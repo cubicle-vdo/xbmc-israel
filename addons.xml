@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.moviexil" name="MovieX-IL" version="2.1.1" provider-name="cubicle">
+<addon id="plugin.video.moviexil" name="MovieX-IL" version="2.1.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
     <extension point="xbmc.python.pluginsource" library="moviexil.py">
         <provides>video</provides>
     </extension>
@@ -21,12 +26,17 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="1.0.4" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="1.0.5" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="sdarottv.py">
         <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
@@ -42,7 +52,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.themarker.video" name="TheMarker Video" version="1.0.2" provider-name="cubicle">
+<addon id="plugin.video.themarker.video" name="TheMarker Video" version="1.0.3" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -61,9 +71,14 @@
           <content>tvshows</content>
         </supportedcontent>
     </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
 </addon>
 
-<addon id="plugin.video.yeladim.me" name="Yeladim.me Video" version="1.0.1" provider-name="cubicle">
+<addon id="plugin.video.yeladim.me" name="Yeladim.me Video" version="1.0.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -82,9 +97,14 @@
           <content>tvshows</content>
         </supportedcontent>
     </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
 </addon>
 
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.0" provider-name="sbentin">
+<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.1" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -102,6 +122,24 @@
         <supportedcontent>
           <content>tvshows</content>
         </supportedcontent>
+    </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
+</addon>
+
+<addon id="repository.xbmc-israel" name="" version="1.0.0" provider-name="cubicle-vdo">
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>XBMC Israeli Streaming Sites</summary>
+        <description>Download and install addons for XBMC Israeli streaming repo for streaming sites</description>
+        <platform>all</platform>
     </extension>
 </addon>
 </addons>
