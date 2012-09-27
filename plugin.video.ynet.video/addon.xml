@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.1" provider-name="cubicle">
+<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -19,8 +19,8 @@
         </supportedcontent>	
     </extension>
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
-        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
-        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
-        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+        <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo</datadir>
     </extension>
 </addon>

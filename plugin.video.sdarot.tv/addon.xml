@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="1.0.5" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="1.0.6" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="sdarottv.py">
         <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
-        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
-        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
-        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
@@ -22,5 +17,10 @@
         <supportedcontent>
           <content>tvshows</content>
         </supportedcontent>	
+    </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo</datadir>
     </extension>
 </addon>
