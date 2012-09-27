@@ -1,0 +1,8 @@
+[B]Version 1.0.4[/B]
+- Changed referer and start parameters due to some changes on the website
+[B]Version 1.0.3[/B]
+- Back to http
+[B]Version 1.0.2[/B]
+- Changed to https
+[B]Version 1.0.0[/B]
+- Initial release

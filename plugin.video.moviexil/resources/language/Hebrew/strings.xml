@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <!-- Category strings -->
+    <string id="20000">כמה זמן להחזיק דפים ב cache</string>
+    <string id="20001">הפעל Debug</string>
+    <string id="30001">עוד פרקים</string>
+    <string id="30002">עונה</string>
+    <string id="30003">חסרה כותרת הפרק</string>
+    <string id="30004">תוכניות</string>
+</strings>

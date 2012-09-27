@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.themarker.video" name="TheMarker Video" version="1.0.3" provider-name="cubicle">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="themarker.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch The Marker video contents.</summary>
+        <summary lang="he">צפה בכתבות וידאו של TheMarker</summary>
+        <description lang="en">Watch TheMarker Video articles from www.themarker.co.il/tv</description>
+        <description lang="he">צפיה בכתבות הוידאו של TheMarker</description>
+        <disclaimer>This addon parse TheMarker's site, you should check Hot's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>	
+    </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/repository.xbmc-israel/raw/master/repo</datadir>
+    </extension>
+</addon>
