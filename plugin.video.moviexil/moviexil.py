@@ -121,6 +121,8 @@ def moviex_video_types():
     addVideoLink('test-sockshare', 'http://www.sockshare.com/embed/67CF7956B246AB8E', 2, '' )
     addVideoLink('test-novamov', 'http://embed.novamov.com/embed.php?v=tverz6xc4slbe&px=1', 2, '' )
     addVideoLink('test-series-novamov', 'http://www.moviex-il.com/series.php?serid=2303', 2, '' )
+    #http://www.youtube.com/embed/jzCYuflJWas
+    addVideoLink('test-youtube', 'http://www.moviex-il.com/movie-%D7%A7%D7%95%D7%A4%D7%99%D7%9D-%D7%91%D7%97%D7%9C%D7%9C-2.html', 2, '' )
     addDir('search: תזיזו', 'תזיזו', 8, '' )
   addDir('סרטים','Movies',4,'')
   addDir('סדרות','http://www.moviex-il.com/page.php?s=seriesList',5,'')
@@ -135,17 +137,26 @@ def moviex_movies_page(url):
     #				<span class="LMdesc">בדרך לעיירת הפיות, אלינה (ברבי) הולכת לארץ בנות הים כדי להציל את חברה נאלו, נסיך בנות הים. נאלו נחטף ע&quot;י עוזרה של לברנה שתוכניותיו היו להשתמש בו כדי לחזק את לברנה על..</span>
 		#<div style="text-align: left;">    
     #regexp='<div class="bmovie2">.*?<h2><a href="(.*?)">(.*?)</a></h2>.*?<img.*?class="picmovie" src="(.*?)" /></a>(.*?)<div class="ab'
-    regexp = 'class="LMimg" src="(.*?)".*?href="(movie-.*?\.html)".*?movieNameIndex\">(.*?)</h3>.*?LMdesc">(.*?)</span>'  
+
+    #	</div><h1>ילדים</h1><div style="text-align: center; padding: 2px;"><a href="?cat=ילדים&amp;page=1"><span class='numPages' style="color: #FFC409;">1</span></a><a href="?cat=ילדים&amp;page=2"><span class='numPages'>2</span></a><a href="?cat=ילדים&amp;page=3"><span class='numPages'>3</span></a><a href="?cat=ילדים&amp;page=4"><span class='numPages'>4</span></a><a href="?cat=ילדים&amp;page=5"><span class='numPages'>5</span></a><a href="?cat=ילדים&amp;page=6"><span class='numPages'>6</span></a><a href="?cat=ילדים&amp;page=7"><span class='numPages'>7</span></a><a href="?cat=ילדים&amp;page=8"><span class='numPages'>8</span></a><a href="?cat=ילדים&amp;page=9"><span class='numPages'>9</span></a><a href="?cat=ילדים&amp;page=10"><span class='numPages'>10</span></a><a href="?cat=ילדים&amp;page=11"><span class='numPages'>11</span></a><a href="?cat=ילדים&amp;page=12"><span class='numPages'>12</span></a><a href="?cat=ילדים&amp;page=13"><span class='numPages'>13</span></a>&nbsp;&nbsp;| <a href="?cat=ילדים&amp;page=2">הבא</a></div><div class="LastMovie" onClick="window.location='movie-%D7%94%D7%A6%27%D7%99%D7%95%D7%95%D7%90%D7%95%D7%95%D7%94-%D7%9E%D7%91%D7%95%D7%95%D7%A8%D7%9C%D7%99-%D7%94%D7%99%D7%9C%D7%A1-3%3A-%D7%95%D7%99%D7%95%D7%94-%D7%9C%D7%94-%D7%A4%D7%99%D7%90%D7%A1%D7%98%D7%94%21.html'">
+		#			  	 <img class="LMimg" src="movpics/506d719d6c6d4.jpg" alt="pic" /><!--
+		#			  --><span class="LMcat">קומדיה וילדים</span><!--
+		#			  --><h3 class="movieNameIndex">הצ'יוואווה מבוורלי הילס 3: ויוה לה פיאסטה! - Beverly Hills Chihuahua 3: Viva La Fiesta!</h3><!--
+		#			  --><span class="LMdesc">פאפי וקלואי, מצטרפים מהלך הרחל וסם למלון לנגהם המפואר, להשלים עם ספא מפואר כלבלב על ידי חמישה גורים השובבים ואת בעלים. אבל יש צרות כאשר רוזה, החבר הקטן ביותר של החבילה, מ..</span>
+		#				 <div style="text-align: left;">
+		#				 	<span class="LMdate">פורסם ב: 4/10/2012 &nbsp; ע"י crazy in love</span>
+		#				 </div>
+    regexp = '(movie-.*?\.html).*?class="LMimg" src="(.*?)".*?<h3 class="movieNameIndex">(.*?)</h3>.*?LMdesc">(.*?)</span>'  
     next_page_regexp='\|.<a\s+href="(.*?)">הבא</a></div'
-    matches = re.compile(regexp).findall(page)
+    matches = re.compile(regexp,re.M+re.I+re.S).findall(page)
     for match in matches:
-      image=match[0]
-      page_link=match[1]
+      image=match[1]
+      page_link=match[0]
       name=match[2]
       description=match[3].strip()
       #print "page_link="+page_link+"\n"
       print "page_link="+page_link+"; name="+name+"; image="+image+"; description"+description+"\n"
-      addVideoLink(name,base_domain+"/"+page_link,2,base_domain+"/"+image, description)
+      addVideoLink(name,base_domain+"/"+page_link,"2&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image, description)
     next_page_matches = re.compile(next_page_regexp).findall(page)
     if (len(next_page_matches) > 0):
       next_page_url=url
@@ -161,6 +172,15 @@ def moviex_movies_page(url):
     xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 def moviex_play_video(url):
+    name = url
+    if ("name" in params):
+      name=params["name"]
+    image=""
+    if ("image" in params):
+      image=params["image"]
+    description=""
+    if "description" in params:  
+      description=params["description"]
     print "Resolving URL: " + url
     videoPlayListUrl = urlresolver.HostedMediaFile(url=url).resolve()
     if not videoPlayListUrl:
@@ -168,8 +188,8 @@ def moviex_play_video(url):
       return
     #addon.resolve_url(stream_url)
     #videoPlayListUrl = urllib.unquote(videoUrl[0])
-    listItem = xbmcgui.ListItem(name, 'DefaultFolder.png', 'DefaultFolder.png', path=videoPlayListUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    listItem.setInfo(type='Video', infoLabels={ "Title": urllib.unquote(url)})
+    listItem = xbmcgui.ListItem(name, image, image, path=videoPlayListUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    listItem.setInfo(type='Video', infoLabels={ "Title": name})
     listItem.setProperty('IsPlayable', 'true')
     print "video url " + videoPlayListUrl
     #xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(videoPlayListUrl)
@@ -194,9 +214,22 @@ def moviex_video_page(url):
           else:
             moviex_play_video(movie_url)
             #curr_source=curr_source+1
-            #addVideoLink("מקור "+str(curr_source),movie_url,3,'') 
+            #addVideoLink("מקור "+str(curr_source),movie_url,3,'')
+      return 
     else:
       print "No matches for "+regexp+"\n"
+    regexp = ">(http://www.youtube.com.*?)</a>"  
+    matches = re.compile(regexp).findall(page)
+    curr_source = 0
+    if len(matches) > 0:
+      for match in matches:
+          print "----- Match start -----\n"
+          print "YouTube Link: "  + match + "\n"
+          print "----- Match end   -----\n"
+          moviex_play_video(match)
+    else:
+      print "No matches for "+regexp+"\n"
+      
       
 def moviex_search(url):
     opener = urllib2.build_opener()
