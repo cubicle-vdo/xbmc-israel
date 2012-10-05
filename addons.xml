@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.moviexil" name="MovieX-IL" version="2.1.3" provider-name="cubicle">
+<addon id="plugin.video.moviexil" name="MovieX-IL" version="2.2.0" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
