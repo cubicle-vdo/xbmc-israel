@@ -69,7 +69,7 @@ def addLink(name, url, iconimage='DefaultFolder.png', sub=''):
         return ok
 
     
-def getData_attempt(url, timeout=__cachePeriod__, name=''):
+def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None):
         print 'getData: url --> ' + url
         if __DEBUG__:
             print 'name --> ' + name
@@ -88,7 +88,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name=''):
         socket.setdefaulttimeout(15)
         req = urllib2.Request(url)
         req.add_header('User-Agent', __USERAGENT__)        
-        response = urllib2.urlopen(url=req,timeout=10)
+        response = urllib2.urlopen(url=req,timeout=10,data=postData)
         data = response.read().replace("\n","").replace("\t","").replace("\r","")
         response.close()
         try:
@@ -102,11 +102,11 @@ def getData_attempt(url, timeout=__cachePeriod__, name=''):
         except:
             return data
     
-def getData(url, timeout=__cachePeriod__, name=''):
+def getData(url, timeout=__cachePeriod__, name='', postData=None):
         for i in range(1,3):
           print "getData: Attempt " + str(i)
           try:
-            return getData_attempt(url, timeout, name)
+            return getData_attempt(url, timeout, name, postData)
           except urllib2.URLError, e:
             print e
             if (i == 3):
