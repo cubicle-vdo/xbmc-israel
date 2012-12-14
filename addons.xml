@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.0.0" provider-name="cubicle">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="gozlan.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch video from gozlan.me</summary>
+        <summary lang="he">צפו בוידאו מהאתר gozlan.me</summary>
+        <description lang="en">Watch video from gozlan.me</description>
+        <description lang="he">צפו בוידאו מהאתר gozlan.me</description>
+        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
+        <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
+        <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo</datadir>
+    </extension>
+</addon>
+
 <addon id="plugin.video.moviexil" name="MovieX-IL" version="2.2.1" provider-name="cubicle">
     <broken>deprecated</broken>
     <requires>
