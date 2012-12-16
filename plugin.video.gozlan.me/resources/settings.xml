@@ -48,7 +48,7 @@
 <category label="rapidvideo">
 <setting id="RapidvideoResolver_priority" type="number" label="Priority" default="100"/>
 </category>
-<category label="putlocker/sockshare">
+<category label="putlocker/sockshare/videoslasher">
 <setting id="PutlockerResolver_priority" type="number" label="Priority" default="100"/>
 </category>
 <category label="novamov">

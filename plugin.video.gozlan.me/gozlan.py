@@ -12,7 +12,7 @@ __plugin__ = "gozlan.me"
 __author__ = "Cubicle"
 
 __image_path__ = ''
-# Don't forget to set lib/urlresolver/common.py
+# Don't forget to set lib/gozlanurlresolver/common.py
 __settings__ = xbmcaddon.Addon(id='plugin.video.gozlan.me')
 addon = __settings__ 
 __language__ = __settings__.getLocalizedString
@@ -27,8 +27,8 @@ sys.path.append (LIB_PATH)
 
 from common import *
 from t0mm0.common.net import Net
-from urlresolver import *
-import urlresolver
+from gozlanurlresolver import *
+import gozlanurlresolver
 
 params = getParams(sys.argv[2])
 url=None
@@ -60,7 +60,7 @@ except:
 
 
 def gozlan_movie_categories(url):
-  page=getData(url,0)
+  page=getData(url+"/",0)
   #<li><a href="search.html?g=הרפתקאות">סרטי הרפתקאות</a></li>
   regexp='<li><a href="search.html\?g=(.*?)">(.*?)</a></li>'
   matches = re.compile(regexp).findall(page)
@@ -165,7 +165,7 @@ def gozlan_play_video(url):
     regexp='<iframe src="(.*?)" id=\'iframeinner\''
     media_url=re.compile(regexp,re.M+re.I+re.S).findall(page)[0]
     print "Resolving URL: " + media_url
-    videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
+    videoPlayListUrl = gozlanurlresolver.HostedMediaFile(url=media_url).resolve()
     if not videoPlayListUrl:
       print "URL " + media_url + " could not have been resolved to a movie.\n"
       return
@@ -192,13 +192,14 @@ def gozlan_video_page(url):
     if "content" in params:  
       content=params["content"]
     print "Calling getdata("+base_domain+"/"+url+")\n"
-    page = getData(base_domain+"/"+url,0)
-    #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-    regexp = 'quality_button.*?<img.*?src="(.*?)" alt="(.*?)".*?_button">(.*?)</span><span class="playing_button"><a  href="(.*?)"'  
-    matches = re.compile(regexp).findall(page)
+    page = getData(base_domain+"/"+url,3)
     curr_source = 0
     # <meta property="og:description" content="הסרט הרווקה עכשיו לצפייה ישירה עם תרגום מובנה בחינם ובמהירות! תקציר הסרט: בקי מתחנת והיא בוחרת בשלוש חברות שנהגו ללעוג לה בתיכון להיות השושבינות שלה לחתונה ולארגן לה את מסיבת הרווקות.שלוש החברות רגן, קייט וג'נה מתכננות את חתונתה של בקי שהייתה המטרה שלהן להקנטות בתיכון , לאחר שהיא מינתה אותן כשושבינות לחתונה שלה." />
     description= re.compile('<meta property="og:description" content="(.*?)"',re.M+re.I+re.S).findall(page)[0]
+    #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
+    #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:110px" src="logo_novamov.jpg" alt="Novamov" /></span><span class="quality_button">DVDRip</span><span class="playing_button"><a  href="play/4826/2-צעדים-למוות-לצפייה-ישירה-4077.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2 צעדים למוות לצפייה ישירה" /></a><font id="edit_462635"></font></span>
+    regexp = 'quality_button.*?<img.*?src="(.*?)" alt="([\w|0-9]+?)"\s+?/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="(.*?)"'  
+    matches = re.compile(regexp).findall(page)
     if len(matches) > 0:
       for match in matches:
         provider_image=match[0]
@@ -207,6 +208,21 @@ def gozlan_video_page(url):
         provider_name=match[1]
         provider_quality=match[2]
         video_page_link=match[3]
+        print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
+        
+        addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,video_page_link,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
+    else:
+      print "No matches for "+regexp+"\n"
+    #<span class="quality_button"><strong style="font-family:'Cuprum',sans-serif; font-weight:bold; font-size:18px;color:Aqua">VideoSlasher</strong></span><span class="quality_button">BDRip</span><span class="playing_button"><a  href="play/4375/2012--עידן-הקרח-לצפייה-ישירה-3533.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2012: עידן הקרח לצפייה ישירה" /></a><font id="edit_462635"></font></span>
+    regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a  href="(.*?)"'  
+    matches = re.compile(regexp).findall(page)
+    curr_source = 0
+    if len(matches) > 0:
+      for match in matches:
+        provider_image=""
+        provider_name=match[0]
+        provider_quality=match[1]
+        video_page_link=match[2]
         print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
         
         addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,video_page_link,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
