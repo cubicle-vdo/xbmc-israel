@@ -1,3 +1,6 @@
+[B]Version 2.0.3[/B]
+- Media is now served as mp4. Changed accordingly
+- Fixed chapter names appearing with "-0" appended 
 [B]Version 2.0.2[/B]
 - Fixed a bug - shows the chapter list of the first season as seasons instead of listing the actual seasons
 [B]Version 2.0.1[/B]
