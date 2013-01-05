@@ -198,7 +198,7 @@ def gozlan_video_page(url):
     description= re.compile('<meta property="og:description" content="(.*?)"',re.M+re.I+re.S).findall(page)[0]
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:110px" src="logo_novamov.jpg" alt="Novamov" /></span><span class="quality_button">DVDRip</span><span class="playing_button"><a  href="play/4826/2-צעדים-למוות-לצפייה-ישירה-4077.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2 צעדים למוות לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-    regexp = 'quality_button.*?<img.*?src="(.*?)" alt="([\w|0-9]+?)"\s+?/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="(.*?)"'  
+    regexp = 'quality_button.*?<img.*?src="(.*?)" alt="([\w|0-9]+?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="(.*?)"'  
     matches = re.compile(regexp).findall(page)
     if len(matches) > 0:
       for match in matches:
