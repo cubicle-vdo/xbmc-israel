@@ -62,13 +62,15 @@ except:
 def gozlan_movie_categories(url):
   page=getData(url+"/",0)
   #<li><a href="search.html?g=הרפתקאות">סרטי הרפתקאות</a></li>
-  regexp='<li><a href="search.html\?g=(.*?)">(.*?)</a></li>'
+  regexp='<li><a href="search.html\?(\w+)=(.*?)">(.*?)</a></li>'
   matches = re.compile(regexp).findall(page)
   for match in matches:
-      results_page=match[0]
-      cat_name=match[1]
+      results_cat=match[0]
+      results_crit=match[1]
+      results_page=match[0]+"="+urllib.quote(results_crit)
+      cat_name=match[2]
       print "results_page="+results_page+"; cat_name="+cat_name
-      addDir(cat_name,base_domain+"/search.html?g="+urllib.quote(results_page),"1&content=movies",'')
+      addDir(cat_name,base_domain+"/search.html?"+results_page,"1&content=movies",'')
   xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 def gozlan_series(url):
@@ -131,7 +133,7 @@ def gozlan_search_page(url):
     #<div class="movie_pic"><a href="האי-של-נים-מדובב-לעברית--לצפייה-ישירה-3831.html"><img src="uploads/50c928afbc30c.jpg" width="105" height="156" alt="האי של נים-מדובב לעברית- לצפייה ישירה" /></a></div>
     regexp = '<div class="movie_pic">.*?<img src="(.*?)" width.*?<strong>.*?<h2><a href="(.*?)">(.*?)</a></h2>';
     #class="pagenum"><a href="/search.html?s=%D7%9E%D7%93%D7%95%D7%91%D7%91&p=2">2</a>  
-    next_page_regexp='class="pagenum"><a href="(.*?&p='+next_page_no+')">'+next_page_no
+    next_page_regexp='<a href="(\/search\.html.*?&p='+next_page_no+')">'+next_page_no
     matches = re.compile(regexp,re.M+re.I+re.S).findall(page)
     for match in matches:
       image=match[0]

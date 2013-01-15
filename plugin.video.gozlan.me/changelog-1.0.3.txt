@@ -1,3 +1,6 @@
+[B]Version 1.0.3[/B]
+- Fix for next page (website html update)
+- Fix for categories not displaying dubbed films and imdb recommended 
 [B]Version 1.0.2[/B]
 - Small change due to a website HTML update
 [B]Version 1.0.1[/B]
