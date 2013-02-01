@@ -25,7 +25,7 @@ sys.path.append (LIB_PATH)
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'lib' ) )
 sys.path.append (LIB_PATH)
 
-from common import *
+from gozlancommon import *
 from t0mm0.common.net import Net
 from gozlanurlresolver import *
 import gozlanurlresolver
