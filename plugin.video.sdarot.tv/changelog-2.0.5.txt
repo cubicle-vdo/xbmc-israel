@@ -1,0 +1,19 @@
+[B]Version 2.0.5[/B]
+- Minor changes to script layout
+[B]Version 2.0.3[/B]
+- Media is now served as mp4. Changed accordingly
+- Fixed chapter names appearing with "-0" appended 
+[B]Version 2.0.2[/B]
+- Fixed a bug - shows the chapter list of the first season as seasons instead of listing the actual seasons
+[B]Version 2.0.1[/B]
+- Modifications due to changes on the upstream website
+[B]Version 2.0.0[/B]
+- Modifications due to major rewrite on the upstream website
+[B]Version 1.0.4[/B]
+- Changed referer and start parameters due to some changes on the website
+[B]Version 1.0.3[/B]
+- Back to http
+[B]Version 1.0.2[/B]
+- Changed to https
+[B]Version 1.0.0[/B]
+- Initial release
