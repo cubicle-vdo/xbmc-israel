@@ -18,7 +18,7 @@ addon = __settings__
 __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __devel__ = 0
-base_domain="http://gozlan.me"
+base_domain="http://deniro.me/"
 
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
@@ -181,9 +181,9 @@ def gozlan_play_video(url):
     xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
 def gozlan_video_page(url):
-    name = url
+    name = urllib.unquote(url)
     if ("name" in params):
-      name=params["name"]
+      name=urllib.unquote(params["name"])
     image=""
     if ("image" in params):
       image=params["image"]
