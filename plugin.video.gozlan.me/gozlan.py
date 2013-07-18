@@ -18,7 +18,7 @@ addon = __settings__
 __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __devel__ = 0
-base_domain="http://deniro.me/"
+base_domain="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/"
 
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
@@ -62,7 +62,7 @@ except:
 def gozlan_movie_categories(url):
   page=getData(url+"/",0)
   #<li><a href="search.html?g=הרפתקאות">סרטי הרפתקאות</a></li>
-  regexp='<li><a href="search.html\?(\w+)=(.*?)">(.*?)</a></li>'
+  regexp='<li><a href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/search.html\?(\w+)=(.*?)">(.*?)</a></li>'
   matches = re.compile(regexp).findall(page)
   for match in matches:
       results_cat=match[0]
@@ -79,7 +79,7 @@ def gozlan_series(url):
 	#		<img src="movpics/4feddfb532688.jpg" alt="seriesImage" />
 	#		<span class="serName">האגדה של קורה</span>
 	#<li style="width:153px"><div class="pic_top_movie2"><a href="vseries.html?id=127"><img src="http://gozlan.me/uploads/50c9cfb938aab.jpg" alt="The Voice ישראל לצפייה ישירה" /></a></div><div class="text_banner_top2"><a href="vseries.html?id=127">The Voice ישראל</a></div>
-  regexp='<a href="(vser.*?)"><img src="(.*?)" alt=".*?<a href.*?">(.*?)</a></div>'
+  regexp='<a href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/(vser.*?)"><img src="(.*?)" alt=".*?<a href.*?">(.*?)</a></div>'
   matches = re.compile(regexp).findall(page)
   for match in matches:
       series_page=match[0]
@@ -94,10 +94,10 @@ def gozlan_series_seasons(url):
   #						<div class="bmovie4">
 	#						<a href="ser.php?ser=24&se=1">עונה: 1</a>
 	#					</div>
-  block_regexp='<h2>עונות:</h2>(.*?)<div class="foot">'
+  block_regexp='<h2>עונות:</h2>(.*?)<div class="foot" style="height:35px">'
   block_matches = re.compile(block_regexp).findall(page)
   print block_matches[0]
-  regexp='href="search.html\?s=(.+?)">'
+  regexp='href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/search.html\?s=(.+?)">'
   icon=urllib.unquote_plus(params["icon"])
   matches = re.compile(regexp).findall(block_matches[0])
   for match in matches:
@@ -119,7 +119,7 @@ def gozlan_video_types():
   addDir('סרטים','Movies',4,'')
   addDir('סדרות',base_domain+'/series.html',5,'')
   addDir('חיפוש סרטים','Movies',9,'')
-      
+
 def gozlan_search_page(url):
     content="tvshows"
     if "content" in params:  
@@ -131,7 +131,7 @@ def gozlan_search_page(url):
     page=getData(url,0)
     print page
     #<div class="movie_pic"><a href="האי-של-נים-מדובב-לעברית--לצפייה-ישירה-3831.html"><img src="uploads/50c928afbc30c.jpg" width="105" height="156" alt="האי של נים-מדובב לעברית- לצפייה ישירה" /></a></div>
-    regexp = '<div class="movie_pic">.*?<img src="(.*?)" width.*?<strong>.*?<h2><a href="(.*?)">(.*?)</a></h2>';
+    regexp = '<div class="movie_pic">.*?<img src="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/(.*?)" width.*?<strong>.*?<h2><a href="(.*?)">(.*?)</a></h2>';
     #class="pagenum"><a href="/search.html?s=%D7%9E%D7%93%D7%95%D7%91%D7%91&p=2">2</a>  
     next_page_regexp='<a href="(\/search\.html.*?&p='+next_page_no+')">'+next_page_no
     matches = re.compile(regexp,re.M+re.I+re.S).findall(page)
@@ -164,8 +164,9 @@ def gozlan_play_video(url):
     
     page=getData(base_domain+"/"+url,7)
     # <iframe src="http://www.putlocker.com/embed/F4988CE321910D0D" id='iframeinner'
-    regexp='<iframe src="(.*?)" id=\'iframeinner\''
-    media_url=re.compile(regexp,re.M+re.I+re.S).findall(page)[0]
+    regexp='<iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"'
+    media_url=re.compile('iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"',re.M+re.I+re.S).findall(page)[0]
+    #addDir('test',media_url,9)
     print "Resolving URL: " + media_url
     videoPlayListUrl = gozlanurlresolver.HostedMediaFile(url=media_url).resolve()
     if not videoPlayListUrl:
@@ -179,6 +180,9 @@ def gozlan_play_video(url):
     print "video url " + videoPlayListUrl
     #xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(videoPlayListUrl)
     xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+
+      
+
 
 def gozlan_video_page(url):
     name = urllib.unquote(url)
@@ -200,7 +204,7 @@ def gozlan_video_page(url):
     description= re.compile('<meta property="og:description" content="(.*?)"',re.M+re.I+re.S).findall(page)[0]
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:110px" src="logo_novamov.jpg" alt="Novamov" /></span><span class="quality_button">DVDRip</span><span class="playing_button"><a  href="play/4826/2-צעדים-למוות-לצפייה-ישירה-4077.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2 צעדים למוות לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-    regexp = 'quality_button.*?<img.*?src="(.*?)" alt="([\w|0-9]+?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="(.*?)"'  
+    regexp = 'quality_button.*?<img.*?src="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/(.*?)" alt="([\w|0-9]+?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co(.*?)"'  
     matches = re.compile(regexp).findall(page)
     if len(matches) > 0:
       for match in matches:
@@ -216,7 +220,7 @@ def gozlan_video_page(url):
     else:
       print "No matches for "+regexp+"\n"
     #<span class="quality_button"><strong style="font-family:'Cuprum',sans-serif; font-weight:bold; font-size:18px;color:Aqua">VideoSlasher</strong></span><span class="quality_button">BDRip</span><span class="playing_button"><a  href="play/4375/2012--עידן-הקרח-לצפייה-ישירה-3533.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2012: עידן הקרח לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-    regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a  href="(.*?)"'  
+    regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a  href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/(.*?)"'  
     matches = re.compile(regexp).findall(page)
     curr_source = 0
     if len(matches) > 0:
@@ -231,7 +235,7 @@ def gozlan_video_page(url):
     else:
       print "No matches for "+regexp+"\n"
     xbmcplugin.setContent(int(sys.argv[1]), content)
-      
+   
       
 def gozlan_search_dialog(url):
     searchtext=""
