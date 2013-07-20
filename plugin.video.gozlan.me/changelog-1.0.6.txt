@@ -1,3 +1,7 @@
+[B]Version 1.0.6[/B]
+- Update by o2ri
+- HTML changes
+- Uses a proxy
 [B]Version 1.0.5[/B]
 - Moved to deniro.me
 - URL Unquote the movie name on the video sources page
