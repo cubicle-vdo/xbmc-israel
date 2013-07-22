@@ -1,0 +1,13 @@
+[B]Version 1.0.5[/B]
+- Moved to deniro.me
+- URL Unquote the movie name on the video sources page
+[B]Version 1.0.3[/B]
+- Fix for next page (website html update)
+- Fix for categories not displaying dubbed films and imdb recommended 
+[B]Version 1.0.2[/B]
+- Small change due to a website HTML update
+[B]Version 1.0.1[/B]
+- Added support for VideoSlasher
+- Fixed MovieX-IL dependency issue
+[B]Version 1.0.0[/B]
+- Initial release

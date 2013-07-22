@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.0" provider-name="o2ri">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="10qtv.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary lang="en">Watch video 10qtv</summary>
+        <summary lang="he">צפו בוידאו מהאתר 10qtv</summary>
+        <description lang="en">Watch video from 10qtv</description>
+        <description lang="he">צפו בוידאו מהאתר 10qtv</description>
+        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+ </addon>
+
 <addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.0.6" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
