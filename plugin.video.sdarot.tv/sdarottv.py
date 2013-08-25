@@ -22,15 +22,24 @@ LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib'
 sys.path.append (LIB_PATH)
 
 from sdarotcommon import *
-from t0mm0.common.net import Net
 
+path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
+cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
+print("Loading cookies from :" + repr(cookie_path))
+cookiejar = cookielib.LWPCookieJar(cookie_path)
 
+if os.path.exists(cookie_path):
+    try:
+        cookiejar.load()
+    except:
+        pass
+  
+cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
+opener = urllib2.build_opener(cookie_handler)
+urllib2.install_opener(opener)
+print "built opener:" + str(opener)
 
-datapath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
-cookie_path = os.path.join(datapath, 'cookies')
-cookie_jar = os.path.join(cookie_path, "sdarot.lwp")
-
-net=Net()
+#net=Net()
 
 
 def LOGIN():
@@ -38,18 +47,10 @@ def LOGIN():
     username    =ADDON.getSetting('user')
     password =ADDON.getSetting('pass')
     
-    data     = {'password': 'pass',
-                'username': 'user',
-                'submit_login' :'התחבר'}
-    headers  = {'Host':'www.sdarot.tv',
-                                            'Origin':'http://www.sdarot.tv',
-                                            'Referer':'http://www.sdarot.tv/',
-                                                    'X-Requested-With':'XMLHttpRequest'}
-    html = net.http_POST(loginurl, data, headers)
-    
-    if os.path.exists(cookie_path) == False:
-            os.makedirs(cookie_path)
-    net.save_cookies(cookie_jar)
+    print "Trying to login to sdarot tv site"
+    page = getData(url=loginurl,timeout=0,postData="username=change&password=change&submit_login=התחבר");
+   
+    print cookiejar
     
    
 
@@ -59,11 +60,7 @@ def MAIN_MENU():
 
     site='http://www.sdarot.tv'   
     LOGIN()
-    net.set_cookies(cookie_jar)
-    html = net.http_GET(site).content
-    page = getData('http://www.sdarot.tv');
-    print page
-
+   
     addDir("הכל א-ת","all-heb",2,'');
     addDir("הכל a-z","all-eng",2,'');
 
@@ -102,15 +99,14 @@ def sdarot_series(url):
     series_id=urllib.unquote_plus(params["series_id"])
     series_name=urllib.unquote_plus(params["series_name"])
     image_link=urllib.unquote_plus(params["image"])
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    opener.addheaders = [('Referer',url),
-      ('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1') ]
+    
+    
+    #opener.addheaders = [('Referer',url)]
     opener.open('http://www.sdarot.tv/landing/'+series_id).read()
     print "sdarot_series: Fetching URL:"+url  
     try:
         page = opener.open(url).read()
-        print cj._cookies
+        print cookiejar
     except urllib2.URLError, e:
         print 'sdarot_season: got http error ' +str(e.code) + ' fetching ' + url + "\n"
         raise e
@@ -148,16 +144,14 @@ def sdarot_movie(url):
     episode_id=urllib.unquote_plus(params["episode_id"])
     title = series_name + "עונה " + season_id + " פרק" + episode_id
     page = getData(url="http://www.sdarot.tv/ajax/watch",timeout=0,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id);
-    print "JSON: " + page
-    strPage=str(page)
-    cj = cookielib.CookieJar()
-    print cj._cookies
+    
+    print cookiejar
     try:
-        xbmc.sleep(40000)
+       
         #the website has a problem that the json is surrounded with exception - therefore we extract it from the text.
-        jsonStart=strPage.find("{")
-        strPage=strPage[jsonStart:]
-        print "Stripped JSON:" + strPage
+        jsonStart=page.find("{")
+        page=page[jsonStart:]
+        print "Stripped JSON:" + page
     except Exception as e:
         print "Unexpected error:"
         print e
@@ -165,7 +159,7 @@ def sdarot_movie(url):
     
     
     
-    prms=json.loads(strPage)
+    prms=json.loads(page)
     print "Token: "+str(prms["token"])+"\n"
     print "Time: "+str(prms["time"])+"\n"
     print "VID: "+str(prms["VID"])+"\n"
