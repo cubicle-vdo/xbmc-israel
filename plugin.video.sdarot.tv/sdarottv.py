@@ -9,6 +9,7 @@ import HTMLParser
 import json
 import cookielib
 
+ADDON = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 ##General vars        
 __plugin__ = "Sdarot.TV Video"
 __author__ = "Cubicle"
@@ -21,8 +22,48 @@ LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib'
 sys.path.append (LIB_PATH)
 
 from sdarotcommon import *
+from t0mm0.common.net import Net
+
+
+
+datapath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
+cookie_path = os.path.join(datapath, 'cookies')
+cookie_jar = os.path.join(cookie_path, "sdarot.lwp")
+
+net=Net()
+
+
+def LOGIN():
+    loginurl = 'http://www.sdarot.tv/login'
+    username    =ADDON.getSetting('user')
+    password =ADDON.getSetting('pass')
+    
+    data     = {'password': 'pass',
+                'username': 'user',
+                'submit_login' :'התחבר'}
+    headers  = {'Host':'www.sdarot.tv',
+                                            'Origin':'http://www.sdarot.tv',
+                                            'Referer':'http://www.sdarot.tv/',
+                                                    'X-Requested-With':'XMLHttpRequest'}
+    html = net.http_POST(loginurl, data, headers)
+    
+    if os.path.exists(cookie_path) == False:
+            os.makedirs(cookie_path)
+    net.save_cookies(cookie_jar)
+    
+   
+
+
 
 def MAIN_MENU():
+
+    site='http://www.sdarot.tv'   
+    LOGIN()
+    net.set_cookies(cookie_jar)
+    html = net.http_GET(site).content
+    page = getData('http://www.sdarot.tv');
+    print page
+
     addDir("הכל א-ת","all-heb",2,'');
     addDir("הכל a-z","all-eng",2,'');
 
@@ -32,7 +73,6 @@ def message(title, message):
     
 def INDEX_AZ(url):
     page = getData('http://www.sdarot.tv/series');
-    print page
     matches = re.compile('<a href="/watch/(\d+)-(.*?)">.*?</noscript>.*?<div>(.*?)</div>').findall(page)
     sr_arr = []
     idx = 0
@@ -70,6 +110,7 @@ def sdarot_series(url):
     print "sdarot_series: Fetching URL:"+url  
     try:
         page = opener.open(url).read()
+        print cj._cookies
     except urllib2.URLError, e:
         print 'sdarot_season: got http error ' +str(e.code) + ' fetching ' + url + "\n"
         raise e
@@ -91,7 +132,7 @@ def sdarot_season(url):
     season_id=urllib.unquote_plus(params["season_id"])
     image_link=urllib.unquote_plus(params["image"])
     page = getData(url="http://www.sdarot.tv/ajax/watch",timeout=0,postData="eplist=true&serie="+series_id+"&season="+season_id);
-    print page
+    print  ("episodes  are:" +page)
     episodes=page.split(",")
     for episode in episodes:
       if ( episode.find("-") != -1 ):
@@ -107,9 +148,24 @@ def sdarot_movie(url):
     episode_id=urllib.unquote_plus(params["episode_id"])
     title = series_name + "עונה " + season_id + " פרק" + episode_id
     page = getData(url="http://www.sdarot.tv/ajax/watch",timeout=0,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id);
-    print "JSON: "
-    print page
-    prms=json.loads(page)
+    print "JSON: " + page
+    strPage=str(page)
+    cj = cookielib.CookieJar()
+    print cj._cookies
+    try:
+        xbmc.sleep(40000)
+        #the website has a problem that the json is surrounded with exception - therefore we extract it from the text.
+        jsonStart=strPage.find("{")
+        strPage=strPage[jsonStart:]
+        print "Stripped JSON:" + strPage
+    except Exception as e:
+        print "Unexpected error:"
+        print e
+        raise
+    
+    
+    
+    prms=json.loads(strPage)
     print "Token: "+str(prms["token"])+"\n"
     print "Time: "+str(prms["time"])+"\n"
     print "VID: "+str(prms["VID"])+"\n"
@@ -120,7 +176,7 @@ def sdarot_movie(url):
     #player_url='http://www.sdarot.tv/templates/frontend/green_w/player.swf?file='+url+'&provider=http&fullscreen=true'
     player_url='http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
     
-    flv_url = "http://media.sdarot.tv/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time+'|User-Agent='+urllib.quote('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20100101 Firefox/15.0.1')+'&Referer='+urllib.quote(player_url)    
+    flv_url = "http://media1.sdarot.tv/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time+'|User-Agent='+urllib.quote('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:15.0) Gecko/20100101 Firefox/15.0.1')+'&Referer='+urllib.quote(player_url)    
     liz = xbmcgui.ListItem(title, path=flv_url, iconImage=params["image"], thumbnailImage=params["image"])
     liz.setInfo(type="Video", infoLabels={ "Title": title })    
     liz.setProperty('IsPlayable', 'true')
@@ -172,3 +228,4 @@ elif mode==5:
 
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__,"fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
+
