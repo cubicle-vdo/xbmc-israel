@@ -33,7 +33,9 @@ if os.path.exists(cookie_path):
         cookiejar.load()
     except:
         pass
-  
+elif not os.path.exists(path):
+    os.makedirs(path) 
+    
 cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
 opener = urllib2.build_opener(cookie_handler)
 urllib2.install_opener(opener)
@@ -44,11 +46,11 @@ print "built opener:" + str(opener)
 
 def LOGIN():
     loginurl = 'http://www.sdarot.tv/login'
-    username    =ADDON.getSetting('user')
-    password =ADDON.getSetting('pass')
+    username = 'shlomicthailand' #ADDON.getSetting('user')
+    password = 'change' #ADDON.getSetting('pass')
     
     print "Trying to login to sdarot tv site"
-    page = getData(url=loginurl,timeout=0,postData="username=change&password=change&submit_login=התחבר");
+    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer="");
    
     print cookiejar
     
