@@ -46,10 +46,14 @@ print "built opener:" + str(opener)
 
 def LOGIN():
     loginurl = 'http://www.sdarot.tv/login'
-    username = 'shlomicthailand' #ADDON.getSetting('user')
-    password = 'change' #ADDON.getSetting('pass')
+    username = ADDON.getSetting('username')
+    password = ADDON.getSetting('user_password')
     
-    print "Trying to login to sdarot tv site"
+    if not username or not password:
+        print "Sdarot tv:no credencials found skipping login"
+        return
+    
+    print "Trying to login to sdarot tv site username:" + username
     page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer="");
    
     print cookiejar
