@@ -92,9 +92,9 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
         if referer: 
             req.add_header ('Referer',referer)
             
-        print "sent headers:" + str(req.headers)     
+        #print "sent headers:" + str(req.headers)     
         response = urllib2.urlopen(url=req,timeout=10,data=postData)
-        print "recieved headers:" + str(response.info());
+        #print "recieved headers:" + str(response.info());
         
         try:
             print sys.modules["__main__"].cookiejar
@@ -104,7 +104,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
             print e       
         
         data = response.read().replace("\n","").replace("\t","").replace("\r","")
-        print "recieved data:" + str(data)
+        #print "recieved data:" + str(data)
                 
         response.close()
         try:
