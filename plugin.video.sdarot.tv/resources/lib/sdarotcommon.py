@@ -5,8 +5,8 @@ Created on 30/04/2011
 
 @author: shai
 '''
-__USERAGENT__ = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
-
+__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
+__REFERER__ = 'http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
@@ -69,11 +69,12 @@ def addLink(name, url, iconimage='DefaultFolder.png', sub=''):
         return ok
 
     
-def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None):
-        print 'getData: url --> ' + url
+def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
+        print 'getData: url --> ' + url + '\npostData-->' + str(postData)
         if __DEBUG__:
             print 'name --> ' + name
-        if timeout > 0:
+        #temporary disabled the cache - cause problems with headers    
+        if timeout > 9999999:
             if name == '':
                 cachePath = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'pages', urllib.quote(url,"")))
             else:
@@ -87,9 +88,24 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None):
                 return ret
         socket.setdefaulttimeout(15)
         req = urllib2.Request(url)
-        req.add_header('User-Agent', __USERAGENT__)        
+        req.add_header('User-Agent', __USERAGENT__)   
+        if referer: 
+            req.add_header ('Referer',referer)
+            
+        #print "sent headers:" + str(req.headers)     
         response = urllib2.urlopen(url=req,timeout=10,data=postData)
+        #print "recieved headers:" + str(response.info());
+        
+        try:
+            print sys.modules["__main__"].cookiejar
+            sys.modules["__main__"].cookiejar.save()
+            
+        except Exception,e:
+            print e       
+        
         data = response.read().replace("\n","").replace("\t","").replace("\r","")
+        #print "recieved data:" + str(data)
+                
         response.close()
         try:
             if timeout > 0:
@@ -102,11 +118,11 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None):
         except:
             return data
     
-def getData(url, timeout=__cachePeriod__, name='', postData=None):
+def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
         for i in range(1,3):
           print "getData: Attempt " + str(i)
           try:
-            return getData_attempt(url, timeout, name, postData)
+            return getData_attempt(url, timeout, name, postData,referer)
           except urllib2.URLError, e:
             print e
             if (i == 3):

@@ -1,3 +1,6 @@
+[B]Version 2.0.6[/B]
+- 1. Modifications due to changes on the upstream website
+- 2. Added new login dialog for registered users, might give better priority.
 [B]Version 2.0.5[/B]
 - Minor changes to script layout
 [B]Version 2.0.3[/B]
