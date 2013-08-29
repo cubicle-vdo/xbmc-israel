@@ -176,9 +176,7 @@ def INDEXepisode(url):
                 print (name,"url= "+ url)                
 def CATEGORIES():
         addDir("סדרות",'http://www.10q.tv/load',1,"")
-        addDir( "","",1,"")
-        addDir( "","",1,"")
-        addDir("","",1,"")
+       
 
 def get_params():
         param=[]
