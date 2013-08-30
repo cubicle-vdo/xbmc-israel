@@ -47,7 +47,7 @@
 </addon>
 
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.6" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.7" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
