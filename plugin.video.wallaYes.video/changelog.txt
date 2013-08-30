@@ -1,0 +1,5 @@
+[B]Version 1.0.1[/B]
+- Fix hebrew text for Frodo
+
+[B]Version 1.0.0[/B]
+- Yes initial plugin
