@@ -110,6 +110,7 @@
     </extension>
  </addon>
  
+ <!-- need a fix 
  <addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.3" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -132,6 +133,7 @@
         </supportedcontent>	
     </extension>
 </addon>
+-->
 
 <addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
