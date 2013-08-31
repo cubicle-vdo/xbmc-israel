@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Category strings -->
+    <string id="0000001">Series</string>
+    <string id="0000002">Movies</string>
+    <string id="0000003">yes</string>
+    <string id="0000004">The next generation</string>
+    <string id="20000">How long to keep pages in cache</string>
+    <string id="20001">Turn on Debug mode</string>
+    <string id="30001">More...</string>
+    <string id="30002">More Movies...</string>
+    <string id="30003">Series</string>
+    <string id="30004">Documentary</string>
+    <string id="30005">Children</string>
+    <string id="30006">Movies</string>
+    <string id="30007">Drama</string>
+    <string id="30008">Comedy</string>
+    <string id="30009">Horror & Suspense</string>
+    <string id="30010">Animation</string>
+    <string id="30011">Season</string>
+    <string id="40001">Video clips</string>
+    <string id="40002">Playlists</string>
+    <string id="40003">Charts</string>
+    <string id="40004">Shows</string>
+    <string id="40005">Live Shows</string>
+    <string id="40006">VOD</string>
+    <string id="40007">Live</string>
+</strings>

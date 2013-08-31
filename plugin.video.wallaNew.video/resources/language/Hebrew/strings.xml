@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <!-- Category strings -->
+    <string id="0000001">סדרות</string>
+    <string id="0000002">סרטים</string>
+    <string id="0000003">yes</string>
+    <string id="0000004">הדור הבא</string>
+    <string id="20000">כמה זמן להחזיק דפים ב cache</string>
+    <string id="20001">הפעל Debug</string>
+    <string id="30001">עוד פרקים</string>
+    <string id="30002">עוד סרטים</string>
+    <string id="30003">סדרות</string>
+    <string id="30004">Yes דוקו</string>
+    <string id="30005">ילדים</string>
+    <string id="30006">סרטים באורך מלא</string>
+    <string id="30007">דרמות</string>
+    <string id="30008">קומדיות</string>
+    <string id="30009">מתח ואימה</string>
+    <string id="30010">מצוייר</string>
+    <string id="30011">עונה</string>
+    <string id="40001">קליפים</string>
+    <string id="40002">פליליסטים</string>
+    <string id="40003">מצעדים</string>
+    <string id="40004">תוכניות</string>
+    <string id="40005">הופעות חיות</string>
+    <string id="40006">VOD</string>
+    <string id="40007">שידור חי</string>
+</strings>

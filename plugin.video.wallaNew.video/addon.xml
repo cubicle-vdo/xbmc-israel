@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.3" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="walla.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Walla video contents.</summary>
+        <summary lang="he">צפה במידע VOD מאתר walla</summary>
+        <description lang="en">Watch Walla contents (inculde Yes, Nickoldeon and Viva).</description>
+        <description lang="he">צפה במגוון הסרטים ערוצים וסדרות הניתנים לצפיה דרך אתר video.walla.co.il</description>
+        <disclaimer>This addon parse Walla site, you should check Walla's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>	
+    </extension>
+</addon>
