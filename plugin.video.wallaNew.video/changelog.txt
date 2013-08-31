@@ -1,0 +1,61 @@
+[B]Version 2.0.3[/B]
+- Fix new walla layouts
+
+[B]Version 2.0.2[/B]
+- Another Fix hebrew text for Frodo
+
+[B]Version 2.0.1[/B]
+- Fix hebrew text for Frodo
+
+[B]Version 2.0.0[/B]
+- Major rewrite of the whole plugin
+
+[B]Version 1.0.19[/B]
+- Fixed problem caused by missing fanart
+
+[B]Version 1.0.18[/B]
+- Fixed Viva and channel 23
+
+[B]Version 1.0.17[/B]
+- Fixed Sratim category
+
+[B]Version 1.0.16[/B]
+- Fixed Junior to support the multiple server address changes
+
+[B]Version 1.0.15[/B]
+- Added new story tellers. Fixes for various other categories.
+
+[B]Version 1.0.14[/B]
+- Yet another change in walla movies needed attention
+
+[B]Version 1.0.13[/B]
+- Fixes for eden version + attempt of fixing the walla movies problem with VideoModes
+
+[B]Version 1.0.12[/B]
+- Fixed support for Walla Movies
+
+[B]Version 1.0.11[/B]
+- Fixed problem with changed video descriptor which caused episodes not to be shown
+
+[B]Version 1.0.10[/B]
+- Fixed live feed for the 6 house cameras
+
+[B]Version 1.0.9[/B]
+- Fixed string concatination in DEBUG mode in common
+- Added support for The new show 'Next Generation'
+
+[B]Version 1.0.8[/B]
+- Fixed changes with Yes to suuport yes again
+
+[B]Version 1.0.7[/B]
+- Fix one thing ruin another.... Fixed problems with 'more chapters' again 
+
+[B]Version 1.0.6[/B]
+- Fix in 'yes' module for next chapters
+- Added more movie videos from the site 
+
+[B]Version 1.0.4[/B]
+- Fixed cache to work as float
+
+[B]Version 1.0.3[/B]
+- Added setting for how long to hold the cache
