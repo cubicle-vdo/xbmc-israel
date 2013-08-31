@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting label="20000" type="text" id="deviceId" default=""/>
+    <setting label="20001" type="bool" id="DEBUG" default="false"/>
+</settings>
