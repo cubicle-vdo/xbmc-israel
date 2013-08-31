@@ -1,0 +1,2 @@
+[B]Version 2.0.7[/B]
+Added search support - by O2ri

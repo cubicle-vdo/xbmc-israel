@@ -1,0 +1,2 @@
+[B]Version 2.0.7[/B]
+Added login support - by O2ri
