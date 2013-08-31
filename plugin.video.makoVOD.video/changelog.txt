@@ -1,0 +1,11 @@
+[B]Version 1.0.5[/B]
+- fixed hebrew encoding problems
+
+[B]Version 1.0.4[/B]
+- A complete rebuild of the plugin based on Mako's Android application and API
+
+[B]Version 1.0.3[/B]
+- fixed cache to work as float
+
+[B]Version 1.0.2[/B]
+- Added setting for how long to hold the cache
