@@ -1,0 +1,2 @@
+[B]Version 2.0.8[/B]
+Fix broken request, added support for Gzip for improved performance.

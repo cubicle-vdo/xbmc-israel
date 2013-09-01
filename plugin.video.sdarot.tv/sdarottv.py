@@ -8,6 +8,8 @@ import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import HTMLParser
 import json
 import cookielib
+import unicodedata
+
 
 ADDON = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 ##General vars        
@@ -75,21 +77,21 @@ def LOGIN():
     
     
     print "Trying to login to sdarot tv site username:" + username
-    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer="");
+    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer="http://www.sdarot.tv/");
    
- #   print cookiejar
-    
-   
-
-
-
+ 
 def MAIN_MENU():
+    
     # check's if login  is required.
-    page = getData('http://www.sdarot.tv')
+    print "check if logged in already"
+    page = getData('http://www.sdarot.tv',referer="")
     match = re.compile('<span class="blue" id="logout"><a href="/log(.*?)">').findall(page)
-    print ("match is :::"+ str(match)+ str(len(match)))
+    
     if len(match)!= 1 :
+        print "login required"
         LOGIN()
+    else:
+        print "already logged in."
     addDir("הכל א-ת","all-heb",2,'');
     addDir("הכל a-z","all-eng",2,'');
     addDir("חפש","http://www.sdarot.tv/search",6,'')
@@ -189,63 +191,46 @@ def sdarot_movie(url):
     image_link=urllib.unquote_plus(params["image"])
     episode_id=urllib.unquote_plus(params["episode_id"])
     title = series_name + "עונה " + season_id + " פרק" + episode_id
-    page = getData(url="http://www.sdarot.tv/ajax/watch",timeout=0,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id);
-    
+    page = getData(url="http://www.sdarot.tv/ajax/watch",timeout=0,postData="watch=false&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer="http://www.sdarot.tv/watch");
+   
+    print "JSON:" + page 
     #print cookiejar
     try:
        
-        #the website has a problem that the json is surrounded with exception - therefore we extract it from the text.
-        jsonStart=page.find("{")
-        page=page[jsonStart:]
-     #   print "Stripped JSON:" + page
-    except Exception as e:
-        print "Unexpected error:"
-        print e
-        raise  
-
-    print "JSON:" + page
-    prms=json.loads(page)
-    print "Token: "+str(prms["token"])+"\n"
-    print "Time: "+str(prms["time"])+"\n"
-    print "VID: "+str(prms["VID"])+"\n"
-    token = str(prms["token"])
-    vid_time = str(prms["time"])
-    VID = str(prms["VID"])
-    
-    flv_url = ".sdarot.tv/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
-    url1=urllib.unquote_plus("http://media"+str(flv_url))
-    url2=urllib.unquote_plus("http://media1"+str(flv_url))
-    url3=urllib.unquote("http://media2"+str(flv_url))
-
-    server1Up=True
-    server2Up=True
-    server3Up=True
-    try:
-        text1=urllib2.urlopen(url1)
-    except (urllib2.HTTPError,urllib2.URLError )as e:
-        server1Up=False
-    try:
-        text2=urllib2.urlopen(url2)
-    except (urllib2.HTTPError,urllib2.URLError) as e:
-         server2Up=False
-    try:
-        text3=urllib2.urlopen(url3)
-    except (urllib2.HTTPError,urllib2.URLError ) as e:
-        server3Up=False
-
-    if server1Up :
-        finalUrl=url1
-    else:
-        if server2Up:
-            finalUrl=url2
-        else:
-            if server3Up:
-                finalUrl=url3
-            else:
-                dialog = xbmcgui.Dialog()
-                xbmcgui.Dialog().ok('Sdarot',' נסה להפעיל את הפרק בעוד דקה')        
-                return
+        #try to see if 
+        prms=json.loads(page)
+        if prms.has_key("error"):
             
+            #encoding needed for hebrew to appear right
+            error = str(prms["error"].encode("utf-8"))
+        
+            if len(error) > 0 :
+                print "error:" + error +"\n"
+                xbmcgui.Dialog().ok('Error occurred',error)
+                return
+        
+        vid_url = str(prms["url"])
+        print "vid_url: "+vid_url+"\n"
+        VID = str(prms["VID"])
+        print "VID: "+VID+"\n"
+        
+        
+        vid_time = str(prms["time"])
+        print "Time: "+ vid_time +"\n"
+        token = str(prms["token"])
+        print "Token: "+token +"\n"        
+    
+    except Exception as e:
+        print e
+        raise
+
+    if not token:
+        xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
+        return
+    
+    finalUrl = "http://" + vid_url + "/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
+  
+        
     player_url='http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
     liz = xbmcgui.ListItem(title, path=finalUrl, iconImage=params["image"], thumbnailImage=params["image"])
     liz.setInfo(type="Video", infoLabels={ "Title": title })    

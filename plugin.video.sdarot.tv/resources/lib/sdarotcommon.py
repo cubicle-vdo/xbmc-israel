@@ -5,11 +5,15 @@ Created on 30/04/2011
 
 @author: shai
 '''
-__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
+#__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
+__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.57 Safari/537.36'
+
 __REFERER__ = 'http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
+import StringIO
+import gzip
 from operator import itemgetter, attrgetter
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
@@ -68,6 +72,14 @@ def addLink(name, url, iconimage='DefaultFolder.png', sub=''):
         ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
         return ok
 
+def extractFromZip(gzipData):
+    
+    data = StringIO.StringIO(gzipData)
+
+    gzipper = gzip.GzipFile(fileobj=data)
+    html = gzipper.read()
+    gzipper.close()
+    return html
     
 def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
         print 'getData: url --> ' + url + '\npostData-->' + str(postData)
@@ -89,13 +101,37 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
         socket.setdefaulttimeout(15)
         req = urllib2.Request(url)
         req.add_header('User-Agent', __USERAGENT__)   
+        req.add_header('X-Requested-With','XMLHttpRequest')
+        req.add_header('Accept','application/json, text/javascript, */*; q=0.01')
+        req.add_header('Accept-Encoding','gzip,deflate,sdch')
+        req.add_header('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
+        req.add_header('Connection','keep-alive')
+        req.add_header('Origin','http://www.sdarot.tv')
+        if (postData):
+            req.add_header('Content-Length',len(postData))
+        
         if referer: 
             req.add_header ('Referer',referer)
             
-        #print "sent headers:" + str(req.headers)     
+        if __DEBUG__:
+            print "sent headers:" + str(req.headers)     
         response = urllib2.urlopen(url=req,timeout=10,data=postData)
-        #print "recieved headers:" + str(response.info());
         
+        if __DEBUG__:
+            print "received headers:" + str(response.info());
+        
+        if response.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO.StringIO( response.read())
+            f = gzip.GzipFile(fileobj=buf)
+            data = f.read()
+            print "received gzip len " + str(len(data))
+           
+        else:
+            data = response.read()
+
+        if data:
+            data = data.replace("\n","").replace("\t","").replace("\r","")   
+                     
         try:
             print sys.modules["__main__"].cookiejar
             sys.modules["__main__"].cookiejar.save()
@@ -103,12 +139,13 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
         except Exception,e:
             print e       
         
-        data = response.read().replace("\n","").replace("\t","").replace("\r","")
-        #print "recieved data:" + str(data)
-                
+        if __DEBUG__:
+            print "recieved data:" + str(data)
+                       
         response.close()
+        
         try:
-            if timeout > 0:
+            if timeout > 999999:
                 f = open(cachePath, 'wb')
                 f.write(data)
                 f.close()
@@ -144,38 +181,5 @@ def getImageName(imageURL):
         idx = int(imageURL.rfind("/")) + 1
         return imageURL[idx:]
 
-def getCookie(url, cookiename):
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', __USERAGENT__)
-        response = urllib2.urlopen(req)
-        cooks = response.headers["set-cookie"].split(";")
-        for x in cooks:
-            y = x.split("=")
-            if (y[0] == cookiename):
-                return y[1]
-        response.close()
-        return "ERROR"
 
   
-def getRealVideoLink(videoId):
-        page = getData("http://10tv.nana10.co.il/Video/?VideoID=" + videoId, 744)
-        ret = re.compile('var sCmsVideoURL.*?"(.*?)"').findall(page)
-        if (len(ret) == 0 or (len(ret) > 0 and len(ret[0]) == 0)):
-            ret = re.compile('var VideoLinkHQ.*?"(.*?)"').findall(page)
-            if (len(ret) == 0 or (len(ret) > 0 and len(ret[0]) == 0)):
-                ret = re.compile('var VideoLink\s*?=\s*"(.*?)"').findall(page)
-        else:
-            # this is a special case where we get a play list
-            playlist = getData(ret[0] + "&ticket=" + getCookie("http://10tv.nana10.co.il/Video/?VideoID=" + videoId, "CUTicket" + videoId), 744, str(videoId))
-            rets = re.compile('<ref href="(.+?)"').findall(playlist)
-            if len(rets) > 1:
-                return rets[1]
-            elif len(rets) == 1:
-                return rets[0] 
-            else:
-                return 'unavailable'
-        if (len(ret) > 0 and len(ret[0]) > 0):
-            ret = ret[0]
-            if ret.find('gmpl.aspx') != -1:
-                ret = ret.replace('gmpl.aspx','gm.asp')
-            return ret + "&ticket=" + getCookie("http://10tv.nana10.co.il/Video/?VideoID=" + videoId, "CUTicket" + videoId)
