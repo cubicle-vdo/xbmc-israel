@@ -39,13 +39,56 @@
           <content>tvshows</content>
         </supportedcontent>
     </extension>
-    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
-        <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
-        <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
-        <datadir zip="true">https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo</datadir>
+
+</addon>
+
+<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.5" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="Mako.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Mako video contents.</summary>
+        <summary lang="he">צפה בתוכניות מאתר מאקו</summary>
+        <description lang="en">Watch Mako Video contents from Mako Application for cellular.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה באמצעות אפךיקציית מאקו בטלפון הסלולרי</description>
+        <disclaimer>This addon connects to Mako site, you should check Mako's TOS on android before using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>
     </extension>
 </addon>
 
+<addon id="plugin.video.moviexil" name="MovieX-IL" version="2.2.2" provider-name="cubicle">
+    <broken>deprecated</broken>
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="moviexil.py">
+        <provides>video</provides>
+        <broken>deprecated</broken>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <broken>deprecated</broken>
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch video from MovieX-IL</summary>
+        <summary lang="he">צפו בוידאו מהאתר MovieX-IL</summary>
+        <description lang="en">Watch video from MovieX-IL</description>
+        <description lang="he">צפו בוידאו מהאתר MovieX-IL</description>
+        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+
+</addon>
 
 <addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.8" provider-name="cubicle">
     <requires>
@@ -66,11 +109,7 @@
           <content>tvshows</content>
         </supportedcontent>
     </extension>
-    <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
-        <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
-        <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
-        <datadir zip="true">https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo</datadir>
-    </extension>
+
 </addon>
 
 <addon id="plugin.video.searchil" name="Search IL" version="1.0.1" provider-name="HILLEL">
@@ -109,8 +148,30 @@
         </supportedcontent>
     </extension>
  </addon>
- 
- <addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.4" provider-name="sbentin">
+
+<addon id="plugin.video.themarker.video" name="TheMarker Video" version="1.0.4" provider-name="cubicle">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="themarker.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch The Marker video contents.</summary>
+        <summary lang="he">צפה בכתבות וידאו של TheMarker</summary>
+        <description lang="en">Watch TheMarker Video articles from www.themarker.co.il/tv</description>
+        <description lang="he">צפיה בכתבות הוידאו של TheMarker</description>
+        <disclaimer>This addon parse TheMarker's site, you should check Hot's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+
+</addon>
+
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.4" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -129,31 +190,10 @@
           <content>tvshows</content>
           <content>episodes</content>
           <content>movies</content>
-        </supportedcontent>	
+        </supportedcontent>
     </extension>
 </addon>
-<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.5" provider-name="sbentin">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="Mako.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary lang="en">Watch Mako video contents.</summary>
-        <summary lang="he">צפה בתוכניות מאתר מאקו</summary>
-        <description lang="en">Watch Mako Video contents from Mako Application for cellular.</description>
-        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה באמצעות אפךיקציית מאקו בטלפון הסלולרי</description>
-        <disclaimer>This addon connects to Mako site, you should check Mako's TOS on android before using. It's as is</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-          <content>episodes</content>
-          <content>movies</content>
-        </supportedcontent>	
-    </extension>
-</addon>
+
 <addon id="plugin.video.wallaYes.video" name="וואלה Yes" version="1.0.1" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -173,10 +213,53 @@
           <content>tvshows</content>
           <content>episodes</content>
           <content>movies</content>
-        </supportedcontent>	
+        </supportedcontent>
     </extension>
 </addon>
 
+<addon id="plugin.video.yeladim.me" name="Yeladim.me Video" version="1.0.3" provider-name="cubicle">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="yeladim.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Yeladim.me video contents.</summary>
+        <summary lang="he">סדרות מתוך האתר yeladim.me</summary>
+        <description lang="en">Watch the many TV series available on yeladim.me</description>
+        <description lang="he">צפיה בסדרות (הרבות) שיש באתר yeladim.me</description>
+        <disclaimer>This addon parsees their website, you should check their TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+
+</addon>
+
+<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.2" provider-name="cubicle">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="ynet.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch YNet video contents.</summary>
+        <summary lang="he">צפה בכתבות וידאו של YNET</summary>
+        <description lang="en">Watch Ynet Video articles from ynet.co.il</description>
+        <description lang="he">צפיה בכתבות הוידאו של YNET</description>
+        <disclaimer>This addon parse YNet's site, you should check Hot's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+        </supportedcontent>
+    </extension>
+
+</addon>
 
 <addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
