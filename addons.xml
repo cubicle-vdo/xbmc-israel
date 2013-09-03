@@ -65,7 +65,6 @@
     </extension>
 </addon>
 
-
 <addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.8" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -125,7 +124,6 @@
     </extension>
  </addon>
 
-
 <addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.4" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -171,8 +169,6 @@
         </supportedcontent>
     </extension>
 </addon>
-
-
 
 <addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.2" provider-name="cubicle">
     <requires>
