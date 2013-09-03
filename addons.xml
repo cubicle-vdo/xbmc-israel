@@ -170,28 +170,6 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.2" provider-name="cubicle">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="ynet.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary lang="en">Watch YNet video contents.</summary>
-        <summary lang="he">צפה בכתבות וידאו של YNET</summary>
-        <description lang="en">Watch Ynet Video articles from ynet.co.il</description>
-        <description lang="he">צפיה בכתבות הוידאו של YNET</description>
-        <disclaimer>This addon parse YNet's site, you should check Hot's TOS before you using. It's as is</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
-
-</addon>
-
 <addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
