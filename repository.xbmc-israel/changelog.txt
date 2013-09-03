@@ -1,5 +1,3 @@
-[B]Version 1.0.3[/B]
-- Support auto updates of addons.
 [B] Version 1.0.2[/B]
 added several addons from different repo for consolidation.
 [B]Version 1.0.1[/B]
