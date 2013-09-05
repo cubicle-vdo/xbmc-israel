@@ -1,0 +1,5 @@
+[B]Version 1.0.1[/B]
+- Added movies section
+- movies are sorted
+[B]Version 1.0.0[/B]
+- Initial release
