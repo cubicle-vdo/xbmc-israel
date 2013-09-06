@@ -10,7 +10,6 @@ __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, 
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib
-import chardet
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
@@ -55,9 +54,11 @@ def addDir(contentType, name,url,mode,iconimage='DefaultFolder.png',elementId=''
             liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
             if not fanart=='':
                 liz.setProperty("Fanart_Image", fanart)
-            print "WALLA addDir after listItem:" + clean(contentType, name)    
+            if __DEBUG__:
+                 print "WALLA addDir after listItem:" + clean(contentType, name)    
             ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-            print "added directory success:" + clean(contentType, name)
+            if __DEBUG__:
+                print "added directory success:" + clean(contentType, name)
             return ok
         except Exception as e:
             print "WALLA exception in addDir"
@@ -98,7 +99,8 @@ def getData(url, period = __cachePeriod__):
             req.add_header('User-Agent', __USERAGENT__)
             response = urllib2.urlopen(req)
             contentType = response.headers['content-type']
-            print "WALLA got content type " + contentType
+            if __DEBUG__:
+                print "WALLA got content type " + contentType
             data = response.read().replace("\n","").replace("\t","").replace("\r","")
             response.close()            
             
@@ -171,31 +173,18 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 
-def convert_encoding(content, new_coding='utf-8'):
-    if (len(content)==0):
-           return "No name found" 
-    encoding = chardet.detect(content)['encoding']
-    print "WALLA detected encoding:" + encoding
-    if encoding != 'utf-8':
-        content = content.decode(encoding, 'replace').encode('utf-8')
-        return content
-    
 def clean(contentType, name):
     
     try:
-        
-        
-        if contentType.find('UTF-8') == -1 and contentType.find('utf-8')==-1:
-            print "WALLA encoding windows-1255"
-             
-            #name = name.decode("windows-1255")
-            name = convert_encoding(name)    
-            print "WALLA after encoding windows-1255"
-         
+        if (len(name)==0):
+            return "No name found" 
+        if contentType.lower().find('utf-8') == -1:
+            name = name.decode('windows-1255', 'replace').encode('utf-8')
+           
     except Exception as e:
         print 'Error in clean: '
         print e
-        raise
+        raise e
     if (name):
         cleanName = name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
         return  cleanName

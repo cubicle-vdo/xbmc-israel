@@ -14,23 +14,22 @@ __PATTERN_FEATURED__ ='<div class="title w5b mt5"><a href="(.*?)"'
 import urllib,urllib2,re,xbmcplugin,xbmcgui,os,sys
 import wallacommon as common
 
-print "WALLA IN NICKJR"
 
 class manager_nickjr:
     
     def __init__(self):
         self.MODES = common.enum(GET_SERIES_LIST=1, GET_EPISODES_LIST=2)
-        print "WALLA IN NICKJR:init"
+       
         
     def work(self, mode, url='', name='', page=''):
-        print "WALLA IN NICKJR:work"
+        
         if (mode==self.MODES.GET_SERIES_LIST):
             self.getSeriesList()
         elif(mode==self.MODES.GET_EPISODES_LIST):
             common.getEpisodeList(__BASE_URL__, url, __PATTERN__, __NAME__, self.MODES.GET_EPISODES_LIST, __PATTERN_FEATURED__, __PATTERN_MORE__)
             
     def getSeriesList(self):
-        print "WALLA IN NICKJR:getSeriesList"
+        
         try:
             ## get all the series base url
             contentType,urls = common.getMatches(__BASE_URL__,'<a id="opc" href="(.*?)"')
