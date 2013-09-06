@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.0" provider-name="o2ri">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.1" provider-name="hillel">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -13,7 +13,7 @@
         <summary lang="he">צפו בוידאו מהאתר 10qtv</summary>
         <description lang="en">Watch video from 10qtv</description>
         <description lang="he">צפו בוידאו מהאתר 10qtv</description>
-        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
+        <disclaimer>'כותבי הסקיפרט אינם אחראים לתוכן המצוג באתר ואין להם קשר אליו בשום צורה ,הנך כפוף לתנאי השימוש של האתר</disclaimer>
         <supportedcontent>
           <content>tvshows</content>
         </supportedcontent>
@@ -170,13 +170,7 @@
     </extension>
 </addon>
 
-<<<<<<< HEAD
-
-
-<addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.3" provider-name="cubicle-vdo">
-=======
 <addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
->>>>>>> upstream/master
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
         <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
