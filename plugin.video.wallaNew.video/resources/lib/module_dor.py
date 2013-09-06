@@ -4,7 +4,7 @@ Created on 23/06/2011
 @author: shai
 '''
 import re, urllib, os, sys, xbmcaddon, xbmcgui, xbmc, xbmcplugin
-import common
+import wallacommon as common
 
 __BASE_URL__ = 'http://dor.walla.co.il/'
 __NAME__ = 'dor'

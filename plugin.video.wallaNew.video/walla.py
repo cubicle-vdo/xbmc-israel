@@ -15,7 +15,7 @@ __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
 
-from common import *
+from wallacommon import *
 
 def CATEGORIES():
 
@@ -62,7 +62,7 @@ try:
 except:
         pass
 try:
-        name=urllib.unquote_plus(params["name"])
+        name=urllib.unquote_plus(params["name"]).encode('utf-8')
 except:
         pass
 try:
@@ -83,7 +83,22 @@ if mode==None or url==None or len(url)<1:
 
 else:
         xbmc.log('in walla %s' % (module), xbmc.LOGDEBUG)
-        manager = getattr(__import__('module_' + module.lower()), 'manager_' + module)()
+        print "WALLA before manager module:" + module
+        moduleScript = __import__('module_' + module.lower())
+        print "WALLA after moduleScript module:" + module 
+        className = 'manager_' + module
+        print moduleScript
+        if hasattr(moduleScript,className ):
+            print "WALLA found attr "
+        try:
+            manager = getattr(moduleScript, className)()
+        except Exception as e:
+            print "WALLA got exception"
+            print e
+            raise e
+            
+        print "WALLA after manager"
+        print manager
         manager.work(mode, url, name, page)
         
 

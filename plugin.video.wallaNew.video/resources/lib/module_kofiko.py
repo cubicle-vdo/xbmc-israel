@@ -12,7 +12,7 @@ __PATTERN__ = '<div class="title w3b"><a href="(.*?)"'
 __PATTERN_FEATURED__ ='<div class="title w5b mt5"><a href="(.*?)"'
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui,os,sys
-import common
+import wallacommon as common
 
 class manager_kofiko:
     

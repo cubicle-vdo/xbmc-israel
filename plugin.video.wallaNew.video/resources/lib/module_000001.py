@@ -15,7 +15,7 @@ __NAME__ = '000001'
 
 import urllib, re, sys
 import xbmc, xbmcplugin, xbmcgui
-import common
+import wallacommon as common
 
 class manager_000001:
     
