@@ -11,7 +11,7 @@ __PATTERN_MORE__ = 'class="p_r"\sstyle=""\shref="(.*?)"'
 __PATTERN_FEATURED__ ='<div class="title w5b mt5"><a href="(.*?)"'
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,os,sys
-import common
+import wallacommon as common
 
 class manager_nick:
     

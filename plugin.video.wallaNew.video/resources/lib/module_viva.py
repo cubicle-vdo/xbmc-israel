@@ -6,7 +6,7 @@ Viva
 '''
 
 import urllib,urllib2,re,xbmc, xbmcaddon, xbmcplugin,xbmcgui,xbmcaddon,os,sys
-import common
+import wallacommon as common
 
 __BASE_URL__ = 'http://viva.walla.co.il/'
 __NAME__ = 'viva'

@@ -10,6 +10,7 @@ __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, 
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib
+import chardet
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
@@ -47,13 +48,22 @@ def translate(arg):
         return __language__(arg)
         
 def addDir(contentType, name,url,mode,iconimage='DefaultFolder.png',elementId='',summary='', fanart=''):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+name+"&module="+urllib.quote_plus(elementId)
-        liz=xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
-        if not fanart=='':
-            liz.setProperty("Fanart_Image", fanart)
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-        return ok
+        try:
+        
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+name+"&module="+urllib.quote_plus(elementId)
+            liz=xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
+            liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
+            if not fanart=='':
+                liz.setProperty("Fanart_Image", fanart)
+            print "WALLA addDir after listItem:" + clean(contentType, name)    
+            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+            print "added directory success:" + clean(contentType, name)
+            return ok
+        except Exception as e:
+            print "WALLA exception in addDir"
+            print e
+            raise
+        
 
 def addLink(contentType, name,url,iconimage='DefaultFolder.png',time='',sub=''):
         liz=xbmcgui.ListItem(clean(contentType, name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -74,16 +84,21 @@ def getData(url, period = __cachePeriod__):
             print 'url --> ' + url
         if float(period) > 0:
             cachePath = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'pages', urllib.quote(url,"")))
-            if (os.path.exists(cachePath) and (time.time()-os.path.getmtime(cachePath))/60/60 <= float(period)):
+            
+            fTime = time.time()
+            if (os.path.exists(cachePath) and (fTime-os.path.getmtime(cachePath))/60/60 <= float(period)):
+               
                 f = open(cachePath, 'r')
                 ret = f.read()
                 f.close()
                 return 'UTF-8',ret
+            
         try:
             req = urllib2.Request(url)
             req.add_header('User-Agent', __USERAGENT__)
             response = urllib2.urlopen(req)
             contentType = response.headers['content-type']
+            print "WALLA got content type " + contentType
             data = response.read().replace("\n","").replace("\t","").replace("\r","")
             response.close()            
             
@@ -154,14 +169,34 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     if (len(nextPage)) > 0:
         addDir('UTF-8',__language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+
+
+def convert_encoding(content, new_coding='utf-8'):
+    if (len(content)==0):
+           return "No name found" 
+    encoding = chardet.detect(content)['encoding']
+    print "WALLA detected encoding:" + encoding
+    if encoding != 'utf-8':
+        content = content.decode(encoding, 'replace').encode('utf-8')
+        return content
     
 def clean(contentType, name):
+    
     try:
-        if contentType.find('UTF-8') == -1:
-            name = name.decode("windows-1255")
-    except:
-        if __DEBUG__:
-            print contentType
-        errno, errstr = sys.exc_info()[:2]
-        print 'Error in clean: ' + str(errno) + ': ' + str(errstr)
-    return name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
+        
+        
+        if contentType.find('UTF-8') == -1 and contentType.find('utf-8')==-1:
+            print "WALLA encoding windows-1255"
+             
+            #name = name.decode("windows-1255")
+            name = convert_encoding(name)    
+            print "WALLA after encoding windows-1255"
+         
+    except Exception as e:
+        print 'Error in clean: '
+        print e
+        raise
+    if (name):
+        cleanName = name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
+        return  cleanName
+    return "N/A" 
