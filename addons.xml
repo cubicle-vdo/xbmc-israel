@@ -170,7 +170,13 @@
     </extension>
 </addon>
 
+<<<<<<< HEAD
+
+
+<addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.3" provider-name="cubicle-vdo">
+=======
 <addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
+>>>>>>> upstream/master
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
         <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>

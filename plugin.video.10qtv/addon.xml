@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.0" provider-name="o2ri">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.1" provider-name="hillel">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -12,7 +12,7 @@
         <summary lang="he">צפו בוידאו מהאתר 10qtv</summary>
         <description lang="en">Watch video from 10qtv</description>
         <description lang="he">צפו בוידאו מהאתר 10qtv</description>
-        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
+        <disclaimer>'כותבי הסקיפרט אינם אחראים לתוכן המצוג באתר ואין להם קשר אליו בשום צורה ,הנך כפוף לתנאי השימוש של האתר</disclaimer>
         <supportedcontent>
           <content>tvshows</content>
         </supportedcontent>	
