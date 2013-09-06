@@ -47,13 +47,24 @@ def translate(arg):
         return __language__(arg)
         
 def addDir(contentType, name,url,mode,iconimage='DefaultFolder.png',elementId='',summary='', fanart=''):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+name+"&module="+urllib.quote_plus(elementId)
-        liz=xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
-        if not fanart=='':
-            liz.setProperty("Fanart_Image", fanart)
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-        return ok
+        try:
+        
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+name+"&module="+urllib.quote_plus(elementId)
+            liz=xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
+            liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
+            if not fanart=='':
+                liz.setProperty("Fanart_Image", fanart)
+            if __DEBUG__:
+                 print "WALLA addDir after listItem:" + clean(contentType, name)    
+            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+            if __DEBUG__:
+                print "added directory success:" + clean(contentType, name)
+            return ok
+        except Exception as e:
+            print "WALLA exception in addDir"
+            print e
+            raise
+        
 
 def addLink(contentType, name,url,iconimage='DefaultFolder.png',time='',sub=''):
         liz=xbmcgui.ListItem(clean(contentType, name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -74,16 +85,22 @@ def getData(url, period = __cachePeriod__):
             print 'url --> ' + url
         if float(period) > 0:
             cachePath = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'pages', urllib.quote(url,"")))
-            if (os.path.exists(cachePath) and (time.time()-os.path.getmtime(cachePath))/60/60 <= float(period)):
+            
+            fTime = time.time()
+            if (os.path.exists(cachePath) and (fTime-os.path.getmtime(cachePath))/60/60 <= float(period)):
+               
                 f = open(cachePath, 'r')
                 ret = f.read()
                 f.close()
                 return 'UTF-8',ret
+            
         try:
             req = urllib2.Request(url)
             req.add_header('User-Agent', __USERAGENT__)
             response = urllib2.urlopen(req)
             contentType = response.headers['content-type']
+            if __DEBUG__:
+                print "WALLA got content type " + contentType
             data = response.read().replace("\n","").replace("\t","").replace("\r","")
             response.close()            
             
@@ -154,14 +171,21 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     if (len(nextPage)) > 0:
         addDir('UTF-8',__language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-    
+
+
 def clean(contentType, name):
+    
     try:
-        if contentType.find('UTF-8') == -1:
-            name = name.decode("windows-1255")
-    except:
-        if __DEBUG__:
-            print contentType
-        errno, errstr = sys.exc_info()[:2]
-        print 'Error in clean: ' + str(errno) + ': ' + str(errstr)
-    return name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
+        if (len(name)==0):
+            return "No name found" 
+        if contentType.lower().find('utf-8') == -1:
+            name = name.decode('windows-1255', 'replace').encode('utf-8')
+           
+    except Exception as e:
+        print 'Error in clean: '
+        print e
+        raise e
+    if (name):
+        cleanName = name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
+        return  cleanName
+    return "N/A" 

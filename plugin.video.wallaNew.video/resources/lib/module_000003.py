@@ -13,7 +13,7 @@ __BASE_URL__ = 'http://vod.walla.co.il/'
 __NAME__ = '000003'
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,os,sys
-import common
+import wallacommon as common
 
 class manager_000003:
     

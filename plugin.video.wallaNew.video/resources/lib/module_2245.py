@@ -11,7 +11,7 @@ __NAME__ = '2245'
 __PATTERN__ = 'class="block w2b fclr1 mrg_t4" href="(.+?)"'
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui,os,sys
-import common
+import wallacommon as common
 
 class manager_2245:
     

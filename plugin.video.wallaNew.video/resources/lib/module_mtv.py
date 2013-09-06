@@ -6,7 +6,7 @@ Created on 01/05/2011
 '''
 
 import urllib,urllib2,re,xbmc,xbmcaddon,xbmcplugin,xbmcgui,xbmcaddon,os,sys
-import common
+import wallacommon as common
 
 __BASE_URL__ = 'http://mtv.walla.co.il'
 __NAME__ = 'mtv'
