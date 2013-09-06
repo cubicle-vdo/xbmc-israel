@@ -1,14 +1,15 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
     Plugin for streaming video content from 10q.tv
 """
 import urllib, urllib2, re, os, sys 
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
+import HTMLParser
 from xml.sax import saxutils as su
 ##General vars
 __plugin__ = "www.10q.tv"
-__author__ = "o2ri"
+__author__ = "hillel"
 base_domain="www.10q.tv"
 __settings__ = xbmcaddon.Addon(id='plugin.video.10qtv')
 
@@ -153,14 +154,11 @@ def INDEXseason(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        #><a href="http://www.10q.tv/load/abvdims/aavnha_1/41" class="catName">עונה 1</a>        
-        print(link)
         match=re.compile('<a href="(.*?)" class="catName">(.*?)<').findall(link)
         for url,name in match:
                 addDir(name,url,3,"")
                 print (name,"url= "+ url)
 
-#<h3 id="title"><a href="http://www.10q.tv/load/ahims_lnshk/aavnha_1/frk_02/141-1-0-1808">פרק 02</a> </h3>
 def INDEXepisode(url):
         print(url)
         req = urllib2.Request(url)
@@ -168,15 +166,74 @@ def INDEXepisode(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()    
-        print(link)
-        #<h3 id="title"><a href="http://www.10q.tv/load/ahims_lnshk/aavnha_1/frk_02/141-1-0-1808">פרק 02</a> </h3>
         match=re.compile('id="title"><a href="(.*?)">(.*?)<').findall(link)
         for url,name in match:
                 addDir(name,url,4,"")
                 print (name,"url= "+ url)                
 def CATEGORIES():
-        addDir("סדרות",'http://www.10q.tv/load',1,"")
-       
+        addDir("סדרות",'http://www.10q.tv/load',1,'http://icons.iconarchive.com/icons/thvg/popcorn/256/TV-Shows-icon.png')
+        addDir("סרטים",'http://www.10q.tv/board/filmy/3',5,'http://icons.iconarchive.com/icons/thiago-silva/palm/256/Videos-icon.png')
+        
+def IndexSeret(url):
+        print(url)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        match=re.compile('top"> <a href="(.*?)" class="sdarot">(.*?)</a>').findall(link)
+        for url,name in match:
+                addDir(name,"http://"+base_domain+url,6,"")
+                print (name,"url= "+ base_domain+url)
+
+def ChooseSeret(url):
+        print(url)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()    
+        pages=re.compile('return false;"><span>(.*?)</span></a>').findall(link)
+        print pages
+        pages=pages[-1]
+        pages=pages.split("-")
+        numOfItems = int(pages[1])
+        print pages
+        if numOfItems % 10 == 0:
+            last =numOfItems // 10
+        else:
+            last= (numOfItems//10) +1
+
+        i=1
+        sorted_movies=[]
+        while i <= last :
+            req = urllib2.Request(url+"-"+str(i)+"-2")
+            req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+            response = urllib2.urlopen(req)
+            link=response.read()
+            response.close()     
+            match=re.compile('<img src="http://www.10q.tv/_bd/(.*?)".*?<h4><a id="href" href="(.*?)">(.*?)</a> </h4>',re.I+re.M+re.U+re.S).findall(link)
+            i=i+1
+            for image,newurl,name in match:
+            #    addDir(name,newurl,7,"http://www.10q.tv/_bd/"+image)
+                sorted_movies.append(( "http://www.10q.tv/_bd/"+image,newurl,name))
+                print (name,"url= "+ newurl)
+        sorted_movies = sorted(sorted_movies,key=lambda sorted_movies: sorted_movies[2])
+        for movie in sorted_movies:
+            addDir(movie[2],movie[1],7,movie[0])
+        xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+        
+        
+         
+def playMovie(url):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()    
+        media=re.compile('<a href="(.*?)"<span style').findall(link)
+        print ("the vk link is "+  str(media))
+        addFinalLink(media[0],str(name))
 
 def get_params():
         param=[]
@@ -243,7 +300,13 @@ elif mode==4:
     media=re.compile('a href="(.*?)&quot').findall(link)
     print ("the vk link is "+  str(media))
     addFinalLink(media[0],str(name))
-
+elif mode==7:
+    playMovie(url)
+    
+elif mode==5:
+    IndexSeret(url)
+elif mode==6:
+    ChooseSeret(url)
 
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
