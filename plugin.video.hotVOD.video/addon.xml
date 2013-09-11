@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.0" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="Hot.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Hot video contents.</summary>
+        <summary lang="he">צפה בתוכניות VOD מאתר הוט</summary>
+        <description lang="en">Watch Hot Video contents from Hot.ynet.co.il.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה מאתר hot.ynet.co.il</description>
+        <disclaimer>This addon parse Hot's site, you should check Hot's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>	
+    </extension>
+</addon>
