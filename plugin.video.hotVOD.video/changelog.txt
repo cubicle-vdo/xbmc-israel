@@ -1,0 +1,31 @@
+[B]Version 1.1.0[/B]
+- Fixed final url decode
+-changed the category function to add more results.
+
+[B]Version 1.0.9[/B]
+- Fixed hebrew encoding problem
+
+[B]Version 1.0.8[/B]
+- Fixed shows not showing because hot changed the layout
+
+[B]Version 1.0.7[/B]
+- Fixed shows with a double id (like in bolywood)
+
+[B]Version 1.0.6[/B]
+- Added the new shows from the main screen
+- Added some icons for genres...
+
+[B]Version 1.0.5[/B]
+- Fixed string concatination in DEBUG mode in common
+
+[B]Version 1.0.4[/B]
+- Fixed alternate base video url path for some of the clips
+
+[B]Version 1.0.3[/B]
+- Fixed problem in naming cache page to disk, fixed.
+
+[B]Version 1.0.2[/B]
+- Fixed cache to work as float
+
+[B]Version 1.0.1[/B]
+- Added setting for how long to hold the cache
