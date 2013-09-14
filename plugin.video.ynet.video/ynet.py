@@ -17,10 +17,10 @@ __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
 
-from common import *
+from ynetcommon import *
 
 def GENRES():
-    #addDir('сшийн','http://www.ynet.co.il/home/0,7340,L-10154,00.html', 1, 'http://www.ynet.co.il/PicServer3/2012/07/30/4070286/koteret.png')
+    #addDir('ЧЎЧЁЧЧ™Чќ','http://www.ynet.co.il/home/0,7340,L-10154,00.html', 1, 'http://www.ynet.co.il/PicServer3/2012/07/30/4070286/koteret.png')
     page = getData('http://www.ynet.co.il/home/0,7340,L-4232,00.html')
     matches = re.compile('<a href="javascript:openInnewWindow\(\'(.*?)\',.*?,.*?,.*?\)" ;><img src=\'(.*?)\' border=0  alt=\'(.*?)\'  title=\'').findall(page)
     if len(matches) > 0:
@@ -57,7 +57,7 @@ def SHOWING_NOW(url):
     page = getData('http://hot.ynet.co.il/')
     shows = re.compile('<tr height=25px>.*?<a href=\'(.*?)\'.*?>(.*?)</a>').findall(page)
     for href, title in shows:
-        title = title.replace('&nbsp;', ' ').replace('&quat;', '"').replace('&#39;', '\'')
+        title = title.replace('&nbsp;', ' ').replace('quot', '"').replace('&#39;', '\'')
         seriesId = re.compile('L-(\d+),').findall(href)[0]
         iconImage = __image_path__ + 'hot/series/series_' + seriesId + '.jpg'
         if not os.path.exists(iconImage):
@@ -78,14 +78,18 @@ def EPISODES(url, mainUrl):
             chanid = item[2]
             image = item[3]
             title = item[4]
-            addVideoLink(title, 'http://www.ynet.co.il' + ajax_items_url + vidid + '-' + artid + '-' + 'VideoChannel,00.html', '4', 'http://www.ynet.co.il' + image, '')
+            addLink(title, 'http://www.ynet.co.il' + ajax_items_url + vidid + '-' + artid + '-' + 'VideoChannel,00.html', 'http://www.ynet.co.il' + image, '')
         
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
     xbmc.executebuiltin("Container.SetViewMode(500)")# see the image view
         
 def PLAY_MOVIE(url, name):    
-    page = getData(url, 0) 
+    url=urllib.unquote(url)
+    page = getData(url)
     videoUrl = re.compile('"path":"(.+?)"').findall(page)
+    videoUrl[0]=videoUrl[0][:-13]
+    videoUrl[0]=videoUrl[0].replace('/z/','/')
+    print  "video url is"+str (videoUrl)
     if len(videoUrl) > 0:
         videoPlayListUrl = urllib.unquote(videoUrl[0])
         listItem = xbmcgui.ListItem(name, 'DefaultFolder.png', 'DefaultFolder.png', path=videoPlayListUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
