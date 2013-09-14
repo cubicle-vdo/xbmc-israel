@@ -92,8 +92,11 @@ def SEASONS(url):
             
             if not urlId == None and not name == None:
                 name = name.replace('&nbsp;', ' ').replace('&quat;', '"').replace('&#39;', '\'')
-                addDir(name, 'http://hot.ynet.co.il' + urlId, 3, 'DefaultFolder.png', mainUrl[0])
-#    else :
+                if urlId.find('/Ext/') !=-1:
+                    addDir(name, 'http://hot.ynet.co.il' + urlId, 3, 'DefaultFolder.png', mainUrl[0])
+                else: # sometimes its just another link to a series page 
+                    addDir(name, 'http://hot.ynet.co.il' + urlId, 2, 'DefaultFolder.png', mainUrl[0])
+#    else :     
 #        # we only show the episodes on the page.
 #        EPISODES(url)
 
