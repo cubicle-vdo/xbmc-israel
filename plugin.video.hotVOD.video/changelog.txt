@@ -1,3 +1,5 @@
+[B]Version 1.1.1[/B]
+-added internal links to work
 [B]Version 1.1.0[/B]
 - Fixed final url decode
 -changed the category function to add more results.
