@@ -51,7 +51,7 @@ class Generator:
         # addon list
         addons = os.listdir( "." )
         
-        excludedFolders = {'.svn':'.svn','.git':'.git','repo': 'repo', 'plugin.video.moviexil': 'plugin.video.moviexil','plugin.video.ynet.video':'plugin.video.ynet.video',
+        excludedFolders = {'.svn':'.svn','.git':'.git','repo': 'repo', 'plugin.video.moviexil': 'plugin.video.moviexil',
                             'plugin.video.themarker.video':'plugin.video.themarker.video','plugin.video.yeladim.me':'plugin.video.yeladim.me'
         
         }
