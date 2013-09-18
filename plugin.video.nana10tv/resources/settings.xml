@@ -1,0 +1,8 @@
+<settings>
+<category label="Auto-View">
+	<setting id="auto-view" type="bool" label="Enable Automatic View" default="false"/>
+	<setting id="epg" type="number" label="EPG View" default="503" enable="!eq(-1,false)"/>
+	<setting id="default" type="number" label="EVERYTHING" default="503" enable="!eq(-1,false)"/>
+	<setting id="anything" type="number" label="SECOND DIRECTORY" default="503" enable="!eq(-1,false)"/>
+</category>
+</settings>
