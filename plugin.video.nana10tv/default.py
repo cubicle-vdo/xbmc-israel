@@ -16,11 +16,17 @@ def CATEGORIES():
        
                       												  
 def Choose_series(url):#  cause mode is empty in this one it will go back to first directory
-        link=OPEN_URL(url)
+        link=OPEN_URL('http://10tv.nana10.co.il/Category/?CategoryID=400008')
         matches=re.compile('" href="http://10tv.nana10.co.il/section/(.*?)".?onclick="t1674.getData.*?return false;">(.*?)</a>',re.I+re.M+re.U+re.S).findall(link)
         #print "matches  are :" +str (matches)
+        sorted_movies=[]
+        matches = [ matches[i] for i,x in enumerate(matches) if x not in matches[i+1:]]
         for url ,name in matches :
-                addDir(name,__SECTION_BASE__+url,2,'','')
+                sorted_movies.append((url,name))
+        sorted_movies = sorted(sorted_movies,key=lambda sorted_movies: sorted_movies[1])
+        for movie in sorted_movies:
+            addDir(movie[1],__SECTION_BASE__+ movie[0],2,'','')
+       # addDir(name,__SECTION_BASE__+url,2,'','')
         setView('tvshows', 'anything') 
 
 def series_land(url):
@@ -28,7 +34,8 @@ def series_land(url):
         print link
         # class="" onmousedown="return cr(event, 'ClickArticle', 980364, null, 3);">
 				#	<img src="//f.nanafiles.co.il/upload/mediastock/img/5/0/105/105370.jpg" alt="המקור 28.05.13" class="Image" />
-        matches=re.compile('<a href="http://10tv.nana10.co.il/Article/(.*?)".*?<img src="//f.nanafiles.co.il/upload(.*?)".*?alt="(.*?)"',re.I+re.M+re.U+re.S).findall(link)
+        block=re.compile('MiddleColumn(.*?)LeftColumn',re.I+re.M+re.U+re.S).findall(link)
+        matches=re.compile('<a href="http://10tv.nana10.co.il/Article/(.*?)".*?<img src="//f.nanafiles.co.il.?/upload(.*?)".*?alt="(.*?)"',re.I+re.M+re.U+re.S).findall(block[0])
         print matches
         for newurl,image,name in matches:
                 newurl='http://10tv.nana10.co.il/Article/'+newurl
@@ -48,11 +55,27 @@ def play_episode(url):
         secondlink=urllib.unquote(OPEN_URL(urlBase[0] + matches[0]))
         print secondlink
         matches=re.compile('MediaStockVideoItemGroupID","(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
-        print matches[0]
-        thirdlink=OPEN_URL('http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID='+matches[0])
-        print thirdlink
-        matches=re.compile('ClipMediaId=(.*?)"',re.I+re.M+re.U+re.S).findall(thirdlink)
         print matches
+        if matches:
+                if  matches[0]!='0' :
+                        thirdlink=OPEN_URL('http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID='+matches[0])
+                        print "thirdlink" + thirdlink
+                        matches=re.compile('ClipMediaId=(.*?)"',re.I+re.M+re.U+re.S).findall(thirdlink)
+                else :
+                        matches=re.compile('ClipMediaID=(.*?)&ak=null',re.I+re.M+re.U+re.S).findall(secondlink)
+        else :
+                matches=re.compile('ClipMediaID=(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
+                print "matches!543e45354:" + str ( matches)
+                final_url='http://switch206-01.castup.net/cunet/gmpl.aspx?ak=null&ClipMediaID='+matches[-1]
+                print "final url is:" + final_url
+                ok=True
+                liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+                liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
+                liz.setProperty("IsPlayable","true")
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=final_url,listitem=liz,isFolder=False)
+                return ok 
+
+        print matches   
         matches.sort(key=int)
         print matches
         final_url='http://switch206-01.castup.net/cunet/gm.asp?ClipMediaId='+matches[-1]
@@ -156,10 +179,6 @@ print "IconImage: "+str(iconimage)
 #these are the modes which tells the plugin where to go
 if mode==None or url==None or len(url)<1:
         print ""
-        CATEGORIES()
-       
-elif mode==1:
-        print ""+url
         Choose_series(url)
 elif mode==2:
         series_land(url)
