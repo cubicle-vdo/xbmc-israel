@@ -31,17 +31,15 @@ def Choose_series(url):#  cause mode is empty in this one it will go back to fir
 
 def series_land(url):
         link=OPEN_URL(url)
-        print link
+        
         # class="" onmousedown="return cr(event, 'ClickArticle', 980364, null, 3);">
 				#	<img src="//f.nanafiles.co.il/upload/mediastock/img/5/0/105/105370.jpg" alt="המקור 28.05.13" class="Image" />
         block=re.compile('MiddleColumn(.*?)LeftColumn',re.I+re.M+re.U+re.S).findall(link)
         matches=re.compile('<a href="http://10tv.nana10.co.il/Article/(.*?)".*?<img src="//f.nanafiles.co.il.?/upload(.*?)".*?alt="(.*?)"',re.I+re.M+re.U+re.S).findall(block[0])
-        print matches
+        
         for newurl,image,name in matches:
                 newurl='http://10tv.nana10.co.il/Article/'+newurl
                 addDir(name,newurl,3,'http://f.nanafiles.co.il/upload'+ image,'')
-                print "newurl is"':' + newurl
-                print image
 
 def play_episode(url):
         #http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID=58993
@@ -51,23 +49,21 @@ def play_episode(url):
         urlBase=matches=re.compile('<link rel="canonical" href="(.*?)Article',re.I+re.M+re.U+re.S).findall(link)
         matches=re.compile('<iframe name="VideoIframe".*?src="(.*?)">VideoIframe',re.I+re.M+re.U+re.S).findall(link)
         matches[0]=matches[0].replace('amp;','')
-        print urlBase[0] + matches[0]
         secondlink=urllib.unquote(OPEN_URL(urlBase[0] + matches[0]))
-        print secondlink
         matches=re.compile('MediaStockVideoItemGroupID","(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
-        print matches
         if matches:
                 if  matches[0]!='0' :
                         thirdlink=OPEN_URL('http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID='+matches[0])
-                        print "thirdlink" + thirdlink
                         matches=re.compile('ClipMediaId=(.*?)"',re.I+re.M+re.U+re.S).findall(thirdlink)
                 else :
                         matches=re.compile('ClipMediaID=(.*?)&ak=null',re.I+re.M+re.U+re.S).findall(secondlink)
         else :
-                matches=re.compile('ClipMediaID=(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
-                print "matches!543e45354:" + str ( matches)
-                final_url='http://switch206-01.castup.net/cunet/gmpl.aspx?ak=null&ClipMediaID='+matches[-1]
-                print "final url is:" + final_url
+                matches=re.compile('http://SWITCH206-01.castup.net/cunet/(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
+                
+                final_url='http://SWITCH206-01.castup.net/cunet/'+matches[-1]
+                link=OPEN_URL(final_url)
+                matches=re.compile('<ref href="(.*?).?ct',re.I+re.M+re.U+re.S).findall(link)
+                final_url=matches[-1]
                 ok=True
                 liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
                 liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
