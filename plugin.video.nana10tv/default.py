@@ -33,7 +33,7 @@ def series_land(url):
         link=OPEN_URL(url)
         
         # class="" onmousedown="return cr(event, 'ClickArticle', 980364, null, 3);">
-				#	<img src="//f.nanafiles.co.il/upload/mediastock/img/5/0/105/105370.jpg" alt="המקור 28.05.13" class="Image" />
+				#	<img src="//f.nanafiles.co.il/upload/mediastock/img/5/0/105/105370.jpg" alt="׳”׳׳§׳•׳¨ 28.05.13" class="Image" />
         block=re.compile('MiddleColumn(.*?)LeftColumn',re.I+re.M+re.U+re.S).findall(link)
         matches=re.compile('<a href="http://10tv.nana10.co.il/Article/(.*?)".*?<img src="//f.nanafiles.co.il.?/upload(.*?)".*?alt="(.*?)"',re.I+re.M+re.U+re.S).findall(block[0])
         
@@ -50,6 +50,7 @@ def play_episode(url):
         matches=re.compile('<iframe name="VideoIframe".*?src="(.*?)">VideoIframe',re.I+re.M+re.U+re.S).findall(link)
         matches[0]=matches[0].replace('amp;','')
         secondlink=urllib.unquote(OPEN_URL(urlBase[0] + matches[0]))
+        print secondlink
         matches=re.compile('MediaStockVideoItemGroupID","(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
         if matches:
                 if  matches[0]!='0' :
@@ -58,9 +59,10 @@ def play_episode(url):
                 else :
                         matches=re.compile('ClipMediaID=(.*?)&ak=null',re.I+re.M+re.U+re.S).findall(secondlink)
         else :
-                matches=re.compile('http://SWITCH206-01.castup.net/cunet/(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
-                
-                final_url='http://SWITCH206-01.castup.net/cunet/'+matches[-1]
+                matches=re.compile('http://SWITCH(.*?).castup.net/cunet/(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
+                print matches
+                final_url='http://SWITCH'+ str(matches[0][0])+'.castup.net/cunet/'+ str(matches[-1][-1])
+                print final_url
                 link=OPEN_URL(final_url)
                 matches=re.compile('<ref href="(.*?).?ct',re.I+re.M+re.U+re.S).findall(link)
                 final_url=matches[-1]
@@ -182,3 +184,4 @@ elif mode==3:
         play_episode(url)
        
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
