@@ -52,7 +52,7 @@ class Generator:
         addons = os.listdir( "." )
         
         excludedFolders = {'.svn':'.svn','.git':'.git','repo': 'repo', 'plugin.video.moviexil': 'plugin.video.moviexil',
-                            'plugin.video.themarker.video':'plugin.video.themarker.video','plugin.video.nana10tv':'plugin.video.nana10tv'
+                            'plugin.video.themarker.video':'plugin.video.themarker.video'
         
         }
         # final addons text
