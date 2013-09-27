@@ -110,6 +110,22 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.0" provider-name="????">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Plays episodes from nana10 site</summary>
+    <description lang="en">This addon parse nana10 site, you should check nana10 TOS before you using. It's as is</description>
+	 <description lang="he">התוסף מציג תכנים מאתר נענע10 יש לבדוק תנאי השימוש באתר לפני השימוש בתוסף</description>
+	<disclaimer>This addon parse nana10 site, you should check nana10 TOS before you using. It's as is</disclaimer>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.8" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
