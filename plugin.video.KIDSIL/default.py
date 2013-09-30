@@ -8,30 +8,30 @@ def CATEGORIES():
                 addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'http://2.bp.blogspot.com/-tkAp5l6dAJA/TyJw_RHiuzI/AAAAAAAACEs/jTFqK7ocFqg/s1600/dumbo+ears.jpg','')
         else:
                 addDir('[COLOR red]10QTV לא מותקן[/COLOR]','','','','')
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin://plugin.video.seretil'):
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.seretil'):
                 addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=סרטים מדובבים&url=http://seretil.me/category/סרטים-מדובבים/page/1/',8,'http://www.printime.co.il/image/users/16584/ftp/my_files/ariel.jpg','')
         else:
                 addDir('[COLOR red]seretil לא מותקן[/COLOR]','','','','')
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin://plugin.video.movie25'):
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
                 
                 addDir('ללא דיבוב','plugin://plugin.video.movie25/?fanart=https%3a%2f%2fgithub.com%2fmash2k3%2fMashupArtwork%2fraw%2fmaster%2fart%2ffanart2.jpg&iconimage=https%3a%2f%2fencrypted-tbn3.gstatic.com%2fimages%3fq%3dtbn%3aANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6&mode=236&name=Animated%20Movies%20%5bCOLOR%20red%5d%20Updated%2009%2f09%2f13%5b%2fCOLOR%5d&plot&url=https%3a%2f%2fgithub.com%2fmash2k3%2fStaael1982%2fraw%2fmaster%2fanimated_movies.xml',8,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6','')
                 addDir('ללא דיבוב 2','plugin://plugin.video.movie25/?fanart=http%3a%2f%2fs20.postimg.org%2ff1ov06599%2ffanart2.png&amp;iconimage=http%3a%2f%2fs20.postimg.org%2fsx4lyuvbx%2fkidzone.png&amp;mode=236&amp;name=KidZonE%20%5bCOLOR%20red%5d%20Updated%2017%2f09%2f13%5b%2fCOLOR%5d&amp;plot&amp;url=https%3a%2f%2fgithub.com%2fmash2k3%2fMashUpTNPB%2fraw%2fmaster%2fkidszone.xml',8,'http://s20.postimg.org/sx4lyuvbx/kidzone.png','')
         else:
                addDir('[COLOR red]MASHUP לא מותקן[/COLOR]','','','','')
                
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin://plugin.video.wallaNew.video'):
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.wallaNew.video'):
                 addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
                 addDir('גוניור','plugin://plugin.video.wallaNew.video/?mode=1&module=junior&name=גוניור&url=http://junior.walla.co.il/',8,'http://upload.wikimedia.org/wikipedia/he/1/19/%D7%A2%D7%A8%D7%95%D7%A5_%D7%92%27%D7%95%D7%A0%D7%99%D7%95%D7%A8.jpg','')
                 addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
                 addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=000003&name=ילדים&url=http://vod.walla.co.il/kids/',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
         else:
                 addDir('[COLOR red]וואלה לא מותקן[/COLOR]','','','','')
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin://plugin.video.hotVOD.video'):
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.hotVOD.video'):
                 addDir('HOT VOD YOUNG','plugin://plugin.video.hotVOD.video/?mode=5&name=%20HOT%20VOD%20YOUNG&url=http%3a%2f%2fhot.ynet.co.il%2fhome%2f0%2c7340%2cL-7449%2c00.html',8,'http://i28.tinypic.com/20o8lt.jpg','')
         else:
                addDir('[COLOR red]HOT VOD לא מותקן[/COLOR]','','','','')
 
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin://plugin.video.gozlan.me'):        
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.gozlan.me'):        
                 addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'http://thelazyandi.files.wordpress.com/2012/07/d790d79ed799d7a6d794-d79ed7a8d799d793d794.jpg','')
                 addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://www.israjung.co.il/chochma/chochma6/sarig/narnia.files/image002.jpg','')
         else:
