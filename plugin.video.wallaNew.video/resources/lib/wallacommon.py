@@ -7,15 +7,23 @@ Created on 30/04/2011
 '''
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11'
 
+from collections import namedtuple
 
+import StorageServer
 
-import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib
+import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib,xbmcaddon
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
+__addon__       = xbmcaddon.Addon()
+__addonname__   = __addon__.getAddonInfo('name')
+__icon__        = __addon__.getAddonInfo('icon')
+sys.modules["__main__"].dbg = True
+cacheServer = StorageServer.StorageServer("plugin.video.wallaNew.video", __cachePeriod__) # (Your plugin name, Cache time in hours)
+
 
 def enum(**enums):
         return type('Enum', (), enums)
@@ -83,16 +91,7 @@ def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', el
 def getData(url, period = __cachePeriod__):
         if __DEBUG__:
             print 'url --> ' + url
-        if float(period) > 0:
-            cachePath = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'pages', urllib.quote(url,"")))
-            
-            fTime = time.time()
-            if (os.path.exists(cachePath) and (fTime-os.path.getmtime(cachePath))/60/60 <= float(period)):
-               
-                f = open(cachePath, 'r')
-                ret = f.read()
-                f.close()
-                return 'UTF-8',ret
+       
             
         try:
             req = urllib2.Request(url)
@@ -102,6 +101,7 @@ def getData(url, period = __cachePeriod__):
             if __DEBUG__:
                 print "WALLA got content type " + contentType
             data = response.read().replace("\n","").replace("\t","").replace("\r","")
+           
             response.close()            
             
         except:
@@ -140,37 +140,64 @@ def getCookie(url, cookiename):
         return data, "ERROR"
         
 def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"'):
-    ## get all the rest of the episodes
-    contentType,mainPage = getData(inUrl)
-    if patternFeatured != '':
-        urls = re.compile(patternFeatured).findall(mainPage)
-        urls += re.compile(pattern).findall(mainPage)
+    print "modulename=" + modulename
+    print "inUrl=" + inUrl
+    Episode = namedtuple('Episode', ['content','title','url','iconImage','time','epiDetails'])    
+    
+    cacheKey = modulename + "_" + inUrl + "_episodes"
+    #cacheServer.delete(modulename + "%")
+    #cacheServer.cacheClean(True)
+    episodes = cacheServer.get(cacheKey)
+    
+    
+    if episodes:
+        episodes  = eval(episodes)
+        print "Found " + str(len(episodes)) + " episodes in cache"
+    
+        for episode in episodes:
+            addLink(episode.content,episode.title, episode.url, episode.iconImage, episode.time, episode.epiDetails)
+               
     else:
-        urls = re.compile(pattern).findall(mainPage)
-    ## for each episode we get the episode page to parse all the info from
-    for path in urls:
-        contentType,page = getData(urlbase + path + '/@@/video/flv_pl')
-        titleMatches = re.compile('<title>(.*?)</title>(.*)<subtitle>(.*?)<').findall(page)
-        if (len(titleMatches)) == 1:
-            title = titleMatches[0][0]
-            images = re.compile('<preview_pic>(.*?)</preview_pic>').findall(page)
-            if (len(images)) >= 1:
-                iconImage = images[0]
-            details = re.compile('<synopsis>(.*?)</synopsis>').findall(page)
-            if (len(details)) > 0:
-                epiDetails = details[0]
-            
-            timeInSeconds = re.compile('<duration>(.*?)</duration>').findall(page)
-            if not timeInSeconds == None and not len(timeInSeconds[0]) <= 0:
-                time = int(timeInSeconds[0]) / 60
-            else:
-                time = '00:00'
-            url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
-            addLink(contentType,title, url, iconImage, str(time), epiDetails)
-    nextPage = re.compile(patternmore).findall(mainPage)
-    if (len(nextPage)) > 0:
-        addDir('UTF-8',__language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
-    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+        episodes = []
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,"First time loading episodes please wait...", 5000, __icon__))
+        ## get all the rest of the episodes
+        contentType,mainPage = getData(inUrl)
+        if patternFeatured != '':
+            urls = re.compile(patternFeatured).findall(mainPage)
+            urls += re.compile(pattern).findall(mainPage)
+        else:
+            urls = re.compile(pattern).findall(mainPage)
+        ## for each episode we get the episode page to parse all the info from
+        for path in urls:
+            contentType,page = getData(urlbase + path + '/@@/video/flv_pl')
+            titleMatches = re.compile('<title>(.*?)</title>(.*)<subtitle>(.*?)<').findall(page)
+            if (len(titleMatches)) == 1:
+                title = titleMatches[0][0]
+                images = re.compile('<preview_pic>(.*?)</preview_pic>').findall(page)
+                if (len(images)) >= 1:
+                    iconImage = images[0]
+                details = re.compile('<synopsis>(.*?)</synopsis>').findall(page)
+                if (len(details)) > 0:
+                    epiDetails = details[0]
+                
+                timeInSeconds = re.compile('<duration>(.*?)</duration>').findall(page)
+                if not timeInSeconds == None and not len(timeInSeconds[0]) <= 0:
+                    time = int(timeInSeconds[0]) / 60
+                else:
+                    time = '00:00'
+                url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
+                epi1 = Episode(content=contentType,title=title,url=url,iconImage=iconImage,time=str(time),epiDetails=epiDetails)
+                episodes.append(epi1)
+                addLink(contentType,title, url, iconImage, str(time), epiDetails)
+                
+    
+        #save to cache
+        cacheServer.set(cacheKey,repr(episodes))
+    
+        nextPage = re.compile(patternmore).findall(mainPage)
+        if (len(nextPage)) > 0:
+            addDir('UTF-8',__language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
+        xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 
 def clean(contentType, name):
