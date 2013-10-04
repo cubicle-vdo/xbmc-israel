@@ -95,7 +95,10 @@ def addDir(name,url,mode,iconimage,description):
         if mode==8:
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         else:
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+                if mode==11:
+                        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+                else:
+                        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 
 def addLink(name,url,iconimage,description):
@@ -124,6 +127,7 @@ def YOUList(name,url,description):
 
         print "murl is :::::::::::::" + str (murl)
         link=OPEN_URL(murl)
+        addDir('[COLOR red]נגן כל התוצאות בעמוד זה [/COLOR]',murl,11,'',description)
         match=re.compile("http\://www.youtube.com/watch\?v\=([^\&]+)\&.+?<media\:descriptio[^>]+>([^<]+)</media\:description>.+?<media\:thumbnail url='([^']+)'.+?<media:title type='plain'>(.+?)/media:title>").findall(link)
         for nurl,desc,thumb,rname in match:
                 rname=rname.replace('<','')
@@ -139,7 +143,40 @@ def YOULink(mname,url,thumb):
         liz.setProperty("IsPlayable","true")
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
         return ok
- 
+
+def YOULinkAll(url):
+    dp = xbmcgui.DialogProgress()
+    dp.create("KIDSIL",'Creating Your Playlist')
+    dp.update(0)
+    pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+    pl.clear()
+    link=OPEN_URL(url)
+    match=re.compile("http\://www.youtube.com/watch\?v\=([^\&]+)\&.+?<media\:descriptio[^>]+>([^<]+)</media\:description>.+?<media\:thumbnail url='([^']+)'.+?<media:title type='plain'>(.+?)/media:title>").findall(link)
+    playlist = []
+    nItem    = len(match)
+
+    for nurl,desc,thumb,rname in match:
+         rname=rname.replace('<','')
+         finalurl= "plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+nurl+"&hd=1"
+         liz = xbmcgui.ListItem(rname, iconImage="DefaultVideo.png", thumbnailImage=thumb)
+         liz.setInfo( type="Video", infoLabels={ "Title": rname} )
+         liz.setProperty("IsPlayable","true")
+         playlist.append((finalurl ,liz))
+         progress = len(playlist) / float(nItem) * 100  
+         dp.update(int(progress), 'Adding to Your Playlist',rname)
+         if dp.iscanceled():
+                return
+    
+    dp.close()
+    for blob ,liz in playlist:
+            try:
+                if blob:
+                    pl.add(blob,liz)
+            except:
+                pass
+    print pl
+    if not xbmc.Player().isPlayingVideo():
+	    xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(pl)
         
 #below tells plugin about the views                
 def setView(content, viewType):
@@ -205,6 +242,8 @@ elif mode==9:
         YOUList(name,url,description)
 elif mode==10:
         YOUsubs(url)
+elif mode==11:
+        YOULinkAll(url)
        
        
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
