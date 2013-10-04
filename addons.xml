@@ -89,7 +89,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.0.0"
+       version="1.0.1"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
