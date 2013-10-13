@@ -8,7 +8,7 @@ Created on 30/04/2011
 #__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.57 Safari/537.36'
 
-__REFERER__ = 'http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
+__REFERER__ = 'http://www.sdarot.me/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
@@ -106,7 +106,8 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
         req.add_header('Accept-Encoding','gzip,deflate,sdch')
         req.add_header('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
         req.add_header('Connection','keep-alive')
-        req.add_header('Origin','http://www.sdarot.tv')
+        req.add_header('Host','www.sdarot.me')
+        req.add_header('Origin','http://www.sdarot.me')
         if (postData):
             req.add_header('Content-Length',len(postData))
         
@@ -115,7 +116,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
             
         if __DEBUG__:
             print "sent headers:" + str(req.headers)     
-        response = urllib2.urlopen(url=req,timeout=10,data=postData)
+        response = urllib2.urlopen(url=req,timeout=50,data=postData)
         
         if __DEBUG__:
             print "received headers:" + str(response.info());
