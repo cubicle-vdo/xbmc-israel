@@ -1,3 +1,7 @@
+
+[B] version 1.0.2[/B]
+-add playlist support
+
 [B]Version 1.0.1[/B]
 -add play this directory for youtube kids.
 
