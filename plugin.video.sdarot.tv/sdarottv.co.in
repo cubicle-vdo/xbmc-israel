@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    Plugin for streaming video content from www.sdarot.pw
+    Plugin for streaming video content from www.sdarot.co.in
 """
 import urllib, urllib2, re, os, sys 
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
@@ -47,7 +47,7 @@ urllib2.install_opener(opener)
 
 def LOGIN():
     #print("LOGIN  is running now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    loginurl = 'http://www.sdarot.pw/login'
+    loginurl = 'http://www.sdarot.co.in/login'
     if ADDON.getSetting('username')=='':
         dialog = xbmcgui.Dialog()
         xbmcgui.Dialog().ok('Sdarot','www.sdarot.tv התוסף דורש חשבון  חינמי באתר' ,' במסך הבא יש להכניס את שם המשתמש והסיסמא')
