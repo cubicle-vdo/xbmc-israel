@@ -1,0 +1,6 @@
+
+[B]Version 1.0.1[/B]
+-two more hebrew menus
+
+[B]Version 1.0.0[/B]
+- Initial release
