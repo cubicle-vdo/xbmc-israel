@@ -7,20 +7,28 @@ ADDON = xbmcaddon.Addon(id='plugin.video.KIDSIL')
 import random 
 def CATEGORIES():
         Announcements()
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.10qtv'):
-                addDir('10Q סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/animciha/5',8,'http://www.helicon.co.il/wp-content/uploads/2011/10/LionKing_920.jpg','')
-                addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'http://2.bp.blogspot.com/-tkAp5l6dAJA/TyJw_RHiuzI/AAAAAAAACEs/jTFqK7ocFqg/s1600/dumbo+ears.jpg','')
-        else:
-                addDir('[COLOR red]10QTV לא מותקן[/COLOR]','','','','')
+        
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.seretil'):
-                addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=סרטים מדובבים&url=http://seretil.me/category/סרטים-מדובבים/page/1/',8,'http://www.printime.co.il/image/users/16584/ftp/my_files/ariel.jpg','')
+                addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=&url=http%3A%2F%2Fseretil.me%2Fcategory%2F%25d7%25a1%25d7%25a8%25d7%2598%25d7%2599%25d7%259d-%25d7%259e%25d7%2593%25d7%2595%25d7%2591%25d7%2591%25d7%2599%25d7%259d%2Fpage%2F1%2F',8,'https://dl.dropboxusercontent.com/u/5461675/meduvavim1.png','')
+                addDir('seretil מדובבים','plugin://plugin.video.seretil/?mode=211&name=%20%d7%90%d7%95%d7%a1%d7%a3%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'https://dl.dropboxusercontent.com/u/5461675/seretIL0.png','')
+                addDir('seretil 2 מדובבים','plugin://plugin.video.seretil/?mode=211&name=%d7%90%d7%95%d7%a1%d7%a3%20%d7%9e%d7%a1%d7%a4%d7%a8%202%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%2592%25D7%2593%25D7%2595%25D7%259C-%25D7%25A9%25D7%259C-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%25A6%25D7%2595%25D7%2599%25D7%25A8%25D7%2599%25D7%259D%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'https://dl.dropboxusercontent.com/u/5461675/seretIL1.png','')
+                         
         else:
                 addDir('[COLOR red]seretil לא מותקן[/COLOR]','','','','')
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.gozlan.me'):        
+                addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'https://dl.dropboxusercontent.com/u/5461675/GOZLAN1.png','')
+                addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'https://dl.dropboxusercontent.com/u/5461675/GOZLAN2.png','')
+        else:
+                 addDir('[COLOR red]GOZLAN לא מותקן[/COLOR]','','','','')
+                 
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.10qtv'):
+                addDir('10Q סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/animciha/5',8,'https://dl.dropboxusercontent.com/u/5461675/10qtv.png','')
+                addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'https://dl.dropboxusercontent.com/u/5461675/10qtv2.png','')
+        else:
+                addDir('[COLOR red]10QTV לא מותקן[/COLOR]','','','','')
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
-                
-                addDir('staael1982 (mashup) ללא דיבוב','plugin://plugin.video.movie25/?fanart=https%3a%2f%2fgithub.com%2fmash2k3%2fMashupArtwork%2fraw%2fmaster%2fart%2ffanart2.jpg&iconimage=https%3a%2f%2fencrypted-tbn3.gstatic.com%2fimages%3fq%3dtbn%3aANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6&mode=236&name=Animated%20Movies%20%5bCOLOR%20red%5d%20Updated%2009%2f09%2f13%5b%2fCOLOR%5d&plot&url=https%3a%2f%2fgithub.com%2fmash2k3%2fStaael1982%2fraw%2fmaster%2fanimated_movies.xml',8,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6','')
-                #addDir('ללא דיבוב 2','plugin://plugin.video.movie25/?fanart=http%3a%2f%2fs20.postimg.org%2ff1ov06599%2ffanart2.png&amp;iconimage=http%3a%2f%2fs20.postimg.org%2fsx4lyuvbx%2fkidzone.png&amp;mode=236&amp;name=KidZonE%20%5bCOLOR%20red%5d%20Updated%2017%2f09%2f13%5b%2fCOLOR%5d&amp;plot&amp;url=https%3a%2f%2fgithub.com%2fmash2k3%2fMashUpTNPB%2fraw%2fmaster%2fkidszone.xml',8,'http://s20.postimg.org/sx4lyuvbx/kidzone.png','')
-                #addDir('ILIVE in Mash','plugin://plugin.video.movie25/?iconimage=https://github.com/mash2k3/MashupArtwork/raw/master/art/ilive.png&amp;mode=120&amp;name=Animation&amp;url=animation&quot',8,'','')
+        
+                addDir('staael1982 (mashup) ללא דיבוב','plugin://plugin.video.movie25/?fanart=https%3a%2f%2fgithub.com%2fmash2k3%2fMashupArtwork%2fraw%2fmaster%2fart%2ffanart2.jpg&iconimage=https%3a%2f%2fencrypted-tbn3.gstatic.com%2fimages%3fq%3dtbn%3aANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6&mode=236&name=Animated%20Movies%20%5bCOLOR%20red%5d%20Updated%2009%2f09%2f13%5b%2fCOLOR%5d&plot&url=https%3a%2f%2fgithub.com%2fmash2k3%2fStaael1982%2fraw%2fmaster%2fanimated_movies.xml',8,'https://dl.dropboxusercontent.com/u/5461675/MASHUP.png','')
         else:
                addDir('[COLOR red]MASHUP לא מותקן[/COLOR]','','','','')
                
@@ -36,11 +44,7 @@ def CATEGORIES():
         else:
                addDir('[COLOR red]HOT VOD לא מותקן[/COLOR]','','','','')
 
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.gozlan.me'):        
-                addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'http://thelazyandi.files.wordpress.com/2012/07/d790d79ed799d7a6d794-d79ed7a8d799d793d794.jpg','')
-                addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://www.israjung.co.il/chochma/chochma6/sarig/narnia.files/image002.jpg','')
-        else:
-                 addDir('[COLOR red]GOZLAN לא מותקן[/COLOR]','','','','')
+        
         addDir(' KIDS LIVE TV (benny 123)','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Kids.plx',7,'http://www.livestream.com/filestore/logos/6a941358-6c7f-2ebf-e8ac-b05f4f338270-banner.png','')
         addDir('Baby Einstein','TerrapinStation5',9,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
         addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')

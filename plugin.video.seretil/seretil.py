@@ -7,9 +7,10 @@ import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
 from xml.sax import saxutils as su
+
 ##General vars
 __plugin__ = "www.seretil.me"
-__author__ = "o2ri"
+__author__ = "Hillel"
 __settings__ = xbmcaddon.Addon(id='plugin.video.seretil')
 
 
@@ -78,8 +79,38 @@ def INDEXSratim(url):
         for url,name in match:
                 if name!="סדרות" :
                     addDir(name,url+'page/1/',4,"")
-              
 
+
+def SpecialPage(url):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
+        for name in match:
+                if (name.find('http') != -1 ):
+                        match=re.compile('a href="(.*?)"').findall(name)
+                        if (match[0].find('multi')== -1) and (match[0].find('flyer') ==-1) :
+                                addDir('LINK',str(match[0]),212,'')
+                        
+                else :
+                        if name !='&nbsp;' and name.find('לצעירים') ==-1 and name.find('span')==-1:
+                                try:
+                                        
+                                        addLink('                 [COLOR red] '+ name+'[/COLOR]','','')
+                                except:pass
+                
+
+
+
+def ResolverLink(url):
+        url=urllib.unquote_plus(url)
+        print " url ========" + str ( url)
+        link=urlresolver.HostedMediaFile(url=url).resolve()
+        print link
+        addLink("Play",link,'')
+        
 def LinksPage(url):
         print(url)
         req = urllib2.Request(url)
@@ -105,15 +136,16 @@ def LinksPage(url):
             else:
                 print("not playble")
                 url=None
-        xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
 
 #<h3 id="title"><a href="http://www.10q.tv/load/ahims_lnshk/aavnha_1/frk_02/141-1-0-1808">פרק 02</a> </h3>
 def INDEXchooseSeret(url):
+        #url=urllib.unquote_plus(url)
         print(url)
         url2=url
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        response = urllib2.urlopen(req)
+        req.add_header ('Referer','http://seretil.me/')
+        response = urllib2.urlopen(req,timeout=50)
         link=response.read()
         link2=link
         response.close()    
@@ -149,7 +181,9 @@ def INDEXchooseSeret(url):
 def CATEGORIES():
 
     INDEXSratim('http://seretil.me/')
-
+    addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
+    addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
+        
    
 
 print "checkMode: "+str(mode)
@@ -164,6 +198,10 @@ elif mode==4:
 elif mode==5:
      print ""+url
      LinksPage(url)
+elif mode==211:
+         SpecialPage(url)
+elif mode==212:
+        ResolverLink(url)
 
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)

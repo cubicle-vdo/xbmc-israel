@@ -1,0 +1,33 @@
+[B]Version 2.1.1[/B]
+-Remote domain managment
+[B]Version 2.1.0[/B]
+-doamin changed
+-huge Timeout for very slow site.
+[B]Version 2.0.9[/B]
+-Site moved to new domain. increased "url timeout"
+[B]Version 2.0.8[/B]
+- Fix broken request, added support for Gzip for improved performance.
+[B]Version 2.0.7[/B]
+- Added search support - by O2ri
+[B]Version 2.0.6[/B]
+- 1. Modifications due to changes on the upstream website
+- 2. Added new login dialog for registered users, might give better priority.
+[B]Version 2.0.5[/B]
+- Minor changes to script layout
+[B]Version 2.0.3[/B]
+- Media is now served as mp4. Changed accordingly
+- Fixed chapter names appearing with "-0" appended 
+[B]Version 2.0.2[/B]
+- Fixed a bug - shows the chapter list of the first season as seasons instead of listing the actual seasons
+[B]Version 2.0.1[/B]
+- Modifications due to changes on the upstream website
+[B]Version 2.0.0[/B]
+- Modifications due to major rewrite on the upstream website
+[B]Version 1.0.4[/B]
+- Changed referer and start parameters due to some changes on the website
+[B]Version 1.0.3[/B]
+- Back to http
+[B]Version 1.0.2[/B]
+- Changed to https
+[B]Version 1.0.0[/B]
+- Initial release

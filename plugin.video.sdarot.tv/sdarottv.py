@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    Plugin for streaming video content from www.sdarot.pw
+    Plugin for streaming video content from www.sdarot.co.in
 """
 import urllib, urllib2, re, os, sys 
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
@@ -22,9 +22,28 @@ __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
-
-
 from sdarotcommon import *
+
+
+def OPEN_URL(url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    return link
+
+
+try:
+    link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
+    match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
+    DOMAIN=match[0]
+except:
+    pass
+    DOMAIN='http://www.sdarot.co.in'
+
+print DOMAIN
+
 
 path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
 cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
@@ -45,9 +64,10 @@ urllib2.install_opener(opener)
 #print "built opener:" + str(opener)
 
 
+
 def LOGIN():
     #print("LOGIN  is running now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    loginurl = 'http://www.sdarot.pw/login'
+    loginurl = DOMAIN+'/login'
     if ADDON.getSetting('username')=='':
         dialog = xbmcgui.Dialog()
         xbmcgui.Dialog().ok('Sdarot','www.sdarot.tv התוסף דורש חשבון  חינמי באתר' ,' במסך הבא יש להכניס את שם המשתמש והסיסמא')
@@ -76,14 +96,14 @@ def LOGIN():
     
     
     print "Trying to login to sdarot tv site username:" + username
-    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer="http://www.sdarot.pw/");
+    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/");
    
  
 def MAIN_MENU():
     
     # check's if login  is required.
     print "check if logged in already"
-    page = getData('http://www.sdarot.pw',referer="")
+    page = getData(DOMAIN,referer="")
     match = re.compile('<span class="blue" id="logout"><a href="/log(.*?)">').findall(page)
     
     if len(match)!= 1 :
@@ -93,7 +113,7 @@ def MAIN_MENU():
         print "already logged in."
     addDir("הכל א-ת","all-heb",2,'');
     addDir("הכל a-z","all-eng",2,'');
-    addDir("חפש","http://www.sdarot.pw/search",6,'')
+    addDir("חפש",DOMAIN+"/search",6,'')
 	
 def SearchSdarot(url):
 	search_entered = ''
@@ -112,12 +132,12 @@ def SearchSdarot(url):
 	for match in matches:
 	  series_id = match[0]
 	  link_name = match[1]
-	  image_link="http://www.sdarot.pw/media/series/"+str(match[0])+".jpg"
-	  series_link="http://www.sdarot.pw/watch/"+str(match[0])+"/"+match[1]
+	  image_link=DOMAIN+"/media/series/"+str(match[0])+".jpg"
+	  series_link=DOMAIN+"/watch/"+str(match[0])+"/"+match[1]
 	  addDir(link_name,series_link,"3&image="+urllib.quote(image_link)+"&series_id="+series_id+"&series_name="+urllib.quote(link_name),image_link)
 		
 def INDEX_AZ(url):
-    page = getData('http://www.sdarot.pw/series');
+    page = getData(DOMAIN+'/series');
     matches = re.compile('<a href="/watch/(\d+)-(.*?)">.*?</noscript>.*?<div>(.*?)</div>').findall(page)
     sr_arr = []
     idx = 0
@@ -137,8 +157,8 @@ def INDEX_AZ(url):
     sr_sorted = sorted(sr_arr,key=lambda sr_arr: sr_arr[2])
       
     for key in sr_sorted:
-      series_link="http://www.sdarot.pw/watch/"+str(key[0])+"/"+key[1]
-      image_link="http://www.sdarot.pw/media/series/"+str(key[0])+".jpg"      
+      series_link=DOMAIN+"/watch/"+str(key[0])+"/"+key[1]
+      image_link=DOMAIN+"/media/series/"+str(key[0])+".jpg"      
       addDir(key[2],series_link,"3&image="+urllib.quote(image_link)+"&series_id="+str(key[0])+"&series_name="+urllib.quote(key[1]),image_link)
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
       
@@ -150,7 +170,7 @@ def sdarot_series(url):
     
     
     #opener.addheaders = [('Referer',url)]
-    opener.open('http://www.sdarot.pw/landing/'+series_id).read()
+    opener.open(DOMAIN+'/landing/'+series_id).read()
   #  print "sdarot_series: Fetching URL:"+url  
     try:
         page = opener.open(url).read()
@@ -175,7 +195,7 @@ def sdarot_season(url):
     series_name=urllib.unquote_plus(params["series_name"])
     season_id=urllib.unquote_plus(params["season_id"])
     image_link=urllib.unquote_plus(params["image"])
-    page = getData(url="http://www.sdarot.pw/ajax/watch",timeout=0,postData="eplist=true&serie="+series_id+"&season="+season_id);
+    page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="eplist=true&serie="+series_id+"&season="+season_id);
     episodes=page.split(",")
     for episode in episodes:
       if ( episode.find("-") != -1 ):
@@ -190,7 +210,7 @@ def sdarot_movie(url):
     image_link=urllib.unquote_plus(params["image"])
     episode_id=urllib.unquote_plus(params["episode_id"])
     title = series_name + "עונה " + season_id + " פרק" + episode_id
-    page = getData(url="http://www.sdarot.pw/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer="http://www.sdarot.pw/watch")
+    page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
    
     print "JSON:" 
     #print cookiejar
@@ -230,7 +250,7 @@ def sdarot_movie(url):
     finalUrl = "http://" + vid_url + "/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
   
         
-    player_url='http://www.sdarot.pw/templates/frontend/blue_html5/player/jwplayer.flash.swf'
+    player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
     liz = xbmcgui.ListItem(title, path=finalUrl, iconImage=params["image"], thumbnailImage=params["image"])
     liz.setInfo(type="Video", infoLabels={ "Title": title })    
     liz.setProperty('IsPlayable', 'true')
