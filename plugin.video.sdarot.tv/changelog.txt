@@ -1,3 +1,5 @@
+[B]Version 2.1.2[/B]
+-Minor fix
 [B]Version 2.1.1[/B]
 -Remote domain managment
 [B]Version 2.1.0[/B]

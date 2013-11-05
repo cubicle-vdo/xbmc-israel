@@ -169,7 +169,7 @@ def sdarot_series(url):
     image_link=urllib.unquote_plus(params["image"])
     
     
-    #opener.addheaders = [('Referer',url)]
+    opener.addheaders = [('Referer',url)]
     opener.open(DOMAIN+'/landing/'+series_id).read()
   #  print "sdarot_series: Fetching URL:"+url  
     try:
