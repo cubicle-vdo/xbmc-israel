@@ -89,7 +89,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.0.2"
+       version="1.0.3"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
@@ -144,7 +144,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.9" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -182,10 +182,10 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.0" provider-name="o2ri">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.1" provider-name="Hillel">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.urlresolver" version="1.0.0"/>
+        <import addon="script.module.urlresolver" version="0.0.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
