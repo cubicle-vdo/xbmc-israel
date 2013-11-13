@@ -1,0 +1,12 @@
+[B]Version 1.0.3[/B]
+-new icons for main menu 
+-new sections for hebrew speaking movies
+[B]Version 1.0.2[/B]
+-add playlist support
+-add YOUTUBE FOR KIDS APP.
+
+[B]Version 1.0.1[/B]
+-add play this directory for youtube kids.
+
+[B]Version 1.0.0[/B]
+- Initial release

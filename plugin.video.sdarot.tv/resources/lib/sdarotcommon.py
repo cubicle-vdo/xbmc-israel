@@ -5,10 +5,8 @@ Created on 30/04/2011
 
 @author: shai
 '''
-#__USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.57 Safari/537.36'
-
-__REFERER__ = 'http://www.sdarot.tv/templates/frontend/blue_html5/player/jwplayer.flash.swf'
+#DOMAIN='http://www.sdarot.co.in'
 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
@@ -20,6 +18,23 @@ __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
+
+def OPEN_URL(url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    return link
+
+link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
+match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
+HOST=match[0][7:]
+DOMAIN=match[0]
+print "common" +  DOMAIN
+print "common"+ HOST
+
+__REFERER__ = DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 
 def enum(**enums):
         return type('Enum', (), enums)
@@ -106,7 +121,8 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
         req.add_header('Accept-Encoding','gzip,deflate,sdch')
         req.add_header('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
         req.add_header('Connection','keep-alive')
-        req.add_header('Origin','http://www.sdarot.tv')
+        req.add_header('Host',HOST)
+        req.add_header('Origin',DOMAIN)
         if (postData):
             req.add_header('Content-Length',len(postData))
         
@@ -115,7 +131,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
             
         if __DEBUG__:
             print "sent headers:" + str(req.headers)     
-        response = urllib2.urlopen(url=req,timeout=10,data=postData)
+        response = urllib2.urlopen(url=req,timeout=180,data=postData)
         
         if __DEBUG__:
             print "received headers:" + str(response.info());

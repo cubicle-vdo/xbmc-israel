@@ -87,6 +87,24 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.KIDSIL"
+       name="KIDSIL"
+       version="1.0.3"
+       provider-name="o2ri">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource"
+               library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+    <summary lang="en">Browse children sections in other addons</summary>
+    <description lang="en">links to other  childern addons .</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.5" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -126,7 +144,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.0.8" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -164,10 +182,10 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.0" provider-name="o2ri">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.1" provider-name="Hillel">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.urlresolver" version="1.0.0"/>
+        <import addon="script.module.urlresolver" version="0.0.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
@@ -185,9 +203,10 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.5" provider-name="sbentin">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.6" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.common.plugin.cache" version="0.9.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="walla.py">
         <provides>video</provides>

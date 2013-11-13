@@ -1,3 +1,5 @@
+[B]Version 2.0.6[/B]
+- Add episodes caching for better performance.
 [B]Version 2.0.5[/B]
 - Fix for android and conflict with other plugins
 [B]Version 2.0.3[/B]

@@ -27,8 +27,8 @@ sys.path.append (LIB_PATH)
 
 from gozlancommon import *
 from t0mm0.common.net import Net
-from gozlanurlresolver import *
-import gozlanurlresolver
+#from gozlanurlresolver import *
+import urlresolver
 
 params = getParams(sys.argv[2])
 url=None
@@ -162,22 +162,22 @@ def gozlan_play_video(url):
     if "description" in params:  
       description=params["description"]
     
-    page=getData(base_domain+"/"+url,7)
+    ''' page=getData(base_domain+"/"+url,7)
     # <iframe src="http://www.putlocker.com/embed/F4988CE321910D0D" id='iframeinner'
     regexp='<iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"'
     media_url=re.compile('iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"',re.M+re.I+re.S).findall(page)[0]
     #addDir('test',media_url,9)
     print "Resolving URL: " + media_url
-    videoPlayListUrl = gozlanurlresolver.HostedMediaFile(url=media_url).resolve()
+    videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
     if not videoPlayListUrl:
       print "URL " + media_url + " could not have been resolved to a movie.\n"
-      return
+      return'''
     #addon.resolve_url(stream_url)
     #videoPlayListUrl = urllib.unquote(videoUrl[0])
-    listItem = xbmcgui.ListItem(name, image, image, path=videoPlayListUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    listItem = xbmcgui.ListItem(name, image, image, path=url) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
     listItem.setInfo(type='Video', infoLabels={ "Title": name})
     listItem.setProperty('IsPlayable', 'true')
-    print "video url " + videoPlayListUrl
+    print "video url " + url
     #xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(videoPlayListUrl)
     xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
@@ -204,8 +204,11 @@ def gozlan_video_page(url):
     description= re.compile('<meta property="og:description" content="(.*?)"',re.M+re.I+re.S).findall(page)[0]
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
     #<span class="quality_button"><img style="margin-top:-3px;position:relative;width:110px" src="logo_novamov.jpg" alt="Novamov" /></span><span class="quality_button">DVDRip</span><span class="playing_button"><a  href="play/4826/2-צעדים-למוות-לצפייה-ישירה-4077.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2 צעדים למוות לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-    regexp = 'quality_button.*?<img.*?src="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co/(.*?)" alt="([\w|0-9]+?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co(.*?)"'  
+    regexp = 'quality_button.*?<img.*?src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)" alt="(.*?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a\s+?href="http://anonymouse.org/cgi-bin/anon-www.cgi/http://gozlan.co(.*?)"'  
     matches = re.compile(regexp).findall(page)
+
+    print matches
+        
     if len(matches) > 0:
       for match in matches:
         provider_image=match[0]
@@ -214,9 +217,16 @@ def gozlan_video_page(url):
         provider_name=match[1]
         provider_quality=match[2]
         video_page_link=match[3]
+        page=getData(base_domain+"/"+video_page_link,7)
+        regexp='<iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"'
+        media_url=re.compile('iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"',re.M+re.I+re.S).findall(page)[0]
+
         print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
+        videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
+        if videoPlayListUrl :
+                        addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,videoPlayListUrl,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
         
-        addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,video_page_link,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
+       
     else:
       print "No matches for "+regexp+"\n"
     #<span class="quality_button"><strong style="font-family:'Cuprum',sans-serif; font-weight:bold; font-size:18px;color:Aqua">VideoSlasher</strong></span><span class="quality_button">BDRip</span><span class="playing_button"><a  href="play/4375/2012--עידן-הקרח-לצפייה-ישירה-3533.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2012: עידן הקרח לצפייה ישירה" /></a><font id="edit_462635"></font></span>
@@ -229,9 +239,14 @@ def gozlan_video_page(url):
         provider_name=match[0]
         provider_quality=match[1]
         video_page_link=match[2]
-        print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
+        page=getData(base_domain+"/"+video_page_link,7)
+        regexp='<iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"'
+        media_url=re.compile('iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"',re.M+re.I+re.S).findall(page)[0]
         
-        addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,video_page_link,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
+        print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
+        videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
+        if videoPlayListUrl :
+                        addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,videoPlayListUrl,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
     else:
       print "No matches for "+regexp+"\n"
     xbmcplugin.setContent(int(sys.argv[1]), content)
