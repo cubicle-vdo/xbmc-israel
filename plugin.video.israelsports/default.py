@@ -14,6 +14,7 @@ def CATEGORIES():
         addDir('תקצירי מדריד','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4437&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTJtSGna8A2FmzVH3WQyBLx6HGwEGqUKeBzPqvzn7cmcKvpkv8D','1')
         addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
         addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4729&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
+        addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
         addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4986&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
         addDir('מכבי ת"א יורוליג','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4972&page=',2,'http://images1.ynet.co.il/PicServer2/24012010/2885944/hot_maccabi3.jpg','1')
         addDir('יורוליג','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4973&page=',2,'http://www.heinnews.com/wp-content/uploads/2010/06/euroleague-logo.jpg','1')
@@ -23,7 +24,6 @@ def CATEGORIES():
         addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=2770&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
         addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
         addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4948&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')
-        
         addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
@@ -36,14 +36,14 @@ def  list_videos(url,page):
        
         url1=url+"1"
         url=url+str(page)
-        print "url is " + str(url )
         link=OPEN_URL(url1)
         total=re.compile('total-pages="(.*?)"').findall(link)
-        total=int(total[0])
+        if total:
+                total=int(total[0])
+        else :
+                total=1
        
-        print "total is" + str (total)
         page=int(page)
-        print "page is "+ str (page)
         if page <= total:
                 link=OPEN_URL(url)
                 matches=re.compile('<li id.*?<a href="(.*?)"><img src="(.*?)" title="(.*?)"').findall(link)
@@ -53,18 +53,14 @@ def  list_videos(url,page):
                         addDir(title,newurl,3,image,'')
                 index=url.find('page=')
                 url=url[0:index]
-                print url
                 page=page+ 1
                 url=url+"page="
                 list_videos(url,page)
                 
 def play_video(url,name,iconimage):       
-        print "once"
         link=OPEN_URL(url)
         clipid=re.compile('clipid=(.*?)&Width',re.M+re.I+re.S).findall(link)
-        print clipid
         secondurl = "http://sport5-metadata-rr-d.nsacdn.com/vod/vod/" + str(clipid[0]) +"/HLS/metadata.xml?smil_profile=default"
-        print secondurl
 
         link=OPEN_URL(secondurl)
 
@@ -91,24 +87,39 @@ def ligat_al():
             name=unescape(name)
             url='http://svc.one.co.il'+url
             image='http://images.one.co.il/Images/Teams/Logos'+image
-            addDir(name,url,4,image,'')
+            addDir(name,url,4,image,'al')
 
-def one_videopage(url):
-        link = OPEN_URL(url)
+def one_videopage(url,description):
+        if description!='al' :
+                murl=url+str(description)
+        else:
+                murl=url
+                        
+        link = OPEN_URL(murl)
         list1=re.compile('"Image": "(.*?)".*?"Title": "(.*?)".*?"HQ":"(.*?)".*?"ID":(.*?)}').findall(link)
+        #var page = 4;var pages = 8;
+        page_total=re.compile('var page = (.*?);.*?var pages = (.*?);').findall(link)[0]
+        current= page_total[0]
+        total= page_total[1]
+        current=int(current)
+        total =int (total)
+        
+        
         for image,name,hq,Id in list1:
                 image="http://images.one.co.il/images/video/segment377x285/"+image
                 name=unescape(name)
-                print name
                 name=name.decode('windows-1255').encode('utf-8')
                 addDir(name,str(Id),5,image,hq)
-        print list1
+        if current < total :
+                current+=1
+                addDir("[COLOR yellow]לעמוד הבא[/COLOR]",url,4,'',str(current))
+        addDir("[COLOR blue]חזרה לראשי [/COLOR]",'',None,'','')
+                
 
 def play_one(name,url,iconimage,description):
+        
         url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
-        print url1
         link = OPEN_URL(url1)
-        print link
         #source file="http://streambk.one.co.il/2013_2/33266.mp4" label="360p" /><jwplayer:source file="http://streambk.one.co.il/2013_2_HD/33266.mp4" label="720p HD" />
         list2=[]
         regex='source file="(.*?)"'
@@ -248,14 +259,15 @@ def Announcements():
 
         except:
                 link='nill'
-        #print link
         r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
         if r:
 
                 match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
-                #print " this is a test " + str (match[0])
                 if match[0]:
                         TextBoxes("[B][COLOR blue] SPORTS ISRAEL[/B][/COLOR]",match[0])                      
+
+
+
                
 params=get_params()
 url=None
@@ -301,7 +313,7 @@ elif mode==2:
 elif mode==3:
         play_video(url,name,iconimage)
 elif mode==4:
-        one_videopage(url)
+        one_videopage(url,description)
 elif mode==5:
         play_one(name,url,iconimage,description)
 elif mode==6:

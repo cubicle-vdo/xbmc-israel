@@ -1,2 +1,8 @@
+v.1.0.1
+-added premier league
+-fixed two sections 
+-add support for next page .
+- + few minor changes 
+
 v1.0.0
 Initial Release
