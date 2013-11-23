@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
 import json
 __settings__ = xbmcaddon.Addon(id='plugin.video.KIDSIL')
 ADDON = xbmcaddon.Addon(id='plugin.video.KIDSIL')
