@@ -89,6 +89,20 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.2" provider-name="BENNY123 AVIGDOR O2RI">
+  <requires>
+    <import addon="xbmc.python" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">benny 123 project + more </summary>
+    <description lang="en">live tv</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.israelsports" name="israelsports" version="1.0.2" provider-name="XAVI 6 ">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
