@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.3" provider-name="cubicle">
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.4" provider-name="cubicle">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="ynet.py">
         <provides>video</provides>

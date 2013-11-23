@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.5" provider-name="sbentin">
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.6" provider-name="sbentin">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="Mako.py">
         <provides>video</provides>

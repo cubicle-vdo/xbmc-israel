@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.2" provider-name="cubicle">
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.3" provider-name="cubicle">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="sdarottv.py">
         <provides>video</provides>
