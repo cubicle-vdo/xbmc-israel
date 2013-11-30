@@ -1,3 +1,6 @@
+[B]Version 1.0.3[/B]
+- few  fixes
+- showing correct name show
 [B]Version 1.0.1[/B]
 - fixed new site layout.
 [B]Version 1.0.0[/B]
