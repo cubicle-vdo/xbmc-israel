@@ -4,18 +4,20 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,os,xbmcaddon
 
 ##General vars
 __plugin__ = "23TV"
-__author__ = "Shmulik"
+__author__ = "Shmulik \ O2RI"
 __credits__ = ""
 __version__ = "1.0.1"
 __XBMC_Revision__ = ""
 
-__usecache__ = xbmcaddon.Addon( id=os.path.basename( os.getcwd() ) ).getSetting("usecache")
+__addon__      = xbmcaddon.Addon()
+__cwd__        = xbmc.translatePath( __addon__.getAddonInfo('path') ).decode("utf-8")
+__usecache__ = __addon__.getSetting("usecache")
 
 def getFromCache(url,type):
   if __usecache__!="true":
     return False;
   url = url.replace('.', ''). replace('/','').replace(':','').replace('?','').replace('-','')
-  filePath = xbmc.translatePath( os.path.join( os.getcwd(), 'cache',type,url) )
+  filePath = os.path.join( __cwd__, 'cache',type,url)
   if (os.path.exists(filePath)):
     return  file(filePath,'r').read()
   return False;
@@ -24,7 +26,7 @@ def saveToCache(pre,final,type):
   if __usecache__!="true":
     return False;
   pre = pre.replace('.', ''). replace('/','').replace(':','').replace('?','').replace('-','')
-  filePath = xbmc.translatePath( os.path.join( os.getcwd(), 'cache',type,pre) )
+  filePath = os.path.join( __cwd__, 'cache',type,pre)
   fileCache = file(filePath,'w')
   fileCache.write(final)
   fileCache.close()
@@ -57,29 +59,22 @@ def programs(url,name):
 	md=4
   matches = getMatches(url,';"><a href="(.*?)" id=.*?">(.*?)</a><')
   for url,name in matches:
-    addDir(name,url,md,"","")
+      if name !='אולפן הבית'  and name.find('חידון')==-1:
+          addDir(name,url,md,"","")
   xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
   
 def episodes(url):
-  print("urls is :" + url)
-  block=getMatches(url,'tabs_content(.*?)"paging_holder"')
-  print block
-  matches = re.compile('"top">(.*?)</div>.*?<img src="(.*?)&th=1',re.M+re.I+re.S).findall(block[0])
-  print("matches:="+ str(matches))
+  matches=getMatches(url,'"top">(.*?)</div>.*?<img src="(.*?)&th=1')
   for name,url in matches:
+
 	newurl=urllib.unquote_plus(url+"&ak=null&cuud=&curettype=1&cucontentlinktype=1")
 	newurl=newurl.replace("gmpl.aspx","gm.asp")
-	print ("newurl" +newurl)
 	addLink(name,newurl,"")
 	
 def episodesType1(url):
-  print("urls is :" + url)
-  block=getMatches(url,'"program_view_pref_wrapper"(.*?)"paging"')
-  print block
-  matches = re.compile('<div><img src="(.*?)&th=1".*?title="(.*?)"',re.M+re.I+re.S).findall(block[0])
-  print("matches:="+ str(matches))
+  matches=getMatches(url,'<div><img src="(.*?)&th=1".*?title="(.*?)"')
   for url,name in matches:
-	newurl=urllib.unquote_plus(url+"&ak=null&cuud=&curettype=1&cucontentlinktype=1")
+        newurl=urllib.unquote_plus(url+"&ak=null&cuud=&curettype=1&cucontentlinktype=1")
 	newurl=newurl.replace("gmpl.aspx","gm.asp")
 	print ("newurl" +newurl)
 	addLink(name,newurl,"")
@@ -120,7 +115,7 @@ def addLink(name,url,plot):
         ok=True
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode=3&name="+urllib.quote_plus(name)
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage="DefaultVideo.png")
-        liz.setInfo( type="Video", infoLabels={ "Title": name,"Plot":plot } )
+        liz.setInfo( type="Video", infoLabels={ "Title": str (name),"Plot":plot } )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         return ok
 
@@ -161,7 +156,9 @@ elif mode==1:
 elif mode==2:
         programs(url,name)
 elif mode==3:
-        xbmc.Player().play(getMmsAddress(url))
+        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage='')
+        liz.setInfo( type="Video", infoLabels={ "Title": name} )
+        xbmc.Player().play(getMmsAddress(url),liz)
 elif mode==4:
 		episodes(url)
 elif mode==5:
