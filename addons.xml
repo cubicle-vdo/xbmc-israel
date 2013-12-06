@@ -160,7 +160,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.1" provider-name="anonymous">
+<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.3" provider-name="anonymous">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
