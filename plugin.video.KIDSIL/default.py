@@ -2,11 +2,13 @@
 
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
 import json
-__settings__ = xbmcaddon.Addon(id='plugin.video.KIDSIL')
-ADDON = xbmcaddon.Addon(id='plugin.video.KIDSIL')
-import random 
+AddonID = 'plugin.video.KIDSIL' 
+ADDON = xbmcaddon.Addon(id=AddonID)
+
+
+
 def CATEGORIES():
-        Announcements()
+        mes()
         
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.seretil'):
                 addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=&url=http%3A%2F%2Fseretil.me%2Fcategory%2F%25d7%25a1%25d7%25a8%25d7%2598%25d7%2599%25d7%259d-%25d7%259e%25d7%2593%25d7%2595%25d7%2591%25d7%2591%25d7%2599%25d7%259d%2Fpage%2F1%2F',8,'https://dl.dropboxusercontent.com/u/5461675/meduvavim1.png','')
@@ -34,6 +36,7 @@ def CATEGORIES():
                
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.wallaNew.video'):
                 addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
+                addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
                 addDir('גוניור','plugin://plugin.video.wallaNew.video/?mode=1&module=junior&name=גוניור&url=http://junior.walla.co.il/',8,'http://upload.wikimedia.org/wikipedia/he/1/19/%D7%A2%D7%A8%D7%95%D7%A5_%D7%92%27%D7%95%D7%A0%D7%99%D7%95%D7%A8.jpg','')
                 addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
                 addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=000003&name=ילדים&url=http://vod.walla.co.il/kids/',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
@@ -45,11 +48,62 @@ def CATEGORIES():
                addDir('[COLOR red]HOT VOD לא מותקן[/COLOR]','','','','')
 
         
-        #addDir(' KIDS LIVE TV (benny 123)','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Kids.plx',7,'http://www.livestream.com/filestore/logos/6a941358-6c7f-2ebf-e8ac-b05f4f338270-banner.png','')
+        addDir('מצויירים קלאסיים','https://dl.dropboxusercontent.com/s/cwcptnocx310g00/Merry_Melodies.plx',7,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzwydiY6V_l5sE_ed7Rf66G6B8Ug2p7ajn4uPAhH2NYpDVMNBUQ','')
         addDir('Baby Einstein','TerrapinStation5',9,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
         addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
 	setView('movies', 'default')       
+
+def unescape(text):
+        try:            
+            rep = {"&nbsp;": " ",
+                   "\n": "",
+                   "\t": "",
+                   "\r":"",
+                   "&#39;":"",
+                   "&quot;":"\""
+                   }
+            for s, r in rep.items():
+                text = text.replace(s, r)
+				
+            # remove html comments
+            text = re.sub(r"<!--.+?-->", "", text)    
+				
+        except TypeError:
+            pass
+
+        return text
+
+def ListLive(url):
+        link=OPEN_URL(url)
+        link=unescape(link)
+        #print link
+        matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
+        print str(matches1[0]) + '\n'
+        for match in matches1 :
+            print "match=" + str(match)
+            match=match+'#'
+            if match.find('playlist') != 0 :
+                regex='name=(.*?)URL=(.*?)#'
+                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+                print str(matches)
+                for name,url in  matches:
+                    thumb=''
+                    i=name.find('thumb')
+                    if i>0:
+                        thumb=name[i+6:]
+                        name=name[0:i]
+		    print url
+                    addLink('[COLOR yellow]'+ name+'[/COLOR]',url,thumb,'')  
+                
+            else:
+                regex='name=(.*?)URL=(.*?).plx'
+                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+                for name,url in matches:
+                    url=url+'.plx'
+                    if name.find('Radio') < 0 :
+                        addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
+
 
 def update_view(url):
 
@@ -86,16 +140,7 @@ def get_params():
                                 param[splitparams[0]]=splitparams[1]
                                 
         return param
-#reads data from Benny123 Kids section 
-def ListLive(url):
-        link=OPEN_URL(url)
-        matches=re.compile('name=(.*?)\\n.*?URL=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-        
-        for match in matches:
-                url=urllib.unquote(match[1][:-2])
-                addLink(match[0],url,'','')
-#                print url
-        setView('tvshows', 'default')   
+
 
 
 def addDir(name,url,mode,iconimage,description):
@@ -324,53 +369,39 @@ def setView(content, viewType):
         if ADDON.getSetting('auto-view') == 'true':#<<<----see here if auto-view is enabled(true) 
                 xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
                       
-def TextBoxes(heading,anounce):
-        class TextBox():
-            """Thanks to BSTRDMKR for this code:)"""
-                # constants
-            WINDOW = 10147
-            CONTROL_LABEL = 1
-            CONTROL_TEXTBOX = 5
+def mes():
+	try:
+		link=OPEN_URL('http://goo.gl/r6eog7')
+		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
+		if not r:
+			return
+			
+		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
+		if not match[0]:
+			return
+			
+		version = ADDON.getAddonInfo('version')
+		
+		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
+		if not os.path.exists(dire):
+			os.makedirs(dire)
+		
+		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
+		if (os.path.isfile(aSeenFile)): 
+			f = open(aSeenFile, 'r') 
+			content = f.read() 
+			f.close() 
+			if content == match[0] :
+				return
 
-            def __init__( self, *args, **kwargs):
-                # activate the text viewer window
-                xbmc.executebuiltin( "ActivateWindow(%d)" % ( self.WINDOW, ) )
-                # get window
-                self.win = xbmcgui.Window( self.WINDOW )
-                # give window time to initialize
-                xbmc.sleep( 500 )
-                self.setControls()
+		f = open(aSeenFile, 'w') 
+		f.write(match[0]) 
+		f.close() 
 
-
-            def setControls( self ):
-                # set heading
-                self.win.getControl( self.CONTROL_LABEL ).setLabel(heading)
-                try:
-                        f = open(anounce)
-                        text = f.read()
-                except:
-                        text=anounce
-                self.win.getControl( self.CONTROL_TEXTBOX ).setText(text)
-                return
-        TextBox()
-
-def Announcements():
-        #Announcement Notifier from xml file
-        
-        try:
-              link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/hodaa.xml')
-              # link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
-
-        except:
-                link='nill'
-        #print link
-        r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
-        if r:
-
-                match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
-                #print " this is a test " + str (match[0])
-                if match[0]:
-                        TextBoxes("[B][COLOR red]KIDSIL Announcements[/B][/COLOR]",match[0])
+		dp = xbmcgui . Dialog ( )
+		dp.ok("UPDATES", match[0])
+	except:
+		pass
                         
 
 params=get_params()
