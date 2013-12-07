@@ -89,9 +89,9 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.2" provider-name="BENNY123 AVIGDOR O2RI">
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.3" provider-name="BENNY123 AVIGDOR O2RI">
   <requires>
-    <import addon="xbmc.python" version="2.0.1"/>
+    <import addon="xbmc.python" version="2.1.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>

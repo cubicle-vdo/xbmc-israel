@@ -26,7 +26,7 @@ def CATEGORIES():
         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
             
     if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
-         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://mirrors.xmission.com/superrepo/Frodo/Video/plugin.video.teledunet/plugin.video.teledunet-1.1.0.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
+         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://superrepo.brantje.com//Frodo/All/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
          
         
 
