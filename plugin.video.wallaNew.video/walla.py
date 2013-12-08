@@ -10,6 +10,7 @@ __plugin__ = "walla"
 __author__ = "Shai Bentin"
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
+__DEBUG__ = __settings__.getSetting("DEBUG") == "true"
 __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
@@ -17,38 +18,14 @@ sys.path.append (LIB_PATH)
 
 from wallacommon import *
 
+print "WALLA Main got URL=" + sys.argv[2]
+
 def CATEGORIES():
 
-    contentType, page = getData('http://vod.walla.co.il/')
-    topMenuBloc = re.compile('<nav class="fc main-nav"(.*?)</nav>').findall(page)
-    bottomGroupBloc = re.compile('<nav class="fc footer-logos".*?</nav>').findall(page)
-    
-    items = re.compile('<a href="(.*?)".*?<span>(.*?)</span>').findall(topMenuBloc[0])
-    i = 0
-    for url, title in items:
-        if i >= 4: 
-            break            
-        module = '00000' + str(i)
-        iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-        if i!=0:
-            addDir('UTF-8', title, 'http://vod.walla.co.il' + url, 1, iconImage, module)
-        i=i+1
-    
-    bottomItems = re.compile('<td.*?<a href="(.*?)"><img src="(.*?)" alt="(.*?)"').findall(bottomGroupBloc[0])  
-    for url, img, title in bottomItems:
-        iconImage = getImage(img, 'wallaBase')
-        if url.startswith('http'):
-            elementId = re.compile("http://(.*?)\.").findall(url)
-            addDir('UTF-8', title, url, 1, iconImage, elementId[0])     
-        else :
-            elementId = str(url)
-            elementId= elementId[9:]
-            s=elementId.find("/")
-            elementId= elementId[:s]
-            addDir('UTF-8', title, 'http://vod.walla.co.il' + url, 1, iconImage, elementId)
-        
-            
+    addDir('UTF-8', "וואלה VOD", 'http://vod.walla.co.il', 1, elementId='000003')
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
+
 
 params = getParams(sys.argv[2])
 url=None
@@ -59,18 +36,23 @@ page=None
 
 try:
         url=urllib.unquote_plus(params["url"])
+        print "WALLA main script url=" + url 
 except:
         pass
 try:
-        name=urllib.unquote_plus(params["name"]).encode('utf-8')
+        
+        name=urllib.unquote_plus(params["name"])
+        print "WALLA main script name=" + name
 except:
         pass
 try:
         mode=int(params["mode"])
+        print "WALLA main script mode=" + str(mode)
 except:
         pass
 try:
         module=urllib.unquote_plus(params["module"])
+        print "WALLA main script module=" + module
 except:
         pass
 try:
@@ -83,7 +65,7 @@ if mode==None or url==None or len(url)<1:
 
 else:
         xbmc.log('in walla %s' % (module), xbmc.LOGDEBUG)
-        print "WALLA before manager module:" + module
+        
         moduleScript = __import__('module_' + module.lower())
         print "WALLA after moduleScript module:" + module 
         className = 'manager_' + module
@@ -96,9 +78,7 @@ else:
             print "WALLA got exception"
             print e
             raise e
-            
-        print "WALLA after manager"
-        print manager
+       
         manager.work(mode, url, name, page)
         
 
