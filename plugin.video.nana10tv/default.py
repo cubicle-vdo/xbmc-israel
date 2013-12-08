@@ -1,39 +1,67 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
 
 icon = 'http://f.nanafiles.co.il//Upload/52013/Navigate/NavigateCatPic_2532151.jpg'
 
-ADDON = xbmcaddon.Addon(id='plugin.video.nana10tv')
+AddonID = 'plugin.video.nana10tv' 
+ADDON = xbmcaddon.Addon(id=AddonID)
 __SECTION_BASE__='http://10tv.nana10.co.il/Section/'
 
 
- 
-def CATEGORIES():
-        addDir('main menu','http://10tv.nana10.co.il/Category/?CategoryID=400008',1,icon,'')
-        setView('movies', 'default') 
-       #setView is setting the automatic view.....first is what section "movies"......second is what you called it in the settings xml  
-       
-       
+def mes():
+	try:
+		link=OPEN_URL('http://goo.gl/8xDxIf')
+		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
+		if not r:
+			return
+			
+		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
+		if not match[0]:
+			return
+			
+		version = ADDON.getAddonInfo('version')
+		
+		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
+		if not os.path.exists(dire):
+			os.makedirs(dire)
+		
+		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
+		if (os.path.isfile(aSeenFile)): 
+			f = open(aSeenFile, 'r') 
+			content = f.read() 
+			f.close() 
+			if content == match[0] :
+				return
+
+		f = open(aSeenFile, 'w') 
+		f.write(match[0]) 
+		f.close() 
+
+		dp = xbmcgui . Dialog ( )
+		dp.ok("UPDATES", match[0])
+	except:
+		pass
                       												  
-def Choose_series(url):#  cause mode is empty in this one it will go back to first directory
+def Choose_series(url):
+        mes()
         link=OPEN_URL('http://10tv.nana10.co.il/Category/?CategoryID=400008')
         matches=re.compile('" href="http://10tv.nana10.co.il/section/(.*?)".?onclick="t1674.getData.*?return false;">(.*?)</a>',re.I+re.M+re.U+re.S).findall(link)
-        #print "matches  are :" +str (matches)
         sorted_movies=[]
-        matches = [ matches[i] for i,x in enumerate(matches) if x not in matches[i+1:]]
-        for url ,name in matches :
-                sorted_movies.append((url,name))
+        for url ,name in matches : 
+                if url !="?SectionId=" and    url !="?SectionId=847131" :
+                        if not (url,name) in sorted_movies:
+                                sorted_movies.append((url,name))
         sorted_movies = sorted(sorted_movies,key=lambda sorted_movies: sorted_movies[1])
         for movie in sorted_movies:
-            addDir(movie[1],__SECTION_BASE__+ movie[0],2,'','')
-       # addDir(name,__SECTION_BASE__+url,2,'','')
+        
+            if not 'http' in movie[0] :    
+                    addDir(movie[1],__SECTION_BASE__+ movie[0],2,'','')
+           
+            
         setView('tvshows', 'anything') 
 
 def series_land(url):
         link=OPEN_URL(url)
-        
-        # class="" onmousedown="return cr(event, 'ClickArticle', 980364, null, 3);">
-				#	<img src="//f.nanafiles.co.il/upload/mediastock/img/5/0/105/105370.jpg" alt="׳”׳׳§׳•׳¨ 28.05.13" class="Image" />
         block=re.compile('MiddleColumn(.*?)LeftColumn',re.I+re.M+re.U+re.S).findall(link)
         matches=re.compile('<a href="http://10tv.nana10.co.il/Article/(.*?)".*?<img src="//f.nanafiles.co.il.?/upload(.*?)".*?alt="(.*?)"',re.I+re.M+re.U+re.S).findall(block[0])
         
@@ -42,53 +70,67 @@ def series_land(url):
                 addDir(name,newurl,3,'http://f.nanafiles.co.il/upload'+ image,'')
 
 def play_episode(url):
-        #http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID=58993
-        #addLink('test','http://switch206-01.castup.net/cunet/gm.asp?ClipMediaId=11948638','','')
         
         link=OPEN_URL(url)
         urlBase=matches=re.compile('<link rel="canonical" href="(.*?)Article',re.I+re.M+re.U+re.S).findall(link)
         matches=re.compile('<iframe name="VideoIframe".*?src="(.*?)">VideoIframe',re.I+re.M+re.U+re.S).findall(link)
         matches[0]=matches[0].replace('amp;','')
         secondlink=urllib.unquote(OPEN_URL(urlBase[0] + matches[0]))
-        print secondlink
+        
         matches=re.compile('MediaStockVideoItemGroupID","(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
         if matches:
-                if  matches[0]!='0' :
+                if  matches[0]!='0' and matches[0]!='':
                         thirdlink=OPEN_URL('http://common.nana10.co.il/Video/Action.ashx/Player/GetData?GroupID='+matches[0])
                         matches=re.compile('ClipMediaId=(.*?)"',re.I+re.M+re.U+re.S).findall(thirdlink)
                 else :
                         matches=re.compile('ClipMediaID=(.*?)&ak=null',re.I+re.M+re.U+re.S).findall(secondlink)
+
+                   
+                matches.sort(key=int)
+                
+                final_url='http://switch206-01.castup.net/cunet/gm.asp?ClipMediaId='+matches[-1]
+
         else :
-                matches=re.compile('http://SWITCH(.*?).castup.net/cunet/(.*?)"',re.I+re.M+re.U+re.S).findall(secondlink)
-                print matches
-                final_url='http://SWITCH'+ str(matches[0][0])+'.castup.net/cunet/'+ str(matches[-1][-1])
-                print final_url
-                link=OPEN_URL(final_url)
+                matches=re.compile('http://SWITCH(.*?).castup.net/cunet/(.*?)&ak',re.I+re.M+re.U+re.S).findall(secondlink)
+                if matches :  
+                        names=matches[-1][-1]
+                        if 'ar=' in names:
+                                 i=names.find('ar=')
+                                 names=names[i+3:]
+                                 names=urllib.quote(names)
+                                 firstname=matches[-1][-1][:i+3]
+                                 final_url='http://SWITCH'+ str(matches[0][0])+'.castup.net/cunet/'+ firstname+names
+                        else:
+                                final_url='http://switch206-01.castup.net/cunet/'+names
+                else: 
+                        match=re.compile('http://switch206-01.castup.net(.*?)&st',re.I+re.M+re.U+re.S).findall(secondlink)[0]
+                        
+                        final_url='http://switch206-01.castup.net'+match.decode("utf-8")
+                        
+                
+                link=OPEN_URL(final_url,'http://10tv.nana10.co.il/Category/?CategoryID=400008')
                 matches=re.compile('<ref href="(.*?).?ct',re.I+re.M+re.U+re.S).findall(link)
                 final_url=matches[-1]
-                ok=True
-                liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-                liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
-                liz.setProperty("IsPlayable","true")
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=final_url,listitem=liz,isFolder=False)
-                return ok 
 
-        print matches   
-        matches.sort(key=int)
-        print matches
-        final_url='http://switch206-01.castup.net/cunet/gm.asp?ClipMediaId='+matches[-1]
-        ok=True
+        
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
         liz.setProperty("IsPlayable","true")
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=final_url,listitem=liz,isFolder=False)
-        return ok 
-      
-        
+        playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+        playlist.clear()
+        playlist.add(final_url,liz)
+        if not xbmc.Player().isPlayingVideo():
+                xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
 
-def OPEN_URL(url):
+
+def OPEN_URL(url,ref=None):
+
+    
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    if ref != None :
+            req.add_header('Referer',ref)
+            
     response = urllib2.urlopen(req)
     link=response.read()
     response.close()
@@ -118,7 +160,10 @@ def addDir(name,url,mode,iconimage,description):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+        if mode==3 :
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        else:
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 #same as above but this is addlink this is where you pass your playable content so you dont use addDir you use addLink "url" is always the playable content         
 def addLink(name,url,iconimage,description):

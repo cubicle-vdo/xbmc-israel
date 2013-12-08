@@ -1,0 +1,5 @@
+v1.0.2
+-update teleduent zip 
+-ready for gotham
+v1.0.1:
+  - initial release

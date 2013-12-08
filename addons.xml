@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.1" provider-name="hillel">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.2" provider-name="hillel">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="10qtv.py">
         <provides>video</provides>
@@ -20,9 +20,9 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.23tv.video" name="23TV" version="1.0.1" provider-name="shmulik,Talya">
+<addon id="plugin.video.23tv.video" name="23TV" version="1.0.4" provider-name="shmulik,o2ri">
     <requires>
-        <import addon="xbmc.python" version="1.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="Default.py">
         <provides>video</provides>
@@ -42,9 +42,9 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.0.7" provider-name="cubicle">
+<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.0.8" provider-name="cubicle">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="0.0.1"/>
 
     </requires>
@@ -66,9 +66,9 @@
 
 </addon>
 
-<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.1" provider-name="sbentin">
+<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.2" provider-name="sbentin">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="Hot.py">
         <provides>video</provides>
@@ -89,9 +89,23 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="israelsports" version="1.0.0" provider-name="XAVI 6 ">
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.3" provider-name="BENNY123 AVIGDOR O2RI">
   <requires>
-    <import addon="xbmc.python" version="2.0"/>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">benny 123 project + more </summary>
+    <description lang="en">live tv</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.israelsports" name="israelsports" version="1.0.2" provider-name="XAVI 6 ">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
@@ -107,10 +121,10 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.0.3"
+       version="1.0.7"
        provider-name="o2ri">
     <requires>
-        <import addon="xbmc.python" version="1.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource"
                library="default.py">
@@ -123,9 +137,9 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.5" provider-name="sbentin">
+<addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.6" provider-name="sbentin">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="Mako.py">
         <provides>video</provides>
@@ -146,9 +160,9 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.0" provider-name="anonymous">
+<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.3" provider-name="anonymous">
   <requires>
-    <import addon="xbmc.python" version="2.0"/>
+    <import addon="xbmc.python" version="2.1.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
@@ -162,9 +176,9 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.2" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.3" provider-name="cubicle">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="sdarottv.py">
         <provides>video</provides>
@@ -200,9 +214,9 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.1" provider-name="Hillel">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.2" provider-name="Hillel">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="0.0.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
@@ -221,9 +235,9 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.6" provider-name="sbentin">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.0.7" provider-name="sbentin">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.common.plugin.cache" version="0.9.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="walla.py">
@@ -245,9 +259,9 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.wallaYes.video" name="וואלה Yes" version="1.0.1" provider-name="sbentin">
+<addon id="plugin.video.wallaYes.video" name="וואלה Yes" version="1.0.2" provider-name="sbentin">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="yes.py">
         <provides>video</provides>
@@ -268,9 +282,9 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.3" provider-name="cubicle">
+<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.4" provider-name="cubicle">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="ynet.py">
         <provides>video</provides>

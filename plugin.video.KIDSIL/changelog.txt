@@ -1,3 +1,8 @@
+[B]Version 1.0.7[/B]
+-added nick from walla
+-added merry melodies
+-ready for live 
+
 [B]Version 1.0.3[/B]
 -new icons for main menu 
 -new sections for hebrew speaking movies
