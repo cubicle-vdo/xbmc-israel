@@ -81,10 +81,10 @@ def addLink(contentType, name, url, iconimage='DefaultFolder.png', time='', sub=
         ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
         return ok
 
-def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', sum=''):
+def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', sum='',duration='0'):
         u = sys.argv[0] + "?url=" + urllib.quote_plus(str(url)) + "&mode=" + str(mode) + "&name=" + name + "&module=" + urllib.quote_plus(elementId)
         liz = xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
-        liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(sum)})
+        liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)),"Duration":str(duration), "Plot": urllib.unquote(sum)})
         liz.setProperty('IsPlayable', 'true')
         ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=False)
         return ok

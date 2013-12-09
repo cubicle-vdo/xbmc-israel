@@ -22,9 +22,9 @@ print "WALLA Main got URL=" + sys.argv[2]
 
 def CATEGORIES():
 
-    addDir('UTF-8', "ילדים", 'englishName=kids', 1, elementId='000003')
-    addDir('UTF-8', "סדרות", 'englishName=tvshows', 1, elementId='000003')
-    addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='000003')
+    addDir('UTF-8', "ילדים", 'englishName=kids', 1, elementId='wallavod')
+    addDir('UTF-8', "סדרות", 'englishName=tvshows', 1, elementId='wallavod')
+    addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='wallavod')
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 
 

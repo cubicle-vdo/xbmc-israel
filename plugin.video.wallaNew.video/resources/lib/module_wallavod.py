@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 '''
 Created on 16/05/2011
@@ -11,14 +11,14 @@ import json
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
 __BASE_URL__ = 'http://ws.vod.walla.co.il/ws/mobile/android/main'
-__NAME__ = '000003'
+__NAME__ = 'wallavod'
 
 __IMAGES_BASE__ = "http://msc.walla.co.il/w/w-160/"
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,os,sys
 import wallacommon as common
 
-class manager_000003:
+class manager_wallavod:
     
     def __init__(self):
         self.MODES = common.enum(PLAY_MODE=10,GET_GENRE=1, GET_GENRE_ITEMS=2, GET_SEASONS_LIST=5,GET_EPISODES_LIST=3, GET_MOVIE_LIST=4)
@@ -71,26 +71,42 @@ class manager_000003:
         params = common.getParams(url)
         genreId =  params["genreId"]
         genre = params["genre"]
+        if params.has_key("page"):
+            page = int(params["page"])
+        else :
+            page = 1
         
-        contentType, page = common.getData('http://ws.vod.walla.co.il/ws/mobile/android/genre/'+ genre + "?id=" + genreId + "&page=1&limit=500&sort=newest")
+        contentType, jsonString = common.getData('http://ws.vod.walla.co.il/ws/mobile/android/genre/'+ genre + "?id=" + genreId + "&page=" + str(page) + "&limit=50&sort=newest")
         if  common.__DEBUG__ == True:
             print "WALLA genre API "
-            print page
+            print jsonString
             
         
-        resultJSON = json.loads(page)
-        seriesList = resultJSON["events"]
-        for series in seriesList:
-            itemName = series["title"]
-            media=series["media"]
-            itemId = str(series["id"])
-            typeName = series["typeName"]
-            about = series["about"]
-            
-            iconImage = __IMAGES_BASE__ + media["types"]["type_29"]["file"] 
+        resultJSON = json.loads(jsonString)
+        genreItems = resultJSON["events"]
+        totalResults = resultJSON["genre"]["amount"]
+        
+        if totalResults> (50*page):
+            page = page +1
+            common.addDir('UTF-8', "לדף הבא.....", "page=" + str(page) + "&genre=" + genre + "&genreId=" + genreId, self.MODES.GET_GENRE_ITEMS, elementId=__NAME__)
+        
+        for item in genreItems:
+            itemName = item["title"]
+            media=item["media"]
+            itemId = str(item["id"])
+            typeName = item["typeName"]
+            about = item["about"]
+            if item.has_key("duration"):
+                duration = str(item["duration"])
+            else:
+                duration = '0'
+            if media["types"].has_key("type_29"):  
+                iconImage = __IMAGES_BASE__ + media["types"]["type_29"]["file"]
+            else:
+                iconImage = 'DefaultFolder.png'     
             if typeName == "movie":
                                
-                common.addVideoLink("UTF-8",itemName, "item_id="+ itemId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=about)
+                common.addVideoLink("UTF-8",itemName, "item_id="+ itemId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=about,duration=duration)
             else:
                
                 common.addDir('UTF-8', itemName, "seriesId=" + itemId , self.MODES.GET_SEASONS_LIST, iconImage, elementId=__NAME__)
@@ -166,12 +182,16 @@ class manager_000003:
             print "WALLA players API "
             print page
         resultJSON = json.loads(page)
-        videoUrl = resultJSON["video_src_tv"]
-        title = resultJSON["items"]["item"]["title"]
+        item = resultJSON["items"]["item"]
+        #videoUrl = resultJSON["video_src_ipad"]
+        videoSrc = item["src"]
+        videoUrl = "rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://isc.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://vod.walla.co.il playpath=" + videoSrc
+        duration = item["duration"]
+        title = item["title"]
         
         
         listItem = xbmcgui.ListItem(title, 'DefaultFolder.png', 'DefaultFolder.png', path=videoUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        listItem.setInfo(type='Video', infoLabels={ "Title": title})
+        listItem.setInfo(type='Video', infoLabels={ "Title": title,"Duration":str(duration)})
         listItem.setProperty('IsPlayable', 'true')
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
         
