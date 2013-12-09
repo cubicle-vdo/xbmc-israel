@@ -1,0 +1,3 @@
+[B]Version 2.0.8[/B]
+- Complete rewrite of the walla vod (not including other channels), now using JSON API , much faster and reliable (by shlomicthailand)
+
