@@ -22,20 +22,22 @@ class manager_000003:
         self.MODES = common.enum(PLAY_MODE=10,GET_GENRE=1, GET_SERIES_LIST=2, GET_SEASONS_LIST=5,GET_EPISODES_LIST=3, GET_MOVIE_LIST=4)
         
     def work(self, mode, url='', name='', page=''):
+
         if (mode==self.MODES.GET_GENRE):
             self.getGenere(url)
         elif (mode==self.MODES.GET_SERIES_LIST):
-            self.getSeriesList(url)
+            self.getGenereItems(url)
         elif (mode==self.MODES.GET_SEASONS_LIST):
             self.getSeasons(url)
         elif (mode==self.MODES.GET_EPISODES_LIST):
             self.getEpisodes(url)
-        elif (mode==self.MODES.GET_MOVIE_LIST):
-            self.getMovieList(url)
         elif (mode==self.MODES.PLAY_MODE):
             self.playEpisode(url)
     
     def getGenere(self, url):
+       
+        params = common.getParams(url)
+        selectedGenre = params["englishName"]
        
         categories = self.getMainJSON();
         
@@ -48,18 +50,20 @@ class manager_000003:
             
             genres = category["genres"]
             for genre in genres:
-                genreName = genre["name"]
-                genreId = str(genre["id"])
-                amount = str(genre["amount"])
                 
-                dirName = categoryName + ":" + genreName + "(" + amount + ")"
-                #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-                common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_SERIES_LIST, elementId=__NAME__)
-            #common.addDir('UTF-8', title, __BASE_URL__, self.MODES.GET_SERIES_LIST, 'DefaultFolder.png', __NAME__)
+                genreName = genre["name"]
+                if (genreEnglish==selectedGenre):
+                    genreId = str(genre["id"])
+                    amount = str(genre["amount"])
+                    
+                    dirName = genreName + " (" + amount + ")"
+                    #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
+                    common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_SERIES_LIST, elementId=__NAME__)
+            
             
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
     
-    def getSeriesList(self, url):
+    def getGenereItems(self, url):
         print "walla getSeriesList url:" + str(url)
         
         params = common.getParams(url)
@@ -75,14 +79,19 @@ class manager_000003:
         resultJSON = json.loads(page)
         seriesList = resultJSON["events"]
         for series in seriesList:
-            seriesName = series["title"]
+            itemName = series["title"]
             media=series["media"]
-            seriesId = str(series["id"])
-            typeName = str(series["typeName"])
+            itemId = str(series["id"])
+            typeName = series["typeName"]
+            about = series["about"]
             
-            dirName = seriesName 
-            #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-            common.addDir('UTF-8', dirName, "seriesId=" + seriesId , self.MODES.GET_SEASONS_LIST, elementId=__NAME__)
+            if typeName == "movie":
+                iconImage = "http://msc.walla.co.il/w/w-160/" + media["types"]["type_29"]["file"]                
+                common.addVideoLink("UTF-8",itemName, "item_id="+ itemId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=about)
+            else:
+                #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
+                common.addDir('UTF-8', itemName, "seriesId=" + itemId , self.MODES.GET_SEASONS_LIST, elementId=__NAME__)
+            
    
         
     def getSeasons(self, url):
@@ -92,9 +101,10 @@ class manager_000003:
         
         params = common.getParams(url)
         seriesId =  str(params["seriesId"])
+       
         
+        contentType, page = common.getData("http://ws.vod.walla.co.il/ws/mobile/android/tvshow?id=" + seriesId + "&page=1&limit=10&sort=newest")
         
-        contentType, page = common.getData("http://ws.vod.walla.co.il/ws/mobile/android/tvshow?id=" + seriesId + "&page=1&limit=100&sort=newest")
         if  common.__DEBUG__ == True:
             print "WALLA tvshow API "
             print page
@@ -126,13 +136,13 @@ class manager_000003:
             episodeId = str(episode["id"])
             title = episode["title"]
             media = episode["media"]
-            about = episode["about"]
+            abstract = episode["abstract"]
             imageTypes = media["types"]
             image = imageTypes["type_29"]
             
             iconImage = "http://msc.walla.co.il/w/w-160/" + image["file"]
             
-            common.addVideoLink("UTF-8",title, "item_id="+ episodeId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=about)
+            common.addVideoLink("UTF-8",title, "item_id="+ episodeId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=abstract)
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             xbmc.executebuiltin("Container.SetViewMode(500)")
      
@@ -148,10 +158,11 @@ class manager_000003:
             print page
         resultJSON = json.loads(page)
         videoUrl = resultJSON["video_src_tv"]
+        title = resultJSON["items"]["item"]["title"]
         
         
         listItem = xbmcgui.ListItem("name", 'DefaultFolder.png', 'DefaultFolder.png', path=videoUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        listItem.setInfo(type='Video', infoLabels={ "Title": "name"})
+        listItem.setInfo(type='Video', infoLabels={ "Title": title})
         listItem.setProperty('IsPlayable', 'true')
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
         

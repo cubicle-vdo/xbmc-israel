@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 """
     Plugin for streaming video content from video.walla.co.il
@@ -7,7 +7,7 @@ import urllib, re, xbmc, xbmcplugin, xbmcaddon, os, sys
 
 ##General vars
 __plugin__ = "walla"
-__author__ = "Shai Bentin"
+__author__ = "shlomicthailand"
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
@@ -22,7 +22,9 @@ print "WALLA Main got URL=" + sys.argv[2]
 
 def CATEGORIES():
 
-    addDir('UTF-8', "����� VOD", 'http://vod.walla.co.il', 1, elementId='000003')
+    addDir('UTF-8', "ילדים", 'englishName=kids', 1, elementId='000003')
+    addDir('UTF-8', "סדרות", 'englishName=tvshows', 1, elementId='000003')
+    addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='000003')
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 
 

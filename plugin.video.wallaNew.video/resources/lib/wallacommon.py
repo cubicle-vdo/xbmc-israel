@@ -209,8 +209,10 @@ def clean(contentType, name):
          
         if isinstance(name, str):
          
-            # if contentType.lower().find('utf-8') == -1: 
-            name = name.decode('windows-1255', 'replace').encode('utf-8')
+            if contentType.lower().find('utf-8') == -1: 
+            
+                name = name.decode('windows-1255', 'replace')
+                name = name.encode('utf-8')
         elif isinstance(name, unicode):
             name = name.encode('utf-8')    
  
