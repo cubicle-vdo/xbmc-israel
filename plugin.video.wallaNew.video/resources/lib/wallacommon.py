@@ -6,67 +6,68 @@ Created on 30/04/2011
 @author: shai
 '''
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11'
+# __USERAGENT__ = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
 
 from collections import namedtuple
 
 import StorageServer
 
-import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib,xbmcaddon
+import urllib, urllib2, re, xbmc, xbmcplugin, xbmcgui, xbmcaddon, os, sys, time, cookielib, xbmcaddon
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
-__addon__       = xbmcaddon.Addon()
-__addonname__   = __addon__.getAddonInfo('name')
-__icon__        = __addon__.getAddonInfo('icon')
+__addon__ = xbmcaddon.Addon()
+__addonname__ = __addon__.getAddonInfo('name')
+__icon__ = __addon__.getAddonInfo('icon')
 sys.modules["__main__"].dbg = True
-cacheServer = StorageServer.StorageServer("plugin.video.wallaNew.video", __cachePeriod__) # (Your plugin name, Cache time in hours)
+cacheServer = StorageServer.StorageServer("plugin.video.wallaNew.video", __cachePeriod__)  # (Your plugin name, Cache time in hours)
 
 
 def enum(**enums):
         return type('Enum', (), enums)
 
 def getMatches(url, pattern):
-        contentType,page = getData(url)
-        matches=re.compile(pattern).findall(page)
-        return contentType,matches   
+        contentType, page = getData(url)
+        matches = re.compile(pattern).findall(page)
+        return contentType, matches   
 
 def getParams(arg):
-        param=[]
-        paramstring=arg
-        if len(paramstring)>=2:
-            params=arg
-            cleanedparams=params.replace('?','')
-            if (params[len(params)-1]=='/'):
-                params=params[0:len(params)-2]
-            pairsofparams=cleanedparams.split('&')
-            param={}
+        param = []
+        paramstring = arg
+        if len(paramstring) >= 2:
+            params = arg
+            cleanedparams = params.replace('?', '')
+            if (params[len(params) - 1] == '/'):
+                params = params[0:len(params) - 2]
+            pairsofparams = cleanedparams.split('&')
+            param = {}
             for i in range(len(pairsofparams)):
-                splitparams={}
-                splitparams=pairsofparams[i].split('=')
-                if (len(splitparams))==2:    
-                    param[splitparams[0]]=splitparams[1]
+                splitparams = {}
+                splitparams = pairsofparams[i].split('=')
+                if (len(splitparams)) == 2:    
+                    param[splitparams[0]] = splitparams[1]
                                 
         return param
 
 def translate(arg):
         return __language__(arg)
         
-def addDir(contentType, name,url,mode,iconimage='DefaultFolder.png',elementId='',summary='', fanart=''):
+def addDir(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', summary='', fanart=''):
         try:
-        
-            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+name+"&module="+urllib.quote_plus(elementId)
-            liz=xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
-            liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
-            if not fanart=='':
+           
+            u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name + "&module=" + urllib.quote_plus(elementId)
+            liz = xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
+            liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Plot": urllib.unquote(summary)})
+            if not fanart == '':
                 liz.setProperty("Fanart_Image", fanart)
+               
+            ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
             if __DEBUG__:
-                 print "WALLA addDir after listItem:" + clean(contentType, name)    
-            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-            if __DEBUG__:
-                print "added directory success:" + clean(contentType, name)
+                 
+                print "added directory success:" + clean(contentType, name) + " url=" + clean('utf-8',u)
             return ok
         except Exception as e:
             print "WALLA exception in addDir"
@@ -74,21 +75,21 @@ def addDir(contentType, name,url,mode,iconimage='DefaultFolder.png',elementId=''
             raise
         
 
-def addLink(contentType, name,url,iconimage='DefaultFolder.png',time='',sub=''):
-        liz=xbmcgui.ListItem(clean(contentType, name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)),"Duration":time,"Plot": urllib.unquote(sub)} )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+def addLink(contentType, name, url, iconimage='DefaultFolder.png', time='', sub=''):
+        liz = xbmcgui.ListItem(clean(contentType, name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+        liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)), "Duration":time, "Plot": urllib.unquote(sub)})
+        ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz)
         return ok
 
-def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', sum=''):
-        u = sys.argv[0] + "?url=" + urllib.quote_plus(str(url)) + "&mode=" + str(mode) + "&name=" + name+"&module="+urllib.quote_plus(elementId)
+def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', sum='',duration='0'):
+        u = sys.argv[0] + "?url=" + urllib.quote_plus(str(url)) + "&mode=" + str(mode) + "&name=" + name + "&module=" + urllib.quote_plus(elementId)
         liz = xbmcgui.ListItem(clean(contentType, name), iconImage=iconimage, thumbnailImage=iconimage)
-        liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)),"Plot": urllib.unquote(sum)})
+        liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(clean(contentType, name)),"Duration":str(duration), "Plot": urllib.unquote(sum)})
         liz.setProperty('IsPlayable', 'true')
         ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=False)
         return ok
     
-def getData(url, period = __cachePeriod__):
+def getData(url, period=__cachePeriod__):
         if __DEBUG__:
             print 'url --> ' + url
        
@@ -100,16 +101,15 @@ def getData(url, period = __cachePeriod__):
             contentType = response.headers['content-type']
             if __DEBUG__:
                 print "WALLA got content type " + contentType
-            data = response.read().replace("\n","").replace("\t","").replace("\r","")
+            data = response.read().replace("\n", "").replace("\t", "").replace("\r", "")
            
             response.close()            
             
         except:
-            if __DEBUG__:
-                errno, errstr = sys.exc_info()[:2]
-                print 'Error in getData: ' + str(errno) + ': ' + str(errstr)
-            xbmc.log('Error in getData: Unable to save cache', xbmc.LOGERROR)
-            return 'UTF-8','unavailable'
+            errno, errstr = sys.exc_info()[:2]
+            
+            xbmc.log('Error in getData: ' + str(errno) + ': ' + str(errstr), xbmc.LOGERROR)
+            return 'UTF-8', 'unavailable'
         return contentType, data
     
 def getImage(imageURL, siteName):
@@ -117,7 +117,7 @@ def getImage(imageURL, siteName):
         cacheDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', siteName))
         cachePath = xbmc.translatePath(os.path.join(cacheDir, imageName))
         if not os.path.exists(cachePath):
-            ## fetch the image and store it in the cache path
+            # # fetch the image and store it in the cache path
             if not os.path.exists(cacheDir):
                 os.makedirs(cacheDir)
             urllib.urlretrieve(imageURL, cachePath)
@@ -135,41 +135,41 @@ def getCookie(url, cookiename):
             name = response.headers[header]
             if __DEBUG__:
                 print 'Cookie --> %s' % (name)
-        data = response.read().replace("\n","").replace("\t","").replace("\r","")        
+        data = response.read().replace("\n", "").replace("\t", "").replace("\r", "")        
         response.close()
         return data, "ERROR"
         
 def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"'):
     print "modulename=" + modulename
     print "inUrl=" + inUrl
-    Episode = namedtuple('Episode', ['content','title','url','iconImage','time','epiDetails'])    
+    Episode = namedtuple('Episode', ['content', 'title', 'url', 'iconImage', 'time', 'epiDetails'])    
     
     cacheKey = modulename + "_" + inUrl + "_episodes"
-    #cacheServer.delete(modulename + "%")
-    #cacheServer.cacheClean(True)
+    # cacheServer.delete(modulename + "%")
+    # cacheServer.cacheClean(True)
     episodes = cacheServer.get(cacheKey)
     
     
     if episodes:
-        episodes  = eval(episodes)
+        episodes = eval(episodes)
         print "Found " + str(len(episodes)) + " episodes in cache"
     
         for episode in episodes:
-            addLink(episode.content,episode.title, episode.url, episode.iconImage, episode.time, episode.epiDetails)
+            addLink(episode.content, episode.title, episode.url, episode.iconImage, episode.time, episode.epiDetails)
                
     else:
         episodes = []
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,"First time loading episodes please wait...", 5000, __icon__))
-        ## get all the rest of the episodes
-        contentType,mainPage = getData(inUrl)
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, "First time loading episodes please wait...", 5000, __icon__))
+        # # get all the rest of the episodes
+        contentType, mainPage = getData(inUrl)
         if patternFeatured != '':
             urls = re.compile(patternFeatured).findall(mainPage)
             urls += re.compile(pattern).findall(mainPage)
         else:
             urls = re.compile(pattern).findall(mainPage)
-        ## for each episode we get the episode page to parse all the info from
+        # # for each episode we get the episode page to parse all the info from
         for path in urls:
-            contentType,page = getData(urlbase + path + '/@@/video/flv_pl')
+            contentType, page = getData(urlbase + path + '/@@/video/flv_pl')
             titleMatches = re.compile('<title>(.*?)</title>(.*)<subtitle>(.*?)<').findall(page)
             if (len(titleMatches)) == 1:
                 title = titleMatches[0][0]
@@ -186,33 +186,40 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
                 else:
                     time = '00:00'
                 url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
-                epi1 = Episode(content=contentType,title=title,url=url,iconImage=iconImage,time=str(time),epiDetails=epiDetails)
+                epi1 = Episode(content=contentType, title=title, url=url, iconImage=iconImage, time=str(time), epiDetails=epiDetails)
                 episodes.append(epi1)
-                addLink(contentType,title, url, iconImage, str(time), epiDetails)
+                addLink(contentType, title, url, iconImage, str(time), epiDetails)
                 
     
-        #save to cache
-        cacheServer.set(cacheKey,repr(episodes))
+        # save to cache
+        cacheServer.set(cacheKey, repr(episodes))
     
         nextPage = re.compile(patternmore).findall(mainPage)
         if (len(nextPage)) > 0:
-            addDir('UTF-8',__language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
+            addDir('UTF-8', __language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
         xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
+def convertToUTF(name):
+    return clean('utf-8',name)
 
 def clean(contentType, name):
-    
+        
     try:
-        if (len(name)==0):
-            return "No name found" 
-        if contentType.lower().find('utf-8') == -1:
-            name = name.decode('windows-1255', 'replace').encode('utf-8')
-           
+         
+        if isinstance(name, str):
+         
+            if contentType.lower().find('utf-8') == -1: 
+            
+                name = name.decode('windows-1255', 'replace')
+                name = name.encode('utf-8')
+        elif isinstance(name, unicode):
+            name = name.encode('utf-8')    
+ 
     except Exception as e:
-        print 'Error in clean: '
-        print e
-        raise e
-    if (name):
-        cleanName = name.replace("&quot;","\"").replace("&#39;", "'").replace("&nbsp;", " ")
-        return  cleanName
-    return "N/A" 
+         print 'Error in clean: '
+         print e
+         raise e
+#     if (name):
+#         cleanName = name.replace("&quot;", "\"").replace("&#39;", "'").replace("&nbsp;", " ")
+#         return  cleanName
+    return name 
