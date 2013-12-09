@@ -13,19 +13,21 @@ __language__ = __settings__.getLocalizedString
 __BASE_URL__ = 'http://ws.vod.walla.co.il/ws/mobile/android/main'
 __NAME__ = '000003'
 
+__IMAGES_BASE__ = "http://msc.walla.co.il/w/w-160/"
+
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,os,sys
 import wallacommon as common
 
 class manager_000003:
     
     def __init__(self):
-        self.MODES = common.enum(PLAY_MODE=10,GET_GENRE=1, GET_SERIES_LIST=2, GET_SEASONS_LIST=5,GET_EPISODES_LIST=3, GET_MOVIE_LIST=4)
+        self.MODES = common.enum(PLAY_MODE=10,GET_GENRE=1, GET_GENRE_ITEMS=2, GET_SEASONS_LIST=5,GET_EPISODES_LIST=3, GET_MOVIE_LIST=4)
         
     def work(self, mode, url='', name='', page=''):
 
         if (mode==self.MODES.GET_GENRE):
             self.getGenere(url)
-        elif (mode==self.MODES.GET_SERIES_LIST):
+        elif (mode==self.MODES.GET_GENRE_ITEMS):
             self.getGenereItems(url)
         elif (mode==self.MODES.GET_SEASONS_LIST):
             self.getSeasons(url)
@@ -58,7 +60,7 @@ class manager_000003:
                     
                     dirName = genreName + " (" + amount + ")"
                     #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-                    common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_SERIES_LIST, elementId=__NAME__)
+                    common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_GENRE_ITEMS, elementId=__NAME__)
             
             
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
@@ -70,7 +72,7 @@ class manager_000003:
         genreId =  params["genreId"]
         genre = params["genre"]
         
-        contentType, page = common.getData('http://ws.vod.walla.co.il/ws/mobile/android/genre/'+ genre + "?id=" + genreId + "&page=1&limit=100&sort=newest")
+        contentType, page = common.getData('http://ws.vod.walla.co.il/ws/mobile/android/genre/'+ genre + "?id=" + genreId + "&page=1&limit=500&sort=newest")
         if  common.__DEBUG__ == True:
             print "WALLA genre API "
             print page
@@ -85,12 +87,13 @@ class manager_000003:
             typeName = series["typeName"]
             about = series["about"]
             
+            iconImage = __IMAGES_BASE__ + media["types"]["type_29"]["file"] 
             if typeName == "movie":
-                iconImage = "http://msc.walla.co.il/w/w-160/" + media["types"]["type_29"]["file"]                
+                               
                 common.addVideoLink("UTF-8",itemName, "item_id="+ itemId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=about)
             else:
-                #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-                common.addDir('UTF-8', itemName, "seriesId=" + itemId , self.MODES.GET_SEASONS_LIST, elementId=__NAME__)
+               
+                common.addDir('UTF-8', itemName, "seriesId=" + itemId , self.MODES.GET_SEASONS_LIST, iconImage, elementId=__NAME__)
             
    
         
@@ -140,9 +143,15 @@ class manager_000003:
             imageTypes = media["types"]
             image = imageTypes["type_29"]
             
-            iconImage = "http://msc.walla.co.il/w/w-160/" + image["file"]
+            summary = ""
+            if episode.has_key("abstract"):
+                summary = episode["abstract"]
+            elif episode.has_key("about"):
+                summary = episode["about"]
             
-            common.addVideoLink("UTF-8",title, "item_id="+ episodeId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=abstract)
+            iconImage = __IMAGES_BASE__ + image["file"]
+            
+            common.addVideoLink("UTF-8",title, "item_id="+ episodeId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=summary)
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             xbmc.executebuiltin("Container.SetViewMode(500)")
      
@@ -161,42 +170,11 @@ class manager_000003:
         title = resultJSON["items"]["item"]["title"]
         
         
-        listItem = xbmcgui.ListItem("name", 'DefaultFolder.png', 'DefaultFolder.png', path=videoUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        listItem = xbmcgui.ListItem(title, 'DefaultFolder.png', 'DefaultFolder.png', path=videoUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         listItem.setInfo(type='Video', infoLabels={ "Title": title})
         listItem.setProperty('IsPlayable', 'true')
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
         
-      
-          
-#         contentType,main_page = common.getData(url)
-#         episodeList = re.compile('<ol class="episode-list".*?</ol>').findall(main_page)
-#         episodes = re.compile('data-json.*?tooltipTitle&quot;:&quot;(.*?)&.*?:&quot;(.*?)&quot;.*?:&quot;(.*?)&.*?href="(.*?)"').findall(episodeList[0])
-#         for title, summary, img, url in episodes:
-#             episodeNum = re.compile('(\d.*?)/').findall(url)[0]
-#             contentType, page = common.getData('http://video2.walla.co.il/?w=null/null/' + episodeNum + '/@@/video/flv_pl')
-#             titleMatches = re.compile('<title>(.*?)</title>(.*)<subtitle>(.*?)<').findall(page)
-#             if (len(titleMatches)) == 1:
-#                 title = titleMatches[0][0]
-#                 images = re.compile('<preview_pic>(.*?)</preview_pic>').findall(page)
-#                 if (len(images)) >= 1:
-#                     iconImage = images[0]
-#                 details = re.compile('<synopsis>(.*?)</synopsis>').findall(page)
-#                 if (len(details)) > 0:
-#                     epiDetails = details[0]
-#                 
-#                 timeInSeconds = re.compile('<duration>(.*?)</duration>').findall(page)
-#                 if not timeInSeconds == None and not len(timeInSeconds[0]) <= 0:
-#                     time = int(timeInSeconds[0]) / 60
-#                 else:
-#                     time = '00:00'
-#                 url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
-#                 common.addLink(contentType,title, url, iconImage, str(time), epiDetails)
-#         nextPage = re.compile('<a class="in_blk p_r" href="(.*?)" style=""></a>').findall(main_page)
-#         if (len(nextPage)) > 0:
-#             addDir('UTF-8',__language__(30001), __BASE_URL__ + nextPage[0], self.MODES.GET_EPISODES_LIST, 'DefaultFolder.png', __NAME__)
-       
-    
-    
     def getMainJSON(self):
 
         contentType, page = common.getData('http://ws.vod.walla.co.il/ws/mobile/android/toolbar')

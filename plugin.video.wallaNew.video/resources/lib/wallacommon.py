@@ -106,10 +106,9 @@ def getData(url, period=__cachePeriod__):
             response.close()            
             
         except:
-            if __DEBUG__:
-                errno, errstr = sys.exc_info()[:2]
-                print 'Error in getData: ' + str(errno) + ': ' + str(errstr)
-            xbmc.log('Error in getData: Unable to save cache', xbmc.LOGERROR)
+            errno, errstr = sys.exc_info()[:2]
+            
+            xbmc.log('Error in getData: ' + str(errno) + ': ' + str(errstr), xbmc.LOGERROR)
             return 'UTF-8', 'unavailable'
         return contentType, data
     
