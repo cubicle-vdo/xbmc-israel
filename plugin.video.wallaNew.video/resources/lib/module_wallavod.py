@@ -155,7 +155,7 @@ class manager_wallavod:
             episodeId = str(episode["id"])
             title = episode["title"]
             media = episode["media"]
-            abstract = episode["abstract"]
+            
             imageTypes = media["types"]
             image = imageTypes["type_29"]
             
