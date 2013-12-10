@@ -35,7 +35,7 @@ def OPEN_URL(url):
 
 
 try:
-    link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
+    link=OPEN_URL('http://goo.gl/A1HFEi')
     match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
     DOMAIN=match[0]
 except:
