@@ -236,7 +236,7 @@ def sdarot_movie(url):
         
         vid_time = str(prms["time"])
         print "Time: "+ vid_time +"\n"
-        token = str(prms["token"])
+        token = str(prms["token_sd"])
         print "Token: "+token +"\n"        
     
     except Exception as e:
