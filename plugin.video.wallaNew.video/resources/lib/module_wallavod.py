@@ -183,6 +183,16 @@ class manager_wallavod:
             print page
         resultJSON = json.loads(page)
         item = resultJSON["items"]["item"]
+        subtitlesUrl = None
+        if item.has_key("subtitles") :
+            
+            subtitles = item["subtitles"]["subtitle"]
+            firstitem = subtitles[0]
+            print firstitem
+            subtitlesUrl = firstitem["src"]
+            
+            print "subtitleUrl=" + subtitlesUrl
+            
         #videoUrl = resultJSON["video_src_ipad"]
         videoSrc = item["src"]
         videoUrl = "rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://isc.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://vod.walla.co.il playpath=" + videoSrc
@@ -194,6 +204,18 @@ class manager_wallavod:
         listItem.setInfo(type='Video', infoLabels={ "Title": title,"Duration":str(duration)})
         listItem.setProperty('IsPlayable', 'true')
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+        
+        if subtitlesUrl:
+            self.downloadSubtitles(subtitlesUrl)
+            
+    
+    def downloadSubtitles(self,subtitlesUrl):
+        print "download subtitles " + subtitlesUrl
+        while not xbmc.Player().isPlaying():
+            xbmc.sleep(10) #wait until video is being played
+        xbmc.Player().setSubtitles(subtitlesUrl);
+        #response = urllib.urlretrieve (url, "c:/subtitles.srt")
+        #html = response.read()
         
     def getMainJSON(self):
 
