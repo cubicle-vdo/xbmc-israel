@@ -1,4 +1,7 @@
 
+[B]Version 1.0.3[/B]
+-faster loading 
+-bug fixes.
 [B]Version 1.0.1[/B]
 -two more hebrew menus
 

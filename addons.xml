@@ -214,7 +214,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.2" provider-name="Hillel">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.3" provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="0.0.1"/>
