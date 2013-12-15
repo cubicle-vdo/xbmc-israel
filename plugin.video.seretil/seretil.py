@@ -7,11 +7,18 @@ import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
 from xml.sax import saxutils as su
+import StorageServer
+
 
 ##General vars
-__plugin__ = "www.seretil.me"
+__plugin__ = 'plugin.video.seretil'
 __author__ = "Hillel"
-__settings__ = xbmcaddon.Addon(id='plugin.video.seretil')
+__settings__ = xbmcaddon.Addon(id=__plugin__)
+__language__ = __settings__.getLocalizedString
+__cachePeriod__ = __settings__.getSetting("cache")
+__addon__ = xbmcaddon.Addon()
+__addonname__ = __addon__.getAddonInfo('name')
+cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
 
 
 
@@ -51,7 +58,7 @@ try:
 except:
         pass
     
-     
+ 
 def addLink(name,url,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -65,7 +72,11 @@ def addDir(name,url,mode,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+        if mode==212:
+                liz.setProperty("IsPlayable","true")
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        else:
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
     
 def INDEXSratim(url):
@@ -74,7 +85,6 @@ def INDEXSratim(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        #<li id="menu-item-35114" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-35114"><a href="http://seretil.me/category/%d7%a7%d7%95%d7%9e%d7%93%d7%99%d7%94/">קומדיה</a></li>
         match=re.compile('<li id=.*?"><a href="(.*?)">(.*?)</a>').findall(link)
         for url,name in match:
                 if name!="סדרות" :
@@ -106,41 +116,32 @@ def SpecialPage(url):
 
 def ResolverLink(url):
         url=urllib.unquote_plus(url)
-        print " url ========" + str ( url)
-        link=urlresolver.HostedMediaFile(url=url).resolve()
-        print link
-        addLink("Play",link,'')
+        url = urlresolver.resolve(url)
+        listitem = xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+        url=urllib.unquote_plus(url)
+        listitem.setPath(url)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
         
 def LinksPage(url):
-        print(url)
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        #<p><a href="http://www.fileflyer.com/view/TGCZAGG36ZP7Cn" class="autohyperlink" title="http://www.fileflyer.com/view/TGCZAGG36ZP7Cn" target="_blank" rel="nofollow">www.fileflyer.com</a></p>
-      #  print(link)
         sources =[]
         match=re.compile('<p><a href="(.*?)"').findall(link)
         for newurl in match:
             sources.append(urlresolver.HostedMediaFile(newurl))
          
-        i=1
-        for source in sources:
-            if source :
-                 try :
-                     stream_url = source.resolve()
-                     addLink("link " + str(i) ,stream_url,"")
-                     i=i+1    
-                 except:pass
-            else:
-                print("not playble")
-                url=None
+        for item in sources:
+                new_url = item.get_url()
+                new_name=item.get_host()
+                if new_name:
+                        addDir(new_name,new_url,212,'')
 
-#<h3 id="title"><a href="http://www.10q.tv/load/ahims_lnshk/aavnha_1/frk_02/141-1-0-1808">פרק 02</a> </h3>
+
 def INDEXchooseSeret(url):
-        #url=urllib.unquote_plus(url)
-        print(url)
+        print url
         url2=url
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -148,44 +149,126 @@ def INDEXchooseSeret(url):
         response = urllib2.urlopen(req,timeout=50)
         link=response.read()
         link2=link
-        response.close()    
-    #    print(link)
-        #<h2 class="title"><a href="http://seretil.me/%d7%98%d7%a0%d7%92%d7%95-%d7%95%d7%a7%d7%90%d7%a9-1989-%d7%aa%d7%a8%d7%92%d7%95%d7%9d-%d7%9e%d7%95%d7%91%d7%a0%d7%94/" title="Permalink to טנגו וקאש (1989) תרגום מובנה לצפייה ישירה" rel="bookmark">טנגו וקאש (1989) תרגום מובנה לצפייה ישירה</a></h2>
-
-        match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
-        for url,name  in match:
-                req = urllib2.Request(url)
-                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                response = urllib2.urlopen(req)
-                link3=response.read()
-                response.close()  
-                image=None
-                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
-                print ("images====" +str(images))
-                if images==[]:
-                    addDir(name,url,5,"")
-                    print (name,"url= "+ url +"special one !!!!!!!")
-                else:
-                    addDir(name,url,5,str(images[0]))
-        now=re.compile('class=\'current\'>(.*?)<').findall(link2)
-        next_page=re.compile('<span class=.?pages.?>(.*?) מתוך').findall(link2)
-        int_now_page =int(str(now[0])) +1
-        url2 = url2[:-7]
-        if url2[len(url2)-1]=='p' :
-            url2= url2[:-1]
-        url2=url2+'page/'+ str(int_now_page)+'/'
-        print("url the next ",url2)
-        addDir("עוד תוצאות",url2,4,"")
-        addDir("חזרה לתפריט ראשי",'www.stam.com',None,"");
+        response.close()  
+        cacheServer.table_name="seretilINDEXchooseSeret"
+        cacheKey=str(url)
+        movies=cacheServer.get(cacheKey)
+        
+        if  not movies:
+                now=re.compile('class=\'current\'>(.*?)<').findall(link2)
+                now_page =int(str(now[0]))
+                movies=[]
+                lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
+                lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
+                i= now_page
+                stop=False
+                dp = xbmcgui . DialogProgress ( )
+		dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
+                while i <= int(lastpage) and not stop  :
+                        
+                        percent= ((i%30)*3.44)
+                        dp.update(int(percent),"בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות","החילזון מהשפן")
+                        link=OPEN_URL(url2)
+                        match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
+                        
+                        for url,name  in match:
+                                '''req = urllib2.Request(url)
+                                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+                                response = urllib2.urlopen(req)
+                                link3=response.read()
+                                response.close()  
+                                image=None
+                                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
+                                if images==[]:'''
+                                        
+                                movies.append((name,url))
+                                addDir(name,url,5,"")
+                                    
+                                '''else:
+                                    movies.append((name,url,images[0]))    
+                                    addDir(name,url,5,str(images[0]))'''
+                        i+=1
+                        url2 = url2[:-7]
+                        if url2[len(url2)-1]=='p' :
+                                url2= url2[:-1]
+                        elif url2[len(url2)-2]=='p' :
+                               url2= url2[:-2]
+                               
+                        url2=url2+'page/'+str(i)+'/'
+                        if (i%30 ==0):
+                                stop=True
+                                addDir("תוצאות נוספות",url2,4,"")
+                                movies.append(("more",url2))
+                                
+                                
+                                                        
+                dp.close()
+                cacheServer.set(cacheKey, repr(movies))
+                
+        else:
+           movies= eval (movies)
+        
+           for item in movies:
+                    if item[0]=="more":
+                            addDir("תוצאות נוספות",item[1],4,"")
+                    else: 
+                            addDir(item[0],item[1],5,"")
+        try:                    
+                xbmc.executebuiltin('Container.SetViewMode(51)')
+        except:
+                pass
                
-def CATEGORIES():
-
+def CATEGORIES():   
+    mes()    
     INDEXSratim('http://seretil.me/')
     addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
     addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
         
-   
 
+def mes():
+
+        
+	try:
+		link=OPEN_URL('http://goo.gl/cpGAcA')
+		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
+		if not r:
+			return
+			
+		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
+		if not match[0]:
+			return
+			
+		version = __settings__.getAddonInfo('version')
+		
+		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), __plugin__)
+		if not os.path.exists(dire):
+			os.makedirs(dire)
+		
+		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
+		if (os.path.isfile(aSeenFile)): 
+			f = open(aSeenFile, 'r') 
+			content = f.read() 
+			f.close() 
+			if content == match[0] :
+				return
+
+		f = open(aSeenFile, 'w') 
+		f.write(match[0]) 
+		f.close() 
+
+		dp = xbmcgui . Dialog ( )
+		dp.ok("UPDATES", match[0])
+	except:
+		pass
+
+def OPEN_URL(url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req,timeout=100)
+    link=response.read()
+    response.close()
+    return link
+     
 print "checkMode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
@@ -196,7 +279,6 @@ elif mode==4:
     INDEXchooseSeret(url)
      
 elif mode==5:
-     print ""+url
      LinksPage(url)
 elif mode==211:
          SpecialPage(url)
@@ -204,4 +286,4 @@ elif mode==212:
         ResolverLink(url)
 
 
-xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
+xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
