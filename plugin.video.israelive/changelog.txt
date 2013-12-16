@@ -1,3 +1,5 @@
+v1.0.4
+-get "now playing" program for more channels
 v1.0.2
 -update teleduent zip 
 -ready for gotham
