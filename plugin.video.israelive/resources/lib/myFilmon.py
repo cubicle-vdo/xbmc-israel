@@ -1,4 +1,4 @@
-import urllib,re,datetime,sys
+import urllib, datetime, json
 import requests
 
 def get_params(url):
@@ -35,62 +35,31 @@ def GetUrlStream(url):
 		referrerCh = int(params["referrerch"])
 	except:
 		referrerCh = None
-		pass
 	try:      
 		ChName = urllib.unquote_plus(params["chname"])
 	except:
 		ChName = None
-		pass
 		
 	return GetChannelStream(chNum, referrerCh, ChName)
 
 def GetChannelStream(chNum, referrerCh=None, ChName=None):
 	if referrerCh == None:
-		html = GetChannelHtml(chNum)
-		match = re.compile('"title":"(.+?)"').findall(html)
-		try:        
-			name = match[0]
-		except:
-			print '--------- Playing Error: there is no channel with id="{0}" ---------'.format(chNum)
-			return '',''
-			
-		fullName = "{0} ".format(name.replace('\\',''))
-		match = re.compile('"streamName":"(.+?)"').findall(html)
-		playPath = match[0]
-		playPath = playPath.replace('\\','').replace('low','high')
-
-		match = re.compile('"server_time":(.*?)}').findall(html)
-		server_time = match[0]
-	
-		match = re.compile('"startdatetime":"(.*?)","enddatetime":"(.*?)"(.+?)"programme_name":"(.*?)"').findall(html)
-
-		for startdatetime, enddatetime, ignore, programmename in match:
-			if (int(server_time) > int(startdatetime) and int(server_time) < int(enddatetime)):
-				startdatetime = datetime.datetime.fromtimestamp(int(startdatetime)).strftime('%H:%M')
-				enddatetime = datetime.datetime.fromtimestamp(int(enddatetime)).strftime('%H:%M')
-				programmename = '{0} [{1}-{2}]'.format(programmename, startdatetime, enddatetime)
-				fullName = "[B]{0}[/B]- {1} ".format(fullName, programmename)
-				break
-				
+		prms = GetChannelJson(chNum)
 	else:
-		html = GetChannelHtml(referrerCh)
-		fullName = name = "{0} ".format(ChName.replace('\\',''))
-		playPath = '{0}.high.stream'.format(chNum)
-	
-	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, name)
-	
-	match = re.compile('"serverURL":"(.+?)"').findall(html)
-	url = match[0]
-	url = url.replace('\\','')
-
-	i = url.find('/', 7)
-	app = url[i+1:]
-
-	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
-
-	fullUrl = "{0} app={1} playpath={2} swfUrl={3} swfVfy=true live=true".format(url, app, playPath, swfUrl)
-	
-	return fullUrl, fullName
+		prms = GetChannelJson(referrerCh)
+		
+	if prms == None:
+		print '--------- Playing Error: there is no channel with id="{0}" ---------'.format(chNum)
+		return None,None,None
+		
+	channelName, programmename, description, iconimage, streamUrl, startdatetime, enddatetime = GetNowPlaying(prms, chNum, referrerCh, ChName)
+	fullName = " [B]{0}[/B]".format(channelName)
+	if programmename <> "":
+		fullName = "{0} - {1}".format(fullName,  programmename)
+	if startdatetime > 0 and enddatetime > 0:
+		fullName = '{0} [{1}-{2}]'.format(fullName, datetime.datetime.fromtimestamp(startdatetime).strftime('%H:%M'), datetime.datetime.fromtimestamp(enddatetime).strftime('%H:%M'))
+	print '--------- Playing: channel="{0}", name="{1}". ----------'.format(chNum, channelName)
+	return streamUrl, fullName, iconimage
 
 def GetChannelHtml(chNum):
 	url1 = 'http://www.filmon.com/tv/htmlmain'
@@ -104,3 +73,44 @@ def GetChannelHtml(chNum):
 
 	return response.text
 	
+def GetChannelJson(chNum):
+	html = GetChannelHtml(chNum)
+	resultJSON = json.loads(html)
+	if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
+		return None
+	return resultJSON[0]
+	
+def GetNowPlaying(prms, chNum, referrerCh=None, ChName=None):
+	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
+	programmename = ""
+	description = ""
+	startdatetime = 0
+	enddatetime = 0
+	
+	if referrerCh <> None:
+		channelName = ChName
+		playPath = '{0}.high.stream'.format(chNum)
+	else:
+		channelName = prms["title"]
+
+		if not prms.has_key("now_playing") or len(prms["now_playing"]) < 1:
+			if prms.has_key("description"):
+				description = prms["description"]
+		else:
+			now_playing = prms["now_playing"]
+			startdatetime = int(prms["now_playing"]["startdatetime"])
+			enddatetime = int(prms["now_playing"]["enddatetime"])
+			description = prms["now_playing"]["programme_description"]
+			programmename = prms["now_playing"]["programme_name"]
+
+		playPath = prms["streamName"].replace('low','high')
+	
+	url = prms["serverURL"]
+
+	i = url.find('/', 7)
+	app = url[i+1:]
+
+	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
+	streamUrl = "{0} app={1} playpath={2} swfUrl={3} swfVfy=true live=true".format(url, app, playPath, swfUrl)
+	
+	return channelName, programmename, description, iconimage, streamUrl, startdatetime, enddatetime
