@@ -75,7 +75,11 @@ def ListLive(url):
         #setView('tvshows', 'default')
 
 def play_Filmon(url):
-    direct,fullName = myFilmon.GetUrlStream(url)
+    direct, fullName, iconimage = myFilmon.GetUrlStream(url)
+    if direct == None:
+    	return
+    if (iconimage == None):
+    	iconimage = "DefaultVideo.png"
     playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
     playlist.clear()
     liz = xbmcgui.ListItem(fullName, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
