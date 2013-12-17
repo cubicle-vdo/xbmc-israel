@@ -172,6 +172,12 @@ class manager_wallavod:
             xbmc.executebuiltin("Container.SetViewMode(500)")
      
     def playEpisode(self,url):
+        
+        try:
+            #report to google about use of the addon
+            contentType, jsonString = common.getData("http://goo.gl/saJsOc")        
+        except:
+            pass
          
         params = common.getParams(url)
         itemId =  str(params["item_id"])

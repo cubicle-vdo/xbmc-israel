@@ -1,0 +1,2 @@
+[B]Version 2.1.0[/B]
+- Added statistics for addon usage
