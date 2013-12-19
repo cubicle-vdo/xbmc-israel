@@ -1,5 +1,11 @@
-import urllib, datetime, json
-import requests
+import sys, datetime
+import urllib, urllib2
+if sys.version_info >=  (2, 7):
+	import json as _json
+else:
+	import simplejson as _json
+
+UA = 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0'
 
 def get_params(url):
 	param = []
@@ -61,21 +67,41 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None):
 	print '--------- Playing: channel="{0}", name="{1}". ----------'.format(chNum, channelName)
 	return streamUrl, fullName, iconimage
 
+def OpenURL(url, headers={}, user_data={}, justCookie=False):
+	if user_data:
+		user_data = urllib.urlencode(user_data)
+		req = urllib2.Request(url, user_data)
+	else:
+		req = urllib2.Request(url)
+	
+	req.add_header('User-Agent', UA)
+	for k, v in headers.items():
+		req.add_header(k, v)
+	
+	response = urllib2.urlopen(req)
+	link = response.read()
+	response.close()
+
+	if justCookie == True:
+		if response.info().has_key("Set-Cookie"):
+			return response.info()['Set-Cookie']
+		return None
+	
+	return link
+	
 def GetChannelHtml(chNum):
 	url1 = 'http://www.filmon.com/tv/htmlmain'
 	url2 = 'http://www.filmon.com/ajax/getChannelInfo'
+	
+	cookie = OpenURL(url1, justCookie=True)
+	headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
 	user_data = {'channel_id': chNum}
-	headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0', 'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive'}
 
-	with requests.session() as s:
-		s.get(url1)
-		response = s.post(url2, data = user_data, headers = headers)
-
-	return response.text
+	return OpenURL(url2, headers, user_data)
 	
 def GetChannelJson(chNum):
 	html = GetChannelHtml(chNum)
-	resultJSON = json.loads(html)
+	resultJSON = _json.loads(html)
 	if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
 		return None
 	return resultJSON[0]
