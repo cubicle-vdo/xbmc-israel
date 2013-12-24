@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,base64
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
 
@@ -23,11 +23,10 @@ def CATEGORIES():
         addDir('חדשות הספורט','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3968&page=',2,'http://www.nrg.co.il/images/archive/300x225/631/730.jpg','1')
         addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=2770&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
         addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
-        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4948&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')
-        addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        setView('movies', 'default') 
+        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4948&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')        
+        addDir('LIVE SPORTS','no url',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRXXYDnees25Hwhbt2CRWlDuH1E6XTE01_8Uv94E3-mop_7isfM','')
+        setView('movies', 'default')
+        
        
        
        
@@ -56,7 +55,8 @@ def  list_videos(url,page):
                 page=page+ 1
                 url=url+"page="
                 list_videos(url,page)
-                
+        setView('movies', 'default')
+        
 def play_video(url,name,iconimage):       
         link=OPEN_URL(url)
         clipid=re.compile('clipid=(.*?)&Width',re.M+re.I+re.S).findall(link)
@@ -70,12 +70,10 @@ def play_video(url,name,iconimage):
         playlist.clear()
         liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title":name} )
-        liz.setProperty("IsPlayable","true")
-        playlist.add(direct,liz)
+        liz.setPath(direct)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
         
         
-        if not xbmc.Player().isPlayingVideo():
-                xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
         
 def ligat_al():
     link = OPEN_URL('http://svc.one.co.il/Cat/Video/Reviews.aspx?c=28')
@@ -88,6 +86,7 @@ def ligat_al():
             url='http://svc.one.co.il'+url
             image='http://images.one.co.il/Images/Teams/Logos'+image
             addDir(name,url,4,image,'al')
+    setView('movies', 'default')
 
 def one_videopage(url,description):
         if description!='al' :
@@ -114,6 +113,8 @@ def one_videopage(url,description):
                 current+=1
                 addDir("[COLOR yellow]לעמוד הבא[/COLOR]",url,4,'',str(current))
         addDir("[COLOR blue]חזרה לראשי [/COLOR]",'',None,'','')
+
+        setView('movies', 'default')
                 
 
 def play_one(name,url,iconimage,description):
@@ -128,15 +129,14 @@ def play_one(name,url,iconimage,description):
         playlist.clear()
         liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title":name} )
-        liz.setProperty("IsPlayable","true")
+        #liz.setProperty("IsPlayable","true")
+        
         for item in direct:
                 if item.find("ds") ==-1 :
                         if description=='True':
                                 if item.find("HD")>0 :
-                                     #addLink(name,item,iconimage,'')
-                                     playlist.add(item,liz)      
-                                     if not xbmc.Player().isPlayingVideo():
-                                        xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
+                                     liz.setPath(item)
+                                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
                                 
                                         
                         else:
@@ -198,6 +198,7 @@ def addDir(name,url,mode,iconimage,description):
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
         if mode==3 or mode==5:
+                liz.setProperty("IsPlayable","true")
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         else:
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -254,8 +255,7 @@ def Announcements():
         #Announcement Notifier from xml file
         
         try:
-              link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sportsisarel.xml')
-              # link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
+              link=OPEN_URL('http://goo.gl/ylPukV')
 
         except:
                 link='nill'
@@ -268,6 +268,28 @@ def Announcements():
 
 
 
+
+def VIPList():
+        url=base64.b64decode('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
+        link=OPEN_URL(url)
+        link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
+        match=re.compile('<title>([^<]+)</title.+?link>(.+?)</link.+?thumbnail>([^<]+)</thumbnail>').findall(link)
+        for name,url,thumb in sorted(match):
+                if not'NHL' in name   and not 'Non' in name:
+                        if not '</sublink>' in url:
+                            addLink(name,url,thumb,'')
+                        else:
+                              links=re.compile('<sublink>(.*?)</sublink>').findall(url)
+                              for link in links:
+                                      addLink(name,link,thumb,'')
+                              
+                
+
+def LIVE():
+        addDir('[COLOR yellow]MASHUP SPORTS [/COLOR]','no url',9,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQd0c329OPCzFrv2uRgi9PnO-VUqnOmpySNjZ81mnuzptUDaERj','')
+        addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
                
 params=get_params()
 url=None
@@ -318,6 +340,9 @@ elif mode==5:
         play_one(name,url,iconimage,description)
 elif mode==6:
         ligat_al()
-       
+elif mode==8:
+        LIVE()
+elif mode==9:
+        VIPList()
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
