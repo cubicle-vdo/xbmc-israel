@@ -222,9 +222,13 @@ def gozlan_video_page(url):
         media_url=re.compile('iframe src="http://anonymouse.org/cgi-bin/anon-www.cgi/(.*?)"',re.M+re.I+re.S).findall(page)[0]
 
         print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
-        videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
-        if videoPlayListUrl :
+        try:
+                videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
+                
+                if videoPlayListUrl :
                         addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,videoPlayListUrl,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),base_domain+"/"+image,description)
+        except:
+                pass
         
        
     else:
