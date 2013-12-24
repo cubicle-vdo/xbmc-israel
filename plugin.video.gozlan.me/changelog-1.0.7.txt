@@ -1,3 +1,5 @@
+[B]Version 1.0.9[/B]
+-small fix for resolve part 
 [B]Version 1.0.7[/B]
 - moved to more updated urlresolver (online)
 -not showing links that cannot be played
