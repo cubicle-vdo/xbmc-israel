@@ -1,3 +1,5 @@
+[B]Version 1.0.8[/B]
+-fixed walla kids link to new addon
 [B]Version 1.0.7[/B]
 -added nick from walla
 -added merry melodies

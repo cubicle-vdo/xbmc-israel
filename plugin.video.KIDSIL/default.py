@@ -39,7 +39,7 @@ def CATEGORIES():
                 addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
                 addDir('גוניור','plugin://plugin.video.wallaNew.video/?mode=1&module=junior&name=גוניור&url=http://junior.walla.co.il/',8,'http://upload.wikimedia.org/wikipedia/he/1/19/%D7%A2%D7%A8%D7%95%D7%A5_%D7%92%27%D7%95%D7%A0%D7%99%D7%95%D7%A8.jpg','')
                 addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
-                addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=000003&name=ילדים&url=http://vod.walla.co.il/kids/',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
+                addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=wallavod&name=י%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=englishName%3dkids',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
         else:
                 addDir('[COLOR red]וואלה לא מותקן[/COLOR]','','','','')
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.hotVOD.video'):
@@ -222,16 +222,17 @@ def PlaylistsFromUser(user):
 	i=0
 	lst=[]
 	while i<TotalPlaylists:
+             try:   
 		playlistid=str(prms['feed'][u'entry'][i][u'yt$playlistId'][u'$t'])
 		title=str(prms['feed'][u'entry'][i][u'title'][u'$t'].encode('utf-8'))
 		thumb=str(prms['feed'][u'entry'][i][u'media$group'][u'media$thumbnail'][2][u'url'])
-		i=i+1
-		lst.append((playlistid,title,thumb))
+             except:
+                     pass
+	     i=i+1
+	     lst.append((playlistid,title,thumb))
 	return lst
 
-
 def ListPlaylist(playlistid): 
-#        print "playlist id:::::::::::::" + playlistid
         url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
         req = urllib2.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -370,6 +371,8 @@ def setView(content, viewType):
                 xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
                       
 def mes():
+
+        
 	try:
 		link=OPEN_URL('http://goo.gl/r6eog7')
 		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)

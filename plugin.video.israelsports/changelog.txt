@@ -1,4 +1,6 @@
 v.1.0.3
+-more channels to live
+v.1.0.3
 -added live section
 v.1.0.1
 -added premier league
