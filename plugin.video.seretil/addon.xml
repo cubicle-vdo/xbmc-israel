@@ -2,7 +2,7 @@
 <addon id="plugin.video.seretil" name="seretil" version="1.0.3" provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver" version="0.0.1"/>
+        <import addon="script.module.urlresolver" version="2.1.2"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
