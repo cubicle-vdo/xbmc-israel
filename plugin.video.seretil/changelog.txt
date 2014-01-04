@@ -1,4 +1,6 @@
 
+[B]Version 1.0.4[/B]
+-added search support
 [B]Version 1.0.3[/B]
 -faster loading 
 -bug fixes.
