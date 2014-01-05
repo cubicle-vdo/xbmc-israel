@@ -175,13 +175,15 @@ def addLink(name,url,iconimage,description):
 
 # reads  user names from my subscriptions 
 def YOUsubs(user):
-      murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?start-index=1&max-results=50'
-      link=OPEN_URL(murl)
-      match=re.compile('>Activity of:(.*?)</title>.*?http://gdata.youtube.com/feeds/api/users/(.*?).?/>').findall(link)
-        
-      for name ,user in match:
-              addDir(name.strip(),user.strip(),9,'http://img-ipad.lisisoft.com/imgmic/1/2/1253-1-youtube-kids.jpg','1')
-      setView('tvshows', 'default')
+        murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?alt=json&start-index=1&max-results=50'
+        resultJSON = json.loads(OPEN_URL(murl))
+        feed=resultJSON['feed']['entry']
+        for i in range (0, len(feed)) :
+            image=str(feed[i]['media$thumbnail']['url'])
+            name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
+            url=feed[i]['yt$channelId']['$t'].encode('utf-8')
+            addDir(name,url,9,image,'1')
+        setView('tvshows', 'default')
 #list the links from  usernames based on mash23 + improvment
 def YOUList(name,url,description):
         playlists=PlaylistsFromUser(url)
@@ -201,6 +203,7 @@ def YOUList(name,url,description):
                 YOULink(rname,nurl,thumb)
         description=int(description)+50
         addDir('[COLOR blue]            עוד תוצאות [/COLOR]',url,9,'',str(description))
+        setView('tvshows', 'default')
 
 def YOULink(mname,url,thumb):
         ok=True
