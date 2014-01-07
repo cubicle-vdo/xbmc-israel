@@ -1,3 +1,5 @@
+v1.0.6
+fixed small bug in downloading missing addons
 v1.0.5
 -Support both old and new python versions (Frodo and Gotham) by avigdor
 v1.0.4
