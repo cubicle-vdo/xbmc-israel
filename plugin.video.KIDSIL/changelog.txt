@@ -1,3 +1,6 @@
+[B]Version 1.1.0[/B]
+-supercartoon addon installed
+-returned livetv section from benny
 [B]Version 1.0.9[/B]
 -grabs the channel image
 [B]Version 1.0.8[/B]
