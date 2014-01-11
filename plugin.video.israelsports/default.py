@@ -144,11 +144,12 @@ def play_one(name,url,iconimage,description):
                                 addLink(name,item,iconimage,'')
 
 
-def OPEN_URL(url):
+def OPEN_URL(url,host=None):
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    
-    response = urllib2.urlopen(req,timeout=100)
+    if host:
+            req.add_header('HOST',host)
+    response = urllib2.urlopen(req,timeout=180)
     link=response.read()
     response.close()
     return link
@@ -317,7 +318,8 @@ def VIPList():
 
 
 def ListLive(url):
-        link=OPEN_URL(url)
+        print url
+        link=OPEN_URL(url,'www.navixtreme.com')
         link=unescape(link)
         #print link
         matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
@@ -342,23 +344,12 @@ def ListLive(url):
                 
 
 def LIVE():
-        addDir('[COLOR pink]MASHUP SPORTS LIST   עוד קישורים בפנים[/COLOR]','no url',9,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQd0c329OPCzFrv2uRgi9PnO-VUqnOmpySNjZ81mnuzptUDaERj','')
+        
         addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        VIPList()
 
-        if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
-                 addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'lo hasuve',10,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
-
-        else:
-                for i in range (1,11):
-                        name="jsc_"+str(i)
-                        addLink(name,'plugin://plugin.video.teledunet/play/'+ name,'','')
-                addLink('abu_dhabi_sports_1','plugin://plugin.video.teledunet/play/abu_dhabi_sports_1','','')
-                addLink('aljazeera_sport_1','plugin://plugin.video.teledunet/play/aljazeera_sport_1','','')
-                addLink('aljazeera_sport_2','plugin://plugin.video.teledunet/play/aljazeera_sport_2','','')
-        addDir('[COLOR red]*****PORKI"S SPORTS LIST**** below [/COLOR]' ,'stam',8,'','')
-        ListLive('http://www.navixtreme.com/playlist/125394/live_uk_tv_channels_(porkies_playlist).plx')
 
         
                
