@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #code by o2ri \ avigdor based on benny123 project in navix.
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64
 AddonID = 'plugin.video.israelive'
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
@@ -39,6 +39,10 @@ def update_view(url):
     
    
 def ListLive(url):
+
+        if 'Sport' in url:
+            VIPList()
+        
         link=OPEN_URL(url)
         link=unescape(link)
         #print link
@@ -88,6 +92,24 @@ def play_Filmon(url):
     playlist.add(direct,liz)
     if not xbmc.Player().isPlayingVideo():
                 xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
+
+
+
+def VIPList():
+        addDir('[COLOR blue]links from mash23k addon [/COLOR]','','','','')
+        url=base64.b64decode('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
+        link=OPEN_URL(url)
+        link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
+        match=re.compile('<title>([^<]+)</title.+?link>(.+?)</link.+?thumbnail>([^<]+)</thumbnail>').findall(link)
+        for name,url,thumb in sorted(match):
+                if not'NHL' in name   and not 'Non' in name:
+                        if not '</sublink>' in url:
+                            addLink(name,url,thumb,'')
+                        else:
+                              links=re.compile('<sublink>(.*?)</sublink>').findall(url)
+                              for link in links:
+                                      addLink(name,link,thumb,'')
+        addDir('[COLOR blue]end of  mash23k links [/COLOR]','','','','')
 
 
 

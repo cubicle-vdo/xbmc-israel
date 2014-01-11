@@ -1,3 +1,5 @@
+v1.0.7
+-more channels to sports section (mash)
 v1.0.6
 fixed small bug in downloading missing addons
 v1.0.5
