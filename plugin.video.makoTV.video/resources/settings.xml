@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting label="20000" type="text" id="deviceId" default=""/>
+    <setting label="20001" type="bool" id="DEBUG" default="false"/>
+	<setting label="20002" type="text" id="UUID" default=""/>
+	<setting label="20003" type="text" id="deviceAuthToken" default=""/>
+</settings>
