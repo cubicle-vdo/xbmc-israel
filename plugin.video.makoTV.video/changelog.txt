@@ -1,0 +1,6 @@
+[B}Version 1.2[/B]
+- Manage proper UUID and authentication token from appCaster's identity service
+- Support new content and better banners (higher resolution assets)
+
+[B]Version 1.0.1[/B]
+- Fix hebrew text for Frodo
