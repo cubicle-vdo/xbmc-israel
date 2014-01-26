@@ -177,6 +177,29 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="reshet.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Reshet video contents.</summary>
+        <summary lang="he">צפה בתוכניות מאפליקציית אנדרויד של רשת</summary>
+        <description lang="en">Watch contents from Reshet's android application.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה מהפלאגין של רשת לאנדרויד</description>
+        <disclaimer>This addon parse Reshets's android application, you should check Reshet's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>
+    </extension>
+</addon>
+
 <addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.5" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -289,7 +312,7 @@
 
 </addon>
 
-<addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
+<addon id="repository.xbmc-israel" name=".[COLOR blue]XBMC Israeli [/COLOR][COLOR white] Streaming Sites[/COLOR]" version="1.0.2" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
         <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
