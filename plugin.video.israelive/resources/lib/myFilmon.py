@@ -7,45 +7,8 @@ else:
 
 UA = 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0'
 
-def get_params(url):
-	param = []
-	params = url
-	if len(params) >= 2:
-		i = params.find('?')
-		if i == -1:
-			return param
-		params = params[i:]
-		cleanedparams = params.replace('?','')
-		if (params[len(params)-1] == '/'):
-			params = params[0:len(params)-2]
-		pairsofparams = cleanedparams.split('&')
-		param = {}
-		for i in range(len(pairsofparams)):
-			splitparams = {}
-			splitparams = pairsofparams[i].split('=')
-			if (len(splitparams)) == 2:
-				param[splitparams[0].lower()] = splitparams[1]
-	return param
-
 def GetUrlStream(url):
-	params=get_params(url)
-	chNum = None
-	referrerCh = None
-	ChName = None
-	
-	try:
-		chNum = urllib.unquote_plus(params["url"])
-	except:
-		pass
-	try:        
-		referrerCh = int(params["referrerch"])
-	except:
-		referrerCh = None
-	try:      
-		ChName = urllib.unquote_plus(params["chname"])
-	except:
-		ChName = None
-		
+	chNum, referrerCh, ChName = GetUrlParams(url)
 	return GetChannelStream(chNum, referrerCh, ChName)
 
 def GetChannelStream(chNum, referrerCh=None, ChName=None):
@@ -58,14 +21,75 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None):
 		print '--------- Playing Error: there is no channel with id="{0}" ---------'.format(chNum)
 		return None,None,None
 		
-	channelName, programmename, description, iconimage, streamUrl, startdatetime, enddatetime = GetNowPlaying(prms, chNum, referrerCh, ChName)
+	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName)
+
 	fullName = " [B]{0}[/B]".format(channelName)
-	if programmename <> "":
-		fullName = "{0} - {1}".format(fullName,  programmename)
-	if startdatetime > 0 and enddatetime > 0:
-		fullName = '{0} [{1}-{2}]'.format(fullName, datetime.datetime.fromtimestamp(startdatetime).strftime('%H:%M'), datetime.datetime.fromtimestamp(enddatetime).strftime('%H:%M'))
-	print '--------- Playing: channel="{0}", name="{1}". ----------'.format(chNum, channelName)
+	
+	if len(tvGuide) > 0:
+		programme = tvGuide[0]
+		fullName = "{0} - {1}".format(fullName, programme[2])
+		fullName = '{0} [{1}-{2}]'.format(fullName, datetime.datetime.fromtimestamp(programme[0]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M'))
+
+	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
 	return streamUrl, fullName, iconimage
+
+def GetChannelGuide(chNum):
+	prms = GetChannelJson(chNum)
+	if prms == None:
+		return None,None,None,None
+		
+	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum)
+	return channelName, channelDescription, iconimage, tvGuide
+	
+def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None):
+	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
+	pageUrl = "http://www.filmon.com/"
+	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
+	url = prms["serverURL"]
+	i = url.find('/', 7)
+	app = url[i+1:]
+	
+	channelName = ""
+	channelDescription = ""
+	tvGuide = []
+	
+	if referrerCh <> None:
+		channelName = ChName
+		playPath = '{0}.high.stream'.format(chNum)
+	else:
+		channelName = prms["title"].encode('utf-8')
+		if prms.has_key("description"):
+			channelDescription = prms["description"].encode('utf-8')
+		playPath = prms["streamName"].replace('low','high')
+		
+		programmename = ""
+		description = ""
+		startdatetime = 0
+		enddatetime = 0
+	
+		server_time = int(prms["server_time"])
+		if prms.has_key("tvguide") and len(prms["tvguide"]) > 1:
+			tvguide = prms["tvguide"]
+			for prm in tvguide:
+				startdatetime = int(prm["startdatetime"])
+				enddatetime = int(prm["enddatetime"])
+				if server_time > enddatetime:
+					continue
+				description = prm["programme_description"]
+				programmename = prm["programme_name"]
+				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8')))
+		elif prms.has_key("now_playing") and len(prms["now_playing"]) > 0:
+			now_playing = prms["now_playing"]
+			startdatetime = int(now_playing["startdatetime"])
+			enddatetime = int(now_playing["enddatetime"])
+			
+			if startdatetime < server_time and server_time < enddatetime:
+				description = now_playing["programme_description"]
+				programmename = now_playing["programme_name"]
+				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8')))
+	
+	streamUrl = "{0} tcUrl={0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
+	return channelName, channelDescription, iconimage, streamUrl, tvGuide
 
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
@@ -105,38 +129,43 @@ def GetChannelJson(chNum):
 	if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
 		return None
 	return resultJSON[0]
-	
-def GetNowPlaying(prms, chNum, referrerCh=None, ChName=None):
-	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
-	programmename = ""
-	description = ""
-	startdatetime = 0
-	enddatetime = 0
-	
-	if referrerCh <> None:
-		channelName = ChName
-		playPath = '{0}.high.stream'.format(chNum)
-	else:
-		channelName = prms["title"]
 
-		if not prms.has_key("now_playing") or len(prms["now_playing"]) < 1:
-			if prms.has_key("description"):
-				description = prms["description"]
-		else:
-			now_playing = prms["now_playing"]
-			startdatetime = int(prms["now_playing"]["startdatetime"])
-			enddatetime = int(prms["now_playing"]["enddatetime"])
-			description = prms["now_playing"]["programme_description"]
-			programmename = prms["now_playing"]["programme_name"]
-
-		playPath = prms["streamName"].replace('low','high')
+def get_params(url):
+	param = []
+	params = url
+	if len(params) >= 2:
+		i = params.find('?')
+		if i == -1:
+			return param
+		params = params[i:]
+		cleanedparams = params.replace('?','')
+		if (params[len(params)-1] == '/'):
+			params = params[0:len(params)-2]
+		pairsofparams = cleanedparams.split('&')
+		param = {}
+		for i in range(len(pairsofparams)):
+			splitparams = {}
+			splitparams = pairsofparams[i].split('=')
+			if (len(splitparams)) == 2:
+				param[splitparams[0].lower()] = splitparams[1]
+	return param
 	
-	url = prms["serverURL"]
-
-	i = url.find('/', 7)
-	app = url[i+1:]
-
-	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
-	streamUrl = "{0} app={1} playpath={2} swfUrl={3} swfVfy=true live=true".format(url, app, playPath, swfUrl)
+def GetUrlParams(url):
+	params=get_params(url)
+	chNum = None
+	referrerCh = None
+	ChName = None
 	
-	return channelName, programmename, description, iconimage, streamUrl, startdatetime, enddatetime
+	try:
+		chNum = urllib.unquote_plus(params["url"])
+	except:
+		pass
+	try:        
+		referrerCh = int(params["referrerch"])
+	except:
+		referrerCh = None
+	try:      
+		ChName = urllib.unquote_plus(params["chname"])
+	except:
+		ChName = None
+	return 	chNum, referrerCh, ChName

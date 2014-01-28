@@ -88,7 +88,11 @@ def addDir(name,url,mode,iconimage,description):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-        if mode==3 or mode==8 or mode==6:
+        if mode==3 or mode==8 or mode==6 or mode==99:
+                if mode==3:
+					items = []
+					items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
+					liz.addContextMenuItems(items = items)
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         elif  mode==7 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
