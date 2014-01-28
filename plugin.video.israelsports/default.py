@@ -9,6 +9,7 @@ AddonID='plugin.video.israelsports'
  
 def CATEGORIES():
         mes()
+        addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
         addDir('ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4649&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
         addDir('ליגה ספרדית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4435&page=',2,'http://blog.tapuz.co.il/tlv1/images/%7B0B4BDB70-5D9B-463A-B894-0D5762E59AA0%7D.jpg','1')
         addDir('תקצירי בארסה','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4436&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYF9lIm6fqSM3cysKy_EqnRFyDOycA8lexCn7dSqp_4Av4vw1mcA','1')
@@ -24,7 +25,7 @@ def CATEGORIES():
         addDir('חדשות הספורט','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3968&page=',2,'http://www.nrg.co.il/images/archive/300x225/631/730.jpg','1')
         addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=2770&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
         addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
-        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4948&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')        
+        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4984&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')        
         addDir('LIVE SPORTS','no url',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRXXYDnees25Hwhbt2CRWlDuH1E6XTE01_8Uv94E3-mop_7isfM','')
         setView('movies', 'default')
         
