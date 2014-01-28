@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #code by o2ri \ avigdor based on benny123 project in navix.
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime
 AddonID = 'plugin.video.israelive'
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
@@ -93,7 +93,30 @@ def play_Filmon(url):
     if not xbmc.Player().isPlayingVideo():
                 xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
 
+def FilmonChannelGuide(url):
+	chNum, referrerCh, ChName = myFilmon.GetUrlParams(url)
+	if referrerCh != None:
+		addDir('[COLOR red][B]No TV-Guide for this channel.[/B][/COLOR]', '.', 99, '', '')
+		return
+		
+	channelName, channelDescription, iconimage, tvGuide = myFilmon.GetChannelGuide(chNum)
 
+	if tvGuide == None:
+		addDir('[COLOR red][B]No TV-Guide for this channel.[/B][/COLOR]', '.', 99, '', '')
+		return
+	elif len(tvGuide) == 0:
+		addDir('[COLOR red][B]No TV-Guide for "{0}".[/B][/COLOR]'.format(channelName), '.', 99, iconimage, channelDescription)
+	else:
+		addDir('------- [B]{0} - TV-Guide[/B] -------'.format(channelName), '.', 99, iconimage, channelDescription)
+		for programme in tvGuide:
+			startdatetime=datetime.datetime.fromtimestamp(programme[0]).strftime('%d/%m %H:%M')
+			enddatetime=datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M')
+			programmename='[{0}-{1}] [B]{2}[/B]'.format(startdatetime,enddatetime,programme[2])
+			description=programme[3]
+			addDir(programmename, chNum, 99, iconimage, description)
+		
+	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+	xbmc.executebuiltin("Container.SetViewMode(504)")
 
 def VIPList():
         addDir('[COLOR blue]links from mash23k addon [/COLOR]','','','','')
@@ -167,4 +190,6 @@ elif mode==7:
 elif mode==8:
            downloader_is(url,description)      
            CATEGORIES()
+elif mode==9:   
+		   FilmonChannelGuide(url)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
