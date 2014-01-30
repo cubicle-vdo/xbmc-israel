@@ -1,3 +1,6 @@
+[B]Version 2.1.2[/B]
+- Fix URL to be mp4 instead of old RTMP and swf urls.
+
 [B]Version 2.1.0[/B]
 - Added statistics for addon usage
 
