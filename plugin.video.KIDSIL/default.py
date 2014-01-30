@@ -4,12 +4,24 @@ import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
 import json
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
-
+libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
+sys.path.insert(0, libDir)
+import commonkids
+from commonkids import *
 
 
 def CATEGORIES():
         mes()
-        
+        if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
+              downloader_is('https://spoyser-repo.googlecode.com/git/zips/repository.spoyser/repository.spoyser-1.0.4.zip','supercartoons repository')
+              downloader_is('https://spoyser-repo.googlecode.com/git/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.4.zip','supercartoons  addon')
+              dlg = xbmcgui . Dialog ( )
+              dlg.ok( "KIDSIL" , "צא מהתוסף וחזור כדי לראות את התוסף החדש")
+        else:
+              addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
+              
+
+                
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.seretil'):
                 addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=&url=http%3A%2F%2Fseretil.me%2Fcategory%2F%25d7%25a1%25d7%25a8%25d7%2598%25d7%2599%25d7%259d-%25d7%259e%25d7%2593%25d7%2595%25d7%2591%25d7%2591%25d7%2599%25d7%259d%2Fpage%2F1%2F',8,'https://dl.dropboxusercontent.com/u/5461675/meduvavim1.png','')
                 addDir('seretil מדובבים','plugin://plugin.video.seretil/?mode=211&name=%20%d7%90%d7%95%d7%a1%d7%a3%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'https://dl.dropboxusercontent.com/u/5461675/seretIL0.png','')
@@ -33,13 +45,19 @@ def CATEGORIES():
                 addDir('staael1982 (mashup) ללא דיבוב','plugin://plugin.video.movie25/?fanart=https%3a%2f%2fgithub.com%2fmash2k3%2fMashupArtwork%2fraw%2fmaster%2fart%2ffanart2.jpg&iconimage=https%3a%2f%2fencrypted-tbn3.gstatic.com%2fimages%3fq%3dtbn%3aANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6&mode=236&name=Animated%20Movies%20%5bCOLOR%20red%5d%20Updated%2009%2f09%2f13%5b%2fCOLOR%5d&plot&url=https%3a%2f%2fgithub.com%2fmash2k3%2fStaael1982%2fraw%2fmaster%2fanimated_movies.xml',8,'https://dl.dropboxusercontent.com/u/5461675/MASHUP.png','')
         else:
                addDir('[COLOR red]MASHUP לא מותקן[/COLOR]','','','','')
+
+        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.israelive'):
+                addDir('LIVE TV','plugin://plugin.video.israelive/?mode=2&url=https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx&name=ילדים',8,'http://www.makingdifferent.com/wp-content/uploads/2013/07/live-tv-online.jpg','')
+        else: 
+              addDir('[COLOR red]ISRAELIVE לא מותקן[/COLOR]','','','','')   
+                
                
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.wallaNew.video'):
                 addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
                 addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
                 addDir('גוניור','plugin://plugin.video.wallaNew.video/?mode=1&module=junior&name=גוניור&url=http://junior.walla.co.il/',8,'http://upload.wikimedia.org/wikipedia/he/1/19/%D7%A2%D7%A8%D7%95%D7%A5_%D7%92%27%D7%95%D7%A0%D7%99%D7%95%D7%A8.jpg','')
                 addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
-                addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=000003&name=ילדים&url=http://vod.walla.co.il/kids/',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
+                addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=wallavod&name=י%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=englishName%3dkids',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
         else:
                 addDir('[COLOR red]וואלה לא מותקן[/COLOR]','','','','')
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.hotVOD.video'):
@@ -54,25 +72,6 @@ def CATEGORIES():
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
 	setView('movies', 'default')       
 
-def unescape(text):
-        try:            
-            rep = {"&nbsp;": " ",
-                   "\n": "",
-                   "\t": "",
-                   "\r":"",
-                   "&#39;":"",
-                   "&quot;":"\""
-                   }
-            for s, r in rep.items():
-                text = text.replace(s, r)
-				
-            # remove html comments
-            text = re.sub(r"<!--.+?-->", "", text)    
-				
-        except TypeError:
-            pass
-
-        return text
 
 def ListLive(url):
         link=OPEN_URL(url)
@@ -104,84 +103,22 @@ def ListLive(url):
                     if name.find('Radio') < 0 :
                         addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
 
-
-def update_view(url):
-
-    ok=True        
-    xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
-    return ok
-    
-    
     
 
 
-def OPEN_URL(url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    return link
-    
-def get_params():
-        param=[]
-        paramstring=sys.argv[2]
-        if len(paramstring)>=2:
-                params=sys.argv[2]
-                cleanedparams=params.replace('?','')
-                if (params[len(params)-1]=='/'):
-                        params=params[0:len(params)-2]
-                pairsofparams=cleanedparams.split('&')
-                param={}
-                for i in range(len(pairsofparams)):
-                        splitparams={}
-                        splitparams=pairsofparams[i].split('=')
-                        if (len(splitparams))==2:
-                                param[splitparams[0]]=splitparams[1]
-                                
-        return param
-
-
-
-def addDir(name,url,mode,iconimage,description):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-        menu = []
-        
-        if mode==12:
-                #url=urllib.unquote(url)
-                menu.append(('[COLOR blue]        הצג פרטי רשימת השמעה [/COLOR]', "XBMC.Container.Update(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=13&name=''&url=%s)"% (url)))
-                liz.addContextMenuItems(items=menu, replaceItems=True)
-                #print str ((sys.argv[0],name,url))+":::::::::::::::::test"
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-        elif  mode==8 :
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-        elif mode==11 :
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-        else :
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-        return ok
-
-def addLink(name,url,iconimage,description):
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
-        liz.setProperty("IsPlayable","true")
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
-        return ok 
 
 
 # reads  user names from my subscriptions 
 def YOUsubs(user):
-      murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?start-index=1&max-results=50'
-      link=OPEN_URL(murl)
-      match=re.compile('>Activity of:(.*?)</title>.*?http://gdata.youtube.com/feeds/api/users/(.*?).?/>').findall(link)
-        
-      for name ,user in match:
-              addDir(name.strip(),user.strip(),9,'http://img-ipad.lisisoft.com/imgmic/1/2/1253-1-youtube-kids.jpg','1')
-      setView('tvshows', 'default')
+        murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?alt=json&start-index=1&max-results=50'
+        resultJSON = json.loads(OPEN_URL(murl))
+        feed=resultJSON['feed']['entry']
+        for i in range (0, len(feed)) :
+            image=str(feed[i]['media$thumbnail']['url'])
+            name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
+            url=feed[i]['yt$channelId']['$t'].encode('utf-8')
+            addDir(name,url,9,image,'1')
+        setView('tvshows', 'default')
 #list the links from  usernames based on mash23 + improvment
 def YOUList(name,url,description):
         playlists=PlaylistsFromUser(url)
@@ -201,6 +138,7 @@ def YOUList(name,url,description):
                 YOULink(rname,nurl,thumb)
         description=int(description)+50
         addDir('[COLOR blue]            עוד תוצאות [/COLOR]',url,9,'',str(description))
+        setView('tvshows', 'default')
 
 def YOULink(mname,url,thumb):
         ok=True
@@ -222,16 +160,17 @@ def PlaylistsFromUser(user):
 	i=0
 	lst=[]
 	while i<TotalPlaylists:
+             try:   
 		playlistid=str(prms['feed'][u'entry'][i][u'yt$playlistId'][u'$t'])
 		title=str(prms['feed'][u'entry'][i][u'title'][u'$t'].encode('utf-8'))
 		thumb=str(prms['feed'][u'entry'][i][u'media$group'][u'media$thumbnail'][2][u'url'])
-		i=i+1
-		lst.append((playlistid,title,thumb))
+             except:
+                     pass
+	     i=i+1
+	     lst.append((playlistid,title,thumb))
 	return lst
 
-
 def ListPlaylist(playlistid): 
-#        print "playlist id:::::::::::::" + playlistid
         url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
         req = urllib2.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -361,48 +300,7 @@ def PlayPlayList(playlistid):
  #https://gdata.youtube.com/feeds/api/playlists/PLN0EJVTzRDL_53Jz8bhZl4m3UtkY2btbV?max-results=50&alt=json
 		
 		
-		#below tells plugin about the views                
-def setView(content, viewType):
-        # set content type so library shows more views and info
-        if content:
-                xbmcplugin.setContent(int(sys.argv[1]), content)
-        if ADDON.getSetting('auto-view') == 'true':#<<<----see here if auto-view is enabled(true) 
-                xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
-                      
-def mes():
-	try:
-		link=OPEN_URL('http://goo.gl/r6eog7')
-		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
-		if not r:
-			return
-			
-		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
-		if not match[0]:
-			return
-			
-		version = ADDON.getAddonInfo('version')
-		
-		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
-		if not os.path.exists(dire):
-			os.makedirs(dire)
-		
-		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
-		if (os.path.isfile(aSeenFile)): 
-			f = open(aSeenFile, 'r') 
-			content = f.read() 
-			f.close() 
-			if content == match[0] :
-				return
 
-		f = open(aSeenFile, 'w') 
-		f.write(match[0]) 
-		f.close() 
-
-		dp = xbmcgui . Dialog ( )
-		dp.ok("UPDATES", match[0])
-	except:
-		pass
-                        
 
 params=get_params()
 url=None

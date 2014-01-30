@@ -8,17 +8,72 @@ import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
 from xml.sax import saxutils as su
 import StorageServer
-
-
-##General vars
+from xgoogle.search import GoogleSearch, SearchError
 __plugin__ = 'plugin.video.seretil'
 __author__ = "Hillel"
-__settings__ = xbmcaddon.Addon(id=__plugin__)
+__settings__ = xbmcaddon.Addon(id='plugin.video.seretil')
 __language__ = __settings__.getLocalizedString
 __cachePeriod__ = __settings__.getSetting("cache")
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
 cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
+
+
+
+def searchInSeretil():
+        search_entered =''
+        keyboard = xbmc.Keyboard(search_entered, 'הכנס מילות חיפוש כאן')
+        keyboard.doModal()
+        if keyboard.isConfirmed():
+                    search_entered = keyboard.getText()
+
+        if search_entered !='' :
+                try:
+                  gs = GoogleSearch("site:seretil.me "+ search_entered) 
+                  gs.results_per_page = 100
+                  results = gs.get_results()
+                  for res in results:
+                    title=res.title.encode('utf8')
+                    url= res.url.encode('utf8')
+                    title=title.replace('SERETIL.ME','')
+                    title=title.replace('לצפייה ישירה','')
+                    title=title.replace('וסדרות','')
+                    title=title.replace('תרגום מובנה','')
+                    title=title.replace('|','')
+                    title=title.replace('.','')
+                    title=title.replace('סרטים','')
+                    title=title.replace('עם','')
+                    title=title.replace('לצפיה','')
+                    
+                    
+                    
+                    
+                    if 'עונה' in title   :
+                                        if not 'page' in url  and not 'tag' in url  and not '?s' in url and not 'search' in url :
+                                                addDir(title,url,211,'')
+                    else:        
+                                    if not 'page' in url  and not 'tag' in url  and not '?s' in url and not 'search' in url:
+                                        image=''
+                                        req = urllib2.Request(url)
+                                        req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+                                        response = urllib2.urlopen(req)
+                                        link3=response.read()
+                                        response.close()  
+                                        
+                                        block= re.compile('<div class="post-wrap post-wrap-single">(.*?)linkwithin_hook',re.M+re.I+re.S).findall(link3)
+                                        image=''
+                                        images= re.compile('src="http(.*?).?jpg').findall(block[0])
+                                        if images:
+                                                image='http'+images[0]+'.jpg'
+                                        addDir(title,url,5,image)
+                
+                                    
+                except SearchError, e:
+                  print "Search failed: %s" % e
+                xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
+##General vars
+
 
 
 
@@ -98,12 +153,15 @@ def SpecialPage(url):
         link=response.read()
         response.close()
         match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
+        print match 
         for name in match:
                 if (name.find('http') != -1 ):
+                        print name
                         match=re.compile('a href="(.*?)"').findall(name)
-                        if (match[0].find('multi')== -1) and (match[0].find('flyer') ==-1) :
-                                addDir('LINK',str(match[0]),212,'')
-                        
+                        if match:
+                                if (match[0].find('multi')== -1) and (match[0].find('flyer') ==-1) :
+                                        addDir('LINK',str(match[0]),212,'')
+                                
                 else :
                         if name !='&nbsp;' and name.find('לצעירים') ==-1 and name.find('span')==-1:
                                 try:
@@ -138,6 +196,15 @@ def LinksPage(url):
                 new_name=item.get_host()
                 if new_name:
                         addDir(new_name,new_url,212,'')
+        if not sources:
+                match=re.compile('<div itemprop="description"><a href="(.*?)"').findall(link)
+                if not match:
+                        match=re.compile('<p><center><iframe src="(.*?)"').findall(link)
+                
+
+                if match :
+                        addDir(name,match[0],212,'')
+                
 
 
 def INDEXchooseSeret(url):
@@ -150,79 +217,69 @@ def INDEXchooseSeret(url):
         link=response.read()
         link2=link
         response.close()  
-        cacheServer.table_name="seretilINDEXchooseSeret"
-        cacheKey=str(url)
-        movies=cacheServer.get(cacheKey)
+        #cacheServer.table_name="seretilINDEXchooseSeret"
+        #cacheKey=str(url)
+        #movies=cacheServer.get(cacheKey)
         
-        if  not movies:
-                now=re.compile('class=\'current\'>(.*?)<').findall(link2)
-                now_page =int(str(now[0]))
-                movies=[]
-                lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
-                lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
-                i= now_page
-                stop=False
-                dp = xbmcgui . DialogProgress ( )
-		dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
-                while i <= int(lastpage) and not stop  :
+        
+        now=re.compile('class=\'current\'>(.*?)<').findall(link2)
+        now_page =int(str(now[0]))
+        movies=[]
+        lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
+        lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
+        i= now_page
+        stop=False
+        dp = xbmcgui . DialogProgress ( )
+        dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
+        while i <= int(lastpage) and not stop  :
                         
-                        percent= ((i%30)*3.44)
-                        dp.update(int(percent),"בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות","החילזון מהשפן")
-                        link=OPEN_URL(url2)
-                        match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
-                        
-                        for url,name  in match:
-                                '''req = urllib2.Request(url)
-                                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                                response = urllib2.urlopen(req)
-                                link3=response.read()
-                                response.close()  
-                                image=None
-                                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
-                                if images==[]:'''
-                                        
-                                movies.append((name,url))
-                                addDir(name,url,5,"")
+            percent= ((i%30)*3.44)
+            dp.update(int(percent),"סבלנות","טוען קטגוריה")
+            link=OPEN_URL(url2)
+            match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
+            
+            for url,name  in match:
+                req = urllib2.Request(url)
+                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+                response = urllib2.urlopen(req)
+                link3=response.read()
+                response.close()  
+                image=None
+                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
+                if images==[]:
+                     addDir(name,url,5,"")   
                                     
-                                '''else:
-                                    movies.append((name,url,images[0]))    
-                                    addDir(name,url,5,str(images[0]))'''
-                        i+=1
-                        url2 = url2[:-7]
-                        if url2[len(url2)-1]=='p' :
-                                url2= url2[:-1]
-                        elif url2[len(url2)-2]=='p' :
-                               url2= url2[:-2]
-                               
-                        url2=url2+'page/'+str(i)+'/'
-                        if (i%30 ==0):
-                                stop=True
-                                addDir("תוצאות נוספות",url2,4,"")
-                                movies.append(("more",url2))
-                                
-                                
-                                                        
-                dp.close()
-                cacheServer.set(cacheKey, repr(movies))
+                else:
+                    movies.append((name,url,images[0]))    
+                    addDir(name,url,5,str(images[0]))
+                #addDir(name,url,5,"")
+                i+=1
+                url2 = url2[:-7]
+                if url2[len(url2)-1]=='p' :
+                        url2= url2[:-1]
+                elif url2[len(url2)-2]=='p' :
+                       url2= url2[:-2]
+                       
+                url2=url2+'page/'+str(i)+'/'
+                if (i%30 ==0):
+                        stop=True
+                        addDir("תוצאות נוספות",url2,4,"")
+                        movies.append(("more",url2))
+                        
+                        
+                                                
                 
-        else:
-           movies= eval (movies)
-        
-           for item in movies:
-                    if item[0]=="more":
-                            addDir("תוצאות נוספות",item[1],4,"")
-                    else: 
-                            addDir(item[0],item[1],5,"")
         try:                    
                 xbmc.executebuiltin('Container.SetViewMode(51)')
         except:
                 pass
                
 def CATEGORIES():   
-    mes()    
-    INDEXSratim('http://seretil.me/')
+    mes()
+    addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
     addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
     addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
+    INDEXSratim('http://seretil.me/')
         
 
 def mes():
@@ -280,6 +337,8 @@ elif mode==4:
      
 elif mode==5:
      LinksPage(url)
+elif mode==18:
+        searchInSeretil()
 elif mode==211:
          SpecialPage(url)
 elif mode==212:

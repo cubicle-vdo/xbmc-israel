@@ -195,12 +195,13 @@ def sdarot_season(url):
     series_name=urllib.unquote_plus(params["series_name"])
     season_id=urllib.unquote_plus(params["season_id"])
     image_link=urllib.unquote_plus(params["image"])
-    page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="eplist=true&serie="+series_id+"&season="+season_id);
-    episodes=page.split(",")
-    for episode in episodes:
-      if ( episode.find("-") != -1 ):
-        episode=episode.replace("-0","")
-      addVideoLink("פרק "+str(episode), url, "4&episode_id="+str(episode)+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link, '')         
+    page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="episodeList=true&serie="+series_id+"&season="+season_id);
+    
+    episodes=json.loads(page)
+    print episodes
+    for i in range (0, len(episodes)) :
+        epis= str(episodes[i]['episode'])
+        addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link, '')         
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 def sdarot_movie(url):

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,base64,os
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
+AddonID='plugin.video.israelsports'
 
 
 
  
 def CATEGORIES():
-        Announcements()
+        mes()
+        addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
         addDir('ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4649&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
         addDir('ליגה ספרדית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4435&page=',2,'http://blog.tapuz.co.il/tlv1/images/%7B0B4BDB70-5D9B-463A-B894-0D5762E59AA0%7D.jpg','1')
         addDir('תקצירי בארסה','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4436&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYF9lIm6fqSM3cysKy_EqnRFyDOycA8lexCn7dSqp_4Av4vw1mcA','1')
@@ -23,11 +25,10 @@ def CATEGORIES():
         addDir('חדשות הספורט','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3968&page=',2,'http://www.nrg.co.il/images/archive/300x225/631/730.jpg','1')
         addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=2770&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
         addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
-        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4948&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')
-        addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        setView('movies', 'default') 
+        addDir('מאיר ורוני','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4984&page=',2,'http://www.the7eye.org.il/wp-content/uploads/2013/10/F130801YS191.jpg','1')        
+        addDir('LIVE SPORTS','no url',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRXXYDnees25Hwhbt2CRWlDuH1E6XTE01_8Uv94E3-mop_7isfM','')
+        setView('movies', 'default')
+        
        
        
        
@@ -56,7 +57,8 @@ def  list_videos(url,page):
                 page=page+ 1
                 url=url+"page="
                 list_videos(url,page)
-                
+        setView('movies', 'default')
+        
 def play_video(url,name,iconimage):       
         link=OPEN_URL(url)
         clipid=re.compile('clipid=(.*?)&Width',re.M+re.I+re.S).findall(link)
@@ -70,12 +72,10 @@ def play_video(url,name,iconimage):
         playlist.clear()
         liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title":name} )
-        liz.setProperty("IsPlayable","true")
-        playlist.add(direct,liz)
+        liz.setPath(direct)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
         
         
-        if not xbmc.Player().isPlayingVideo():
-                xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
         
 def ligat_al():
     link = OPEN_URL('http://svc.one.co.il/Cat/Video/Reviews.aspx?c=28')
@@ -88,6 +88,7 @@ def ligat_al():
             url='http://svc.one.co.il'+url
             image='http://images.one.co.il/Images/Teams/Logos'+image
             addDir(name,url,4,image,'al')
+    setView('movies', 'default')
 
 def one_videopage(url,description):
         if description!='al' :
@@ -114,6 +115,8 @@ def one_videopage(url,description):
                 current+=1
                 addDir("[COLOR yellow]לעמוד הבא[/COLOR]",url,4,'',str(current))
         addDir("[COLOR blue]חזרה לראשי [/COLOR]",'',None,'','')
+
+        setView('movies', 'default')
                 
 
 def play_one(name,url,iconimage,description):
@@ -128,26 +131,26 @@ def play_one(name,url,iconimage,description):
         playlist.clear()
         liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title":name} )
-        liz.setProperty("IsPlayable","true")
+        #liz.setProperty("IsPlayable","true")
+        
         for item in direct:
                 if item.find("ds") ==-1 :
                         if description=='True':
                                 if item.find("HD")>0 :
-                                     #addLink(name,item,iconimage,'')
-                                     playlist.add(item,liz)      
-                                     if not xbmc.Player().isPlayingVideo():
-                                        xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
+                                     liz.setPath(item)
+                                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
                                 
                                         
                         else:
                                 addLink(name,item,iconimage,'')
 
 
-def OPEN_URL(url):
+def OPEN_URL(url,host=None):
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    
-    response = urllib2.urlopen(req,timeout=100)
+    if host:
+            req.add_header('HOST',host)
+    response = urllib2.urlopen(req,timeout=180)
     link=response.read()
     response.close()
     return link
@@ -190,7 +193,44 @@ def unescape(text):
 
         return text
 
-# this is the listing of the items        
+# this is the listing of the items
+
+
+
+def downloader_is (url,name ) :
+ import downloader,extract   
+ i1iIIII = xbmc . getInfoLabel ( "System.ProfileName" )
+ I1 = xbmc . translatePath ( os . path . join ( 'special://home' , '' ) )
+ O0OoOoo00o = xbmcgui . Dialog ( )
+ if name.find('repo')< 0 :
+     choice = O0OoOoo00o . yesno ( "XBMC ISRAEL" , "לחץ כן להתקנת תוסף חסר" ,name)
+ else:
+     choice=True
+ if    choice :
+  iiI1iIiI = xbmc . translatePath ( os . path . join ( 'special://home/addons' , 'packages' ) )
+  iiiI11 = xbmcgui . DialogProgress ( )
+  iiiI11 . create ( "XBMC ISRAEL" , "Downloading " , '' , 'Please Wait' )
+  OOooO = os . path . join ( iiI1iIiI , 'isr.zip' )
+  try :
+     os . remove ( OOooO )
+  except :
+      pass
+  downloader . download ( url , OOooO , iiiI11 )
+  II111iiii = xbmc . translatePath ( os . path . join ( 'special://home' , 'addons' ) )
+  iiiI11 . update ( 0 , "" , "Extracting Zip Please Wait" )
+  print '======================================='
+  print II111iiii
+  print '======================================='
+  extract . all ( OOooO , II111iiii , iiiI11 )
+  iiiI11 . update ( 0 , "" , "Downloading" )
+  iiiI11 . update ( 0 , "" , "Extracting Zip Please Wait" )
+  xbmc . executebuiltin ( 'UpdateLocalAddons ' )
+  xbmc . executebuiltin ( "UpdateAddonRepos" )
+  if 96 - 96: i1IIi . ii1IiI1i * iiiIIii1I1Ii % i111I
+  if 60 - 60: iII11iiIII111 * IIIiiIIii % IIIiiIIii % O00oOoOoO0o0O * i11i + i1IIi
+
+
+
 def addDir(name,url,mode,iconimage,description):
         
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
@@ -198,6 +238,7 @@ def addDir(name,url,mode,iconimage,description):
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
         if mode==3 or mode==5:
+                liz.setProperty("IsPlayable","true")
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         else:
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -220,54 +261,98 @@ def setView(content, viewType):
         if ADDON.getSetting('auto-view') == 'true':#<<<----see here if auto-view is enabled(true) 
                 xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
 
-def TextBoxes(heading,anounce):
-        class TextBox():
-            """Thanks to BSTRDMKR for this code:)"""
-                # constants
-            WINDOW = 10147
-            CONTROL_LABEL = 1
-            CONTROL_TEXTBOX = 5
+                    
 
-            def __init__( self, *args, **kwargs):
-                # activate the text viewer window
-                xbmc.executebuiltin( "ActivateWindow(%d)" % ( self.WINDOW, ) )
-                # get window
-                self.win = xbmcgui.Window( self.WINDOW )
-                # give window time to initialize
-                xbmc.sleep( 500 )
-                self.setControls()
+def mes():
 
-
-            def setControls( self ):
-                # set heading
-                self.win.getControl( self.CONTROL_LABEL ).setLabel(heading)
-                try:
-                        f = open(anounce)
-                        text = f.read()
-                except:
-                        text=anounce
-                self.win.getControl( self.CONTROL_TEXTBOX ).setText(text)
-                return
-        TextBox()
-
-def Announcements():
-        #Announcement Notifier from xml file
         
-        try:
-              link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sportsisarel.xml')
-              # link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
+	try:
+		link=OPEN_URL('http://goo.gl/ylPukV')
+		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
+		if not r:
+			return
+                        
+                        
+			
+		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
+		if not match[0]:
+			return
 
-        except:
-                link='nill'
-        r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
-        if r:
+			
+		version = ADDON.getAddonInfo('version')
+		
+		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
+		if not os.path.exists(dire):
+			os.makedirs(dire)
+		
+		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
+		if (os.path.isfile(aSeenFile)): 
+			f = open(aSeenFile, 'r') 
+			content = f.read() 
+			f.close() 
+			if content == match[0] :
+				return
 
-                match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
-                if match[0]:
-                        TextBoxes("[B][COLOR blue] SPORTS ISRAEL[/B][/COLOR]",match[0])                      
+		f = open(aSeenFile, 'w') 
+		f.write(match[0]) 
+		f.close() 
+
+		dp = xbmcgui . Dialog ( )
+		dp.ok("UPDATES", match[0])
+	except:
+		pass
 
 
+def VIPList():
+        url=base64.b64decode('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
+        link=OPEN_URL(url)
+        link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
+        match=re.compile('<title>([^<]+)</title.+?link>(.+?)</link.+?thumbnail>([^<]+)</thumbnail>').findall(link)
+        for name,url,thumb in sorted(match):
+                if not'NHL' in name   and not 'Non' in name:
+                        if not '</sublink>' in url:
+                            addLink(name,url,thumb,'')
+                        else:
+                              links=re.compile('<sublink>(.*?)</sublink>').findall(url)
+                              for link in links:
+                                      addLink(name,link,thumb,'')
 
+
+def ListLive(url):
+        print url
+        link=OPEN_URL(url,'www.navixtreme.com')
+        link=unescape(link)
+        #print link
+        matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
+        print str(matches1[0]) + '\n'
+        for match in matches1 :
+            print "match=" + str(match)
+            match=match+'#'
+            if match.find('playlist') != 0 :
+                regex='name=(.*?)URL=(.*?)#'
+                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+                print str(matches)
+                for name,url in  matches:
+                    thumb=''
+                    i=name.find('thumb')
+                    if i>0:
+                        thumb=name[i+6:]
+                        name=name[0:i]		    
+                    if  'port' in  name :
+                            addLink('[COLOR yellow]'+ name+'[/COLOR]',url,thumb,'')  
+                
+                              
+                
+
+def LIVE():
+        
+        addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
+        VIPList()
+
+
+        
                
 params=get_params()
 url=None
@@ -318,6 +403,12 @@ elif mode==5:
         play_one(name,url,iconimage,description)
 elif mode==6:
         ligat_al()
-       
+elif mode==8:
+        LIVE()
+elif mode==9:
+        VIPList()
+elif mode==10:
+        downloader_is('http://mirrors.xmission.com/superrepo/Frodo/Video/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip','Teleduent')
+        downloader_is('https://github.com/downloads/hadynz/repository.arabic.xbmc-addons/repository.arabic.xbmc-addons-1.0.0.zip','Teleduent repo')
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

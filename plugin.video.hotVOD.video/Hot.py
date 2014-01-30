@@ -134,14 +134,17 @@ def PLAY_MOVIE(url, name):
     print str(videoUrl[0])
     #http://ynethd-f.akamaihd.net/z/1112/hot/1411121445ima_veabaz_1_ynet.mp4/manifest.f4m
     videoUrl[0]=videoUrl[0][:-13]
-    videoUrl[0]=videoUrl[0].replace('/z/','/')
+    videoUrl[0]=videoUrl[0].replace('/z/','/').replace(' ','%20')
     print str(videoUrl[0])
+    
     if len(videoUrl) > 0:
-        videoPlayListUrl = urllib.unquote(videoUrl[0])
+        videoPlayListUrl = videoUrl[0]
         listItem = xbmcgui.ListItem(name, 'DefaultFolder.png', 'DefaultFolder.png', path=videoPlayListUrl) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        listItem.setInfo(type='Video', infoLabels={ "Title": urllib.unquote(name)})
-        listItem.setProperty('IsPlayable', 'true')
-        xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+        listItem.setPath(videoUrl[0])        
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listItem)
+        
+        
+        
         
   
 params = getParams(sys.argv[2])

@@ -1,3 +1,10 @@
+v1.0.8
+-support playing more channels from filmon
+-TV-Guide for filmon channels: click right-click on channel and choose TV-Guide from context-menu.
+v1.0.7
+-more channels to sports section (mash)
+v1.0.6
+-fixed small bug in downloading missing addons
 v1.0.5
 -Support both old and new python versions (Frodo and Gotham) by avigdor
 v1.0.4

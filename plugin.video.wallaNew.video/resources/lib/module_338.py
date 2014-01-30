@@ -10,7 +10,7 @@ import xbmcaddon
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
-__BASE_URL__ = 'http://vod.walla.co.il/'
+__BASE_URL__ = 'http://vod.walla.co.il'
 __NAME__ = '338'
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,os,sys
@@ -57,13 +57,14 @@ class manager_338:
                             time = '00:00'
                         playPath = re.compile('<src>(.*?)</src>').findall(page)
                         length = len(playPath)
-                        url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://isc.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://vod.walla.co.il' + url + ' playpath=' + playPath[length -1]
-                        common.addLink(contentType,title, url, img, str(time), epiDetails)
+                        #url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://isc.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://vod.walla.co.il' + url + ' playpath=' + playPath[length -1]
+                        url='rtmp://waflaWNE.walla.co.il:1935/vod playpath' + playPath[length -1]+' swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf?testMode=1&v=436 pageUrl==http://vod.walla.co.il' + url
             i=i+1
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
         xbmc.executebuiltin("Container.SetViewMode(500)")
         
     def getEpisodeList(self, url):
+        orig=url
         contentType,main_page = common.getData(url)
         episodeList = re.compile('<ol class="episode-list".*?</ol>').findall(main_page)
         episodes = re.compile('data-json.*?tooltipTitle&quot;:&quot;(.*?)&.*?:&quot;(.*?)&quot;.*?:&quot;(.*?)&.*?href="(.*?)"').findall(episodeList[0])
@@ -86,6 +87,7 @@ class manager_338:
                 else:
                     time = '00:00'
                 url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
+                url='rtmp://waflaWNE.walla.co.il:1935/vod playpath=' +re.compile('<src>(.*?)</src>').findall(page)[0]+' swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf?testMode=1&v=436 pageUrl='+orig.replace('.il//','.il/')
                 common.addLink(contentType,title, url, iconImage, str(time), epiDetails)
         nextPage = re.compile('<a class="in_blk p_r" href="(.*?)" style=""></a>').findall(main_page)
         if (len(nextPage)) > 0:

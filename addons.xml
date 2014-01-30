@@ -20,33 +20,10 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.23tv.video" name="23TV" version="1.0.4" provider-name="shmulik,o2ri">
+<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.1.1" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="Default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary>Wacth 23 channel content.</summary>
-        <description>Wacth israeli 23 channel contents from 23tv.co.il.</description>
-        <disclaimer>This addon parse 23tv's site, you should check their TOS before you using. It's as is
-		התוסף מציג תכנים מהאתר חינוכית 23 השימוש בו מבלי לפגוע בזכויות יוצרים ולפי התנאים המפורטים באתר בלבד
-		</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-          <content>episodes</content>
-        </supportedcontent>
-    </extension>
-</addon>
-
-<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.0.8" provider-name="cubicle">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver" version="0.0.1"/>
-
+        <import addon="script.module.urlresolver" version="1.0.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="gozlan.py">
         <provides>video</provides>
@@ -66,7 +43,7 @@
 
 </addon>
 
-<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.2" provider-name="sbentin">
+<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.3" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -89,7 +66,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.5" provider-name="BENNY123 AVIGDOR O2RI">
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.0.8" provider-name="BENNY123 AVIGDOR O2RI">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -103,7 +80,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="israelsports" version="1.0.2" provider-name="XAVI 6 ">
+<addon id="plugin.video.israelsports" name="israelsports" version="1.0.6" provider-name="XAVI 6 ">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -121,10 +98,11 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.0.7"
+       version="1.1.0"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
+		<import addon="plugin.video.youtube" version="2.1.3"/>
     </requires>
     <extension point="xbmc.python.pluginsource"
                library="default.py">
@@ -135,6 +113,29 @@
     <description lang="en">links to other  childern addons .</description>
     <platform>all</platform>
   </extension>
+</addon>
+
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.2" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="Mako.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Mako video contents.</summary>
+        <summary lang="he">צפה בתוכניות מאתר מאקו</summary>
+        <description lang="en">Watch Mako Video contents from Mako Application for cellular.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה באמצעות אפךיקציית מאקו בטלפון הסלולרי</description>
+        <disclaimer>This addon connects to Mako site, you should check Mako's TOS on android before using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>
+    </extension>
 </addon>
 
 <addon id="plugin.video.makoVOD.video" name="Mako VOD" version="1.0.6" provider-name="sbentin">
@@ -176,7 +177,30 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.4" provider-name="cubicle">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="reshet.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch Reshet video contents.</summary>
+        <summary lang="he">צפה בתוכניות מאפליקציית אנדרויד של רשת</summary>
+        <description lang="en">Watch contents from Reshet's android application.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה מהפלאגין של רשת לאנדרויד</description>
+        <disclaimer>This addon parse Reshets's android application, you should check Reshet's TOS before you using. It's as is</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>
+    </extension>
+</addon>
+
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.5" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -198,26 +222,10 @@
 
 </addon>
 
-<addon id="plugin.video.searchil" name="Search IL" version="1.0.1" provider-name="HILLEL">
-  <requires>
-    <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.t0mm0.common" version="1.1.0"/>
-    <import addon="script.module.urlresolver" version="1.0.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">Search israeli sites for videos</summary>
-    <description lang="en">a Build for  my Own personal uses Only </description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.video.seretil" name="seretil" version="1.0.3" provider-name="o2ri">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.5" provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver" version="0.0.1"/>
+        <import addon="script.module.urlresolver" version="1.0.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
@@ -235,7 +243,7 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.0" provider-name="sbentin shlomico">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.1" provider-name="sbentin shlomico">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.common.plugin.cache" version="0.9.1"/>
@@ -304,7 +312,7 @@
 
 </addon>
 
-<addon id="repository.xbmc-israel" name="XBMC Israeli Streaming Sites" version="1.0.2" provider-name="cubicle-vdo">
+<addon id="repository.xbmc-israel" name=".[COLOR blue]XBMC Israeli [/COLOR][COLOR white] Streaming Sites[/COLOR]" version="1.0.2" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml</info>
         <checksum>https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml.md5</checksum>
