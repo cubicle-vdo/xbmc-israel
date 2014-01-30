@@ -9,6 +9,14 @@ import urlresolver
 from xml.sax import saxutils as su
 import StorageServer
 from xgoogle.search import GoogleSearch, SearchError
+__plugin__ = 'plugin.video.seretil'
+__author__ = "Hillel"
+__settings__ = xbmcaddon.Addon(id='plugin.video.seretil')
+__language__ = __settings__.getLocalizedString
+__cachePeriod__ = __settings__.getSetting("cache")
+__addon__ = xbmcaddon.Addon()
+__addonname__ = __addon__.getAddonInfo('name')
+cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
 
 
 
@@ -65,14 +73,7 @@ def searchInSeretil():
                 xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 
 ##General vars
-__plugin__ = 'plugin.video.seretil'
-__author__ = "Hillel"
-__settings__ = xbmcaddon.Addon(id=__plugin__)
-__language__ = __settings__.getLocalizedString
-__cachePeriod__ = __settings__.getSetting("cache")
-__addon__ = xbmcaddon.Addon()
-__addonname__ = __addon__.getAddonInfo('name')
-cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
+
 
 
 
@@ -216,69 +217,58 @@ def INDEXchooseSeret(url):
         link=response.read()
         link2=link
         response.close()  
-        cacheServer.table_name="seretilINDEXchooseSeret"
-        cacheKey=str(url)
-        movies=cacheServer.get(cacheKey)
+        #cacheServer.table_name="seretilINDEXchooseSeret"
+        #cacheKey=str(url)
+        #movies=cacheServer.get(cacheKey)
         
-        if  not movies:
-                now=re.compile('class=\'current\'>(.*?)<').findall(link2)
-                now_page =int(str(now[0]))
-                movies=[]
-                lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
-                lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
-                i= now_page
-                stop=False
-                dp = xbmcgui . DialogProgress ( )
-		dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
-                while i <= int(lastpage) and not stop  :
+        
+        now=re.compile('class=\'current\'>(.*?)<').findall(link2)
+        now_page =int(str(now[0]))
+        movies=[]
+        lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
+        lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
+        i= now_page
+        stop=False
+        dp = xbmcgui . DialogProgress ( )
+        dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
+        while i <= int(lastpage) and not stop  :
                         
-                        percent= ((i%30)*3.44)
-                        dp.update(int(percent),"בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות","החילזון מהשפן")
-                        link=OPEN_URL(url2)
-                        match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
-                        
-                        for url,name  in match:
-                                '''req = urllib2.Request(url)
-                                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                                response = urllib2.urlopen(req)
-                                link3=response.read()
-                                response.close()  
-                                image=None
-                                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
-                                if images==[]:'''
-                                        
-                                movies.append((name,url))
-                                addDir(name,url,5,"")
+            percent= ((i%30)*3.44)
+            dp.update(int(percent),"סבלנות","טוען קטגוריה")
+            link=OPEN_URL(url2)
+            match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
+            
+            for url,name  in match:
+                req = urllib2.Request(url)
+                req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+                response = urllib2.urlopen(req)
+                link3=response.read()
+                response.close()  
+                image=None
+                images= re.compile('       <img width=".?.?.?" height=".?.?.?" src="(.*?)"').findall(link3)
+                if images==[]:
+                     addDir(name,url,5,"")   
                                     
-                                '''else:
-                                    movies.append((name,url,images[0]))    
-                                    addDir(name,url,5,str(images[0]))'''
-                        i+=1
-                        url2 = url2[:-7]
-                        if url2[len(url2)-1]=='p' :
-                                url2= url2[:-1]
-                        elif url2[len(url2)-2]=='p' :
-                               url2= url2[:-2]
-                               
-                        url2=url2+'page/'+str(i)+'/'
-                        if (i%30 ==0):
-                                stop=True
-                                addDir("תוצאות נוספות",url2,4,"")
-                                movies.append(("more",url2))
-                                
-                                
-                                                        
-                dp.close()
-                cacheServer.set(cacheKey, repr(movies))
+                else:
+                    movies.append((name,url,images[0]))    
+                    addDir(name,url,5,str(images[0]))
+                #addDir(name,url,5,"")
+                i+=1
+                url2 = url2[:-7]
+                if url2[len(url2)-1]=='p' :
+                        url2= url2[:-1]
+                elif url2[len(url2)-2]=='p' :
+                       url2= url2[:-2]
+                       
+                url2=url2+'page/'+str(i)+'/'
+                if (i%30 ==0):
+                        stop=True
+                        addDir("תוצאות נוספות",url2,4,"")
+                        movies.append(("more",url2))
+                        
+                        
+                                                
                 
-        else:
-           movies= eval (movies)
-        
-           for item in movies:
-                    if item[0]=="more":
-                            addDir("תוצאות נוספות",item[1],4,"")
-                    else: 
-                            addDir(item[0],item[1],5,"")
         try:                    
                 xbmc.executebuiltin('Container.SetViewMode(51)')
         except:
