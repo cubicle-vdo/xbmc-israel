@@ -185,7 +185,8 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
                     time = int(timeInSeconds[0]) / 60
                 else:
                     time = '00:00'
-                url = 'rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
+                #url = 'rtmp://waflaWNE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWNE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
+                url='rtmp://waflaWNE.walla.co.il:1935/vod playpath='+ re.compile('<src>(.*?)</src>').findall(page)[0]+' swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf?testMode=1&v=436 pageurl='+inUrl
                 epi1 = Episode(content=contentType, title=title, url=url, iconImage=iconImage, time=str(time), epiDetails=epiDetails)
                 episodes.append(epi1)
                 addLink(contentType, title, url, iconImage, str(time), epiDetails)
