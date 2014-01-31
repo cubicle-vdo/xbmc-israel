@@ -222,10 +222,10 @@
 
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.4" provider-name="o2ri">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.5" provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver" version="2.1.2"/>
+        <import addon="script.module.urlresolver" version="1.0.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
