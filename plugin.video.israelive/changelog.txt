@@ -1,3 +1,5 @@
+v1.0.9
+-fixed link to teleduent
 v1.0.8
 -support playing more channels from filmon
 -TV-Guide for filmon channels: click right-click on channel and choose TV-Guide from context-menu.
