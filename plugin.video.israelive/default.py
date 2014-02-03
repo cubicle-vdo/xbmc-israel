@@ -182,7 +182,7 @@ elif mode==3:
 elif mode==4:
      downloader_is( )
 elif mode==6:
-        downloader_is('http://mirrors.xmission.com/superrepo/Frodo/Video/plugin.video.teledunet/plugin.video.teledunet-1.1.0.zip','Teleduent')
+        downloader_is('https://github.com/hadynz/repository.arabic.xbmc-addons/raw/master/repo/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip','Teleduent')
         downloader_is('https://github.com/downloads/hadynz/repository.arabic.xbmc-addons/repository.arabic.xbmc-addons-1.0.0.zip','Teleduent repo')
         CATEGORIES()
 elif mode==7:
