@@ -1,3 +1,5 @@
+[B]Version 1.1.1[/B]
+-option to delete walla cache
 [B]Version 1.1.0[/B]
 -supercartoon addon installed
 -returned livetv section from benny

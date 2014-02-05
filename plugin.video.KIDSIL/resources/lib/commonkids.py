@@ -108,7 +108,7 @@ def addDir(name,url,mode,iconimage,description):
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         elif  mode==8 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-        elif mode==11 :
+        elif mode==11 or mode==15 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         else :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -130,6 +130,19 @@ def setView(content, viewType):
                 xbmcplugin.setContent(int(sys.argv[1]), content)
         if ADDON.getSetting('auto-view') == 'true':#<<<----see here if auto-view is enabled(true) 
                 xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
+                
+                
+                
+def CleanTheCache():
+    dir=xbmc.translatePath('special://temp/')
+    file=os.path.join(dir, 'commoncache.db')
+    f = open(file, 'w')
+    f.write('')
+    f.close
+    
+    dlg = xbmcgui . Dialog ( )
+    dlg.ok("KIDS IL BY O2ri"," cache deleted ! " ,"dora was saved again")
+    
                       
 def mes():
 
