@@ -70,8 +70,11 @@ def CATEGORIES():
         addDir('Baby Einstein','TerrapinStation5',9,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
         addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
-	setView('movies', 'default')       
-
+        addDir('Fix Walla','stam',15,'','')
+        addDir('Testing 1','reshettv',16,'','')
+        addDir('Testing 2','23tv',16,'','')
+        setView('movies', 'default')
+    
 
 def ListLive(url):
         link=OPEN_URL(url)
@@ -109,6 +112,47 @@ def ListLive(url):
 
 
 # reads  user names from my subscriptions 
+
+
+
+def ShowFromUser(user):
+    murl='https://gdata.youtube.com/feeds/api/users/'+user+'/shows?alt=json&start-index=1&max-results=50&v=2'
+    resultJSON = json.loads(OPEN_URL(murl))
+    shows=resultJSON['feed']['entry']
+    hasNext= True
+    while hasNext:
+        shows=resultJSON['feed']['entry']
+        for  i in range (0, len(shows)) :
+            showApiUrl=shows[i]['link'][1]['href']
+            showApiUrl=showApiUrl[:-4]+'/content?v=2&alt=json'
+            showName=shows[i]['title']['$t'].encode('utf-8')
+            image= shows[i]['media$group']['media$thumbnail'][-1]['url']
+            addDir(showName,showApiUrl,14,image,'')
+        hasNext= resultJSON['feed']['link'][-1]['rel'].lower()=='next'
+        if hasNext:
+            resultJSON = json.loads(OPEN_URL(resultJSON['feed']['link'][-1]['href']))
+        
+def SeasonsFromShow(showApiUrl):
+    print showApiUrl
+    resultJSON = json.loads(OPEN_URL(showApiUrl))
+    seasons=resultJSON['feed']['entry']
+    for  i in range (0, len(seasons)) :
+        print seasons[i].keys()
+        print seasons[i]['title']['$t']
+        for index,item in  enumerate(seasons[i]['gd$feedLink']) :
+            if item['countHint'] !=0:
+                resultJSON = json.loads(OPEN_URL( seasons[i]['gd$feedLink'][index]['href']+'&alt=json'))
+                for  j in range (0, len(resultJSON['feed']['entry'])) :
+                    title= str(resultJSON['feed'][u'entry'][j][ u'media$group'][u'media$title'][u'$t'].encode('utf-8')).decode('utf-8')
+                    thumb =str(resultJSON['feed'][u'entry'][j][ u'media$group'][u'media$thumbnail'][-1][u'url'])
+                    episode_num=resultJSON['feed']['entry'][j]['yt$episode']['number']
+                    url= resultJSON['feed']['entry'][j]['link'][0]['href']
+                    match=re.compile('www.youtube.com/watch\?v\=(.*?)\&f').findall(url)
+                    finalurl="plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+match[0]+"&hd=1"
+                    addLink(title+' '+episode_num ,finalurl,thumb,'')
+                    
+                    
+        
 def YOUsubs(user):
         murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?alt=json&start-index=1&max-results=50'
         resultJSON = json.loads(OPEN_URL(murl))
@@ -363,6 +407,10 @@ elif mode==12:
         PlayPlayList(url)
 elif mode==13:
         ListPlaylist(url)
-       
-       
+elif mode==14:       
+        SeasonsFromShow(url)
+elif mode==15:       
+            CleanTheCache()
+elif mode==16:       
+    ShowFromUser(url)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
