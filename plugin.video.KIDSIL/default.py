@@ -13,8 +13,8 @@ from commonkids import *
 def CATEGORIES():
         mes()
         if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
-              downloader_is('https://spoyser-repo.googlecode.com/git/zips/repository.spoyser/repository.spoyser-1.0.4.zip','supercartoons repository')
-              downloader_is('https://spoyser-repo.googlecode.com/git/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.4.zip','supercartoons  addon')
+              downloader_is('http://xfinity.xunitytalk.com/Repositories/Spoyser.zip','supercartoons repository')
+              downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.4.zip?raw=true','supercartoons  addon')
               dlg = xbmcgui . Dialog ( )
               dlg.ok( "KIDSIL" , "צא מהתוסף וחזור כדי לראות את התוסף החדש")
         else:
