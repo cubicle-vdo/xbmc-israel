@@ -7,7 +7,7 @@ import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
 from xml.sax import saxutils as su
-import StorageServer
+#import StorageServer
 from xgoogle.search import GoogleSearch, SearchError
 __plugin__ = 'plugin.video.seretil'
 __author__ = "Hillel"
@@ -16,7 +16,7 @@ __language__ = __settings__.getLocalizedString
 __cachePeriod__ = __settings__.getSetting("cache")
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
-cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
+#cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
 
 
 
