@@ -98,7 +98,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.1.1"
+       version="1.1.2"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -222,7 +222,7 @@
 
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.5" provider-name="o2ri">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.6" provider-name="h">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>
@@ -235,7 +235,7 @@
         <summary lang="en">Watch seretil.me</summary>
         <summary lang="he">seretil</summary>
         <description lang="en">Watch video fromseretil</description>
-        <description lang="he">SERETIL By o2ri</description>
+        <description lang="he">SERETIL </description>
         <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
         <supportedcontent>
           <content>tvshows</content>
