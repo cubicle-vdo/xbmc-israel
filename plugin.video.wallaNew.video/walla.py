@@ -25,6 +25,8 @@ def CATEGORIES():
     addDir('UTF-8', "ילדים", 'englishName=kids', 1, elementId='wallavod')
     addDir('UTF-8', "סדרות", 'englishName=tvshows', 1, elementId='wallavod')
     addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='wallavod')
+    addDir('UTF-8', "תחזוקה - מחיקת זיכרון מטמון", 'englishName=maintenance', 0, elementId='wallavod',isRealFolder=False)
+    
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 
 
@@ -64,7 +66,9 @@ except:
     
 if mode==None or url==None or len(url)<1:
         CATEGORIES()
-
+elif mode==0:
+    cleanCache()
+    
 else:
         xbmc.log('in walla %s' % (module), xbmc.LOGDEBUG)
         

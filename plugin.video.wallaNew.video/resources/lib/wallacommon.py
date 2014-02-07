@@ -55,7 +55,7 @@ def getParams(arg):
 def translate(arg):
         return __language__(arg)
         
-def addDir(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', summary='', fanart=''):
+def addDir(contentType, name, url, mode, iconimage='DefaultFolder.png', elementId='', summary='', fanart='',isRealFolder=True):
         try:
            
             u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name + "&module=" + urllib.quote_plus(elementId)
@@ -64,7 +64,7 @@ def addDir(contentType, name, url, mode, iconimage='DefaultFolder.png', elementI
             if not fanart == '':
                 liz.setProperty("Fanart_Image", fanart)
                
-            ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
+            ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=isRealFolder)
             if __DEBUG__:
                  
                 print "added directory success:" + clean(contentType, name) + " url=" + clean('utf-8',u)
@@ -145,8 +145,6 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     Episode = namedtuple('Episode', ['content', 'title', 'url', 'iconImage', 'time', 'epiDetails'])    
     
     cacheKey = modulename + "_" + inUrl + "_episodes"
-    # cacheServer.delete(modulename + "%")
-    # cacheServer.cacheClean(True)
     episodes = cacheServer.get(cacheKey)
     
     
@@ -202,6 +200,13 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
 
 def convertToUTF(name):
     return clean('utf-8',name)
+
+def cleanCache():
+    print "Walla: cleaning cache for all modules "
+    cacheServer.delete("%")
+    cacheServer.cacheClean(True)
+    
+    xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, "Deleting cache for walla modules...", 5000, __icon__))
 
 def clean(contentType, name):
         
