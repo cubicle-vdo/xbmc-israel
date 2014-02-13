@@ -217,23 +217,20 @@ def INDEXchooseSeret(url):
         link=response.read()
         link2=link
         response.close()  
-        #cacheServer.table_name="seretilINDEXchooseSeret"
-        #cacheKey=str(url)
-        #movies=cacheServer.get(cacheKey)
         
         
         now=re.compile('class=\'current\'>(.*?)<').findall(link2)
         now_page =int(str(now[0]))
-        movies=[]
         lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
         lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
+        print lastpage
         i= now_page
         stop=False
         dp = xbmcgui . DialogProgress ( )
         dp.create('please wait','בפעם הבאה זה ייטען הרבה יותר מהר קצת סבלנות')
         while i <= int(lastpage) and not stop  :
                         
-            percent= ((i%30)*3.44)
+            percent= ((i%10)*10)
             dp.update(int(percent),"סבלנות","טוען קטגוריה")
             link=OPEN_URL(url2)
             match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
@@ -249,22 +246,24 @@ def INDEXchooseSeret(url):
                 if images==[]:
                      addDir(name,url,5,"")   
                                     
-                else:
-                    movies.append((name,url,images[0]))    
+                else: 
                     addDir(name,url,5,str(images[0]))
                 #addDir(name,url,5,"")
-                i+=1
-                url2 = url2[:-7]
-                if url2[len(url2)-1]=='p' :
-                        url2= url2[:-1]
-                elif url2[len(url2)-2]=='p' :
-                       url2= url2[:-2]
-                       
-                url2=url2+'page/'+str(i)+'/'
-                if (i%30 ==0):
-                        stop=True
-                        addDir("תוצאות נוספות",url2,4,"")
-                        movies.append(("more",url2))
+            print name
+            i+=1
+            url2 = url2[:-7]
+            if url2[len(url2)-1]=='p' :
+                    url2= url2[:-1]
+            elif url2[len(url2)-2]=='p' :
+                   url2= url2[:-2]
+                   
+            url2=url2+'page/'+str(i)+'/'
+            print url2
+            if (i%10 ==0):
+                    stop=True
+                    print   "test"  + url2
+                    addDir("תוצאות נוספות",url2,4,"")
+                        
                         
                         
                                                 

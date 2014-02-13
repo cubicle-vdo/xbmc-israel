@@ -222,7 +222,7 @@
 
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="1.0.6" provider-name="h">
+<addon id="plugin.video.seretil" name="seretil" version="1.0.7" provider-name="hillel">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>
