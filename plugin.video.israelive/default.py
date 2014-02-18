@@ -96,14 +96,9 @@ def play_Filmon(url):
     	return
     if (iconimage == None):
     	iconimage = "DefaultVideo.png"
-    playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-    playlist.clear()
-    liz = xbmcgui.ListItem(fullName, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    liz.setInfo( type="Video", infoLabels={ "Title":fullName} )
-    liz.setProperty("IsPlayable","true")
-    playlist.add(direct,liz)
-    if not xbmc.Player().isPlayingVideo():
-                xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
+    listitem = xbmcgui.ListItem(fullName, iconimage, iconimage)
+    listitem.setPath(direct)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def FilmonChannelGuide(url):
 	chNum, referrerCh, ChName = myFilmon.GetUrlParams(url)
@@ -164,7 +159,7 @@ def listFavorites():
         addDir('[COLOR red]No channels in your favorits[/COLOR]','',99,'','')
         addDir('[COLOR red]ADD with right click on any channel[/COLOR]','',99,'','')
     for item in data :
-        url = item["url"].encode("utf-8")
+        url = item["url"]
         name = item["name"].encode("utf-8")
         image = item["image"].encode("utf-8")
         i=url.find('myfilmon')
