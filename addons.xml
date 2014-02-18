@@ -66,7 +66,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.1.0" provider-name="BENNY123 AVIGDOR O2RI">
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="1.1.1" provider-name="BENNY123 AVIGDOR O2RI">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>

@@ -84,7 +84,9 @@ def get_params():
 
 def addDir(name,url,mode,iconimage,description):
       
+        print url
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
+        print u + 'after'
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
@@ -93,24 +95,24 @@ def addDir(name,url,mode,iconimage,description):
                     items = []
                     items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
                     items.append(('add to favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                    liz.addContextMenuItems(items = items,replaceItems=True)
+                    liz.addContextMenuItems(items = items)
+                    liz.setProperty("IsPlayable","true")
                 if mode==11 :
                      items = []
                      items.append(('add to favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
                      liz.setProperty("IsPlayable","true")
-                     liz.addContextMenuItems(items = items,replaceItems=True)
-                     #ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
+                     liz.addContextMenuItems(items = items)
                 if mode==16 :
                      items = []
                      items.append(('remove from  favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
                      liz.setProperty("IsPlayable","true")
-                     liz.addContextMenuItems(items = items,replaceItems=True)
+                     liz.addContextMenuItems(items = items)
                     
                 if mode==17 :
                     items = []
                     items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
                     items.append(('remove from  favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                    liz.addContextMenuItems(items = items,replaceItems=True)
+                    liz.addContextMenuItems(items = items)
                     
                 
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
