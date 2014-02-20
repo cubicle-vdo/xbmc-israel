@@ -96,8 +96,8 @@ def play_Filmon(url):
     	return
     if (iconimage == None):
     	iconimage = "DefaultVideo.png"
-    listitem = xbmcgui.ListItem(fullName, iconimage, iconimage)
-    listitem.setPath(direct)
+    listitem = xbmcgui.ListItem(fullName, iconimage, iconimage, path=direct)
+    listitem.setInfo( type="Video", infoLabels={ "Title":fullName} )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def FilmonChannelGuide(url):

@@ -1,3 +1,7 @@
+v1.1.2
+-fix program-name's display on filmon
+v1.1.1
+-changed the way it plays filmon
 v1.1.0
 -added favorites
 v1.0.9
