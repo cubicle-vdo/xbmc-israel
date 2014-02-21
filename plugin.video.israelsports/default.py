@@ -303,9 +303,10 @@ def mes():
 		pass
 
 
-def VIPList():
-        url=base64.b64decode('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
+def VIPList(url):
+        url=base64.b64decode(url)
         link=OPEN_URL(url)
+        print link
         link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
         match=re.compile('<title>([^<]+)</title.+?link>(.+?)</link.+?thumbnail>([^<]+)</thumbnail>').findall(link)
         for name,url,thumb in sorted(match):
@@ -349,7 +350,9 @@ def LIVE():
         addLink('SPORT 5 site live 3','rtmp://s5-s.nsacdn.com:1935/sport5_Live3Repeat/Live3_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live3&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 2','rtmp://s5-s.nsacdn.com:1935/sport5_Live2Repeat/Live2 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live2&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
         addLink('SPORT 5 site live 1','rtmp://s5-s.nsacdn.com:1935/sport5_Live1Repeat/Live1_3 swfUrl=http://playern.sport5.co.il/Plugins/RTMPPlugin.swfpageUrl=http://playern.sport5.co.il/Player.aspx?clipId=Live1&Type=live','https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/1234096_10151587235806651_42196135_a.jpg','')
-        VIPList()
+        VIPList('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
+        #addDir('k1m05', '' ,'' ,'' ,'')
+        VIPList('aHR0cHM6Ly9yYXcyLmdpdGh1Yi5jb20vbWFzaDJrMy9NYXNoVXBLMW0wNS9tYXN0ZXIvazFtMDUncyUyMHBsYXlsaXN0L3Nwb3J0c2sxLnhtbA==')
 
 
         
