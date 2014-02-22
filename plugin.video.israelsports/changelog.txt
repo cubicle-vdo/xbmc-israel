@@ -1,3 +1,5 @@
+v.1.0.8
++ live channels + בובה של לילה 
 v.1.0.5
 minor fix in live 
 v.1.0.3
