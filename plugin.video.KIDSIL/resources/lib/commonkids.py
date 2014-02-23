@@ -104,12 +104,16 @@ def addDir(name,url,mode,iconimage,description):
                 #url=urllib.unquote(url)
                 menu.append(('[COLOR blue]        הצג פרטי רשימת השמעה [/COLOR]', "XBMC.Container.Update(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=13&name=''&url=%s)"% (url)))
                 liz.addContextMenuItems(items=menu, replaceItems=True)
-                #print str ((sys.argv[0],name,url))+":::::::::::::::::test"
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         elif  mode==8 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         elif mode==11 or mode==15 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        elif mode==13:
+             menu.append(('[COLOR blue]        נגן ברצף [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=12&name=''&url=%s)"% (url)))
+             liz.addContextMenuItems(items=menu, replaceItems=True)
+             ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+            
         else :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
