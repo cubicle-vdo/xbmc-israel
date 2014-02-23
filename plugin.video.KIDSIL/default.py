@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random
 import json
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
@@ -69,8 +69,10 @@ def CATEGORIES():
         addDir('מצויירים קלאסיים','https://dl.dropboxusercontent.com/s/cwcptnocx310g00/Merry_Melodies.plx',7,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzwydiY6V_l5sE_ed7Rf66G6B8Ug2p7ajn4uPAhH2NYpDVMNBUQ','')
         addDir('Baby Einstein','TerrapinStation5',9,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
         addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
+        addDir('YES שירי','PLF11AD94724D37E02',13,'http://static.wixstatic.com/media/96e157_2b95d7111507dcbbf4d07a346b1a08bf.jpg_srz_261_263_85_22_0.50_1.20_0.00_jpg_srz','1')
+        addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
+        
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
-        addDir('Fix Walla','stam',15,'','')
         addDir('Testing 1','reshettv',16,'','')
         addDir('Testing 2','23tv',16,'','')
         setView('movies', 'default')
@@ -327,6 +329,7 @@ def PlayPlayList(playlistid):
 
                 j=j+1
                 url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50&start-index='+str (j*50-49)
+        random.shuffle(playlist1)
         for blob ,liz in playlist1:
             try:
                 if blob:
