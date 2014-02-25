@@ -143,17 +143,28 @@ class manager_wallavod:
         
         params = common.getParams(url)
         seasonId =  str(params["seasonId"])
+        limit = 100
+        if params.has_key("page"):
+            page = int(params["page"])
+        else :
+            page = 1
         
-        contentType, page = common.getData("http://ws.vod.walla.co.il/ws/mobile/android/episodes?id=" + seasonId + "&page=1&limit=100&sort=newest")
+        contentType, pageContent = common.getData("http://ws.vod.walla.co.il/ws/mobile/android/episodes?id=" + seasonId + "&page=" + str(page)  + "&limit=" + str(limit) + "&sort=newest")
+      
         if  common.__DEBUG__ == True:
             print "WALLA episodes API "
-            print page
-        resultJSON = json.loads(page)
+            print pageContent
+        resultJSON = json.loads(pageContent)
         episodes = resultJSON["episodes"]
         
+        # if we have 100 we might have another page - this is assumption there is not total items so we can't check for sure.
+        if len(episodes) == 100 :
+            common.addDir('UTF-8', "לדף הבא.....", "page=" + str(page+1) + "&seasonId=" + seasonId , self.MODES.GET_EPISODES_LIST, elementId=__NAME__)
+                    
+        i=1
         for episode in episodes:
             episodeId = str(episode["id"])
-            title = episode["title"]
+            title = "[COLOR yellow]" + str((page*limit)-limit+i) + ".   [/COLOR]" + episode["title"] 
             media = episode["media"]
             
             imageTypes = media["types"]
@@ -170,6 +181,7 @@ class manager_wallavod:
             common.addVideoLink("UTF-8",title, "item_id="+ episodeId ,self.MODES.PLAY_MODE, iconImage,elementId=__NAME__, sum=summary)
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             xbmc.executebuiltin("Container.SetViewMode(500)")
+            i=i+1
      
     def playEpisode(self,url):
         
