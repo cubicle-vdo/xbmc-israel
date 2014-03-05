@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 #code by o2ri \ avigdor based on benny123 project in navix.
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json,xbmcswift2
 AddonID = 'plugin.video.israelive'
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myFilmon,commonlive
+import myFilmon,commonlive,chardet
 from commonlive import *
 
 dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
@@ -12,6 +12,7 @@ if not os.path.exists(dire):
             os.makedirs(dire)
 __icon__='http://static2.wikia.nocookie.net/__cb20121121053458/spongebob/images/f/f4/Check-icon.png'
 __icon2__='https://svn.apache.org/repos/asf/openoffice/symphony/trunk/main/extras/source/gallery/symbols/Sign-QuestionMark02-Red.png'
+tmpList=os.path.join(dire, 'tempList.txt')
 FAV=os.path.join(dire, 'favorites.txt')
 if  not (os.path.isfile(FAV)):
     f = open(FAV, 'w') 
@@ -52,43 +53,52 @@ def update_view(url):
     
    
 def ListLive(url):
-
-        if 'Sport' in url:
-            VIPList()
+	if 'Sport' in url:
+		VIPList()
         
-        link=OPEN_URL(url)
-        link=unescape(link)
-        #print link
-        matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-        for match in matches1 :
-            #print "match=" + str(match)
-            match=match+'#'
-            if match.find('playlist') != 0 :
-                regex='name=(.*?)URL=(.*?)#'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                #print str(matches)
-                for name,url in  matches:
-                    thumb=''
-                    i=name.find('thumb')
-                    if i>0:
-                        thumb=name[i+6:]
-                        name=name[0:i]
-		    #print url
-                    i=url.find('plugin.video.MyFilmOn')
-		    if i >0:
-                        addDir('[COLOR yellow]' +name+'[/COLOR]',url,3,thumb,'')
-                    else:
-                        addDir('[COLOR yellow]'+ name+'[/COLOR]',url,11,thumb,'')  
-                
-            else:
-                regex='name=(.*?)URL=(.*?).plx'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                for name,url in matches:
-                    url=url+'.plx'
-                    if name.find('Radio') < 0 :
-                        addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
-               
-       
+	link=OPEN_URL(url)
+	link=unescape(link)
+	#print link
+	matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
+	list = []
+	for match in matches1 :
+		#print "match=" + str(match)
+		match=match+'#'
+		if match.find('playlist') != 0 :
+			regex='name=(.*?)URL=(.*?)#'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			#print str(matches)
+			for name,url in  matches:
+				thumb=''
+				i=name.find('thumb')
+				if i>0:
+					thumb=name[i+6:]
+					name=name[0:i]
+				#print url
+				name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
+				name = '[COLOR yellow]' +name+'[/COLOR]'
+				i=url.find('plugin.video.MyFilmOn')
+				if i >0:
+					addDir(name,url,3,thumb,'')
+				else:
+					addDir(name,url,11,thumb,'')  
+				data = {"url": url, "image": thumb, "name": name}
+				list.append(data)
+		else:
+			regex='name=(.*?)URL=(.*?).plx'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			for name,url in matches:
+				url=url+'.plx'
+				if name.find('Radio') < 0 :
+					name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
+					name = '[COLOR blue]'+name+'[/COLOR]'
+					addDir(name,url,2,'','')
+					data = {"url": url, "image": None, "name": name}
+					list.append(data)
+
+	with open(tmpList, 'w') as outfile:
+		json.dump(list, outfile) 
+	outfile.close()
 
 def play_Filmon(url):
     direct, fullName, iconimage = myFilmon.GetUrlStream(url)
@@ -96,9 +106,9 @@ def play_Filmon(url):
     	return
     if (iconimage == None):
     	iconimage = "DefaultVideo.png"
-    listitem = xbmcgui.ListItem(fullName, iconimage, iconimage, path=direct)
-    listitem.setInfo( type="Video", infoLabels={ "Title":fullName} )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+    listitem = xbmcswift2.ListItem(label=fullName, icon=iconimage, thumbnail=iconimage, path=direct)
+    listitem.set_info( type="Video", info_labels={ "Title":fullName} )
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem.as_xbmc_listitem())
 
 def FilmonChannelGuide(url):
 	chNum, referrerCh, ChName = myFilmon.GetUrlParams(url)
@@ -120,7 +130,8 @@ def FilmonChannelGuide(url):
 			enddatetime=datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M')
 			programmename='[{0}-{1}] [B]{2}[/B]'.format(startdatetime,enddatetime,programme[2])
 			description=programme[3]
-			addDir(programmename, chNum, 99, iconimage, description)
+			image = programme[4] if programme[4] else iconimage
+			addDir(programmename, chNum, 99, image, description)
 		
 	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 	xbmc.executebuiltin("Container.SetViewMode(504)")
@@ -141,9 +152,9 @@ def VIPList():
                                       addLink(name,link,thumb,'')
         addDir('[COLOR blue]end of  mash23k links [/COLOR]','','','','')
 
-def ReadFavories():
+def ReadFavories(fileName):
      try:
-        f = open(FAV,'r')
+        f = open(fileName,'r')
         fileContent=f.read()
         f.close()
         content=json.loads(fileContent)
@@ -153,8 +164,7 @@ def ReadFavories():
      return content
   
 def listFavorites():
-    data=ReadFavories()
-    print data
+    data=ReadFavories(FAV)
     if data==[]:
         addDir('[COLOR red]No channels in your favorits[/COLOR]','',99,'','')
         addDir('[COLOR red]ADD with right click on any channel[/COLOR]','',99,'','')
@@ -162,7 +172,7 @@ def listFavorites():
         url = item["url"]
         name = item["name"].encode("utf-8")
         image = item["image"].encode("utf-8")
-        i=url.find('myfilmon')
+        i=url.lower().find('myfilmon')
         if i >0:
 			mode = 17
         else:
@@ -170,12 +180,18 @@ def listFavorites():
         addDir('[COLOR yellow]'+ name+'[/COLOR]',url,mode,image,'')   
     
 def addFavorites(url, iconimage, name):
-    dirs=ReadFavories()
+    dirs=ReadFavories(FAV)
     #print dirs 
     for item in dirs:
-        if item["url"] == url:
+        if item["url"].lower() == url.lower():
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  Already in  favorites", 5000, __icon2__))
             return
+    
+    list=ReadFavories(tmpList)	
+    for item in list:
+		if item["name"].lower() == name.lower():
+			url = item["url"]
+			iconimage = item["image"]
     if not iconimage:
 		iconimage = ""
     data = {"url": url, "image": iconimage, "name": name}
@@ -186,11 +202,11 @@ def addFavorites(url, iconimage, name):
     xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  added to favorites", 5000, __icon__))
 	
 def removeFavorties(url):
-    dirs=ReadFavories()
+    dirs=ReadFavories(FAV)
     #print dirs 
     for item in dirs:
         #print item
-        if item["url"] == url:
+        if item["url"].lower() == url.lower():
           dirs.remove(item)
           with open(FAV, 'w') as outfile:
             json.dump(dirs, outfile) 

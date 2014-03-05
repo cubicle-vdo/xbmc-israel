@@ -82,45 +82,35 @@ def get_params():
                                 
         return param
 
-def addDir(name,url,mode,iconimage,description):
+def addDir(name,url,mode,iconimage,description,isFolder=True):
       
-        print url
+        #print url
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
-        print u + 'after'
+        #print u + 'after'
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-        if mode==3 or mode==8 or mode==6 or mode==99 or mode==11 or mode==16 or mode==17   :
+        if mode==7 or mode==8 or mode==6 or mode==99:
+                isFolder=False
+        elif mode==3 or mode==11 or mode==16 or mode==17:
+                isFolder=False
+                liz.setProperty("IsPlayable","true")
+                items = []
+
                 if mode==3:
-                    items = []
                     items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-                    items.append(('add to favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                    liz.addContextMenuItems(items = items)
-                    liz.setProperty("IsPlayable","true")
+                    items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
                 if mode==11 :
-                     items = []
-                     items.append(('add to favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                     liz.setProperty("IsPlayable","true")
-                     liz.addContextMenuItems(items = items)
+                     items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
                 if mode==16 :
-                     items = []
-                     items.append(('remove from  favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                     liz.setProperty("IsPlayable","true")
-                     liz.addContextMenuItems(items = items)
-                    
+                     items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
                 if mode==17 :
-                    items = []
                     items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-                    items.append(('remove from  favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                    liz.addContextMenuItems(items = items)
-                    
-                
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-                
-        elif  mode==7 :
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-        else:
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+                    items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+
+                liz.addContextMenuItems(items = items)
+
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
         return ok
 #same as above but this is addlink this is where you pass your playable content so you dont use addDir you use addLink "url" is always the playable content         
 def addLink(name,url,iconimage,description):
