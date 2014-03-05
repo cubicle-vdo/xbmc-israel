@@ -24,14 +24,18 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None):
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName)
 
 	fullName = " [B]{0}[/B]".format(channelName)
+	image = None
 	
 	if len(tvGuide) > 0:
 		programme = tvGuide[0]
 		fullName = "{0} - {1}".format(fullName, programme[2])
 		fullName = '{0} [{1}-{2}]'.format(fullName, datetime.datetime.fromtimestamp(programme[0]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M'))
+		image = programme[4]
 
+	if not image:
+		image = iconimage
 	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
-	return streamUrl, fullName, iconimage
+	return streamUrl, fullName, image
 
 def GetChannelGuide(chNum):
 	prms = GetChannelJson(chNum)
@@ -77,7 +81,8 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None):
 					continue
 				description = prm["programme_description"]
 				programmename = prm["programme_name"]
-				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8')))
+				image = None if not prm.has_key("images") or len(prm["images"]) == 0 else prm["images"][0]["url"]
+				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8'), image))
 		elif prms.has_key("now_playing") and len(prms["now_playing"]) > 0:
 			now_playing = prms["now_playing"]
 			startdatetime = int(now_playing["startdatetime"])
@@ -86,7 +91,8 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None):
 			if startdatetime < server_time and server_time < enddatetime:
 				description = now_playing["programme_description"]
 				programmename = now_playing["programme_name"]
-				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8')))
+				image = None if not prms.has_key("images") or len(prms["images"]) == 0 else prms["images"][0]["url"]
+				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8'), image))
 	
 	streamUrl = "{0} tcUrl={0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
 	return channelName, channelDescription, iconimage, streamUrl, tvGuide
