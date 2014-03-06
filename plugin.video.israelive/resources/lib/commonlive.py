@@ -84,34 +84,39 @@ def get_params():
 
 def addDir(name,url,mode,iconimage,description,isFolder=True):
       
-        #print url
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
-        #print u + 'after'
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-        if mode==7 or mode==8 or mode==6 or mode==99:
-                isFolder=False
-        elif mode==3 or mode==11 or mode==16 or mode==17:
-                isFolder=False
-                liz.setProperty("IsPlayable","true")
-                items = []
+	#print url
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
+	#print u + 'after'
+	ok=True
+	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
+	
+	if mode==7 or mode==8 or mode==6 or mode==99 or mode==3 or mode==11 or mode==16 or mode==17:
+		isFolder=False
+	
+	if mode==3 or mode==11 or mode==16 or mode==17:
+		liz.setProperty("IsPlayable","true")
+		items = []
 
-                if mode==3:
-                    items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-                    items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                if mode==11 :
-                     items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                if mode==16 :
-                     items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-                if mode==17 :
-                    items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-                    items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+		if mode==3:
+			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+		elif mode==11 :
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+		elif mode==16 :
+			items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+		elif mode==17 :
+			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
+			items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
 
-                liz.addContextMenuItems(items = items)
+		liz.addContextMenuItems(items = items)
+	
+	elif mode == 99:
+		liz.setProperty("Fanart_Image", iconimage)
 
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
-        return ok
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
+	return ok
+	
 #same as above but this is addlink this is where you pass your playable content so you dont use addDir you use addLink "url" is always the playable content         
 def addLink(name,url,iconimage,description):
         #print "once"

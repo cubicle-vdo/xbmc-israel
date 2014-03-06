@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #code by o2ri \ avigdor based on benny123 project in navix.
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json,xbmcswift2
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json
 AddonID = 'plugin.video.israelive'
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
@@ -101,14 +101,14 @@ def ListLive(url):
 	outfile.close()
 
 def play_Filmon(url):
-    direct, fullName, iconimage = myFilmon.GetUrlStream(url)
+    direct, channelName, programmeName, iconimage = myFilmon.GetUrlStream(url)
     if direct == None:
     	return
-    if (iconimage == None):
-    	iconimage = "DefaultVideo.png"
-    listitem = xbmcswift2.ListItem(label=fullName, icon=iconimage, thumbnail=iconimage, path=direct)
-    listitem.set_info( type="Video", info_labels={ "Title":fullName} )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem.as_xbmc_listitem())
+
+    listItem = xbmcgui.ListItem(path=direct)
+    listItem.setInfo(type="Video", infoLabels={ "Title": programmeName, "studio": channelName})
+    #listItem.setThumbnailImage(iconimage)
+    xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
 def FilmonChannelGuide(url):
 	chNum, referrerCh, ChName = myFilmon.GetUrlParams(url)
