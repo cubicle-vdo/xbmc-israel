@@ -1,3 +1,5 @@
+[B]Version 1.0.4[/B]
+-now working without walla.new intsalled
 [B]Version 1.0.1[/B]
 - Fix hebrew text for Frodo
 
