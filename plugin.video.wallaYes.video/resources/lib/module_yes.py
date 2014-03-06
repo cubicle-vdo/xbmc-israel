@@ -13,7 +13,7 @@ __NAME__ = 'yes'
 __PATTERN__ = 'top"><a href="(.+?)" class="w2b">'
 __PATTERN_MORE__ = 'class="p_r"\sstyle=""\shref="(.*?)"'
 __PATTERN_FEATURED__ = ''
-__settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
+__settings__ = xbmcaddon.Addon(id='plugin.video.wallaYes.video')
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 
 class manager_yes:

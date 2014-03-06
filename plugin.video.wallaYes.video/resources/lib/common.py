@@ -11,7 +11,7 @@ __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, 
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time,cookielib
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
+__settings__ = xbmcaddon.Addon(id='plugin.video.wallaYes.video')
 __language__ = __settings__.getLocalizedString
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
