@@ -19,23 +19,26 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None):
 		
 	if prms == None:
 		print '--------- Playing Error: there is no channel with id="{0}" ---------'.format(chNum)
-		return None,None,None
+		return None,None,None,None
 		
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName)
 
-	fullName = " [B]{0}[/B]".format(channelName)
-	image = None
+	channelName = "[B]{0}[/B]".format(channelName)
 	
 	if len(tvGuide) > 0:
 		programme = tvGuide[0]
-		fullName = "{0} - {1}".format(fullName, programme[2])
-		fullName = '{0} [{1}-{2}]'.format(fullName, datetime.datetime.fromtimestamp(programme[0]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M'))
-		image = programme[4]
+		programmeName = '[B]{0}[/B] [{1}-{2}]'.format(programme[2], datetime.datetime.fromtimestamp(programme[0]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M'))
+		#image = programme[4]
+		if len(tvGuide) > 1:
+			nextProgramme = tvGuide[1]
+			channelName = "[COLOR yellow]{0}[/COLOR] - [COLOR white]Next: [B]{1}[/B] [{2}-{3}][/COLOR]".format(channelName, nextProgramme[2], datetime.datetime.fromtimestamp(nextProgramme[0]).strftime('%H:%M'), datetime.datetime.fromtimestamp(nextProgramme[1]).strftime('%H:%M'))
+	else:
+		programmeName = channelName
+		channelName = "[COLOR yellow]{0}[/COLOR]".format(channelName)
+		#image = iconimage
 
-	if not image:
-		image = iconimage
 	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
-	return streamUrl, fullName, image
+	return streamUrl, channelName, programmeName, iconimage #, image
 
 def GetChannelGuide(chNum):
 	prms = GetChannelJson(chNum)
@@ -109,21 +112,25 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 		req.add_header(k, v)
 	
 	response = urllib2.urlopen(req)
-	link = response.read()
-	response.close()
-
+	
 	if justCookie == True:
 		if response.info().has_key("Set-Cookie"):
-			return response.info()['Set-Cookie']
-		return None
+			data = response.info()['Set-Cookie']
+		else:
+			data = None
+	else:
+		data = response.read()
 	
-	return link
+	response.close()
+	return data
 	
 def GetChannelHtml(chNum):
 	url1 = 'http://www.filmon.com/tv/htmlmain'
 	url2 = 'http://www.filmon.com/ajax/getChannelInfo'
 	
 	cookie = OpenURL(url1, justCookie=True)
+	if cookie == None:
+		return None
 	headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
 	user_data = {'channel_id': chNum}
 
