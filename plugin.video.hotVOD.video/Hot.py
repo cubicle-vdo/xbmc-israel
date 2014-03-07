@@ -51,10 +51,10 @@ def SERIES(url):
 
 def SHOWING_NOW(url):
     page = getData(url)
-    print page
+    #print page
     shows = re.compile('<tr height=25px>.*?<a href=\'(.*?)\'.*?>(.*?)</a>',re.I+re.M+re.U+re.S).findall(page)
     sorted_movies=[]
-    print shows
+    #print shows
     for href, title in shows:
         title = title.replace('&nbsp;', ' ').replace('&quat;', '"').replace('&#39;', '\'')
         seriesId = re.compile('L-(\d+),').findall(href)[0]
@@ -72,70 +72,137 @@ def SHOWING_NOW(url):
             
 def SEASONS(url):
     page = getData(url)
-    seriesId = re.compile('L-(\d+.*?),').findall(url)[0]
-    if (seriesId.find('-') > -1):
-        seriesId = seriesId[0:seriesId.index('-')]
-    availSeasons = re.compile('<tr id=\'tr_\d\'(.*?)</tr>').findall(page)
-    mainUrl = re.compile('AjaxItemsUrl:"(.+?)videoId').findall(page)
-    if len(availSeasons) > 0:
-        # if we have different menu items we need to extract names and actions....
-        for item in availSeasons:
-            menuItems = re.compile('topSrsLoadVidItems\((.+?)\);">.*?110px;\'>(.+?)<').findall(item)
-            if len(menuItems) > 0:
-                urlId = '/Ext/Comp/Hot/TopSeriesPlayer_Hot/CdaTopSeriesPlayer_VidItems_Hot/0,13031,L-' + seriesId + '-' + menuItems[0][0] + '-0-0,00.html'
-                name = menuItems[0][1]
-            else :
-                menuItems = re.compile('window.location=\'(.+?)\'">.*?class.*?>(.+?)<').findall(item)
+    if 'meta property="og:video"' in page :
+        blockurl=re.compile('og:video(.*?)manifest').findall(page)
+        #print blockurl
+        directurl=re.compile('http(.*?)mp4').findall(blockurl[0])
+        directurl=urllib.unquote('http'+directurl+'mp4')
+        #print directurl
+        listItem = xbmcgui.ListItem('video', 'DefaultFolder.png', 'DefaultFolder.png', path=directurl)
+        listItem.setPath(directurl)        
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listItem)
+        
+    else:
+        seriesId = re.compile('L-(\d+.*?),').findall(url)[0]
+        if (seriesId.find('-') > -1):
+            seriesId = seriesId[0:seriesId.index('-')]
+        availSeasons = re.compile('<tr id=\'tr_\d\'(.*?)</tr>').findall(page)
+        mainUrl = re.compile('AjaxItemsUrl:"(.+?)videoId').findall(page)
+        if len(availSeasons) > 0:
+            # if we have different menu items we need to extract names and actions....
+            for item in availSeasons:
+                menuItems = re.compile('topSrsLoadVidItems\((.+?)\);">.*?110px;\'>(.+?)<').findall(item)
                 if len(menuItems) > 0:
-                    urlId = menuItems[0][0]
+                    urlId = '/Ext/Comp/Hot/TopSeriesPlayer_Hot/CdaTopSeriesPlayer_VidItems_Hot/0,13031,L-' + seriesId + '-' + menuItems[0][0] + '-0-0,00.html'
                     name = menuItems[0][1]
-            
-            if not urlId == None and not name == None:
-                name = name.replace('&nbsp;', ' ').replace('&quat;', '"').replace('&#39;', '\'')
-                if urlId.find('/Ext/') !=-1:
-                    addDir(name, 'http://hot.ynet.co.il' + urlId, 3, 'DefaultFolder.png', mainUrl[0])
-                else: # sometimes its just another link to a series page 
-                    addDir(name, 'http://hot.ynet.co.il' + urlId, 2, 'DefaultFolder.png', mainUrl[0])
-#    else :     
-#        # we only show the episodes on the page.
-#        EPISODES(url)
+                else :
+                    menuItems = re.compile('window.location=\'(.+?)\'">.*?class.*?>(.+?)<').findall(item)
+                    if len(menuItems) > 0:
+                        urlId = menuItems[0][0]
+                        name = menuItems[0][1]
+                if len(availSeasons)==1 and name.find('סרט') !=-1:
+                  print 'name is' + str (name)
+                  #addDir(name, 'http://hot.ynet.co.il' + urlId, 2, 'DefaultFolder.png', mainUrl[0])
+                  addDir(name, url, 6, 'DefaultFolder.png',urlId)
+                  #EPISODES2(url)
+                    
+                else:    
+                    if not urlId == None and not name == None:
+                        name = name.replace('&nbsp;', ' ').replace('&quat;', '"').replace('&#39;', '\'')
+                        if urlId.find('/Ext/') !=-1:
+                            addDir(name, 'http://hot.ynet.co.il' + urlId, 3, 'DefaultFolder.png', mainUrl[0])
+                        else: # sometimes its just another link to a series page 
+                            addDir(name, 'http://hot.ynet.co.il' + urlId, 2, 'DefaultFolder.png', mainUrl[0])
+        
+    
+    
+    #    else :     
+    #         we only show the episodes on the page.
+    #    print "got here"
+    #    EPISODES2(url)
 
-def EPISODES(url, mainUrl):
-    page = getData(url)
+def EPISODES2(url,module):
+    #print "hhhhhhh" + url
+    page = getData('http://hot.ynet.co.il'+module)
     sections = re.compile('<table border=0 cellspacing=0 cellpadding=0 height=100%(.*?)</table></div>.*?</t').findall(page)
+    #print sections
     if len(sections) > 0:
         for item in sections:
             images = re.compile('<img id=\'topSrsImg.*?src=\'(.+?)\'').findall(item)
             titles = re.compile('1;\'>(.+?)<').findall(item)
             details = re.compile('/div><font.*?topSrsUpdateStage\(\'small\',\d+\);">(.+?)</font').findall(item)
             urls = re.compile('topSrsUpdateStage.*?\(\'small\',(\d+)\)').findall(item)
+            print "gagagagag"+ str (urls[0])
             if len(urls) > 0: # we must have a url to continue
-                if len(images) == 0:
-                    images = 'DefaultVideo.png'
-                else:
-                    images = images[0]
-                if len(titles) == 0:
-                    titles = __language__(30003)
-                else:
-                    titles = urllib.unquote(titles[0])
-                if len(details) == 0:
-                    details = ''
-                else:
-                    details = urllib.unquote(details[0])
-                titles = titles.replace('&nbsp;', ' ').replace('&quot;', '"').replace('&#39;', '\'')
-                addVideoLink(titles, 'http://hot.ynet.co.il' + mainUrl + urls[0] + '-0,00.html', 4, images, details)
+                page = getData(url[:-8]+'-'+urls[0]+',00.html')
+                
+                if 'meta property="og:video"' in page :
+                    
+                    blockurl=re.compile('og:video(.*?)manifest').findall(page)
+                    
+                    directurl=re.compile('%3A%2F%2F(.*?)mp4').findall(blockurl[0])                    
+                    print directurl
+                    directurl=urllib.unquote('http://'+directurl[0]+'mp4')
+                    directurl=directurl.replace('/z','')
+                    listItem = xbmcgui.ListItem(name, 'DefaultFolder.png', 'DefaultFolder.png', path=directurl) 
+                    listItem.setInfo( type="Video", infoLabels={ "Title":name} )
+                    listItem.setPath(directurl)        
+                    #print directurl
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listItem)
+                    
         
-        xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-        xbmc.executebuiltin("Container.SetViewMode(500)")# see the image view
         
+         
+         
+def EPISODES(url, mainUrl):
+    
+    page = getData(url)
+    if 'meta property="og:video"' in page :
+        
+        blockurl=re.compile('og:video(.*?)manifest').findall(page)
+        directurl=re.compile('http(.*?)mp4').findall(blockurl[0])
+        directurl=urllib.unquote('http'+directurl+'mp4')
+        #print directurl
+        listItem = xbmcgui.ListItem('video', 'DefaultFolder.png', 'DefaultFolder.png', path=directurl)
+        listItem.setPath(directurl)        
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listItem)
+        
+    else:
+        sections = re.compile('<table border=0 cellspacing=0 cellpadding=0 height=100%(.*?)</table></div>.*?</t').findall(page)
+        if len(sections) > 0:
+            for item in sections:
+                images = re.compile('<img id=\'topSrsImg.*?src=\'(.+?)\'').findall(item)
+                titles = re.compile('1;\'>(.+?)<').findall(item)
+                details = re.compile('/div><font.*?topSrsUpdateStage\(\'small\',\d+\);">(.+?)</font').findall(item)
+                urls = re.compile('topSrsUpdateStage.*?\(\'small\',(\d+)\)').findall(item)
+                if len(urls) > 0: # we must have a url to continue
+                    if len(images) == 0:
+                        images = 'DefaultVideo.png'
+                    else:
+                        images = images[0]
+                    if len(titles) == 0:
+                        titles = __language__(30003)
+                    else:
+                        titles = urllib.unquote(titles[0])
+                    if len(details) == 0:
+                        details = ''
+                    else:
+                        details = urllib.unquote(details[0])
+                    titles = titles.replace('&nbsp;', ' ').replace('&quot;', '"').replace('&#39;', '\'')
+                    addVideoLink(titles, 'http://hot.ynet.co.il' + mainUrl + urls[0] + '-0,00.html', 4, images, details)
+            
+            xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+            xbmc.executebuiltin("Container.SetViewMode(500)")# see the image view
+            print   'urls='+ str(urls[0])
+            
 def PLAY_MOVIE(url, name):
     page = getData(url, 0) #'http://hot.ynet.co.il/Cmn/App/Video/CmmAppVideoApi_AjaxItems/0,0,'+url+'-0,00.html'
     videoUrl = re.compile('path":"(.+?)"').findall(page)
-    print str(videoUrl[0])
+    
     #http://ynethd-f.akamaihd.net/z/1112/hot/1411121445ima_veabaz_1_ynet.mp4/manifest.f4m
     videoUrl[0]=videoUrl[0][:-13]
     videoUrl[0]=videoUrl[0].replace('/z/','/').replace(' ','%20')
-    print str(videoUrl[0])
+    
     
     if len(videoUrl) > 0:
         videoPlayListUrl = videoUrl[0]
@@ -153,6 +220,9 @@ name=None
 mode=None
 module=None
 page=None
+
+
+
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -174,7 +244,7 @@ try:
         page=urllib.unquote_plus(params["page"])
 except:
         pass
-    
+
 if mode==None or url==None or len(url)<1:
     GENRES()
 
@@ -192,7 +262,8 @@ elif mode==4:
 
 elif mode==5:
     SHOWING_NOW(url)   
-          
+elif mode==6:    
+    EPISODES2(url,module)      
 else:
         manager = getattr(__import__('module_' + module.lower()), 'manager_' + module)()
         manager.work(mode, url, name, page)

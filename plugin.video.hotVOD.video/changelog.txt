@@ -1,3 +1,5 @@
+[B]Version 1.1.4[/B]
+-fixed channel 8 to work
 [B]Version 1.1.1[/B]
 -added internal links to work
 [B]Version 1.1.0[/B]
