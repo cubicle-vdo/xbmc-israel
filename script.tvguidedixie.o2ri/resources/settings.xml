@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+	<category label="30101">
+		<setting id="source" label="30101" type="labelenum" default="DIXIE"
+                 values="XMLTV|DIXIE" />
+
+        <setting id="xmltv.file" label="30103" type="file" visible="eq(-1,0)" />
+        <setting id="xmltv.logo.folder" label="30116" type="folder" visible="eq(-2,0)"/>
+
+        <setting id="dixie.url" label="30117" type="labelenum" values="o2ri|selected" default="selected" visible="eq(-3,1)"/>
+ 		<setting id="gmtfrom" label="30124" type="labelenum"  default="GMT"
+					values="GMT-12|GMT-11|GMT-10|GMT-9|GMT-8|GMT-7|GMT-6|GMT-5|GMT-4|GMT-3|GMT-2|GMT-1|GMT|GMT+1|GMT+2|GMT+3|GMT+4|GMT+5|GMT+6|GMT+7|GMT+8|GMT+9|GMT+10|GMT+11|GMT+12"
+					visible="eq(-4,1)" />
+		<setting label="Download Default Logo Pack" type="action" action="RunScript($CWD/logoDownloader.py)" visible="eq(-5,1)" />
+		<setting id="dixie.logo.folder" label="Choose Logo Pack" type="select"  source="../../userdata/addon_data/script.tvguidedixie.o2ri/extras/logos/" mask="/" default="" visible="eq(-6,1)" />
+        
+	<setting id="gmtprev" type="text" label="Previous GMT" default="0" visible="false"/>
+	<setting id="categories" label="categories" type="text" default="" visible="false"/>
+    </category>
+
+    <category label="30114">
+        <setting id="dixie.skin" label="Choose Skin Style" type="select" source="../../userdata/addon_data/script.tvguidedixie.o2ri/extras/skins/" mask="/" default="Dixie"/>
+        <setting id="idle" label="Quit Stream If Idle For" type="enum" values="Never|1 Hour|2 Hours|3 Hours|4 Hours" default="3" />
+        <setting id="mashmode" type="text" label="MASHMODE" default="false" visible="false"/>
+        <setting id="autoStart" label="Start Automatically (requires reboot)" type="bool" default="false" />
+        <setting id="enable.osd" label="30118" type="bool" default="true" enable="eq(2,false)" />
+        
+        <setting label="30119" type="lsep" />
+        <setting id="alternative.playback" label="30120" type="bool" default="false" />
+        <setting label="30121" type="lsep" />
+    </category>
+
+    <category label="30112">
+        <setting id="notifications.enabled" label="30106" type="bool" default="false" />
+        <setting label="30108" type="action" action="RunScript($CWD/notification.py)" />
+    </category>
+    
+    <category label="30122">
+        <setting id="enable.touch" label="30123" type="bool" default="false" />
+    </category>
+    
+    <category label="30125">
+        <setting label="30126" type="action" action="RunScript($CWD/deleteDB.py)" />
+    </category>
+    
+    
+</settings>
+
