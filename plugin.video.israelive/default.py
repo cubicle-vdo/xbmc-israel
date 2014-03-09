@@ -2,6 +2,7 @@
 #code by o2ri \ avigdor based on benny123 project in navix.
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json
 AddonID = 'plugin.video.israelive'
+Addon = xbmcaddon.Addon()
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
 import myFilmon,commonlive,chardet
@@ -22,27 +23,30 @@ if  not (os.path.isfile(FAV)):
 def CATEGORIES():
     Announcements()
     addDir('הערוצים שלי','favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
-    addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
-    addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
-    addDir('ילדים','https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
-    addDir('בידור','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
-    addDir('סרטים','https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
-    addDir('מוזיקה','https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
-    addDir('חדשות','https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
-    addDir('מדע וטבע','https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
-    addDir('ספורט','https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
-    addDir('עולם','https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
-   
-
-    if   os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
-        addDir('iLive.to','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
+	
+    isTVlight = False if (Addon.getSetting('TV-LightPlaylist').lower() == 'false') else True
+    
+    if isTVlight == True:
+		ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/TVlight/tvlight.plx')
     else:
-        addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
-            
-    if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
+		addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
+		addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
+		addDir('ילדים','https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
+		addDir('בידור','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
+		addDir('סרטים','https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
+		addDir('מוזיקה','https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
+		addDir('חדשות','https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
+		addDir('מדע וטבע','https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
+		addDir('ספורט','https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
+		addDir('עולם','https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
+
+		if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
+			addDir('iLive.to','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
+		else:
+			addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
+				
+    if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
          addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://superrepo.brantje.com//Frodo/All/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
-         
-        
 
 def update_view(url):
 
@@ -57,8 +61,9 @@ def ListLive(url):
 		VIPList()
         
 	link=OPEN_URL(url)
-	link=unescape(link)
 	#print link
+	link=unescape(link)
+	
 	matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
 	list = []
 	for match in matches1 :
@@ -90,9 +95,14 @@ def ListLive(url):
 			for name,url in matches:
 				url=url+'.plx'
 				if name.find('Radio') < 0 :
+					thumb=''
+					i=name.find('thumb')
+					if i>0:
+						thumb=name[i+6:]
+						name=name[0:i]
 					name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
 					name = '[COLOR blue]'+name+'[/COLOR]'
-					addDir(name,url,2,'','')
+					addDir(name,url,2,thumb,'')
 					data = {"url": url, "image": None, "name": name}
 					list.append(data)
 
