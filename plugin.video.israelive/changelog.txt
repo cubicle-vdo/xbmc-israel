@@ -1,5 +1,7 @@
+v1.1.4
+-added choose TV-Light (or Full-List [default]) from plugin settings.
 v1.1.3
--fixed adding some urls to favorites/
+-fixed adding some urls to favorites.
 -added now showing also next program on filmon channels
 -added now showing programs' pictures in tv-guide for filmon channels
 v1.1.2
