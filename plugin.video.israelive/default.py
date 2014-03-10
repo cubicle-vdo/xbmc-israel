@@ -23,11 +23,13 @@ if  not (os.path.isfile(FAV)):
 def CATEGORIES():
     Announcements()
     addDir('הערוצים שלי','favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
-	
+    
     isTVlight = False if (Addon.getSetting('TV-LightPlaylist').lower() == 'false') else True
     
     if isTVlight == True:
-		ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/TVlight/tvlight.plx')
+        ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/TVlight/tvlight.plx')
+        if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
+         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://superrepo.brantje.com//Frodo/All/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
     else:
 		addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
 		addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
@@ -94,7 +96,7 @@ def ListLive(url):
 			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
 			for name,url in matches:
 				url=url+'.plx'
-				if name.find('Radio') < 0 :
+				if name.find('Scripts section') < 0 :
 					thumb=''
 					i=name.find('thumb')
 					if i>0:
