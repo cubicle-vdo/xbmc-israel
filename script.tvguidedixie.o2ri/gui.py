@@ -736,7 +736,7 @@ class TVGuide(xbmcgui.WindowXML):
             if not wasPlaying:
                 self._hideControl(self.C_MAIN_BLACKOUT)
             path = os.path.join(ADDON.getAddonInfo('path'), 'player.py')
-            xbmc.executebuiltin('XBMC.RunScript(%s,%s,%d)' % (path, url, self.osdEnabled))
+            xbmc.executebuiltin('XBMC.RunScript(%s,%s,%d,%s,%s)' % (path, url, self.osdEnabled, channel.title, channel.logo))
 
             if not wasPlaying:
                 self._hideEpg()
