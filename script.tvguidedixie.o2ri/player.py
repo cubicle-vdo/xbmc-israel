@@ -28,11 +28,14 @@ def CheckIdle(maxIdle):
         xbmc.Player().stop()
 
 
-def play(url, windowed):
+def play(url, windowed, title, logo):
+    listItem = xbmcgui.ListItem(title, iconImage = logo, thumbnailImage = logo)
+    #listItem.setInfo(type="Video", infoLabels={ "Title": channel.title})
+    #listItem.setProperty("Fanart_Image", channel.logo)
     ADDON = xbmcaddon.Addon(id = 'script.tvguidedixie.o2ri')
     maxIdle = int(ADDON.getSetting('idle')) * 60 * 60
     if not checkForAlternateStreaming(url):
-        xbmc.Player().play(item = url, windowed = windowed)
+        xbmc.Player().play(item = url, windowed = windowed, listitem=listItem)
         print '****** Attempt 1 ******'
         print url
         xbmc.sleep(100)
@@ -115,7 +118,7 @@ def alternateStream(url):
 
 
 if __name__ == '__main__': 
-    play(sys.argv[1], sys.argv[2] == 1)
+    play(sys.argv[1], sys.argv[2] == 1, sys.argv[3], sys.argv[4])
 
 
 # expattv
