@@ -80,22 +80,6 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="israelsports" version="1.0.9" provider-name="XAVI 6 ">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">Plays episodes from sport5 and one.co.il site</summary>
-    <description lang="en">This addon parse sport5 site and one.co.il  you should check sport5 TOS before you using. It's as is</description>
-	 <description lang="he">יש לבדוק תנאי השימוש באתר- התוסף נבנה לצרכי לימוד פייטון</description>
-	<disclaimer>This addon parse sport5 site, you should check sport5 TOS before you using. It's as is</disclaimer>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
        version="1.1.4"
@@ -159,22 +143,6 @@
           <content>movies</content>
         </supportedcontent>
     </extension>
-</addon>
-
-<addon id="plugin.video.nana10tv" name="Nana10tv" version="1.0.3" provider-name="anonymous">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">Plays episodes from nana10 site</summary>
-    <description lang="en">This addon parse nana10 site, you should check nana10 TOS before you using. It's as is</description>
-	 <description lang="he">התוסף מציג תכנים מאתר נענע10 יש לבדוק תנאי השימוש באתר לפני השימוש בתוסף</description>
-	<disclaimer>This addon parse nana10 site, you should check nana10 TOS before you using. It's as is</disclaimer>
-    <platform>all</platform>
-  </extension>
 </addon>
 
 <addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
