@@ -1,3 +1,6 @@
+v.2.0.2
+Added Logo and Channel-name (taking from the TV-Guide) is now showing when playing a channel
+
 v1.5.5
 Updated addons.ini file loading process.
 
