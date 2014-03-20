@@ -50,7 +50,12 @@ def addDir(name, url, mode, iconimage='DefaultFolder.png', elementId=None, summa
         liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(name), "Plot": urllib.unquote(summary)})
         if not fanart == '':
             liz.setProperty("Fanart_Image", fanart)
-        ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
+        if mode==6:
+            liz.setProperty("IsPlayable","true")
+            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=False)
+            
+        else:
+            ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
         return ok
 
 def addVideoLink(name, url, mode, iconimage='DefaultFolder.png', summary = ''):

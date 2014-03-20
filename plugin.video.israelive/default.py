@@ -2,9 +2,10 @@
 #code by o2ri \ avigdor based on benny123 project in navix.
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json
 AddonID = 'plugin.video.israelive'
+Addon = xbmcaddon.Addon()
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myFilmon,commonlive
+import myFilmon,commonlive,chardet
 from commonlive import *
 
 dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
@@ -12,6 +13,7 @@ if not os.path.exists(dire):
             os.makedirs(dire)
 __icon__='http://static2.wikia.nocookie.net/__cb20121121053458/spongebob/images/f/f4/Check-icon.png'
 __icon2__='https://svn.apache.org/repos/asf/openoffice/symphony/trunk/main/extras/source/gallery/symbols/Sign-QuestionMark02-Red.png'
+tmpList=os.path.join(dire, 'tempList.txt')
 FAV=os.path.join(dire, 'favorites.txt')
 if  not (os.path.isfile(FAV)):
     f = open(FAV, 'w') 
@@ -21,27 +23,30 @@ if  not (os.path.isfile(FAV)):
 def CATEGORIES():
     Announcements()
     addDir('הערוצים שלי','favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
-    addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
-    addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
-    addDir('ילדים','https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
-    addDir('בידור','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
-    addDir('סרטים','https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
-    addDir('מוזיקה','https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
-    addDir('חדשות','https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
-    addDir('מדע וטבע','https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
-    addDir('ספורט','https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
-    addDir('עולם','https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
-   
-
-    if   os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
-        addDir('iLive.to','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
+    
+    isTVlight = False if (Addon.getSetting('TV-LightPlaylist').lower() == 'false') else True
+    
+    if isTVlight == True:
+        ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/TVlight/tvlight.plx')
     else:
-        addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
-            
-    if    not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
+		addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
+		#addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
+		addDir('ילדים','https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
+		addDir('בידור','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
+		addDir('סרטים','https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
+		addDir('מוזיקה','https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
+		addDir('חדשות','https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
+		addDir('מדע וטבע','https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
+		addDir('ספורט','https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
+		addDir('עולם','https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
+
+		if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
+			addDir('iLive.to','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
+		else:
+			addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
+				
+    if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
          addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://superrepo.brantje.com//Frodo/All/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
-         
-        
 
 def update_view(url):
 
@@ -52,53 +57,68 @@ def update_view(url):
     
    
 def ListLive(url):
-
-        if 'Sport' in url:
-            VIPList()
+	if 'Sport' in url:
+		VIPList()
         
-        link=OPEN_URL(url)
-        link=unescape(link)
-        #print link
-        matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-        for match in matches1 :
-            #print "match=" + str(match)
-            match=match+'#'
-            if match.find('playlist') != 0 :
-                regex='name=(.*?)URL=(.*?)#'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                #print str(matches)
-                for name,url in  matches:
-                    thumb=''
-                    i=name.find('thumb')
-                    if i>0:
-                        thumb=name[i+6:]
-                        name=name[0:i]
-		    #print url
-                    i=url.find('plugin.video.MyFilmOn')
-		    if i >0:
-                        addDir('[COLOR yellow]' +name+'[/COLOR]',url,3,thumb,'')
-                    else:
-                        addDir('[COLOR yellow]'+ name+'[/COLOR]',url,11,thumb,'')  
-                
-            else:
-                regex='name=(.*?)URL=(.*?).plx'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                for name,url in matches:
-                    url=url+'.plx'
-                    if name.find('Radio') < 0 :
-                        addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
-               
-       
+	link=OPEN_URL(url)
+	#print link
+	link=unescape(link)
+	
+	matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
+	list = []
+	for match in matches1 :
+		#print "match=" + str(match)
+		match=match+'#'
+		if match.find('playlist') != 0 :
+			regex='name=(.*?)URL=(.*?)#'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			#print str(matches)
+			for name,url in  matches:
+				thumb=''
+				i=name.find('thumb')
+				if i>0:
+					thumb=name[i+6:]
+					name=name[0:i]
+				#print url
+				name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
+				name = '[COLOR yellow]' +name+'[/COLOR]'
+				i=url.find('plugin.video.MyFilmOn')
+				if i >0:
+					addDir(name,url,3,thumb,'')
+				else:
+					addDir(name,url,11,thumb,'')  
+				data = {"url": url, "image": thumb, "name": name}
+				list.append(data)
+		else:
+			regex='name=(.*?)URL=(.*?).plx'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			for name,url in matches:
+				url=url+'.plx'
+				if name.find('Scripts section') < 0 :
+					thumb=''
+					i=name.find('thumb')
+					if i>0:
+						thumb=name[i+6:]
+						name=name[0:i]
+					name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
+					name = '[COLOR blue]'+name+'[/COLOR]'
+					addDir(name,url,2,thumb,'')
+					data = {"url": url, "image": None, "name": name}
+					list.append(data)
+
+	with open(tmpList, 'w') as outfile:
+		json.dump(list, outfile) 
+	outfile.close()
 
 def play_Filmon(url):
-    direct, fullName, iconimage = myFilmon.GetUrlStream(url)
+    direct, channelName, programmeName, iconimage = myFilmon.GetUrlStream(url)
     if direct == None:
     	return
-    if (iconimage == None):
-    	iconimage = "DefaultVideo.png"
-    listitem = xbmcgui.ListItem(fullName, iconimage, iconimage, path=direct)
-    listitem.setInfo( type="Video", infoLabels={ "Title":fullName} )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+
+    listItem = xbmcgui.ListItem(path=direct)
+    listItem.setInfo(type="Video", infoLabels={ "Title": programmeName, "studio": channelName})
+    listItem.setThumbnailImage(iconimage)
+    xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
 def FilmonChannelGuide(url):
 	chNum, referrerCh, ChName = myFilmon.GetUrlParams(url)
@@ -120,7 +140,8 @@ def FilmonChannelGuide(url):
 			enddatetime=datetime.datetime.fromtimestamp(programme[1]).strftime('%H:%M')
 			programmename='[{0}-{1}] [B]{2}[/B]'.format(startdatetime,enddatetime,programme[2])
 			description=programme[3]
-			addDir(programmename, chNum, 99, iconimage, description)
+			image = programme[4] if programme[4] else iconimage
+			addDir(programmename, chNum, 99, image, description)
 		
 	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 	xbmc.executebuiltin("Container.SetViewMode(504)")
@@ -141,9 +162,9 @@ def VIPList():
                                       addLink(name,link,thumb,'')
         addDir('[COLOR blue]end of  mash23k links [/COLOR]','','','','')
 
-def ReadFavories():
+def ReadFavories(fileName):
      try:
-        f = open(FAV,'r')
+        f = open(fileName,'r')
         fileContent=f.read()
         f.close()
         content=json.loads(fileContent)
@@ -153,8 +174,7 @@ def ReadFavories():
      return content
   
 def listFavorites():
-    data=ReadFavories()
-    print data
+    data=ReadFavories(FAV)
     if data==[]:
         addDir('[COLOR red]No channels in your favorits[/COLOR]','',99,'','')
         addDir('[COLOR red]ADD with right click on any channel[/COLOR]','',99,'','')
@@ -162,7 +182,7 @@ def listFavorites():
         url = item["url"]
         name = item["name"].encode("utf-8")
         image = item["image"].encode("utf-8")
-        i=url.find('myfilmon')
+        i=url.lower().find('myfilmon')
         if i >0:
 			mode = 17
         else:
@@ -170,12 +190,18 @@ def listFavorites():
         addDir('[COLOR yellow]'+ name+'[/COLOR]',url,mode,image,'')   
     
 def addFavorites(url, iconimage, name):
-    dirs=ReadFavories()
+    dirs=ReadFavories(FAV)
     #print dirs 
     for item in dirs:
-        if item["url"] == url:
+        if item["url"].lower() == url.lower():
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  Already in  favorites", 5000, __icon2__))
             return
+    
+    list=ReadFavories(tmpList)	
+    for item in list:
+		if item["name"].lower() == name.lower():
+			url = item["url"]
+			iconimage = item["image"]
     if not iconimage:
 		iconimage = ""
     data = {"url": url, "image": iconimage, "name": name}
@@ -186,11 +212,11 @@ def addFavorites(url, iconimage, name):
     xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  added to favorites", 5000, __icon__))
 	
 def removeFavorties(url):
-    dirs=ReadFavories()
+    dirs=ReadFavories(FAV)
     #print dirs 
     for item in dirs:
         #print item
-        if item["url"] == url:
+        if item["url"].lower() == url.lower():
           dirs.remove(item)
           with open(FAV, 'w') as outfile:
             json.dump(dirs, outfile) 

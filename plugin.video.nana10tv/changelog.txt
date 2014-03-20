@@ -1,8 +1,0 @@
-v1.0.3
-- few fixes,more needed
-
-v1.0.2
--few small fixes
-
-v1.0.0
-Initial Release

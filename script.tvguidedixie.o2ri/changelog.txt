@@ -1,0 +1,168 @@
+v.2.0.2
+Added Logo and Channel-name (taking from the TV-Guide) is now showing when playing a channel
+
+v1.5.5
+Updated addons.ini file loading process.
+
+
+v1.5.4
+Bug fix on clean install error.
+
+v1.5.3
+Added 'working' dialog as the addon starts.
+All live streaming video addons should now work via 'Add To Favorites'.
+Added ability to auto-stop a stream after a set period.
+
+v1.5.2
+Fixed error in the Detect Stream feature - If more than one match was found an error occured.
+Slight change to Preview Stream code.
+
+v1.5.1
+New dialog window for logo pack download.
+Added new skin download on first run.
+Automatically checks for missing (default) skins.
+Added Buggalo email for error reporting.
+Various bug fixes.
+
+v1.5.0
+New feature - Default Logo Pack downloader.
+New feature (credit to twinther, spoyser) - If no program data is available and default program is shown.
+Category behavior resolved - Default is all channels show ready for category choice.
+Skins moved to userdata folder for easier install of custom skins.
+
+v1.4.99
+New feature -
+Category selections saved and retained after restarting the addon.
+
+v1.4.8
+Bug fix.
+
+v1.4.7
+Further url fixes.
+
+v1.4.6
+Minor url change for addons.ini to fix occasional errors on startup.
+
+v1.4.5
+Removed Xmas message (until next year ;-)).
+
+v1.4.4
+Removed Popup Ads.
+
+v1.4.3
+Bug fix.
+
+v1.4.2
+Fixed Time Bar issues.
+
+v1.4.1
+New skin settings
+- option to change amount of channels displayed.
+- user modded skins will auto-show as a choice in settings.
+
+v1.4.0
+Corrected versioning error.
+Made ustvnow-dixie and LiveTV dependencies.
+
+v1.3.2
+Fixed USTVNOW issue.
+
+v1.3.11
+Maintenance update
+
+v1.3.1
+Updated stream triggering method to integrate some addons better.
+Updated FXB skin.
+Updated Dixie skin.
+
+v1.3.0
+Changed stream triggering method.
+Moved TVCatchup to addons.ini and removed option from 'Stream Setup' dialog box.
+Added more addons to addons.ini.
+Updated FXB skin.
+
+v1.2.9
+Added initial implementation of categories feature.
+
+v1.2.8
+Updated new FXB skin.
+
+v1.2.7
+Added option to choose between different skins.
+One 'in development' skin added.
+
+v1.2.6
+Further GUI modifications
+- Fixed programme time text wrapping to allow for 24/12hr clock difference.
+
+
+v1.2.5
+Further GUI modifications
+- Adjusted half-hour columns to match today's times column.
+
+v1.2.4
+Fixed minor script errors.
+GUI modifications 
+- Moved programme time display.
+- Adjusted TVGD logo.
+- Adjust bachground colour.
+Adjusted fanart.jpg
+
+v1.2.3
+Fixed error in MyFont.py
+
+v1.2.2
+Skipped
+
+v1.2.1
+Added support for the existing OSD feature.
+Moved some config files online for easier updating.
+New layout for the main EPG and context menu.
+Small GUI changes.
+
+v1.2.0
+Skipped
+
+v1.1.9
+Removed 'Update programme data on XBMC startup' as an option. Always off.
+Database bug fix. 
+Fixed spelling mistake in GUI.
+
+v1.1.8
+Skipped
+
+v1.1.7
+Fixed 'No description' to show sub-title information.
+Fixed EPG Title to show more information.
+Fixed incorrect display of some punctuation marks.
+Removed built-in .png logos that some websites include in the xml file.
+Added import of channel category information. Work in progress.
+
+v1.1.6
+Added built-in support for TV Catchup
+Added built-in support for USTVNOW
+Added partial built-in support for the LiveTV addon
+
+v1.1.5
+'Update program information on XBMC startup' is now OFF by default.
+Minor bug fix.
+
+v1.1.4
+Added option in settings to delete the entire database file.
+Changed EPG time bar from a red line to fading blue bar.
+Added two new sources ready for future use - International and FilmOn channels.
+
+v1.1.3
+Edited script so that settings for OffSide or Dixie urls are kept exclusive.
+This allows the user to swap between the two urls if required and not get an incorrect EPG displayed.
+
+v1.1.2
+Fixed incorrect loading of database causing the add-on to slow down.
+Fixed loss of linked streams if TV guide was reset to Defaults.
+Fixed loss of custom channel layout.
+Timezone change does not lose custom settings.
+Added custom Fonts.
+
+v1.1 
+Added direct url links for the Dixie and Offside channels to speed up performance. 
+Added Logo folder for DIXIE source.

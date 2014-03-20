@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="55001">
+		<setting id="TV-LightPlaylist" type="bool" label="55002" default="false" />
+	</category>
+</settings>
