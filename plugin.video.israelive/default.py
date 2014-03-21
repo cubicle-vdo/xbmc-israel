@@ -271,7 +271,7 @@ elif mode==3 or mode==17:
 elif mode==4:
 	downloader_is( )
 elif mode==6:
-	downloader_is('https://github.com/hadynz/repository.arabic.xbmc-addons/raw/master/repo/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip','Teleduent')
+	downloader_is('https://github.com/hadynz/repository.arabic.xbmc-addons/raw/master/repo/plugin.video.ArabicStreamSuperCollection/plugin.video.ArabicStreamSuperCollection-1.6.0.zip','Teleduent')
 	downloader_is('https://github.com/downloads/hadynz/repository.arabic.xbmc-addons/repository.arabic.xbmc-addons-1.0.0.zip','Teleduent repo')
 	CATEGORIES()
 elif mode==7:
