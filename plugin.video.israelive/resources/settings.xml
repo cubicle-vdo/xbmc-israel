@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-	<category label="55001">
-		<setting id="TV-LightPlaylist" type="bool" label="55002" default="false" />
+	<category label="30100">
+		<setting label="30100" type="lsep"/>
+		<setting id="TV-LightPlaylist" type="bool" label="30101" default="false" />
+	</category>
+	<category label="30200">
+		<setting label="30200" type="lsep"/>
+		<setting id="iptvPackage" type="enum" label="30201" lvalues="30001|30002" default="0" />
+		<setting type="action" label="30205" action="RunScript($CWD/default.py,,?mode=22&url=.)" option="close"/>
+		<setting type="sep"/>
+		<setting id="ForceFilmonScan" type="bool" label="30202" default="false" />
+		<setting type="sep"/>
+		<setting type="action" label="30203" action="RunScript($CWD/default.py,,?mode=21&url=.)" option="close"/>
+		<setting type="action" label="30204" action="RunScript($CWD/default.py,,?mode=20&url=.)" option="close"/>
 	</category>
 </settings>

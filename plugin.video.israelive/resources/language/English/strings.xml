@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="55001">Settings</string>
-	<string id="55002">Use TVlight playlist</string>
+	<string id="30001">TV-Light (Benny123)</string>
+	<string id="30002">English-Optimized</string>
+	
+	<string id="30100">Settings</string>
+	<string id="30101">Use TVlight playlist</string>
+	
+	<string id="30200">IPTV</string>
+	<string id="30201">IPTV Package</string>
+	<string id="30202">Force Re-Scan</string>
+	<string id="30203">Download IPTV Logo Pack</string>
+	<string id="30204">IPTV channels scan</string>
+	<string id="30205">Update IPTV-Simple</string>
 </strings>
