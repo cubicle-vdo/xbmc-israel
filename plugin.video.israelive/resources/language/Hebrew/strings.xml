@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="55001">הגדרות</string>
-	<string id="55002">שימוש ברשימת ערוצים קלה</string>
+	<string id="30001">רשימה קלה (בני)</string>
+	<string id="30002">אנגלית - המיטב</string>
+	
+	<string id="30100">הגדרות</string>
+	<string id="30101">שימוש ברשימת ערוצים קלה</string>
+	
+	<string id="30200">ערוצי טלויזיה</string>
+	<string id="30201">חבילת תחנות</string>
+	<string id="30202">הכרחת סריקה</string>
+	<string id="30203">הורדת חבילת סמלי ערוצים</string>
+	<string id="30204">סריקת ערוצי טלויזיה</string>
+	<string id="30205">עדכן את IPTV-Simple</string>
 </strings>
