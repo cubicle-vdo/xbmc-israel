@@ -237,7 +237,7 @@ def sdarot_movie(url):
         
         vid_time = str(prms["time"])
         print "Time: "+ vid_time +"\n"
-        token = str(prms["token_sd"])
+        token = prms["watch"]["sd"]
         print "Token: "+token +"\n"        
     
     except Exception as e:
@@ -248,7 +248,7 @@ def sdarot_movie(url):
         xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
         return
     
-    finalUrl = "http://" + vid_url + "/media/videos/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
+    finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
   
         
     player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
