@@ -1,3 +1,6 @@
+[B]Version 2.1.5[/B]
+-Bug fixing ,now showing "more episodes" correctly
+
 [B]Version 2.1.4[/B]
 - Add support for paging in seasons with more than 100 episodes.
 
