@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random
 import json
@@ -23,7 +23,7 @@ def CATEGORIES():
 
                 
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.seretil'):
-                addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=&url=http%3A%2F%2Fseretil.me%2Fcategory%2F%25d7%25a1%25d7%25a8%25d7%2598%25d7%2599%25d7%259d-%25d7%259e%25d7%2593%25d7%2595%25d7%2591%25d7%2591%25d7%2599%25d7%259d%2Fpage%2F1%2F',8,'https://dl.dropboxusercontent.com/u/5461675/meduvavim1.png','')
+                #addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=&url=http%3A%2F%2Fseretil.me%2Fcategory%2F%25d7%25a1%25d7%25a8%25d7%2598%25d7%2599%25d7%259d-%25d7%259e%25d7%2593%25d7%2595%25d7%2591%25d7%2591%25d7%2599%25d7%259d%2Fpage%2F1%2F',8,'https://dl.dropboxusercontent.com/u/5461675/meduvavim1.png','')
                 addDir('seretil מדובבים','plugin://plugin.video.seretil/?mode=211&name=%20%d7%90%d7%95%d7%a1%d7%a3%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'https://dl.dropboxusercontent.com/u/5461675/seretIL0.png','')
                 addDir('seretil 2 מדובבים','plugin://plugin.video.seretil/?mode=211&name=%d7%90%d7%95%d7%a1%d7%a3%20%d7%9e%d7%a1%d7%a4%d7%a8%202%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%2592%25D7%2593%25D7%2595%25D7%259C-%25D7%25A9%25D7%259C-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%25A6%25D7%2595%25D7%2599%25D7%25A8%25D7%2599%25D7%259D%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'https://dl.dropboxusercontent.com/u/5461675/seretIL1.png','')
                          
@@ -40,11 +40,6 @@ def CATEGORIES():
                 addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'https://dl.dropboxusercontent.com/u/5461675/10qtv2.png','')
         else:
                 addDir('[COLOR red]10QTV לא מותקן[/COLOR]','','','','')
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
-        
-                addDir('staael1982 (mashup) ללא דיבוב','plugin://plugin.video.movie25/?fanart=https%3a%2f%2fgithub.com%2fmash2k3%2fMashupArtwork%2fraw%2fmaster%2fart%2ffanart2.jpg&iconimage=https%3a%2f%2fencrypted-tbn3.gstatic.com%2fimages%3fq%3dtbn%3aANd9GcTR26WavA0VthRpyIneD6ERay2rnWOA5gxoWnfTDCfAWCfHcXg6&mode=236&name=Animated%20Movies%20%5bCOLOR%20red%5d%20Updated%2009%2f09%2f13%5b%2fCOLOR%5d&plot&url=https%3a%2f%2fgithub.com%2fmash2k3%2fStaael1982%2fraw%2fmaster%2fanimated_movies.xml',8,'https://dl.dropboxusercontent.com/u/5461675/MASHUP.png','')
-        else:
-               addDir('[COLOR red]MASHUP לא מותקן[/COLOR]','','','','')
 
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.israelive'):
                 addDir('LIVE TV','plugin://plugin.video.israelive/?mode=2&url=https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx&name=ילדים',8,'http://www.makingdifferent.com/wp-content/uploads/2013/07/live-tv-online.jpg','')
@@ -73,8 +68,8 @@ def CATEGORIES():
         addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
         
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
-        addDir('Testing 1','reshettv',16,'','')
-        addDir('Testing 2','23tv',16,'','')
+        addDir('יוטיוב מרשת','reshettv',16,'','')
+        addDir('יוטיוב מחינוכית 23','23tv',16,'','')
         setView('movies', 'default')
     
 
@@ -83,21 +78,21 @@ def ListLive(url):
         link=unescape(link)
         #print link
         matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-        print str(matches1[0]) + '\n'
+        #print str(matches1[0]) + '\n'
         for match in matches1 :
-            print "match=" + str(match)
+            #print "match=" + str(match)
             match=match+'#'
             if match.find('playlist') != 0 :
                 regex='name=(.*?)URL=(.*?)#'
                 matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                print str(matches)
+                #print str(matches)
                 for name,url in  matches:
                     thumb=''
                     i=name.find('thumb')
                     if i>0:
                         thumb=name[i+6:]
                         name=name[0:i]
-		    print url
+		    #print url
                     addLink('[COLOR yellow]'+ name+'[/COLOR]',url,thumb,'')  
                 
             else:
@@ -135,12 +130,12 @@ def ShowFromUser(user):
             resultJSON = json.loads(OPEN_URL(resultJSON['feed']['link'][-1]['href']))
         
 def SeasonsFromShow(showApiUrl):
-    print showApiUrl
+    #print showApiUrl
     resultJSON = json.loads(OPEN_URL(showApiUrl))
     seasons=resultJSON['feed']['entry']
     for  i in range (0, len(seasons)) :
-        print seasons[i].keys()
-        print seasons[i]['title']['$t']
+        #print seasons[i].keys()
+        #print seasons[i]['title']['$t']
         for index,item in  enumerate(seasons[i]['gd$feedLink']) :
             if item['countHint'] !=0:
                 resultJSON = json.loads(OPEN_URL( seasons[i]['gd$feedLink'][index]['href']+'&alt=json'))
@@ -195,26 +190,27 @@ def YOULink(mname,url,thumb):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
         return ok
 def PlaylistsFromUser(user):
-	url='https://gdata.youtube.com/feeds/api/users/'+user+ '/playlists?alt=json&max-results=50'
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	prms=json.loads(link)
-	TotalPlaylists=int(prms['feed'][u'openSearch$totalResults'][u'$t'])
-	i=0
-	lst=[]
-	while i<TotalPlaylists:
-             try:   
-		playlistid=str(prms['feed'][u'entry'][i][u'yt$playlistId'][u'$t'])
-		title=str(prms['feed'][u'entry'][i][u'title'][u'$t'].encode('utf-8'))
-		thumb=str(prms['feed'][u'entry'][i][u'media$group'][u'media$thumbnail'][2][u'url'])
-             except:
+    url='https://gdata.youtube.com/feeds/api/users/'+user+ '/playlists?alt=json&max-results=50'
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    prms=json.loads(link)
+    TotalPlaylists=int(prms['feed'][u'openSearch$totalResults'][u'$t'])
+    i=0
+    lst=[]
+    while i<TotalPlaylists:
+        thumb=''
+        try:
+                playlistid=str(prms['feed'][u'entry'][i][u'yt$playlistId'][u'$t'])
+                title=str(prms['feed'][u'entry'][i][u'title'][u'$t'].encode('utf-8'))
+                thumb=str(prms['feed'][u'entry'][i][u'media$group'][u'media$thumbnail'][2][u'url'])
+        except:
                      pass
-	     i=i+1
-	     lst.append((playlistid,title,thumb))
-	return lst
+        i=i+1
+        lst.append((playlistid,title,thumb))
+    return lst
 
 def ListPlaylist(playlistid): 
         url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
