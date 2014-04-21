@@ -244,11 +244,9 @@ def download_season(url):
         download_path = os.path.join(path,str(series_id))
         if not os.path.exists(download_path):
             os.makedirs(download_path) 
-        download_path = os.path.join(download_path, fileName )
         
-       
-        
-        if not os.path.isfile(download_path):
+        finalFileName = os.path.join(download_path,fileName)
+        if not os.path.isfile(finalFileName):
             #progress = xbmcgui . DialogProgress ( )
             #progress.create ( "XBMC ISRAEL" , "Downloading " , '' , 'Please Wait' )
         
