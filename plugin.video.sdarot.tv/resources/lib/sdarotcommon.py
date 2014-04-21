@@ -12,6 +12,7 @@ __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
 import StringIO
 import gzip
+import json
 from operator import itemgetter, attrgetter
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
@@ -62,12 +63,19 @@ def getParams(arg):
                                 
         return param
     
-def addDir(name, url, mode, iconimage='DefaultFolder.png', elementId=None, summary='', fanart=''):
+def addDir(name, url, mode, iconimage='DefaultFolder.png', elementId=None, summary='', fanart='',contextMenu=None):
         u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name
         if not elementId == None and not elementId == '':
             u += "&module=" + urllib.quote_plus(elementId)
         liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
         liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(name), "Plot": urllib.unquote(summary)})
+        
+        if not contextMenu == None:
+        
+            liz.addContextMenuItems(items=contextMenu, replaceItems=False)
+        
+        
+        
         if not fanart == '':
             liz.setProperty("Fanart_Image", fanart)
         ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
@@ -181,6 +189,51 @@ def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFER
             if (i == 3):
               raise e
 
+def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
+    
+    page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
+   
+    print "Sdarot processing JSON:" + str(page)
+    #print cookiejar
+    try:
+       
+        #try to see if 
+        prms=json.loads(page)
+        if prms.has_key("error"):
+            
+            #encoding needed for hebrew to appear right
+            error = str(prms["error"].encode("utf-8"))
+        
+            if len(error) > 0 :
+                print "error:" + error +"\n"
+                if not silent:
+                    xbmcgui.Dialog().ok('Error occurred',error)
+                return None,None
+        
+        vid_url = str(prms["url"])
+        #vid_name = str(prms["name"])
+        #print "vid_name: "+vid_name+"\n"
+        print "vid_url: "+vid_url+"\n"
+        VID = str(prms["VID"])
+        print "VID: "+VID+"\n"
+        
+        
+        vid_time = str(prms["time"])
+        print "Time: "+ vid_time +"\n"
+        token = prms["watch"]["sd"]
+        print "Token: "+token +"\n"        
+    
+    except Exception as e:
+        print e
+
+    if not token:
+        if not silent:
+            xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
+        return None,None
+    
+    finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
+    
+    return finalUrl,VID
 
 def getImage(imageURL, siteName):
         imageName = getImageName(imageURL)
@@ -197,5 +250,3 @@ def getImageName(imageURL):
         idx = int(imageURL.rfind("/")) + 1
         return imageURL[idx:]
 
-
-  

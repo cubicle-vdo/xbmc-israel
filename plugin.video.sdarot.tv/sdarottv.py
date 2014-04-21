@@ -24,6 +24,8 @@ LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib'
 sys.path.append (LIB_PATH)
 from sdarotcommon import *
 
+dbg = False # used for simple downloader logging
+
 
 def OPEN_URL(url):
     req = urllib2.Request(url)
@@ -167,7 +169,7 @@ def sdarot_series(url):
     series_id=urllib.unquote_plus(params["series_id"])
     series_name=urllib.unquote_plus(params["series_name"])
     image_link=urllib.unquote_plus(params["image"])
-    
+    downloadEnabled = False
     
     opener.addheaders = [('Referer',url)]
     opener.open(DOMAIN+'/landing/'+series_id).read()
@@ -186,8 +188,13 @@ def sdarot_series(url):
     seasons_list = re.compile(block_regexp,re.I+re.M+re.U+re.S).findall(page)[0]
     regexp='>(\d+)</a'
     matches = re.compile(regexp).findall(seasons_list)
+            
     for season in matches:
-        addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link)
+        downloadMenu = []
+        if downloadEnabled:
+            downloadUrl = "XBMC.RunPlugin(plugin://plugin.video.sdarot.tv/?mode=7&url=" + url + "&season_id="+str(season)+"&series_id="+str(series_id) + ")"
+            downloadMenu.append(('הורד עונה', downloadUrl,))
+        addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link,contextMenu=downloadMenu)
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
       
 def sdarot_season(url):
@@ -198,11 +205,63 @@ def sdarot_season(url):
     page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="episodeList=true&serie="+series_id+"&season="+season_id);
     
     episodes=json.loads(page)
+    
+    if episodes is None or (len(episodes)==0):
+        xbmcgui.Dialog().ok('Error occurred',"לא נמצאו פרקים לעונה")
+        return
+    
     print episodes
     for i in range (0, len(episodes)) :
         epis= str(episodes[i]['episode'])
         addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link, '')         
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+
+def download_season(url):
+    import SimpleDownloader as downloader
+    downloader = downloader.SimpleDownloader()
+    downloader.dbg = False
+    
+    series_id=urllib.unquote_plus(params["series_id"])
+   
+    season_id=urllib.unquote_plus(params["season_id"])
+    
+   
+    page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="episodeList=true&serie="+series_id+"&season="+season_id);
+    
+    episodes=json.loads(page)
+    if episodes is None or (len(episodes)==0):
+        xbmcgui.Dialog().ok('Error occurred',"לא נמצאו פרקים לעונה")
+        return
+    print "Download sdarot series=" + series_id + " season=" + season_id + " #episodes=" + str(len(episodes))
+    for i in range (0, len(episodes)) :
+        epis= str(episodes[i]['episode'])
+        finalVideoUrl,VID = getFinalVideoUrl(series_id,season_id,epis,silent=True)
+        if finalVideoUrl == None :
+            continue
+        
+        print "Downloading:" + str(finalVideoUrl)
+        fileName = 'S' + str(season_id).zfill(2) + 'E' + str(epis).zfill(2) + '_' + str(VID) + '.mp4'
+        download_path = os.path.join(path,str(series_id))
+        if not os.path.exists(download_path):
+            os.makedirs(download_path) 
+        download_path = os.path.join(download_path, fileName )
+        
+       
+        
+        if not os.path.isfile(download_path):
+            #progress = xbmcgui . DialogProgress ( )
+            #progress.create ( "XBMC ISRAEL" , "Downloading " , '' , 'Please Wait' )
+        
+            try :
+               #downloader . download ( finalVideoUrl , download_path , progress )
+               downloaderParams = { "url": finalVideoUrl, "download_path": download_path }
+               downloader.download(fileName, downloaderParams,async=True)
+            except Exception, e:
+                print str(e)
+                pass
+        
+         
+    
 
 def sdarot_movie(url):
     series_id=urllib.unquote_plus(params["series_id"])
@@ -211,45 +270,9 @@ def sdarot_movie(url):
     image_link=urllib.unquote_plus(params["image"])
     episode_id=urllib.unquote_plus(params["episode_id"])
     title = series_name + "עונה " + season_id + " פרק" + episode_id
-    page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
    
-    print "JSON:" 
-    #print cookiejar
-    try:
-       
-        #try to see if 
-        prms=json.loads(page)
-        if prms.has_key("error"):
-            
-            #encoding needed for hebrew to appear right
-            error = str(prms["error"].encode("utf-8"))
-        
-            if len(error) > 0 :
-                print "error:" + error +"\n"
-                xbmcgui.Dialog().ok('Error occurred',error)
-                return
-        
-        vid_url = str(prms["url"])
-        print "vid_url: "+vid_url+"\n"
-        VID = str(prms["VID"])
-        print "VID: "+VID+"\n"
-        
-        
-        vid_time = str(prms["time"])
-        print "Time: "+ vid_time +"\n"
-        token = prms["watch"]["sd"]
-        print "Token: "+token +"\n"        
-    
-    except Exception as e:
-        print e
-        raise
-
-    if not token:
-        xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
-        return
-    
-    finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
-  
+    finalUrl,VID = getFinalVideoUrl(series_id,season_id,episode_id)
+    print "finalUrl" + finalUrl
         
     player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
     liz = xbmcgui.ListItem(title, path=finalUrl, iconImage=params["image"], thumbnailImage=params["image"])
@@ -260,6 +283,8 @@ def sdarot_movie(url):
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=finalUrl, listitem=liz, isFolder=False)
                                   
 params = getParams(sys.argv[2])
+print "params:"
+print params
 url=None
 name=None
 mode=None
@@ -268,6 +293,7 @@ page=None
 
 try:
         url=urllib.unquote_plus(params["url"])
+       
 except:
         pass
 try:
@@ -303,6 +329,8 @@ elif mode==5:
     sdarot_season(url)
 elif mode==6:
 	SearchSdarot(url)
+elif mode==7:
+    download_season(url)
 
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__,"fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
