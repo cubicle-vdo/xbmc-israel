@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-    Plugin for streaming video content from Mako VOD based on Android
+    Plugin for streaming video content like MakoTV 3 Android app
     
-    Copyright (c) 2010-2012 Shai Bentin.
-    All rights reserved.  Unpublished -- rights reserved
+    Copyright (c) 2014 derived from original work by Shai Bentin.
 
     Use of a copyright notice is precautionary only, and does
     not imply publication or disclosure.
@@ -17,7 +16,7 @@ import urllib, urllib2, re, os, sys, unicodedata, random
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 
 ##General vars
-__plugin__ = "Mako VOD"
+__plugin__ = "MakoTV 3"
 __author__ = "Shai Bentin"
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.makoTV.video')
@@ -25,83 +24,44 @@ __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __DEBUG__       = __settings__.getSetting('DEBUG') == 'true'
 
-LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'appCaster' ) )
+LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'makoStore' ) )
 M3U8_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'm3u8' ) )
 sys.path.append (LIB_PATH)
 sys.path.append (M3U8_PATH)
 
-__properties = {'pKey':'81d42db7c211bf9615a895c504', 'accountId': '39', 'broadcasterId':'24', 'bundle':'com.keshet.mako.VODandroid', 'bucketId':'4fb10d943b35010c320041f4'}
-import APCategoryLoader, APAccountLoader, APBroadcaster, APCategoryList, APItemLoader, APChannel, APChannelLoader
-import APEpgLoader, APVodItem, APCategory, APExtensions
+import MakoVodIndexLoader, MakoProgramNode, MakoProgramLoader, MakoSeasonNode, MakoSeasonLoader, MakoVodItemLoader, MakoVodItemNode
+import MakoTicketLoader
 
+# define properties dictionary to be delivered down the hierarchy
+__properties = { 'consumer':'android4', 'appId':'0c4f6ec6-9194-450e-a963-e524bb6404g2', 'appVer':'3.0.3' }
 
-def getMainCategoryList():
-    ## Get the account details
-    ## account
-    accountLoader = APAccountLoader.APAccountLoader(__properties)
-    jsonAccountDictionary = accountLoader.loadURL()    
-    if __DEBUG__:
-        xbmc.log('accountURL --> %s' % (accountLoader.getQuery()), xbmc.LOGERROR)
-    
-    # get programs category
-    rootCategoryId = ''
+def getProgramsIndex():
+    # obtain VOD index
+    indexLoader = MakoVodIndexLoader.MakoVodIndexLoader(__properties)
+    jsonProgramsIndex = indexLoader.loadURL()
+    if None == jsonProgramsIndex:
+        xbmc.log('Nothing returned from mako-vod-index', xbmc.LOGERROR)
+
+    # find all programs section
     try:
-        extensionsStr = jsonAccountDictionary["account"]["extensions"]
-        extensions = APExtensions.APExtensions(json.loads(extensionsStr, 'utf-8'))
-	rootCategoryId = extensions.getProgramsCategoryId()
-	if __DEBUG__:
-	    xbmc.log('Programs category id --> %s' % rootCategoryId, xbmc.LOGERROR)
+        allPrograms = jsonProgramsIndex['root']['allPrograms']
     except:
-        pass
-    
-    if '' == rootCategoryId:
-        ## broadcaster and main category from previous incarnation of the plugin
-        broadcaster = APBroadcaster.APBroadcaster(__properties['broadcasterId'], jsonAccountDictionary["account"]["broadcasters"])
-        if __DEBUG__:
-            xbmc.log('Main Category --> %s' % (broadcaster.getRootCategory()), xbmc.LOGERROR)
-        rootCategoryId = broadcaster.getRootCategory()
-    
-    # get the main categories list
-    getCategory(rootCategoryId)
+        xbmc.log('Couldnt locate allPrograms in main index', xbmc.LOGERROR)
+	pass
 
+    # create programs
+    for prog in allPrograms:
+        programNode = MakoProgramNode.MakoProgramNode(prog)
+	addProgramView(programNode)
 
-def getCategory(categoryId):
-    # get the main categories list
-    categoryLoader = APCategoryLoader.APCategoryLoader(__properties, categoryId)
-    if __DEBUG__:
-        xbmc.log('CategoryURL --> %s' % (categoryLoader.getQuery()), xbmc.LOGERROR)
-    jsonCategoryDictionary = categoryLoader.loadURL()
-    categories = APCategoryList.APCategoryList(jsonCategoryDictionary["category"])
-    
-    if (categories.hasSubCategories()):
-        for category in categories.getSubCategories():
-            if category.getId() not in ['36', '3103']: # omit the non video stuff
-                addCategoryView(category)
-    elif (categories.hasVideoitems()):
-        for item in categories.getVodItems():
-            addItemView(item)
-        xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-        xbmc.executebuiltin("Container.SetViewMode(504)")
-            
-def getItem(itemId):
-    # get the item and load it's movie
-    itemLoader = APItemLoader.APItemLoader(__properties, itemId)
-    if __DEBUG__:
-        xbmc.log('ItemURL --> %s' % (itemLoader.getQuery()), xbmc.LOGERROR)
-    jsonItemDictionary = itemLoader.loadURL()
-    item = APVodItem.APVodItem(jsonItemDictionary["vod_item"])
-    playMovie(item)
-    
-          
-def addCategoryView(category):
-    if __DEBUG__:        
-        xbmc.log('category --> %s' % (category.getId()), xbmc.LOGERROR)
-    _url = sys.argv[0] + "?category=" + category.getId()    
+def addProgramView(programNode):
+    _url = sys.argv[0] + "?program=" + urllib.quote_plus(programNode.getProgramURL())
+    title = programNode.getTitle().encode('UTF-8')
+    summary = programNode.getDescription().encode('UTF-8')
+    thumbnail = programNode.getThumbnailURL()
+    fanart = ''
 
-    title = category.getTitle().encode('UTF-8')
-    summary = category.getDescription().encode('UTF-8')
-    thumbnail = category.getThumbnail()
-    fanart = category.getFanartImage()
+    #xbmc.log('***** Mako: adding program %s' % title, xbmc.LOGDEBUG)
     
     liz = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
     liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
@@ -109,47 +69,102 @@ def addCategoryView(category):
         liz.setProperty("Fanart_Image", fanart)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=liz, isFolder=True)
 
-def addItemView(item):
-    if __DEBUG__:
-        xbmc.log('item --> %s' % (item.getId()), xbmc.LOGERROR)
-    _url = sys.argv[0] + "?item=" + item.getId()    
-
-    title = item.getTitle().encode('UTF-8')
-    summary = item.getDescription().encode('UTF-8')
-    thumbnail = item.getThumbnail()
+def getProgram(programURL):
+    # obtain program seasons and items
+    progLoader = MakoProgramLoader.MakoProgramLoader(__properties, programURL)
+    xbmc.log('***** Mako: loading data for program URL=%s' % (progLoader.getQuery()), xbmc.LOGDEBUG)
+    programDict = progLoader.loadURL()
+    if None == programDict:
+        xbmc.log('Couldt retrieve json data for program, URL=%s' % (progLoader.getQuery()), xbmc.LOGERROR)
     
+    # find seasons, the loader already removed the root element
+    xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_TITLE)
+    seasons = programDict['programData']['seasons']
+    for season in seasons:
+        seasonNode = MakoSeasonNode.MakoSeasonNode(season)
+        addSeasonView(seasonNode)
+
+def addSeasonView(seasonNode):
+    _url = sys.argv[0] + "?season=" + urllib.quote_plus(seasonNode.getSeasonURL()) + "&seasonId=" + urllib.quote_plus(seasonNode.getGUID())
+    title = seasonNode.getTitle().encode('UTF-8')
+    summary = seasonNode.getDescription().encode('UTF-8')
+    thumbnail = ''
+
+    #xbmc.log('***** Mako: adding season %s' % title, xbmc.LOGDEBUG)
+
+    liz = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
+    liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
+    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=liz, isFolder=True)
+
+def getSeason(seasonURL, seasonId):
+    # obtain the same page as before but parse the wanted season
+    seasonLoader = MakoSeasonLoader.MakoSeasonLoader(__properties, seasonURL, seasonId)
+    seasonDict = seasonLoader.loadURL()
+    if 'vods' not in seasonDict:
+        xbmc.log('***** Mako: didnt find vods in season dict for season with id %s' % (seasonId), xbmc.LOGERROR)
+    else:
+        # get the vod items and create them
+	xbmcplugin.addSortMethod(handle=int(sys.argv[1]), sortMethod=xbmcplugin.SORT_METHOD_TITLE)
+	progress = xbmcgui.DialogProgress()
+	progress.create('Mako TV', 'Loading VOD items...')
+	vodItems = seasonDict['vods']
+	step = int(100 / len(vodItems))
+	perc = 0
+	for vodItem in vodItems:
+	    # load each item URL since we want all the data available before play
+	    url = vodItem['link']
+	    xbmc.log('***** Mako: loading vod item page: %s' % (url), xbmc.LOGDEBUG)
+	    itemLoader = MakoVodItemLoader.MakoVodItemLoader(__properties, url)
+	    vodItemDict = itemLoader.loadURL()
+	    vodItemNode = MakoVodItemNode.MakoVodItemNode(vodItemDict)
+	    addVodItemView(vodItemNode)
+	    perc = perc + step
+	    progress.update(perc, 'Mako TV', 'Loading VOD items...')
+	progress.close
+
+def addVodItemView(vodItemNode):
+    # craft the URL to the video
+    _url = sys.argv[0] + "?vodItem=" + urllib.quote_plus(vodItemNode.getDirectVideoUrl()) + "&vodItemId=" + urllib.quote_plus(vodItemNode.getGUID())
+    title = vodItemNode.getTitle().encode('UTF-8')
+    summary = vodItemNode.getDescription().encode('UTF-8')
+    thumbnail = vodItemNode.getThumbnailURL()
+
+    #xbmc.log('***** Mako: adding vod item with URL: %s' % (_url), xbmc.LOGDEBUG)
     listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
     listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
     listItem.setProperty("Fanart_Image", thumbnail)
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
 
-def playMovie(item):
-    _url = item.getStreamUrl()
-    _hls_cookie = item.getHLSCookie()
-    if __DEBUG__:
-        xbmc.log('vod_item --> %s' % (item.getId()), xbmc.LOGERROR)
-        xbmc.log('playable _url --> %s' % (_url), xbmc.LOGERROR)
-    
-    title = item.getTitle().encode('UTF-8')
-    summary = item.getDescription().encode('UTF-8')
-    thumbnail = item.getThumbnail()
-    
-    # falsify a user agent
-    _user_agent = '|User-Agent=' + urllib.quote_plus('stagefright/1.2 (Linux; Android 4.2.2)')
-    _dummyHeader = '&Accept-Language=en-US'
+def playItem(vodItemURL, vodItemId):
+    # obtain a ticket for the video item
+    ticketLoader = MakoTicketLoader.MakoTicketLoader(__properties, vodItemURL, vodItemId)
+    ticketLoader.loadURL()
+    urlEncodedTicket = ticketLoader.getTicket()
+    if urlEncodedTicket == '':
+        xbmc.log('***** Mako: unable to find ticket for vod item %s' % vodItemURL, xbmc.LOGERROR)
+    else:
+        # create final URL
+	_url = vodItemURL
+	if _url.find('?') == -1:
+	    _url = _url + '?' + urlEncodedTicket
+	else:
+	    _url = _url + '&' + urlEncodedTicket
+	xbmc.log('***** Mako: final video URL with ticket: %s' % _url, xbmc.LOGDEBUG)
+	title = ''
+	summary = ''
+	thumbnail = ''
 
-    # add a specific cookie, if needed (not normally)
-    _cookie = ''
-    if '' != _hls_cookie:
-        _cookie = '&Cookie=' + urllib.quote_plus(_hls_cookie)
+        # falsify a user agent
+        _user_agent = '|User-Agent=' + urllib.quote_plus('stagefright/1.2 (Linux; Android 4.2.2)')
+        _acceptHeader = '&Accept-Language=en-US'
 
-    listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail, path=_url + _user_agent + _dummyHeader)
-    listItem.setInfo(type='Video', infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
-    listItem.setProperty('IsPlayable', 'true')
+        listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail, path=_url + _user_agent + _acceptHeader)
+        listItem.setInfo(type='Video', infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
+        listItem.setProperty('IsPlayable', 'true')
 
-    # Gotham properly probes the mime type now, no need to do anything special
-    xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+        # Gotham properly probes the mime type
+        xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
 def getParams(arg):
     param=[]
@@ -169,59 +184,61 @@ def getParams(arg):
                             
     return param
 
-# manage a random deviceId (if not already saved)
+
+# manage a random deviceId (if not already saved) of 15 hex digits.
 deviceId = __settings__.getSetting(id = 'deviceId')
+
+# if we encounter a previous incarnation of the add-on, clear and do it again
+if None != deviceId and len(deviceId) == 16:
+    deviceId = ''
+    __settings__.setSetting(id = 'deviceId', value = deviceId)
+
 if None == deviceId or '' == deviceId:
     rand1 = int((random.random() * 8999) + 1000)
     rand2 = int((random.random() * 89) + 10)
-    deviceId = '1d' + str(rand1) + 'd3b4f71c' + str(rand2)
+    deviceId = 'd' + str(rand1) + 'd3b4f71c' + str(rand2)
     
     __settings__.setSetting(id = 'deviceId', value = deviceId)
 
 __properties['deviceId'] = deviceId
-if __DEBUG__:
-    xbmc.log('deviceId --> %s' % (__properties['deviceId']), xbmc.LOGERROR)
+xbmc.log('***** Mako: deviceId = %s' % (__properties['deviceId']), xbmc.LOGDEBUG)
 
-
-# if we dont have a unique user ID and token yet, make it so
-uuid = __settings__.getSetting(id = 'UUID')
-token = __settings__.getSetting(id = 'deviceAuthToken')
-if __DEBUG__:
-    xbmc.log('UUID from settings --> %s, auth token from settings --> %s', uuid, token, xbmc.LOGERROR)
-if None == uuid or '' == uuid:
-    accountLoader = APAccountLoader.APAccountLoader(__properties)
-    uuidDict = accountLoader.loadURL()
-    id = uuidDict['id']
-    token = uuidDict['token']
-    if None != id and '' != id:
-        __settings__.setSetting(id = 'UUID', value = id)
-    if None != token and '' != token:
-        __settings__.setSetting(id = 'deviceAuthToken', value = token)
-
-__properties['UUID'] = uuid
-__properties['deviceAuthToken'] = token
-if __DEBUG__:
-    xbmc.log('final UUID --> %s, final auth token --> %s', uuid, token, xbmc.LOGERROR)
+# reset old settings, if exist. make a simple UDID out of the unique android ID
+__settings__.setSetting(id = 'UUID', value = '')
+__settings__.setSetting(id = 'deviceAuthToken', value = '')
+udid = 'A1800000000' + deviceId
+__properties['UDID'] = udid
+xbmc.log('***** Mako: UDID = %s' % (__properties['UDID']), xbmc.LOGDEBUG)
 
 params = getParams(sys.argv[2])
-categoryId = None
-itemId = None
+programURL = None
+seasonURL = None
+seasonId = None
+vodItemURL = None
+vodItemId = None
 
-try:
-    categoryId=urllib.unquote_plus(params["category"])
-except:
-    pass
-try:
-    itemId=urllib.unquote_plus(params["item"])
-except:
-    pass
+# attempt to get program URL
+if 'program' in params:
+    programURL = urllib.unquote_plus(params["program"])
 
-if None == categoryId and None == itemId:
-    getMainCategoryList()
-elif None != categoryId:
-    getCategory(categoryId)
-elif None != itemId:
-    getItem(itemId)
+# attempt to get season URL
+if 'season' in params:
+    seasonURL = urllib.unquote_plus(params["season"])
+    seasonId = urllib.unquote_plus(params["seasonId"])
+
+# attempt to get vodItem URL
+if 'vodItem' in params:
+    vodItemURL = urllib.unquote_plus(params["vodItem"])
+    vodItemId = urllib.unquote_plus(params["vodItemId"])
+
+if None == programURL and None == seasonURL and None == vodItemURL:
+    getProgramsIndex()
+elif None != programURL:
+    getProgram(programURL)
+elif None != seasonURL:
+    getSeason(seasonURL, seasonId)
+elif None != vodItemURL:
+    playItem(vodItemURL, vodItemId)
             
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__, "fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=True)
