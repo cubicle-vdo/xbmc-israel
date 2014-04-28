@@ -1,14 +1,13 @@
-import sys, datetime, xbmcgui, random
+import sys, datetime, xbmcgui, random, xbmc, xbmcaddon, json
 import urllib, urllib2
-isNewPython = True if sys.version_info >=  (2, 7) else False
-if isNewPython:
-	import json as _json
-else:
-	import simplejson as _json
 
 filmonMainUrl = 'http://www.filmon.com/tv/htmlmain'
 filmonChannelUrl = 'http://www.filmon.com/ajax/getChannelInfo'
 UA = 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0'
+
+AddonID = 'plugin.video.israelive'
+Addon = xbmcaddon.Addon(AddonID)
+icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url):
 	chNum, referrerCh, ChName = GetUrlParams(url)
@@ -107,7 +106,8 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, forM3U=False):
 	
 	return channelName, channelDescription, iconimage, streamUrl, tvGuide
 
-def MakeM3ULinks(scanChList, dp, isIptvAddonGotham):
+#def MakeM3ULinks(scanChList, dp, isIptvAddonGotham):
+def MakeM3ULinks(scanChList, isIptvAddonGotham):
 	M3Ulist = '#EXTM3U\n'
 	errorLog = ''
 
@@ -118,7 +118,7 @@ def MakeM3ULinks(scanChList, dp, isIptvAddonGotham):
 		headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
 	except:
 		return None, "Cannot connect to server. :-("
-			
+
 	channelsCount = len(scanChList)
 	
 	random.seed()
@@ -128,31 +128,23 @@ def MakeM3ULinks(scanChList, dp, isIptvAddonGotham):
 	for channel in scanChList: 
 		i = i + 1
 		user_data = {'channel_id': channel['chNum']}
-		
-		if dp.iscanceled(): 
-			return None, "Canceled by user."
-			
+
 		percent = i * 100 // channelsCount 
-		progress = "{0} of {1}".format(i, channelsCount)
+		xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating links... {0}%, {1}, {2})".format(percent, 10000 ,icon))
 
 		try:
 			response = OpenURL(filmonChannelUrl, headers, user_data)
-			resultJSON = _json.loads(response)
+			resultJSON = json.loads(response)
 			if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
 				raise
-			dp.update(percent, line2=progress, line3="{0}... Done.".format(channel['chName']))
-			print "{0} of {1} [{2}. {3}]... Done. :-)".format(i, channelsCount, channel['chNum'], channel['chName'])
 		except:
-			dp.update(percent, line2=progress, line3="{0}... Faild.".format(channel['chName']))
-			print "{0} of {1} [{2}. {3}]... Faild. :-(".format(i, channelsCount, channel['chNum'], channel['chName'])
 			errorLog += "{0}. {1}\n".format(channel['chNum'], channel['chName'])
 			continue
 
 		channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(resultJSON[0], channel['chNum'], forM3U=True)
 		
 		chID = "fil-{0}".format(channel['chNum'])
-		#M3Ulist += '#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" tvg-logo="{2}" group-title="{3}",{4}\n{5}\n'.format(chID, channelName.replace(' ','_'), iconimage.replace('.png',''), "Filmon", channelName, streamUrl)
-		#M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}",{3}\n{4}\n'.format(chID, channelName.replace(' ','_'), channel['group'], channelName, streamUrl)
+
 		if isIptvAddonGotham:
 			M3Ulist += '\n#{5}#\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}.png",{3}\n{4}\n'.format(chID, channel['chName'].replace(' ','_'), channel['group'], channel['chName'], streamUrl, channel['index'])
 		else:
@@ -194,7 +186,7 @@ def GetChannelHtml(chNum):
 	
 def GetChannelJson(chNum):
 	html = GetChannelHtml(chNum)
-	resultJSON = _json.loads(html)
+	resultJSON = json.loads(html)
 	if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
 		return None
 	return resultJSON[0]
@@ -238,3 +230,4 @@ def GetUrlParams(url):
 	except:
 		ChName = None
 	return 	chNum, referrerCh, ChName
+	
