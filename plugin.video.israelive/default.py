@@ -2,17 +2,20 @@
 #code by o2ri \ avigdor based on benny123 project in navix.
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,datetime,json
 AddonID = 'plugin.video.israelive'
-Addon = xbmcaddon.Addon()
+Addon = xbmcaddon.Addon(AddonID)
+localizedString = Addon.getLocalizedString
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myFilmon,commonlive,chardet
+import myFilmon,commonlive,chardet,myIPTVSimple#, myTeledunet
 from commonlive import *
 
 dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
 if not os.path.exists(dire):
-            os.makedirs(dire)
+	os.makedirs(dire)
 __icon__='http://static2.wikia.nocookie.net/__cb20121121053458/spongebob/images/f/f4/Check-icon.png'
 __icon2__='https://svn.apache.org/repos/asf/openoffice/symphony/trunk/main/extras/source/gallery/symbols/Sign-QuestionMark02-Red.png'
+icon = Addon.getAddonInfo('icon')
+
 tmpList=os.path.join(dire, 'tempList.txt')
 FAV=os.path.join(dire, 'favorites.txt')
 if  not (os.path.isfile(FAV)):
@@ -21,91 +24,73 @@ if  not (os.path.isfile(FAV)):
     f.close() 
 
 def CATEGORIES():
-    Announcements()
-    addDir('הערוצים שלי','favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
+    addDir(localizedString(20101).encode('utf-8'),'settings',40,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQdhwAJTHe3O3EFl7wV_vj1MA-jymE-_6x7RsklkF86gYGQbwEX','')
+    addDir(localizedString(20102).encode('utf-8'),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
     
     isTVlight = False if (Addon.getSetting('TV-LightPlaylist').lower() == 'false') else True
+    PlxPlaylist = Addon.getSetting("PlxPlaylist")
     
-    if isTVlight == True:
+    if PlxPlaylist == "0":
         ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/TVlight/tvlight.plx')
+    elif PlxPlaylist == "1":
+		ListLive('https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/ZipTV/ZipTV.plx')
     else:
-		addDir('עידן פלוס','https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
-		#addDir('רדיו','https://dl.dropboxusercontent.com/u/94071174/Online/wow/SUB/Entertainment/IL%20Radio.plx',2,'http://www.binamica.co.il/english/data/images/Image/radio.jpg','')
-		addDir('ילדים','https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
-		addDir('בידור','https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
-		addDir('סרטים','https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
-		addDir('מוזיקה','https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
-		addDir('חדשות','https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
-		addDir('מדע וטבע','https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
-		addDir('ספורט','https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
-		addDir('עולם','https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
+		addDir(localizedString(20103).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/DTT%2B.plx',2,'http://ftp5.bizportal.co.il/web/giflib/news/idan_plus_gay.jpg','')
+		addDir(localizedString(20104).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx',2,'http://4hdwall.com/wp-content/uploads/2012/09/HD-cartoon-wallpaper.jpg','')
+		addDir(localizedString(20105).encode('utf-8'),'https://dl.dropboxusercontent.com/u/94071174/Online/wow/Entertainment.plx',2,'http://digitalmediafilms.webs.com/Variety%20of%20Your%20Favortie%20Channels.jpg','')
+		addDir(localizedString(20106).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/Movies.plx',2,'http://www.attractherdateher.com/wp-content/uploads/2012/08/movie_night.jpg','')
+		addDir(localizedString(20107).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/Music.plx',2,'http://www.hdwallpapers.in/wallpapers/dance_with_me_hd_wide-1920x1200.jpg','')
+		addDir(localizedString(20108).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/News.plx',2,'http://www.realtrends.com/application/view/theme/default/docs/scroll/blog6.jpg','')
+		addDir(localizedString(20109).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/Science%20%26%20Nature.plx',2,'http://wallpapers.free-review.net/wallpapers/23/Nature_-_Wallpaper_for_Windows_7.jpg','')
+		addDir(localizedString(20110).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/Sport.plx',2,'http://4vector.com/i/free-vector-sport-vector-pack_098139_sportsvector%20pack.jpg','')
+		addDir(localizedString(20111).encode('utf-8'),'https://dl.dropbox.com/u/94071174/Online/wow/World.plx',2,'http://www.icangiveyouhouse.com/audio/2010/09/world-in-black-and-white-hands-1.jpg','')
 
 		if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
 			addDir('iLive.to','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
 		else:
 			addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
+		addDir('Mash Sports','plugin://plugin.video.movie25/?fanart&genre&iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fskins%2fvector%2fk1m05.png&mode=182&name=K1m05%20Sports&plot&url=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashUpK1m05%2fmaster%2fPlaylists%2fSports%2fSports.xml',7,'http://3.bp.blogspot.com/-gJtkhvtY1EY/UVWwH2iCGfI/AAAAAAAAA-o/b-_qJk5UMiU/s1600/Live-Sports+-+Copie.jpg','')
 				
-    if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.teledunet'):
-         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'http://superrepo.brantje.com//Frodo/All/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
+    if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.ArabicStreamSuperCollection'):
+         addDir('[COLOR yellow]לחץ כאן להתקנת תוסף חסר[/COLOR]' ,'stam',6,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Teleduent')
 
 def update_view(url):
 
     ok=True        
     xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
     return ok
-        
-    
-   
-def ListLive(url):
-	if 'Sport' in url:
-		VIPList()
-        
-	link=OPEN_URL(url)
-	#print link
-	link=unescape(link)
-	
-	matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-	list = []
-	for match in matches1 :
-		#print "match=" + str(match)
-		match=match+'#'
-		if match.find('playlist') != 0 :
-			regex='name=(.*?)URL=(.*?)#'
-			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-			#print str(matches)
-			for name,url in  matches:
-				thumb=''
-				i=name.find('thumb')
-				if i>0:
-					thumb=name[i+6:]
-					name=name[0:i]
-				#print url
-				name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
-				name = '[COLOR yellow]' +name+'[/COLOR]'
-				i=url.find('plugin.video.MyFilmOn')
-				if i >0:
-					addDir(name,url,3,thumb,'')
-				else:
-					addDir(name,url,11,thumb,'')  
-				data = {"url": url, "image": thumb, "name": name}
-				list.append(data)
-		else:
-			regex='name=(.*?)URL=(.*?).plx'
-			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-			for name,url in matches:
-				url=url+'.plx'
-				if name.find('Scripts section') < 0 :
-					thumb=''
-					i=name.find('thumb')
-					if i>0:
-						thumb=name[i+6:]
-						name=name[0:i]
-					name = name.decode(chardet.detect(name)["encoding"]).encode("utf-8")
-					name = '[COLOR blue]'+name+'[/COLOR]'
-					addDir(name,url,2,thumb,'')
-					data = {"url": url, "image": None, "name": name}
-					list.append(data)
 
+def ListLive(url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
+	page = urllib2.urlopen(req)
+	response=page.read()
+	page.close()
+	matches=re.compile('(.*?)#',re.I+re.M+re.U+re.S).findall(response)
+	list = []
+	for match in matches:
+		item=re.compile('(.*?)=(.*?)\r\n',re.I+re.M+re.U+re.S).findall("{0}\r\n".format(match))
+		item_data = {}
+		for field, value in item:
+			item_data[field.strip().lower()] = value.strip()
+		if not item_data.has_key("type") or (item_data["type"]=='playlist' and item_data['name'].find('Scripts section') >= 0):
+			continue
+		
+		name = item_data['name'].decode(chardet.detect(item_data['name'])["encoding"]).encode("utf-8")
+		if item_data["type"]=='video' or item_data["type"]=='audio':
+			name = '[COLOR yellow]' +name+'[/COLOR]'
+			if item_data['url'].find('plugin.video.MyFilmOn') > 0:
+				mode = 3
+			else:
+				mode = 11 
+		elif item_data["type"]=='playlist':
+			mode = 2
+			name = '[COLOR blue]'+name+'[/COLOR]'
+					
+		thumb = "" if not item_data.has_key("thumb") else item_data['thumb']
+		addDir(name, item_data['url'], mode, thumb, '')
+		list.append({"url": item_data['url'], "image": thumb, "name": name, "type": item_data["type"]})
+		
 	with open(tmpList, 'w') as outfile:
 		json.dump(list, outfile) 
 	outfile.close()
@@ -145,22 +130,6 @@ def FilmonChannelGuide(url):
 		
 	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 	xbmc.executebuiltin("Container.SetViewMode(504)")
-
-def VIPList():
-        addDir('[COLOR blue]links from mash23k addon [/COLOR]','','','','')
-        url=base64.b64decode('aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9tYXNoMmszL01hc2hTcG9ydHMvbWFzdGVyL01hc2hzcHJ0LnhtbA==')
-        link=OPEN_URL(url)
-        link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
-        match=re.compile('<title>([^<]+)</title.+?link>(.+?)</link.+?thumbnail>([^<]+)</thumbnail>').findall(link)
-        for name,url,thumb in sorted(match):
-                if not'NHL' in name   and not 'Non' in name:
-                        if not '</sublink>' in url:
-                            addLink(name,url,thumb,'')
-                        else:
-                              links=re.compile('<sublink>(.*?)</sublink>').findall(url)
-                              for link in links:
-                                      addLink(name,link,thumb,'')
-        addDir('[COLOR blue]end of  mash23k links [/COLOR]','','','','')
 
 def ReadFavories(fileName):
      try:
@@ -202,9 +171,10 @@ def addFavorites(url, iconimage, name):
 		if item["name"].lower() == name.lower():
 			url = item["url"]
 			iconimage = item["image"]
+			type = item["type"]
     if not iconimage:
 		iconimage = ""
-    data = {"url": url, "image": iconimage, "name": name}
+    data = {"url": url, "image": iconimage, "name": name, "type": type}
     dirs.append(data)
     with open(FAV, 'w') as outfile:
 		json.dump(dirs, outfile) 
@@ -222,17 +192,38 @@ def removeFavorties(url):
             json.dump(dirs, outfile) 
             outfile.close()
             xbmc.executebuiltin("XBMC.Container.Update('plugin://plugin.video.israelive/?description&iconimage=http%3a%2f%2fcdn3.tnwcdn.com%2ffiles%2f2010%2f07%2fbright_yellow_star.png&mode=15&name=%d7%94%d7%a2%d7%a8%d7%95%d7%a6%d7%99%d7%9d%20%d7%a9%d7%9c%d7%99&url=favorits')")
-          
 
-
-
+def LiveTV_Settings():
+	addDir(localizedString(20001).encode('utf-8'),'settings',44,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQdhwAJTHe3O3EFl7wV_vj1MA-jymE-_6x7RsklkF86gYGQbwEX','')
+	addDir(localizedString(20002).encode('utf-8'),'settings',41,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQdhwAJTHe3O3EFl7wV_vj1MA-jymE-_6x7RsklkF86gYGQbwEX','')
+	addDir(localizedString(20003).encode('utf-8'),'settings',42,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQdhwAJTHe3O3EFl7wV_vj1MA-jymE-_6x7RsklkF86gYGQbwEX','')
+	addDir(localizedString(20004).encode('utf-8'),'settings',43,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQdhwAJTHe3O3EFl7wV_vj1MA-jymE-_6x7RsklkF86gYGQbwEX','')
+	
+def RefreshIPTVlinks():
+	#dp = xbmcgui.DialogProgress()
+	#dp.create("ISRAELIVE","Checking for updates..")
+	xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Checking for updates..., {1}, {2})".format('', 5000 ,icon))
+	sourceSettings = myIPTVSimple.CheckIPTVupdates()
+	if sourceSettings != None:
+		if sourceSettings['isFilmonUpdate'] or sourceSettings['isNewM3U']: 
+			#myIPTVSimple.RefreshIPTVlinks(sourceSettings, dp)
+			myIPTVSimple.RefreshIPTVlinks(sourceSettings)
+		else: # if nothing changed
+			message = "Everything is up to date. :-)"
+			print message
+			xbmc.executebuiltin("XBMC.Notification(ISRALIVE, No updates., {1}, {2})".format('', 5000 ,icon))
+			##dp.update(100, line2=message, line3=' ')
+			##dp.close()
+	#else:
+	#	dp.update(100)
+	#	dp.close() 
+	
 params=get_params()
 url=None
 name=None
 mode=None
 iconimage=None
 description=None
-
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -259,11 +250,10 @@ print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 print "IconImage: "+str(iconimage)
-   
-        
+         
 #these are the modes which tells the plugin where to go
 if mode==None or url==None or len(url)<1:
-        CATEGORIES()
+	CATEGORIES()
 elif mode==2:
 	ListLive(url)
 elif mode==3 or mode==17:
@@ -271,7 +261,7 @@ elif mode==3 or mode==17:
 elif mode==4:
 	downloader_is( )
 elif mode==6:
-	downloader_is('https://github.com/hadynz/repository.arabic.xbmc-addons/raw/master/repo/plugin.video.teledunet/plugin.video.teledunet-2.0.2.zip','Teleduent')
+	downloader_is('https://github.com/hadynz/repository.arabic.xbmc-addons/raw/master/repo/plugin.video.ArabicStreamSuperCollection/plugin.video.ArabicStreamSuperCollection-1.6.0.zip','Teleduent')
 	downloader_is('https://github.com/downloads/hadynz/repository.arabic.xbmc-addons/repository.arabic.xbmc-addons-1.0.0.zip','Teleduent repo')
 	CATEGORIES()
 elif mode==7:
@@ -282,14 +272,35 @@ elif mode==8:
 elif mode==9:   
 	FilmonChannelGuide(url)
 elif mode==11 or mode==16:
-	listitem = xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-	listitem.setPath(url)
+	listitem = xbmcgui.ListItem(name, iconImage='', thumbnailImage='', path=url)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 elif mode==10: 
-	addFavorites(url, iconimage, name)   
+	addFavorites(url, iconimage, name) 
 elif mode==15:
 	listFavorites()
-elif mode==18 :
+elif mode==18:
 	removeFavorties(url)
-    
+elif mode==20:
+	RefreshIPTVlinks()
+	sys.exit()
+elif mode==21:
+	myIPTVSimple.DownloadLogosFolder()
+	sys.exit()
+#elif mode==22:
+#	myIPTVSimple.UpdateIPTVSimple()
+#	sys.exit()
+elif mode==40:
+	LiveTV_Settings()
+elif mode==41:
+	Addon.openSettings()
+elif mode==42:
+	RefreshIPTVlinks()
+elif mode==43:
+	myIPTVSimple.DownloadLogosFolder()
+elif mode==44:
+	iptvAddon = myIPTVSimple.GetIptvAddon()
+	if iptvAddon != None:
+		dlg = xbmcgui.Dialog()
+		dlg.ok('ISRAELIVE', 'You can use Live TV on this machine. :-)')
+
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

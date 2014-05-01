@@ -1,11 +1,13 @@
-import sys, datetime
+import sys, datetime, xbmcgui, random, xbmc, xbmcaddon, json
 import urllib, urllib2
-if sys.version_info >=  (2, 7):
-	import json as _json
-else:
-	import simplejson as _json
 
+filmonMainUrl = 'http://www.filmon.com/tv/htmlmain'
+filmonChannelUrl = 'http://www.filmon.com/ajax/getChannelInfo'
 UA = 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0'
+
+AddonID = 'plugin.video.israelive'
+Addon = xbmcaddon.Addon(AddonID)
+icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url):
 	chNum, referrerCh, ChName = GetUrlParams(url)
@@ -48,7 +50,7 @@ def GetChannelGuide(chNum):
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum)
 	return channelName, channelDescription, iconimage, tvGuide
 	
-def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None):
+def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, forM3U=False):
 	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
 	pageUrl = "http://www.filmon.com/"
 	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
@@ -97,9 +99,59 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None):
 				image = None if not prms.has_key("images") or len(prms["images"]) == 0 else prms["images"][0]["url"]
 				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8'), image))
 	
-	streamUrl = "{0} tcUrl={0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
+	if (forM3U):
+		streamUrl = "{0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
+	else:
+		streamUrl = "{0} tcUrl={0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
+	
 	return channelName, channelDescription, iconimage, streamUrl, tvGuide
 
+#def MakeM3ULinks(scanChList, dp, isIptvAddonGotham):
+def MakeM3ULinks(scanChList, isIptvAddonGotham):
+	M3Ulist = '#EXTM3U\n'
+	errorLog = ''
+
+	try:
+		cookie = OpenURL(filmonMainUrl, justCookie=True)
+		if cookie == None:
+			raise
+		headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
+	except:
+		return None, "Cannot connect to server. :-("
+
+	channelsCount = len(scanChList)
+	
+	random.seed()
+	random.shuffle(scanChList)
+	
+	i = 0
+	for channel in scanChList: 
+		i = i + 1
+		user_data = {'channel_id': channel['chNum']}
+
+		percent = i * 100 // channelsCount 
+		xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating links... {0}%, {1}, {2})".format(percent, 10000 ,icon))
+
+		try:
+			response = OpenURL(filmonChannelUrl, headers, user_data)
+			resultJSON = json.loads(response)
+			if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
+				raise
+		except:
+			errorLog += "{0}. {1}\n".format(channel['chNum'], channel['chName'])
+			continue
+
+		channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(resultJSON[0], channel['chNum'], forM3U=True)
+		
+		chID = "fil-{0}".format(channel['chNum'])
+
+		if isIptvAddonGotham:
+			M3Ulist += '\n#{5}#\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}.png",{3}\n{4}\n'.format(chID, channel['chName'].replace(' ','_'), channel['group'], channel['chName'], streamUrl, channel['index'])
+		else:
+			M3Ulist += '\n#{5}#\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}",{3}\n{4}\n'.format(chID, channel['chName'].replace(' ','_'), channel['group'], channel['chName'], streamUrl, channel['index'])
+		
+	return "{0}\n".format(M3Ulist), errorLog
+	
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
 		user_data = urllib.urlencode(user_data)
@@ -124,21 +176,17 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	response.close()
 	return data
 	
-def GetChannelHtml(chNum):
-	url1 = 'http://www.filmon.com/tv/htmlmain'
-	url2 = 'http://www.filmon.com/ajax/getChannelInfo'
-	
-	cookie = OpenURL(url1, justCookie=True)
+def GetChannelHtml(chNum):	
+	cookie = OpenURL(filmonMainUrl, justCookie=True)
 	if cookie == None:
 		return None
 	headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
 	user_data = {'channel_id': chNum}
-
-	return OpenURL(url2, headers, user_data)
+	return OpenURL(filmonChannelUrl, headers, user_data)
 	
 def GetChannelJson(chNum):
 	html = GetChannelHtml(chNum)
-	resultJSON = _json.loads(html)
+	resultJSON = json.loads(html)
 	if len(resultJSON) < 1 or not resultJSON[0].has_key("title"):
 		return None
 	return resultJSON[0]
@@ -182,3 +230,4 @@ def GetUrlParams(url):
 	except:
 		ChName = None
 	return 	chNum, referrerCh, ChName
+	

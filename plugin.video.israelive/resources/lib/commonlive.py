@@ -35,6 +35,21 @@ def downloader_is (url,name ) :
   if 96 - 96: i1IIi . ii1IiI1i * iiiIIii1I1Ii % i111I
   if 60 - 60: iII11iiIII111 * IIIiiIIii % IIIiiIIii % O00oOoOoO0o0O * i11i + i1IIi
 
+def downloader_logos (url):
+	import downloader,extract   
+	folder = xbmc.translatePath(os.path.join('special://home/addons', 'packages'))
+	dp = xbmcgui.DialogProgress()
+	dp.create("XBMC ISRAEL", "Downloading", '', 'Please Wait')
+	zipFile = os.path.join(folder, 'isr.zip')
+	try:
+		os.remove(zipFile)
+	except :
+		pass
+	downloader.download(url, zipFile, dp)
+	extractFolder = xbmc . translatePath ( os . path . join ( 'special://home' , 'addons' ) )
+	dp.update (0, "", "Extracting Zip Please Wait")
+	extract.all(zipFile ,extractFolder, dp)
+  
 def unescape(text):
         try:            
             rep = {"&nbsp;": " ",
@@ -91,7 +106,7 @@ def addDir(name,url,mode,iconimage,description,isFolder=True):
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
-	if mode==7 or mode==8 or mode==6 or mode==99 or mode==3 or mode==11 or mode==16 or mode==17:
+	if mode==7 or mode==8 or mode==6 or mode==99 or mode==3 or mode==11 or mode==16 or mode==17 or mode==41 or mode==42 or mode==43 or mode==44:
 		isFolder=False
 	
 	if mode==3 or mode==11 or mode==16 or mode==17:

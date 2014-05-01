@@ -1,3 +1,9 @@
+v2.0.1
+- built in service running option  for channels scan.
+-small bug fix
+v2.0.0
+-new support for using Live-TV with IPTVSimple addon
+-sport channels from Mashup
 v1.1.6
 -added channel logo will shown when playing from another plugin (TV-Guide plugin..)
 -fix Radio section duplicate on full-list mode (remove from main list, it stays only in idan-plus list).

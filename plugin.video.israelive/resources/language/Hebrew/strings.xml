@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="55001">הגדרות</string>
-	<string id="55002">שימוש ברשימת ערוצים קלה</string>
+	<string id="20001">בדיקת תאימות טלויזיה חיה</string>
+	<string id="20002">הצגת הגדרות התוסף</string>
+	<string id="20003">רענון תחנות טלויזיה חיה</string>
+	<string id="20004">הורדת חבילת סמלי ערוצים</string>
+	
+	<string id="20101">הגדרות טלויזיה חיה</string>
+	<string id="20102">הערוצים שלי</string>
+	<string id="20103">עידן פלוס</string>
+	<string id="20104">ילדים</string>
+	<string id="20105">בידור</string>
+	<string id="20106">סרטים</string>
+	<string id="20107">מוזיקה</string>
+	<string id="20108">חדשות</string>
+	<string id="20109">מדע וטבע</string>
+	<string id="20110">ספורט</string>
+	<string id="20111">עולם</string>
+	
+	<string id="30000">מועדפים</string>
+	<string id="30001">רשימה קלה (בני)</string>
+	<string id="30002">אנגלית - המיטב</string>
+	<string id="30003">ZipTV</string>
+	<string id="30004">בני - רשימה מלאה</string>
+	
+	<string id="30100">הגדרות ISRALIVE</string>
+	<string id="30101">רשימת ערוצים</string>
+	
+	<string id="30200">IPTVSIMPLE</string>
+	<string id="30201">חבילת תחנות</string>
+	<string id="30202">הכרחת סריקה</string>
+	<string id="30203">הורדת חבילת סמלי ערוצים</string>
+	<string id="30204">סריקת ערוצי טלויזיה</string>
+	<!--<string id="30205">עדכן את IPTV-Simple</string>-->
+	
+	<string id="30300">סריקה מתוזמנת</string>
+	<string id="30301">הרצת סריקה בהפעלה</string>
+	<string id="30302">סריקה כל מספר שעות</string>
 </strings>

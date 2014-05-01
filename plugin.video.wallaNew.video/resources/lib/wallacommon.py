@@ -140,6 +140,7 @@ def getCookie(url, cookiename):
         return data, "ERROR"
         
 def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"'):
+    contentType,mainPage = getData(inUrl)
     print "modulename=" + modulename
     print "inUrl=" + inUrl
     Episode = namedtuple('Episode', ['content', 'title', 'url', 'iconImage', 'time', 'epiDetails'])    
@@ -193,10 +194,10 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
         # save to cache
         cacheServer.set(cacheKey, repr(episodes))
     
-        nextPage = re.compile(patternmore).findall(mainPage)
-        if (len(nextPage)) > 0:
-            addDir('UTF-8', __language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
-        xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+    nextPage = re.compile(patternmore).findall(mainPage)
+    if (len(nextPage)) > 0:
+        addDir('UTF-8', __language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
+    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 def convertToUTF(name):
     return clean('utf-8',name)

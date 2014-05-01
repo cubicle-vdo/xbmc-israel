@@ -1,5 +1,7 @@
+[B]Version 1.1.5[/B]
+-Maintenance
 [B]Version 1.1.4[/B]
--added yes tv playlist and aeutz yeladim
+-added yes tv playlist and arutz yeladim
 [B]Version 1.1.2[/B]
 -fix for the supercartoons url  
 [B]Version 1.1.1[/B]
