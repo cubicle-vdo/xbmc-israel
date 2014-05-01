@@ -20,20 +20,11 @@ __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
 
-def OPEN_URL(url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    return link
+DOMAIN = __settings__.getSetting("domain")
+HOST = DOMAIN[7:]
 
-#link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
-#match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
-HOST= sys.modules["__main__"].HOST
-DOMAIN=sys.modules["__main__"].DOMAIN
-print "common " +  DOMAIN
-print "common "+ HOST
+print "common domain=" +  DOMAIN
+print "common domain="+ HOST
 
 __REFERER__ = DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 

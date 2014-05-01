@@ -1,5 +1,5 @@
 [B]Version 2.1.7[/B]
--domain back to hardcoded
+-added domain to addon-settings
 [B]Version 2.1.4[/B]
 -minor fix
 [B]Version 2.1.2[/B]
