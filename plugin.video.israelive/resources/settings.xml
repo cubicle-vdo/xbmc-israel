@@ -2,16 +2,21 @@
 <settings>
 	<category label="30100">
 		<setting label="30100" type="lsep"/>
-		<setting id="TV-LightPlaylist" type="bool" label="30101" default="false" />
+		<setting id="PlxPlaylist" type="enum" label="30101" lvalues="30001|30003|30004" default="2" />
 	</category>
 	<category label="30200">
 		<setting label="30200" type="lsep"/>
-		<setting id="iptvPackage" type="enum" label="30201" lvalues="30001|30002" default="0" />
-		<setting type="action" label="30205" action="RunScript($CWD/default.py,,?mode=22&url=.)" option="close"/>
+		<setting id="iptvPackage" type="enum" label="30201" lvalues="30001|30002|30003" default="0" />
+		<!--<setting type="action" label="30205" action="RunScript($CWD/default.py,,?mode=22&url=.)" option="close"/>-->
 		<setting type="sep"/>
-		<setting id="ForceFilmonScan" type="bool" label="30202" default="false" />
+		<setting id="ForceReScan" type="bool" label="30202" default="false" />
 		<setting type="sep"/>
 		<setting type="action" label="30203" action="RunScript($CWD/default.py,,?mode=21&url=.)" option="close"/>
 		<setting type="action" label="30204" action="RunScript($CWD/default.py,,?mode=20&url=.)" option="close"/>
+	</category>
+	<category label="30300">
+		<setting label="30300" type="lsep"/>
+		<setting id="runAtStartup" type="bool" label="30301" default="false" />
+		<setting id="checkInterval" label="30302" type="number" default="0" />
 	</category>
 </settings>
