@@ -28,12 +28,12 @@ def OPEN_URL(url):
     response.close()
     return link
 
-link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
-match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
-HOST=match[0][7:]
-DOMAIN=match[0]
-print "common" +  DOMAIN
-print "common"+ HOST
+#link=OPEN_URL('https://dl.dropboxusercontent.com/u/5461675/sdarotdomain.xml')
+#match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
+HOST= sys.modules["__main__"].HOST
+DOMAIN=sys.modules["__main__"].DOMAIN
+print "common " +  DOMAIN
+print "common "+ HOST
 
 __REFERER__ = DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 

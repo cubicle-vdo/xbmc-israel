@@ -22,7 +22,7 @@ __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
 LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
 sys.path.append (LIB_PATH)
-from sdarotcommon import *
+
 
 dbg = False # used for simple downloader logging
 
@@ -36,16 +36,13 @@ def OPEN_URL(url):
     return link
 
 
-try:
-    link=OPEN_URL('http://goo.gl/A1HFEi')
-    match=re.compile('<domain>(.*?)</domain>',re.I+re.M+re.U+re.S).findall(link)
-    DOMAIN=match[0]
-except:
-    pass
-    DOMAIN='http://www.sdarot.co.in'
+    
+DOMAIN='http://sdarot.wf'
+HOST='sdarot.wf'
 
 print DOMAIN
 
+from sdarotcommon import *
 
 path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
 cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
