@@ -4,7 +4,6 @@ xbmc-israel
 XBMC Israeli streaming repo for streaming sites
 
 
-due to github problems with xbmc the project
-is here now:
+The addons now available through the TheWiz repository
+http://www.hometheater.co.il/vp2068379
 
-https://bitbucket.org/xbmcisrael/xbmc-israel
