@@ -1,3 +1,9 @@
+v3.0.1
+- new version, new lists.
+v3.0.0
+- addon rewritten. This version nor include LiveTV support.
+v2.0.2
+- small fix because of internal changes in some sites.
 v2.0.1
 - built in service running option  for channels scan.
 -small bug fix
