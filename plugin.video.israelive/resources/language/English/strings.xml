@@ -1,39 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="20001">Check Live-TV compatibility</string>
-	<string id="20002">Open addon settings</string>
-	<string id="20003">Refresh Live-TV channels</string>
-	<string id="20004">Download Live-TV Logo Pack</string>
+	<string id="30100">IsraeLive settings</string>
+	<string id="30101">Channel lists:</string>
+	<string id="30102">Radio stations</string>
+	<string id="30103">French channels</string>
+	<string id="30104">Russian channels</string>
 	
-	<string id="20101">Live-TV settings</string>
-	<string id="20102">My Channels</string>
-	<string id="20103">Idan Plus</string>
-	<string id="20104">Kids</string>
-	<string id="20105">Entertainment</string>
-	<string id="20106">Movies</string>
-	<string id="20107">Music</string>
-	<string id="20108">News</string>
-	<string id="20109">Science and Nature</string>
-	<string id="20110">Sport</string>
-	<string id="20111">World</string>
-	
-	<string id="30000">Favourites</string>
-	<string id="30001">TV-Light (Benny123)</string>
-	<string id="30002">English-Optimized</string>
-	<string id="30003">ZipTV</string>
-	<string id="30004">Benny123 Full-list</string>
-	
-	<string id="30100">ISRALIVE Settings</string>
-	<string id="30101">TV-Playlist</string>
-	
-	<string id="30200">IPTVSIMPLE</string>
-	<string id="30201">IPTV Package</string>
-	<string id="30202">Force Re-Scan</string>
-	<string id="30203">Download IPTV Logo Pack</string>
-	<string id="30204">IPTV channels scan</string>
-	<!--<string id="30205">Update IPTV-Simple</string>-->
-	
-	<string id="30300">Schedual scan</string>
-	<string id="30301">Run a scan at Startup</string>
-	<string id="30302">Scan interval (Hours)</string>
+	<string id="30201">Live TV:</string>
+	<string id="30202">Enable LiveTV support</string>
 </strings>

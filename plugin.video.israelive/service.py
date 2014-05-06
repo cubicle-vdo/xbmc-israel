@@ -1,10 +1,10 @@
-import xbmc, xbmcaddon, xbmcgui, os, sys;
+import xbmc, xbmcaddon, os, sys;
 
 AddonID = 'plugin.video.israelive'
-israeliveAddon = xbmcaddon.Addon(AddonID)
+Addon = xbmcaddon.Addon(AddonID)
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myIPTVSimple
+import myIPTVSimple, common
 
 def sleepFor(timeS):
     while((not xbmc.abortRequested) and (timeS > 0)):
@@ -12,30 +12,23 @@ def sleepFor(timeS):
         timeS -= 1
 		
 def RefreshIPTVlinks():
-	sourceSettings = myIPTVSimple.CheckIPTVupdates()
-	if sourceSettings != None:
-		if sourceSettings['isFilmonUpdate'] or sourceSettings['isNewM3U']: 
-			myIPTVSimple.RefreshIPTVlinks(sourceSettings)
-			print "--------------> IsraeLive service: Update finnished. <-----------------"
-		else: # if nothing changed
-			print "--------> IsraeLive service: Everything is up to date. :-) <-----------"
+	nothingChanged = True
+	if common.UpdateLists():
+		print "------------> IsraeLive service: Channel-list updated. <---------------"
+		nothingChanged = False
+	if useLiveTV and (nothingChanged == False or myIPTVSimple.isIPTVChange()):
+		myIPTVSimple.RefreshIPTVlinks()
+		print "-------------> IsraeLive service: IPTV-links updated. <----------------"
+		nothingChanged = False
+	if nothingChanged: # if nothing changed
+		print "--------> IsraeLive service: Everything is up to date. :-) <-----------"
 
-runAtStartup = israeliveAddon.getSetting("runAtStartup") == "true"
-checkInterval = int(israeliveAddon.getSetting("checkInterval"))
-
-if not runAtStartup and checkInterval <= 0:
-	sys.exit()
+useLiveTV = Addon.getSetting("useLiveTV") == "true"
+checkInterval = 24 #hours
 
 print "---------------------> IsraeLive service Started <---------------------"
-
-if runAtStartup:
-	print "----------------> IsraeLive service: Scan At Startup <-----------------"
-	RefreshIPTVlinks()
-
-if checkInterval <= 0:
-	print "--------------> IsraeLive service: No schedule scans <-----------------"
-	print "---------------------> IsraeLive service Stoped <----------------------"
-	sys.exit()
+print "----------------> IsraeLive service: Scan At Startup <-----------------"
+RefreshIPTVlinks()
 
 while (not xbmc.abortRequested):
 	sleepFor(checkInterval * 3600)
