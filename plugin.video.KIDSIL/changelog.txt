@@ -1,3 +1,5 @@
+[B]Version 1.1.6[/B]
+Right click on youtube channel will TV MODE
 [B]Version 1.1.5[/B]
 -Maintenance
 [B]Version 1.1.4[/B]
