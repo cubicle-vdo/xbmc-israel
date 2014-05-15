@@ -105,9 +105,13 @@ def addDir(name,url,mode,iconimage,description):
                 menu.append(('[COLOR blue]        הצג פרטי רשימת השמעה [/COLOR]', "XBMC.Container.Update(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=13&name=''&url=%s)"% (url)))
                 liz.addContextMenuItems(items=menu, replaceItems=True)
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        if mode==9:
+                menu.append(('[COLOR blue]       TV MODE [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=115&name=''&url=%s)"% (url)))
+                liz.addContextMenuItems(items=menu, replaceItems=True)
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         elif  mode==8 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-        elif mode==11 or mode==15 :
+        elif mode==11 or mode==15 or mode==115 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         elif mode==13:
              menu.append(('[COLOR blue]        נגן ברצף [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=12&name=''&url=%s)"% (url)))

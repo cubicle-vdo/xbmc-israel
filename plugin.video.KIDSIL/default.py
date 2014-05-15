@@ -41,12 +41,7 @@ def CATEGORIES():
         else:
                 addDir('[COLOR red]10QTV לא מותקן[/COLOR]','','','','')
 
-        if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.israelive'):
-                addDir('LIVE TV','plugin://plugin.video.israelive/?mode=2&url=https://dl.dropbox.com/u/94071174/Online/wow/Kids.plx&name=ילדים',8,'http://www.makingdifferent.com/wp-content/uploads/2013/07/live-tv-online.jpg','')
-        else: 
-              addDir('[COLOR red]ISRAELIVE לא מותקן[/COLOR]','','','','')   
-                
-               
+
         if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.wallaNew.video'):
                 addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
                 addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
@@ -68,42 +63,12 @@ def CATEGORIES():
         addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
         
         YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
-        addDir('יוטיוב מרשת','reshettv',16,'','')
+        #addDir('יוטיוב מרשת','reshettv',16,'','')
         addDir('יוטיוב מחינוכית 23','23tv',16,'','')
         setView('movies', 'default')
-    
 
-def ListLive(url):
-        link=OPEN_URL(url)
-        link=unescape(link)
-        #print link
-        matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
-        #print str(matches1[0]) + '\n'
-        for match in matches1 :
-            #print "match=" + str(match)
-            match=match+'#'
-            if match.find('playlist') != 0 :
-                regex='name=(.*?)URL=(.*?)#'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                #print str(matches)
-                for name,url in  matches:
-                    thumb=''
-                    i=name.find('thumb')
-                    if i>0:
-                        thumb=name[i+6:]
-                        name=name[0:i]
-		    #print url
-                    addLink('[COLOR yellow]'+ name+'[/COLOR]',url,thumb,'')  
-                
-            else:
-                regex='name=(.*?)URL=(.*?).plx'
-                matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
-                for name,url in matches:
-                    url=url+'.plx'
-                    if name.find('Radio') < 0 :
-                        addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
 
-    
+
 
 
 
@@ -181,6 +146,31 @@ def YOUList(name,url,description):
         addDir('[COLOR blue]            עוד תוצאות [/COLOR]',url,9,'',str(description))
         setView('tvshows', 'default')
 
+
+def TvMode(user):
+    playlists=PlaylistsFromUser(user)
+    if playlists==[] :  #no playlists on  youtube channel
+        dialog = xbmcgui.Dialog()
+        ok = dialog.ok('XBMC', 'No TV mode for this Channel.')
+        CATEGORIES()
+    #print "str is" +  str(random.choice(playlists)[0])
+    else:
+        pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+        pl.clear()
+        dp= xbmcgui.DialogProgress()
+        dp.create('KIDSIL BY o2Ri','Preapring TV mode')
+        for i in range (1,21) :  #20  RANDOM PROGRAMS IN TV MODE 
+            dp.update(i*5,"Please wait ","Will take few minutes")
+            #print str (playlists)
+            ran=str(random.choice(playlists)[0])
+            print "kkkkkkkkkkkkkk"+str(ran)
+            finalurl,title,thumb= RanFromPlayList(ran)
+            liz = xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumb)
+            liz.setInfo( type="Video", infoLabels={ "Title": title} )
+            liz.setProperty("IsPlayable","true")
+            pl.add(finalurl, liz)
+        xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(pl)
+    
 def YOULink(mname,url,thumb):
         ok=True
         url = "plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+url
@@ -284,6 +274,44 @@ def YOULinkAll(url):
     
     if not xbmc.Player().isPlayingVideo():
 	    xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(pl)
+        
+
+        
+def RanFromPlayList(playlistid):
+        url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        prms=json.loads(link)
+        numOfItems=int(prms['feed'][u'openSearch$totalResults'][u'$t']) #if bigger than 50 needs  to add more result
+        if numOfItems >1 :
+            link=OPEN_URL(url)
+            prms=json.loads(link)
+            if numOfItems>49:
+                numOfItems=49
+            i=random.randint(1, numOfItems-1)
+            #print str (len(prms['feed'][u'entry']))  +"and i="+ str(i)
+            try:
+                urlPlaylist= str(prms['feed'][u'entry'][i][ u'media$group'][u'media$player'][0][u'url'])
+                match=re.compile('www.youtube.com/watch\?v\=(.*?)\&f').findall(urlPlaylist)
+                finalurl="plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+match[0]+"&hd=1"
+                title= str(prms['feed'][u'entry'][i][ u'media$group'][u'media$title'][u'$t'].encode('utf-8')).decode('utf-8')
+                thumb =str(prms['feed'][u'entry'][i][ u'media$group'][u'media$thumbnail'][2][u'url'])
+            except :
+                 return "","",""  # private video from youtube
+            '''liz = xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumb)
+            liz.setInfo( type="Video", infoLabels={ "Title": title} )
+            liz.setProperty("IsPlayable","true")
+            pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+            pl.clear()
+            pl.add(finalurl, liz)'''
+            #xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(pl)
+            return finalurl,title,thumb
+        else:
+            return "","",""
+        
         
 def PlayPlayList(playlistid):
 
@@ -412,4 +440,6 @@ elif mode==15:
             CleanTheCache()
 elif mode==16:       
     ShowFromUser(url)
+elif mode==115:
+    TvMode(url)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
