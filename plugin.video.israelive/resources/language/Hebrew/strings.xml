@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
+	<string id="20101">הגדרות</string>
+	<string id="20102">הצגת הגדרות התוסף</string>
+	<string id="20103">רענון תחנות טלויזיה חיה</string>
+	
 	<string id="30100">הגדרות ISRALIVE</string>
 	<string id="30101">רשימת ערוצים:</string>
 	<string id="30102">תחנות רדיו</string>
-	<string id="30103">ערוצים צרפתיים</string>
-	<string id="30104">ערוצים רוסיים</string>
+	<string id="30103">ערוצים אנגליים</string>
+	<string id="30104">ערוצים צרפתיים</string>
+	<string id="30105">ערוצים רוסיים</string>
 	
 	<string id="30201">טלויזיה חיה:</string>
 	<string id="30202">אפשרות תמיכה בטלויזיה חיה</string>

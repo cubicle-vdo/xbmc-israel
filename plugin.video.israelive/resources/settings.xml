@@ -3,8 +3,9 @@
 	<category label="30100">
 		<setting label="30101" type="lsep"/>
 		<setting id="radio" type="bool" label="30102" default="true" />
-		<setting id="french" type="bool" label="30103" default="false" />
-		<setting id="russian" type="bool" label="30104" default="false" />
+		<setting id="uk" type="bool" label="30103" default="false" />
+		<setting id="france" type="bool" label="30104" default="false" />
+		<setting id="russia" type="bool" label="30105" default="false" />
 		<setting type="sep"/>
 		<setting label="30201" type="lsep"/>
 		<setting id="useLiveTV" type="bool" label="30202" default="true" />
