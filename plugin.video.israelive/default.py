@@ -9,58 +9,55 @@ icon = Addon.getAddonInfo('icon')
 
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myIPTVSimple, common
+import common, myFilmon, myIPTVSimple
 
 listsFile = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'lists', "lists.list")
+AddonLogosDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos')
 
 def Categories():
-	logosDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos')
+	addDir("[COLOR yellow][{0}][/COLOR]".format(localizedString(20101).encode('utf-8')), "settings", 10, os.path.join(AddonLogosDir, "settings.jpg"))
 	
-	isRadio = False if (Addon.getSetting('radio').lower() == 'false') else True
-	if isRadio:
-		addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30102).encode('utf-8')) ,"radio", 1, os.path.join(logosDir, "radio.jpg"), description=localizedString(30102).encode('utf-8'))
-	
-	Category("israel")
-	
-	isFrench = False if (Addon.getSetting('french').lower() == 'false') else True
-	if isFrench:
-		addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30103).encode('utf-8')) ,"france", 1, os.path.join(logosDir, "france.png"), description=localizedString(30103).encode('utf-8'))
-	isRussian = False if (Addon.getSetting('russian').lower() == 'false') else True
-	if isRussian:
-		addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30104).encode('utf-8')) ,"russia", 1, os.path.join(logosDir, "russia.png"), description=localizedString(30104).encode('utf-8'))
+	lists = ['radio', 'uk', 'france', 'russia']
+	markedLists = common.GetMarkedLists()
 
+	for listName in markedLists:
+		if listName == "Main":
+			Category(listName)
+		else:
+			addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30102 + lists.index(listName)).encode('utf-8')) , listName, 1, os.path.join(AddonLogosDir, "{0}.png".format(listName)))
+			
 def Category(categoryName):	
-	lists = ReadList(listsFile)
-
-	logosDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos')
-	
+	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'logos')
+	if not os.path.exists(logosDir):
+		os.makedirs(logosDir)
+	lists = common.ReadList(listsFile)
+	common.updateLogos(lists[categoryName])
 	for channel in lists[categoryName]:
-		logoFile = os.path.join(logosDir, "{0}.png".format(channel["tvg_id"]))
-		addDir(channel["display_name"].encode("utf-8"), channel["url"], 2, logoFile, isFolder=False)
+		logoFile = os.path.join(logosDir, "{0}.png".format(channel["logo"]))
+		mode = 3 if channel["type"]== "filmon" else 2
+		addDir(channel["display_name"].encode("utf-8"), channel["url"], mode, logoFile, isFolder=False)
 
+def SettingsCat():
+	addDir(localizedString(20102).encode('utf-8'), 'settings', 11, os.path.join(AddonLogosDir, "settings.jpg"), isFolder=False)
+	addDir(localizedString(20103).encode('utf-8'), 'settings', 12, os.path.join(AddonLogosDir, "settings.jpg"), isFolder=False)
+	
 def PlayUrl(name, url, iconimage=None):
-	listitem = xbmcgui.ListItem(name, path=url)
-	if iconimage:
-		listitem.setThumbnailImage(iconimage)
+	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
+	listitem.setInfo(type="Video", infoLabels={ "Title": name })
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
-def ReadList(fileName):
-	try:
-		f = open(fileName,'r')
-		fileContent = f.read()
-		f.close()
-		content = json.loads(fileContent)
-	except:
-		content = []
+def PlayFilmon(chNum):
+	direct, channelName, programmeName, iconimage = myFilmon.GetChannelStream(chNum)
+	if direct == None:
+		return
+	PlayUrl(programmeName, direct, iconimage)
 
-	return content
-	
 def addDir(name, url, mode, iconimage, description="", isFolder=True):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 
 	liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-	if (not isFolder):
+	if (mode == 2 or mode == 3):
 		liz.setProperty('IsPlayable', 'true')
 	
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=isFolder)
@@ -113,12 +110,22 @@ except:
  
 if not os.path.isfile(listsFile):
 	common.UpdateLists()
-	
+
 if mode == None or url == None or len(url) < 1:
 	Categories()
 elif mode == 1:
 	Category(url)
 elif mode == 2:
 	PlayUrl(name, url, iconimage)
+elif mode == 3:
+	PlayFilmon(url)
+elif mode== 10:
+	SettingsCat()
+elif mode == 11:
+	Addon.openSettings()
+elif mode == 12:
+	if myIPTVSimple.RefreshIPTVlinks():
+		dlg = xbmcgui.Dialog()
+		dlg.ok('ISRAELIVE', 'Links updated.', "Please restart XBMC or PVR db.")
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

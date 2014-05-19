@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import urllib2, sys, re, xbmcgui, xbmcaddon, xbmc, os, json
+import urllib2, sys, re, xbmcgui, xbmcaddon, xbmc, os, json, random
 import xml.etree.ElementTree as ET
+import common, myFilmon
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
@@ -26,22 +27,43 @@ def GetIptvAddon():
 		dlg.ok('ISRAELIVE', msg1, msg2)
 		return None
 
-def isIPTVChange():
-	markedListsFilename = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, "lists", "markedLists.txt") 
-	oldList = ReadList(markedListsFilename)
-	newList = GetMarkedLists()
+def isIPChange():
+	newIP = json.load(urllib2.urlopen('http://httpbin.org/ip'))['origin'] # get current IP
+	#sourceSettings['myIP'] = urllib2.urlopen('http://ip.42.pl/raw').read()
+	oldIPfile = os.path.join(addon_data_dir, 'myPublicIP.txt')
+	
+	if os.path.isfile(oldIPfile): # compare with previous IP (if exist)
+		f = open(oldIPfile,'r')
+		oldIP = f.read()
+		f.close()
+	else:
+		oldIP = ''
+	
+	isIPChanged = newIP != oldIP # check if IP changed
+	
+	if isIPChanged: 
+		f = open(oldIPfile, 'w')
+		f.write(newIP)
+		f.close()
+	
+	return isIPChanged
+	
+def isMarkedListsChange():
+	markedListsFilename = os.path.join(addon_data_dir, "lists", "markedLists.txt") 
+	oldList = common.ReadList(markedListsFilename)
+	newList = common.GetMarkedLists()
 	#oldList = [x.encode('UTF8') for x in oldList]
 	return cmp(oldList, newList) != 0
 
 def RefreshIPTVlinks():
 	iptvAddon = GetIptvAddon()
 	if iptvAddon == None:
-		return None
+		return False
 
-	#xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating links..., {1}, {2})".format('', 10000 ,icon))
+	xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating links..., {0}, {1})".format(300000 ,icon))
 
-	markedLists = GetMarkedLists()
-	markedListsFilename = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, "lists", "markedLists.txt") 
+	markedLists = common.GetMarkedLists()
+	markedListsFilename = os.path.join(addon_data_dir, "lists", "markedLists.txt") 
 	
 	with open(markedListsFilename, 'w') as outfile:
 		json.dump(markedLists, outfile) 
@@ -55,15 +77,19 @@ def RefreshIPTVlinks():
 	f.write(finalM3Ulist)
 	f.close()
 
-	dlg = xbmcgui.Dialog()
-	dlg.ok('ISRAELIVE', 'Links updated.', "Please restart XBMC or PVR db.")
-	
 	if os.path.exists(xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple")):
 		DeleteCache()
 		
 	UpdateIPTVSimpleSettings(iptvAddon)
+	xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Update links is done., {0}, {1})".format(2000 ,icon))
+	return True
 
-def UpdateIPTVSimpleSettings(iptvAddon):
+def UpdateIPTVSimpleSettings(iptvAddon = None):
+	if iptvAddon == None:
+		iptvAddon = GetIptvAddon()
+		if iptvAddon == None:
+			return 
+			
 	iptvSettingsFile = os.path.join(xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple" ).decode("utf-8"), "settings.xml")
 	if not os.path.isfile(iptvSettingsFile):
 		iptvAddon.setSetting("epgPathType", "1") # make 'settings.xml' in 'userdata/addon_data/pvr.iptvsimple' folder
@@ -73,17 +99,20 @@ def UpdateIPTVSimpleSettings(iptvAddon):
 		
 	isSettingsChanged = False
 	# make changes
-	if dict.has_key("epgPathType") and dict["epgPathType"] != "1":
-		dict["epgPathType"] = "1"
+	if dict.has_key("epgPathType") and dict["epgPathType"] != "0":
+		dict["epgPathType"] = "0"
 		isSettingsChanged = True
-	if dict.has_key("epgUrl") and dict["epgUrl"] != "http://thewiz.info/XBMC/_STATIC/guide.xml":
-		dict["epgUrl"] = "http://thewiz.info/XBMC/_STATIC/guide.xml"
+	if dict.has_key("epgPath") and dict["epgPath"] != os.path.join(addon_data_dir, 'guide.xml'):
+		dict["epgPath"] = os.path.join(addon_data_dir, 'guide.xml')
 		isSettingsChanged = True
+	#if dict.has_key("epgUrl") and dict["epgUrl"] != "http://thewiz.info/XBMC/_STATIC/guide.xml":
+	#	dict["epgUrl"] = "http://thewiz.info/XBMC/_STATIC/guide.xml"
+	#	isSettingsChanged = True
 	if dict.has_key("logoPathType") and dict["logoPathType"] != "0":
 		dict["logoPathType"] = "0"
 		isSettingsChanged = True
-	if dict.has_key("logoPath") and dict["logoPath"] != os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos'):
-		dict["logoPath"] = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos')
+	if dict.has_key("logoPath") and dict["logoPath"] != os.path.join(addon_data_dir, 'logos'):
+		dict["logoPath"] = os.path.join(addon_data_dir, 'logos')
 		isSettingsChanged = True
 	if dict.has_key("m3uPathType") and dict["m3uPathType"] != "0":
 		dict["m3uPathType"] = "0"
@@ -106,19 +135,9 @@ def UpdateIPTVSimpleSettings(iptvAddon):
 	f.write(xml)
 	f.close()
 
-def GetMarkedLists():
-	list = ["israel"]
-	if (Addon.getSetting('radio').lower() == 'true'):
-		list = ["radio"] + list
-	if (Addon.getSetting('french').lower() == 'true'):
-		list += ["france"]
-	if (Addon.getSetting('russian').lower() == 'true'):
-		list += ["russia"]
-	return list 
-	
 def MakeFinalList(markedLists):	
-	listsFile = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, "lists", "lists.list")
-	fullList = ReadList(listsFile)
+	listsFile = os.path.join(addon_data_dir, "lists", "lists.list")
+	fullList = common.ReadList(listsFile)
 
 	list = []
 	for name in markedLists:
@@ -126,28 +145,66 @@ def MakeFinalList(markedLists):
 
 	return list
 	
-def ReadList(fileName):
-	try:
-		f = open(fileName,'r')
-		fileContent = f.read()
-		f.close()
-		content = json.loads(fileContent)
-	except:
-		content = []
-
-	return content
-	
 def MakeM3U(list, isIptvAddonGotham):
+	randList =  [{ "index": list.index(item), "channel": item} for item in list]
+	random.seed()
+	random.shuffle(randList)
+	headers = None
+	for item in randList:
+		if item["channel"]["type"] == "filmon":
+			headers, streamUrl = myFilmon.GetStreamUrl(int(item["channel"]["url"]), headers)
+			if headers:
+				list[item["index"]]["url"] = streamUrl
+			continue
+
 	M3Ulist = "#EXTM3U\n"
 	for item in list:
 		tvg_name = item['tvg_id'].replace(' ','_')
-		tvg_logo = item['tvg_id']
+		tvg_logo = item['logo']
 		if isIptvAddonGotham:
 			tvg_logo += ".png"
 		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
-		M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(item['tvg_id'], tvg_name, item['group_title'], tvg_logo, radio, item['display_name'].encode("utf-8"), item['url'].encode("utf-8"))
+		M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(item['tvg_id'], tvg_name, item['group_title'].encode("utf-8"), tvg_logo, radio, item['display_name'].encode("utf-8"), item['url'].encode("utf-8"))
 	return M3Ulist
 		
+def RefreshEPG():
+	epgLastETag = os.path.join(addon_data_dir, 'epgLastETag.txt')
+	if os.path.isfile(epgLastETag):
+		f = open(epgLastETag,'r')
+		fileContent = f.read()
+		f.close()
+	else:
+		fileContent = ""
+		
+	URL = "http://thewiz.info/XBMC/_STATIC/guide.xml"
+	req = urllib2.Request(URL)
+	url_handle = urllib2.urlopen(req)
+	headers = url_handle.info()
+	etag = headers.getheader("ETag")
+	#print etag
+	#last_modified = headers.getheader("Last-Modified") 
+	#print last_modified
+	
+	isNewEPG = fileContent != etag
+	if isNewEPG:
+		f = open(epgLastETag, 'w')
+		f.write(etag)
+		f.close()
+		
+		urlContent = common.OpenURL(URL).replace('\r','')
+		epgFile = os.path.join(addon_data_dir, 'guide.xml')
+		f = open(epgFile, 'w')
+		f.write(urlContent)
+		f.close()
+	
+	UpdateIPTVSimpleSettings()
+	return isNewEPG
+
+def UpdateLogos():
+	markedLists = common.GetMarkedLists()
+	finalList = MakeFinalList(markedLists)
+	common.updateLogos(finalList)
+
 def DeleteCache():
 	mypath=xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple" ).decode("utf-8")
 	for f in os.listdir(mypath):
@@ -155,15 +212,6 @@ def DeleteCache():
 			if f.endswith('cache'):
 				os.remove(os.path.join(mypath,f))
 
-def OPEN_URL(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    
-	response = urllib2.urlopen(req,timeout=100)
-	link=response.read()
-	response.close()
-	return link
-	
 def ReadSettings(source, fromFile=False):
 	tree = ET.parse(source) if fromFile else ET.fromstring(source)
 	elements = tree.findall('*')

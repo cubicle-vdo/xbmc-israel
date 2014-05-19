@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
+	<string id="20101">Settings</string>
+	<string id="20102">Open addon settings</string>
+	<string id="20103">Refresh Live-TV channels</string>
+	
 	<string id="30100">IsraeLive settings</string>
 	<string id="30101">Channel lists:</string>
 	<string id="30102">Radio stations</string>
-	<string id="30103">French channels</string>
-	<string id="30104">Russian channels</string>
+	<string id="30103">English channels</string>
+	<string id="30104">French channels</string>
+	<string id="30105">Russian channels</string>
 	
 	<string id="30201">Live TV:</string>
 	<string id="30202">Enable LiveTV support</string>

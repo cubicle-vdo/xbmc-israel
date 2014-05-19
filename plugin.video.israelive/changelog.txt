@@ -1,7 +1,12 @@
-v3.0.1
-- new version, new lists.
+v3.0.7
+- support for filmons' channels.
+v3.0.4
+- automatic download missing logos from server (if exist)
+- automatic download EPG to client.
+v3.0.2
+- new version, new lists, include LiveTV support.
 v3.0.0
-- addon rewritten. This version nor include LiveTV support.
+- addon rewritten. This version not include LiveTV support.
 v2.0.2
 - small fix because of internal changes in some sites.
 v2.0.1

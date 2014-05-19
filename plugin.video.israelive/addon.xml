@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelive" name="ISRAELIVE" version="3.0.2" provider-name="THE-ANGLO, AVIGDOR">
+<addon id="plugin.video.israelive" name="ISRAELIVE" version="3.0.7" provider-name="THE-ANGLO, AVIGDOR">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -10,7 +10,7 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en">live tv </summary>
     <description lang="en">live tv</description>
-    <description lang="en">צפיה בערוצי טלויזיה ישראלית</description>
+    <description lang="he">צפיה בערוצי טלויזיה ישראלית</description>
     <platform>all</platform>
   </extension>
 </addon>

@@ -1,4 +1,4 @@
-import xbmc, xbmcaddon, os, sys;
+import xbmc, xbmcaddon, xbmcgui, os, sys;
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
@@ -11,29 +11,47 @@ def sleepFor(timeS):
         xbmc.sleep(1000)
         timeS -= 1
 		
-def RefreshIPTVlinks():
-	nothingChanged = True
-	if common.UpdateLists():
+def CheckUpdates():
+	isListsChanged = common.UpdateLists()
+	if isListsChanged:
 		print "------------> IsraeLive service: Channel-list updated. <---------------"
-		nothingChanged = False
-	if useLiveTV and (nothingChanged == False or myIPTVSimple.isIPTVChange()):
-		myIPTVSimple.RefreshIPTVlinks()
-		print "-------------> IsraeLive service: IPTV-links updated. <----------------"
-		nothingChanged = False
-	if nothingChanged: # if nothing changed
+	
+	myIPTVSimple.UpdateLogos()
+	
+	isIPTVChanged = False
+	isEPGChanged = False
+	
+	if Addon.getSetting("useLiveTV") == "true":
+		isIPChanged = myIPTVSimple.isIPChange()
+		if isListsChanged or isIPChanged or myIPTVSimple.isMarkedListsChange():
+			isIPTVChanged = myIPTVSimple.RefreshIPTVlinks()
+			if isIPTVChanged:
+				print "-------------> IsraeLive service: IPTV-links updated. <----------------"
+			else:
+				print "----------> IsraeLive service: error updating IPTV-links. <------------"
+		isEPGChanged = myIPTVSimple.RefreshEPG()
+		if isEPGChanged:
+			print "-------------> IsraeLive service: TV-Guide updated. <-----------------"
+	
+	if isIPTVChanged or isEPGChanged: 
+		dlg = xbmcgui.Dialog()
+		dlg.ok('ISRAELIVE', 'Links updated.', "Please restart XBMC or PVR db.")
+	elif isListsChanged:
+		pass
+	else: # if nothing changed
 		print "--------> IsraeLive service: Everything is up to date. :-) <-----------"
 
-useLiveTV = Addon.getSetting("useLiveTV") == "true"
-checkInterval = 24 #hours
+checkInterval = 24  # hours
 
 print "---------------------> IsraeLive service Started <---------------------"
 print "----------------> IsraeLive service: Scan At Startup <-----------------"
-RefreshIPTVlinks()
+
+CheckUpdates()
 
 while (not xbmc.abortRequested):
 	sleepFor(checkInterval * 3600)
 	if (not xbmc.abortRequested):
 		print "----------------> IsraeLive service: Schedule scan <-------------------"
-		RefreshIPTVlinks()
+		CheckUpdates()
 	
 print "---------------------> IsraeLive service Stoped <----------------------"	
