@@ -1,7 +1,9 @@
-import urllib, urllib2, os, xbmc, xbmcaddon, json
+import urllib, urllib2, os, xbmc, xbmcaddon, xbmcgui, json
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
+
+listsDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'lists')
 
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
@@ -27,13 +29,13 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	response.close()
 	return data
 
-def UpdateLists():
+def UpdateList(listName):
 	isRanUpdate = False
 	
-	listsDir = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'lists')
 	if not os.path.exists(listsDir):
 		os.makedirs(listsDir)
-	listsFile = os.path.join(listsDir, "lists.list")
+
+	listsFile = os.path.join(listsDir, "{0}.list".format(listName))
 	if os.path.isfile(listsFile):
 		f = open(listsFile,'r')
 		fileContent = f.read()
@@ -41,14 +43,27 @@ def UpdateLists():
 	else:
 		fileContent = ""
 	
-	urlContent = OpenURL("http://thewiz.info/XBMC/_STATIC/lists.list").replace('\r','')
+	try:
+		urlContent = OpenURL("http://thewiz.info/XBMC/_STATIC/{0}.list".format(listName)).replace('\r','')
+	except:
+		print "Can't get {0} list from server.".format(listName)		
+		return False
 	
 	if fileContent != urlContent:
 		f = open(listsFile, 'w')
 		f.write(urlContent)
 		f.close()
 		isRanUpdate = True
-	
+
+	return isRanUpdate
+
+def UpdateLists():
+	isRanUpdate = False
+
+	markedLists = GetMarkedLists()
+	for listName in markedLists:
+		isRanUpdate = UpdateList(listName)
+		
 	return isRanUpdate
 	
 def ReadList(fileName):
@@ -61,21 +76,33 @@ def ReadList(fileName):
 		content = []
 
 	return content
-
+	
+def ReadChannelsList(listName, forceUpdate=False):
+	fileName = os.path.join(listsDir, "{0}.list".format(listName))
+	if forceUpdate or not os.path.isfile(fileName):
+		UpdateList(listName)
+	return ReadList(fileName)
+	
 def GetMarkedLists():
-	list = ["Main"]
+	list = ["israel"]
+	if (Addon.getSetting('news').lower() == 'true'):
+		list += ["news"]
+	if (Addon.getSetting('music').lower() == 'true'):
+		list += ["music"]
 	if (Addon.getSetting('radio').lower() == 'true'):
-		list = ["radio"] + list
-	if (Addon.getSetting('uk').lower() == 'true'):
-		list += ["uk"]
+		list += ["radio"]
+	if (Addon.getSetting('localRadio').lower() == 'true'):
+		list += ["localRadio"]
 	if (Addon.getSetting('france').lower() == 'true'):
 		list += ["france"]
 	if (Addon.getSetting('russia').lower() == 'true'):
 		list += ["russia"]
+	if (Addon.getSetting('others').lower() == 'true'):
+		list += ["others"]
 	return list 
 	
 def updateLogos(chList):
-	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'logos')
+	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'logos')
 	if not os.path.exists(logosDir):
 		os.makedirs(logosDir)
 		
@@ -112,3 +139,7 @@ def updateLogos(chList):
 			logoFile.close()
 		except:
 			pass
+
+def OKmsg(title, line1, line2 = None, line3 = None):
+	dlg = xbmcgui.Dialog()
+	dlg.ok(title, line1, line2, line3)
