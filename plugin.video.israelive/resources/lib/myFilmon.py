@@ -129,12 +129,20 @@ def GetStreamUrl(chNum, headers = None):
 		return None, "Cannot Find Stream for channel."
 	
 def GetChannelHtml(chNum):	
-	cookie = common.OpenURL(filmonMainUrl, justCookie=True)
-	if cookie == None:
+	try:
+		cookie = common.OpenURL(filmonMainUrl, justCookie=True)
+		if cookie == None:
+			return None
+	except:
 		return None
+		
 	headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
 	user_data = {'channel_id': chNum}
-	return common.OpenURL(filmonChannelUrl, headers, user_data)
+	
+	try:
+		return common.OpenURL(filmonChannelUrl, headers, user_data)
+	except:
+		return None
 	
 def GetChannelJson(chNum):
 	html = GetChannelHtml(chNum)

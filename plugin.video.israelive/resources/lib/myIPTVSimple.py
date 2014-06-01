@@ -5,27 +5,35 @@ import common, myFilmon
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
+icon = Addon.getAddonInfo('icon')
 
-addon_data_dir=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
+addon_data_dir = os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
 if not os.path.exists(addon_data_dir):
 	os.makedirs(addon_data_dir)
-icon = Addon.getAddonInfo('icon')
-	
+
 def GetIptvAddon():
-	import platform
+	iptvAddon = None
 	
-	if os.path.exists(xbmc.translatePath("special://home/addons/") + 'pvr.iptvsimple') or os.path.exists(xbmc.translatePath("special://xbmc/addons/") + 'pvr.iptvsimple'):
-		return xbmcaddon.Addon("pvr.iptvsimple")
+	if os.path.exists(xbmc.translatePath("special://home/addons/").decode("utf-8") + 'pvr.iptvsimple') or os.path.exists(xbmc.translatePath("special://xbmc/addons/").decode("utf-8") + 'pvr.iptvsimple'):
+		try:
+			iptvAddon = xbmcaddon.Addon("pvr.iptvsimple")
+		except:
+			print "---- IsraeLive ----\nIPTVSimple addon is disable."
+			msg1 = "PVR IPTVSimple is Disable."
+			msg2 = "Please enable IPTVSimple addon."
 	else:	
+		import platform
 		osType = platform.system()
 		osVer = platform.release()
 		xbmcVer = xbmc.getInfoLabel( "System.BuildVersion" )[:2]
 		print "---- IsraeLive ----\nosType: {0}\nosVer: {1}\nxbmcVer: {2}".format(osType, osVer, xbmcVer)
 		msg1 = "PVR IPTVSimple is NOT installed on your machine."
 		msg2 = "Please install XBMC version that include IPTVSimple in it."
-		dlg = xbmcgui.Dialog()
-		dlg.ok('ISRAELIVE', msg1, msg2)
-		return None
+	
+	if iptvAddon == None:
+		common.OKmsg("IsraeLIVE", msg1, msg2)
+		
+	return iptvAddon
 
 def isIPChange():
 	newIP = json.load(urllib2.urlopen('http://httpbin.org/ip'))['origin'] # get current IP
@@ -77,7 +85,7 @@ def RefreshIPTVlinks():
 	f.write(finalM3Ulist)
 	f.close()
 
-	if os.path.exists(xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple")):
+	if os.path.exists(os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), "pvr.iptvsimple")):
 		DeleteCache()
 		
 	UpdateIPTVSimpleSettings(iptvAddon)
@@ -90,7 +98,8 @@ def UpdateIPTVSimpleSettings(iptvAddon = None):
 		if iptvAddon == None:
 			return 
 			
-	iptvSettingsFile = os.path.join(xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple" ).decode("utf-8"), "settings.xml")
+			
+	iptvSettingsFile = os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), "pvr.iptvsimple", "settings.xml")
 	if not os.path.isfile(iptvSettingsFile):
 		iptvAddon.setSetting("epgPathType", "1") # make 'settings.xml' in 'userdata/addon_data/pvr.iptvsimple' folder
 	
@@ -136,14 +145,12 @@ def UpdateIPTVSimpleSettings(iptvAddon = None):
 	f.close()
 
 def MakeFinalList(markedLists):	
-	listsFile = os.path.join(addon_data_dir, "lists", "lists.list")
-	fullList = common.ReadList(listsFile)
-
-	list = []
+	fullList = []
 	for name in markedLists:
-		list += fullList[name]
+		list = common.ReadChannelsList(name, forceUpdate=True)
+		fullList += list
 
-	return list
+	return fullList
 	
 def MakeM3U(list, isIptvAddonGotham):
 	randList =  [{ "index": list.index(item), "channel": item} for item in list]
@@ -181,9 +188,7 @@ def RefreshEPG():
 	url_handle = urllib2.urlopen(req)
 	headers = url_handle.info()
 	etag = headers.getheader("ETag")
-	#print etag
 	#last_modified = headers.getheader("Last-Modified") 
-	#print last_modified
 	
 	isNewEPG = fileContent != etag
 	if isNewEPG:
@@ -191,11 +196,15 @@ def RefreshEPG():
 		f.write(etag)
 		f.close()
 		
-		urlContent = common.OpenURL(URL).replace('\r','')
-		epgFile = os.path.join(addon_data_dir, 'guide.xml')
-		f = open(epgFile, 'w')
-		f.write(urlContent)
-		f.close()
+		try:
+			urlContent = common.OpenURL(URL).replace('\r','')
+		
+			epgFile = os.path.join(addon_data_dir, 'guide.xml')
+			f = open(epgFile, 'w')
+			f.write(urlContent)
+			f.close()
+		except:
+			print "Can't update guide."
 	
 	UpdateIPTVSimpleSettings()
 	return isNewEPG
@@ -206,7 +215,7 @@ def UpdateLogos():
 	common.updateLogos(finalList)
 
 def DeleteCache():
-	mypath=xbmc.translatePath( "special://userdata/addon_data/pvr.iptvsimple" ).decode("utf-8")
+	mypath=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), "pvr.iptvsimple")
 	for f in os.listdir(mypath):
 		if os.path.isfile(os.path.join(mypath,f)):
 			if f.endswith('cache'):
@@ -221,3 +230,8 @@ def ReadSettings(source, fromFile=False):
 		dict[elem.get('id')] = elem.get('value')
 	
 	return dict
+	
+def getM3uFileLastUpdate():
+	m3uFile = os.path.join(addon_data_dir, 'iptv.m3u')
+	lastUpdate = 0 if not os.path.isfile(m3uFile) else int(os.path.getmtime(m3uFile))
+	return lastUpdate
