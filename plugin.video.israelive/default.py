@@ -6,28 +6,33 @@ AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
 localizedString = Addon.getLocalizedString
 icon = Addon.getAddonInfo('icon')
-AddonLogosDir = os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), AddonID, 'resources', 'logos')
 
-libDir = os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), AddonID, 'resources', 'lib')
+libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
 import common, myFilmon, myIPTVSimple
+
+listsFile = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'lists', "lists.list")
+AddonLogosDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'logos')
 
 def Categories():
 	addDir("[COLOR yellow][{0}][/COLOR]".format(localizedString(20101).encode('utf-8')), "settings", 10, os.path.join(AddonLogosDir, "settings.jpg"))
 	
-	lists = ["israel", "news", "music", "radio", "localRadio", "france", "russia", "others"]
+	lists = ['radio', 'uk', 'france', 'russia']
 	markedLists = common.GetMarkedLists()
+
 	for listName in markedLists:
-		if listName == "israel":
+		if listName == "Main":
 			Category(listName)
 		else:
-			addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30101 + lists.index(listName)).encode('utf-8')) , listName, 1, os.path.join(AddonLogosDir, "{0}.png".format(listName)))
+			addDir("[COLOR blue][{0}][/COLOR]".format(localizedString(30102 + lists.index(listName)).encode('utf-8')) , listName, 1, os.path.join(AddonLogosDir, "{0}.png".format(listName)))
 			
 def Category(categoryName):	
-	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'logos')
-	list = common.ReadChannelsList(categoryName)
-	common.updateLogos(list)
-	for channel in list:
+	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data"), AddonID, 'logos')
+	if not os.path.exists(logosDir):
+		os.makedirs(logosDir)
+	lists = common.ReadList(listsFile)
+	common.updateLogos(lists[categoryName])
+	for channel in lists[categoryName]:
 		logoFile = os.path.join(logosDir, "{0}.png".format(channel["logo"]))
 		mode = 3 if channel["type"]== "filmon" else 2
 		addDir(channel["display_name"].encode("utf-8"), channel["url"], mode, logoFile, isFolder=False)
@@ -103,6 +108,9 @@ try:
 except:
 	pass
  
+if not os.path.isfile(listsFile):
+	common.UpdateLists()
+
 if mode == None or url == None or len(url) < 1:
 	Categories()
 elif mode == 1:
@@ -117,7 +125,7 @@ elif mode == 11:
 	Addon.openSettings()
 elif mode == 12:
 	if myIPTVSimple.RefreshIPTVlinks():
-		xbmc.executebuiltin('StartPVRManager')
-		#common.OKmsg("IsraeLIVE", "Links updated.", "Please restart XBMC or PVR db.")
+		dlg = xbmcgui.Dialog()
+		dlg.ok('ISRAELIVE', 'Links updated.', "Please restart XBMC or PVR db.")
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
