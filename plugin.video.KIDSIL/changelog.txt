@@ -1,3 +1,5 @@
+[B]Version 1.1.7[/B]
+fix loop for playlists and double listing 
 [B]Version 1.1.6[/B]
 Right click on youtube channel will TV MODE
 [B]Version 1.1.5[/B]

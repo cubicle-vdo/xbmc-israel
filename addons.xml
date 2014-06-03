@@ -66,7 +66,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="ISRAELIVE" version="3.0.7" provider-name="THE-ANGLO, AVIGDOR">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.0" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -75,16 +75,21 @@
   </extension>
   <extension point="xbmc.service" library="service.py" start="[login|startup]"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">live tv </summary>
-    <description lang="en">live tv</description>
-    <description lang="he">צפיה בערוצי טלויזיה ישראלית</description>
+    <summary lang="en">Israel Live TV - downloaded for free from:
+http://www.hometheater.co.il</summary>
+	<summary lang="he">צפיה בערוצי טלויזיה ישראלית.
+	הורד בחינם מ- http://www.hometheater.co.il</summary>
+    <description lang="en">Israel Live TV - downloaded for free from:
+http://www.hometheater.co.il</description>
+    <description lang="he">צפיה בערוצי טלויזיה ישראלית.
+	הורד בחינם מ- http://www.hometheater.co.il</description>
     <platform>all</platform>
   </extension>
 </addon>
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.1.6"
+       version="1.1.7"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -145,6 +150,22 @@
           <content>movies</content>
         </supportedcontent>
     </extension>
+</addon>
+
+<addon id="plugin.video.playlistLoader" name="Playlist Loader" version="0.0.7" provider-name="Avigdor">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Playlist Loader - downloaded for free from:
+http://www.hometheater.co.il</summary>
+    <description lang="en">Playlist Loader - downloaded for free from:
+http://www.hometheater.co.il</description>
+    <platform>all</platform>
+  </extension>
 </addon>
 
 <addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
