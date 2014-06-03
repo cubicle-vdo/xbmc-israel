@@ -95,31 +95,35 @@ def get_params():
 
 def addDir(name,url,mode,iconimage,description):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
-        ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
         menu = []
         
+        #ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         if mode==12:
                 #url=urllib.unquote(url)
                 menu.append(('[COLOR blue]        הצג פרטי רשימת השמעה [/COLOR]', "XBMC.Container.Update(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=13&name=''&url=%s)"% (url)))
                 liz.addContextMenuItems(items=menu, replaceItems=True)
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+                return ok
         if mode==9:
                 menu.append(('[COLOR blue]       TV MODE [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=115&name=''&url=%s)"% (url)))
                 liz.addContextMenuItems(items=menu, replaceItems=True)
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+                return ok
         elif  mode==8 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+                return ok
         elif mode==11 or mode==15 or mode==115 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+                return ok
         elif mode==13:
              menu.append(('[COLOR blue]        נגן ברצף [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=12&name=''&url=%s)"% (url)))
              liz.addContextMenuItems(items=menu, replaceItems=True)
              ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-            
-        else :
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+             return ok
+        
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 
 
