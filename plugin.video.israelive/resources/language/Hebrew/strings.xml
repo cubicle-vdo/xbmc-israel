@@ -6,10 +6,13 @@
 	
 	<string id="30100">הגדרות ISRALIVE</string>
 	<string id="30101">רשימת ערוצים:</string>
-	<string id="30102">תחנות רדיו</string>
-	<string id="30103">ערוצים אנגליים</string>
-	<string id="30104">ערוצים צרפתיים</string>
-	<string id="30105">ערוצים רוסיים</string>
+	<string id="30102">חדשות</string>
+	<string id="30103">מוזיקה</string>
+	<string id="30104">רדיו ארצי</string>
+	<string id="30105">רדיו אזורי</string>
+	<string id="30106">צרפת</string>
+	<string id="30107">רוסיה</string>
+	<string id="30108">אחרים</string>
 	
 	<string id="30201">טלויזיה חיה:</string>
 	<string id="30202">אפשרות תמיכה בטלויזיה חיה</string>
