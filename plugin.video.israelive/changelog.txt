@@ -1,3 +1,9 @@
+v3.1.0
+- fix for restart PVR on startup when nothing changed.
+v3.0.9
+- update LiveTV list automatically, without the need to restart xbmc. 
+v3.0.8.1
+- fix for script error when iptvsimple addon is disable
 v3.0.7
 - support for filmons' channels.
 v3.0.4
