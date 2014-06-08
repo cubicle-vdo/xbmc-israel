@@ -1,2 +1,6 @@
+v1.0.0
+- Added support for local lists (file) and remote lists (url)
 v0.0.7:
 - Initial release
+  support plx and m3u lists.
+  you can remove a list by right click on it and choose remove from menu.

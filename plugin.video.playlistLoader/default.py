@@ -9,7 +9,7 @@ icon = Addon.getAddonInfo('icon')
 
 libDir = os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common
+import common, chardet
 
 addon_data_dir = os.path.join(xbmc.translatePath("special://userdata/addon_data" ).decode("utf-8"), AddonID)
 if not os.path.exists(addon_data_dir):
@@ -19,26 +19,33 @@ playlistsFile = os.path.join(addon_data_dir, "playLists.txt")
 
 def Categories():
 	addDir("[COLOR yellow][Add new list][/COLOR]".format("xbmcil").encode('utf-8') , "settings" , 20, os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), AddonID, 'resources', 'images', "NewList.ico"), isFolder=False)
+	addDir("[COLOR yellow][Add new local-list][/COLOR]".format("xbmcil").encode('utf-8') , "settings" , 21, os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), AddonID, 'resources', 'images', "NewList.ico"), isFolder=False)
 	
 	list = common.ReadList(playlistsFile)
 	for item in list:
 		mode = 1 if item["url"].find(".plx") > 0 else 2
 		addDir("[COLOR blue][{0}][/COLOR]".format(item["name"]).encode('utf-8') ,item["url"], mode, "")
 
-def AddNewList():
+def AddNewList(method = "url"):
+	
 	keyboard = xbmc.Keyboard("", "Playlist name")
 	keyboard.doModal()
 	if keyboard.isConfirmed():
 		listName = keyboard.getText()
 	else:
 		return
-		
-	keyboard = xbmc.Keyboard("", "Playlist URL")
-	keyboard.doModal()
-	if keyboard.isConfirmed():
-		listUrl = keyboard.getText()
+	
+	if method == "url":
+		keyboard = xbmc.Keyboard("", "Playlist URL")
+		keyboard.doModal()
+		if keyboard.isConfirmed():
+			listUrl = keyboard.getText()
+		else:
+			return
 	else:
-		return
+		listUrl = xbmcgui.Dialog().browse(int(1), "Choose list", 'myprograms','.plx|.m3u').decode("utf-8")
+		if not listUrl:
+			return
 	
 	print "{0}. {1}".format(listName, listUrl)
 	
@@ -62,35 +69,40 @@ def removeFavorties(url):
 			
 def PlxCategory(url):
 	list = common.plx2list(url)
-	for channel in list:
+	background = list[0]["background"]
+	for channel in list[1:]:
 		iconimage = "" if not channel.has_key("thumb") else channel["thumb"]
 		if channel["type"] == 'playlist':
-			addDir("[COLOR blue][{0}][/COLOR]".format(channel["name"]).encode('utf-8') ,channel["url"], 1, iconimage)
+			addDir("[COLOR blue][{0}][/COLOR]".format(channel["name"]).encode('utf-8') ,channel["url"], 1, iconimage, background=background)
 		else:
-			addDir(channel["name"].encode('utf-8') ,channel["url"], 3, iconimage, isFolder=False)
+			addDir(channel["name"].encode('utf-8') ,channel["url"], 3, iconimage, isFolder=False, background=background)
 			
 def m3uCategory(url):	
 	list = common.m3u2list(url)
 	for channel in list:
-		iconimage = "" if not channel.has_key("tvg_logo") else channel["tvg_logo"]
-		addDir(channel["display_name"].encode('utf-8') ,channel["url"], 3, iconimage, isFolder=False)
+		iconimage = ""
+		#iconimage = "" if not channel.has_key("tvg_logo") else channel["tvg_logo"]
+		name = channel["display_name"].decode(chardet.detect(channel["display_name"])["encoding"]).encode("utf-8")
+		addDir(name ,channel["url"], 3, iconimage, isFolder=False)
 	
 def PlayUrl(name, url, iconimage=None):
-	print '--- Playing "{0}". {1}'.format(name, url).encode('utf-8')
+	print '--- Playing "{0}". {1}'.format(name, url)
 	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
 	listitem.setInfo(type="Video", infoLabels={ "Title": name })
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
-def addDir(name, url, mode, iconimage, description="", isFolder=True):
+def addDir(name, url, mode, iconimage, description="", isFolder=True, background=None):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 
-	liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
+	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	liz.setInfo(type="Video", infoLabels={ "Title": name, "Plot": description})
+	if background:
+		liz.setProperty('fanart_image', background)
 	if mode == 3:
 		liz.setProperty('IsPlayable', 'true')
 	if mode == 1 or mode == 2:
 		items = []
-		items.append(('Remove from Playlist Loader', 'XBMC.RunPlugin({0}?url={1}&mode=21)'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+		items.append(('Remove from Playlist Loader', 'XBMC.RunPlugin({0}?url={1}&mode=22)'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
 		liz.addContextMenuItems(items = items)
 	
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=isFolder)
@@ -150,8 +162,10 @@ elif mode == 2:
 elif mode == 3:
 	PlayUrl(name, url, iconimage)
 elif mode == 20:
-	AddNewList()
+	AddNewList("url")
 elif mode == 21:
+	AddNewList("file")
+elif mode == 22:
 	removeFavorties(url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
