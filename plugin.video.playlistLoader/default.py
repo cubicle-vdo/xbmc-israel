@@ -35,6 +35,9 @@ def AddNewList(method = "url"):
 	else:
 		return
 	
+	if len(listName) < 1:
+		return
+	
 	if method == "url":
 		keyboard = xbmc.Keyboard("", "Playlist URL")
 		keyboard.doModal()
@@ -47,6 +50,9 @@ def AddNewList(method = "url"):
 		if not listUrl:
 			return
 	
+	if len(listUrl) < 1:
+		return
+		
 	print "{0}. {1}".format(listName, listUrl)
 	
 	list = common.ReadList(playlistsFile)
@@ -72,10 +78,11 @@ def PlxCategory(url):
 	background = list[0]["background"]
 	for channel in list[1:]:
 		iconimage = "" if not channel.has_key("thumb") else channel["thumb"]
+		name = channel["name"].decode(chardet.detect(channel["name"])["encoding"]).encode("utf-8")
 		if channel["type"] == 'playlist':
-			addDir("[COLOR blue][{0}][/COLOR]".format(channel["name"]).encode('utf-8') ,channel["url"], 1, iconimage, background=background)
+			addDir("[COLOR blue][{0}][/COLOR]".format(name) ,channel["url"], 1, iconimage, background=background)
 		else:
-			addDir(channel["name"].encode('utf-8') ,channel["url"], 3, iconimage, isFolder=False, background=background)
+			addDir(name ,channel["url"], 3, iconimage, isFolder=False, background=background)
 			
 def m3uCategory(url):	
 	list = common.m3u2list(url)
