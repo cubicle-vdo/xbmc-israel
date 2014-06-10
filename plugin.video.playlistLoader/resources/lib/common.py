@@ -98,7 +98,7 @@ def m3u2list(url):
 	else:
 		response = ReadFile(url)
 		
-	matches=re.compile('^#EXTINF:-1(.*?),(.*?)\n(.*?)$',re.I+re.M+re.U+re.S).findall(response)
+	matches=re.compile('^#EXTINF:-?[0-9]*(.*?),(.*?)\n(.*?)$',re.I+re.M+re.U+re.S).findall(response)
 	li = []
 	for params, display_name, url in matches:
 		item_data = {"params": params, "display_name": display_name, "url": url}
