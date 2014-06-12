@@ -1,3 +1,6 @@
+1.0.2
+- Added support for adding a channel from a list to favorites list (right click on channel)
+- Added support for adding a channel manually to favorites list
 1.0.1
 - Fix for some channels was missing from list 
 - Fix for addind a list with empty url
