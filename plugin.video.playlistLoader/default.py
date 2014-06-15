@@ -3,8 +3,9 @@
 import urllib, sys, xbmcplugin ,xbmcgui, xbmcaddon, xbmc, os, json
 
 AddonID = 'plugin.video.playlistLoader'
+AddonName = "Playlist Loader"
 Addon = xbmcaddon.Addon(AddonID)
-#localizedString = Addon.getLocalizedString
+localizedString = Addon.getLocalizedString
 icon = Addon.getAddonInfo('icon')
 
 addonDir = Addon.getAddonInfo('path').decode("utf-8")
@@ -26,24 +27,25 @@ if  not (os.path.isfile(favoritesFile)):
 	f.close() 
 	
 def Categories():
-	AddDir("[COLOR yellow][B]Add a new list[/B][/COLOR]" , "settings" , 20, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
-	AddDir("[COLOR yellow][B]Add a new local-list[/B][/COLOR]" , "settings" , 21, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
-	AddDir("[COLOR white][B][Favorites][/B][/COLOR]", "favorites" ,30 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"))
+	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10001).encode('utf-8')), "settings" , 20, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
+	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10002).encode('utf-8')), "settings" , 21, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
+	AddDir("[COLOR white][B][{0}][/B][/COLOR]".format(localizedString(10003).encode('utf-8')), "favorites" ,30 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"))
 	
 	list = common.ReadList(playlistsFile)
 	for item in list:
 		mode = 1 if item["url"].find(".plx") > 0 else 2
-		AddDir("[COLOR blue][{0}][/COLOR]".format(item["name"]).encode('utf-8') ,item["url"], mode, "")
+		name = item["name"].encode("utf-8")
+		AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,item["url"], mode, "")
 
 def AddNewList(method = "url"):
-	listName = GetKeyboardText("Playlist name").strip()
+	listName = GetKeyboardText(localizedString(10004).encode('utf-8')).strip()
 	if len(listName) < 1:
 		return
-	
+
 	if method == "url":
-		listUrl = GetKeyboardText("Playlist URL").strip()
+		listUrl = GetKeyboardText(localizedString(10005).encode('utf-8')).strip()
 	else:
-		listUrl = xbmcgui.Dialog().browse(int(1), "Choose list", 'myprograms','.plx|.m3u').decode("utf-8")
+		listUrl = xbmcgui.Dialog().browse(int(1), localizedString(10006).encode('utf-8'), 'myprograms','.plx|.m3u').decode("utf-8")
 		if not listUrl:
 			return
 	
@@ -53,7 +55,7 @@ def AddNewList(method = "url"):
 	list = common.ReadList(playlistsFile)
 	for item in list:
 		if item["url"].lower() == listUrl.lower():
-			xbmc.executebuiltin('Notification(Playlist Loader, "{0}" already in playlists, 5000, {1})'.format(listName, icon))
+			xbmc.executebuiltin('Notification({0}, "{1}" {2}, 5000, {3})'.format(AddonName, listName, localizedString(10007).encode('utf-8'), icon))
 			return
 	list.append({"name": listName, "url": listUrl})
 	if common.SaveList(playlistsFile, list):
@@ -109,15 +111,13 @@ def AddDir(name, url, mode, iconimage, description="", isFolder=True, background
 	if background:
 		liz.setProperty('fanart_image', background)
 	if mode == 1 or mode == 2:
-		#items = []
-		#items.append(('Remove from Playlist Loader', 'XBMC.RunPlugin({0}?url={1}&mode=22)'.format(sys.argv[0], urllib.quote_plus(url), iconimage, name)))
-		liz.addContextMenuItems(items = [('Remove from Playlist Loader', 'XBMC.RunPlugin({0}?url={1}&mode=22)'.format(sys.argv[0], urllib.quote_plus(url)))])
+		liz.addContextMenuItems(items = [('{0}'.format(localizedString(10008).encode('utf-8')), 'XBMC.RunPlugin({0}?url={1}&mode=22)'.format(sys.argv[0], urllib.quote_plus(url)))])
 	elif mode == 3:
 		liz.setProperty('IsPlayable', 'true')
-		liz.addContextMenuItems(items = [('Add to Playlist Loader favorites', 'XBMC.RunPlugin({0}?url={1}&mode=31&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, name))])
+		liz.addContextMenuItems(items = [('{0}'.format(localizedString(10009).encode('utf-8')), 'XBMC.RunPlugin({0}?url={1}&mode=31&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, name))])
 	elif mode == 32:
 		liz.setProperty('IsPlayable', 'true')
-		liz.addContextMenuItems(items = [('Remove from Playlist Loader favorites', 'XBMC.RunPlugin({0}?url={1}&mode=33&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, name))])
+		liz.addContextMenuItems(items = [('{0}'.format(localizedString(10010).encode('utf-8')), 'XBMC.RunPlugin({0}?url={1}&mode=33&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, name))])
 		
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=isFolder)
 
@@ -131,7 +131,7 @@ def AddFavorites(url, iconimage, name):
 	favList = common.ReadList(favoritesFile)
 	for item in favList:
 		if item["url"].lower() == url.lower():
-			xbmc.executebuiltin("Notification('Playlist Loader', '{0}' is already in favorites, 5000, {1})".format(name, icon))
+			xbmc.executebuiltin("Notification({0}, '{1}' {2}, 5000, {3})".format(AddonName, name, localizedString(10011).encode('utf-8'), icon))
 			return
     
 	list = common.ReadList(tmpListFile)	
@@ -148,10 +148,10 @@ def AddFavorites(url, iconimage, name):
 	
 	favList.append(data)
 	common.SaveList(favoritesFile, favList)
-	xbmc.executebuiltin("Notification('Playlist Loader', '{0}' added to favorites, 5000, {1})".format(name, icon))
+	xbmc.executebuiltin("Notification({0}, '{1}' {2}, 5000, {3})".format(AddonName, name, localizedString(10012).encode('utf-8'), icon))
 	
 def ListFavorites():
-	AddDir("[COLOR yellow][B]Add a new channel[/B][/COLOR]", "favorites" ,34 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"), isFolder=False)
+	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10013).encode('utf-8')), "favorites" ,34 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"), isFolder=False)
 	list = common.ReadList(favoritesFile)
 	for channel in list:
 		name = channel["name"].encode("utf-8")
@@ -169,17 +169,17 @@ def RemoveFavorties(url):
 	xbmc.executebuiltin("XBMC.Container.Update('plugin://{0}?mode=30&url=favorites')".format(AddonID))
 	
 def AddNewFavortie():
-	chName = GetKeyboardText("Channel name").strip()
+	chName = GetKeyboardText("{0}".format(localizedString(10014).encode('utf-8'))).strip()
 	if len(chName) < 1:
 		return
-	chUrl = GetKeyboardText("Channel URL").strip()
+	chUrl = GetKeyboardText("{0}".format(localizedString(10015).encode('utf-8'))).strip()
 	if len(chUrl) < 1:
 		return
 		
 	favList = common.ReadList(favoritesFile)
 	for item in favList:
 		if item["url"].lower() == url.lower():
-			xbmc.executebuiltin("Notification('Playlist Loader', '{0}' is already in favorites, 5000, {1})".format(chName, icon))
+			xbmc.executebuiltin("Notification({0}, '{1}' {2}, 5000, {3})".format(AddonName, chName, localizedString(10011).encode('utf-8'), icon))
 			return
 			
 	data = {"url": chUrl, "image": "", "name": chName}
