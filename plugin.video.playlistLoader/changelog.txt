@@ -1,3 +1,5 @@
+1.0.3
+- Added supoort for hebrew
 1.0.2
 - Added support for adding a channel from a list to favorites list (right click on channel)
 - Added support for adding a channel manually to favorites list
