@@ -80,6 +80,32 @@ def RefreshIPTVlinks():
 	isIptvAddonGotham = iptvAddon.getAddonInfo('version')  >= "1.9.3"
 	finalList = MakeFinalList(markedLists)
 	finalM3Ulist = MakeM3U(finalList, isIptvAddonGotham)
+	
+	if Addon.getSetting("useM3uPath") == "true":
+		try:
+			f = open(Addon.getSetting("m3uPath"),'r')
+			lines = f.readlines()
+			f.close()
+			
+			for line in lines:
+				if line.upper().find('#EXTM3U') == -1:
+					finalM3Ulist += "{0}".format(line)
+				else:
+					finalM3Ulist += "\n"
+		except:
+			pass
+			
+	if Addon.getSetting("useM3uUrl") == "true":	
+		try:
+			f = open(Addon.getSetting("m3uPath"),'r')
+			lines = common.OpenURL(Addon.getSetting("m3uUrl")).replace('\r','').split('\n')
+
+			for line in lines:
+				if line.upper().find('#EXTM3U') == -1:
+					finalM3Ulist += "{0}\n".format(line)
+		except:
+			pass
+			
 	finalM3Ufilename = os.path.join(addon_data_dir, 'iptv.m3u') # The final m3u file. (static + filmon links)
 	f = open(finalM3Ufilename, 'w') # make the finnal m3u list (this file will used in IPTVSimple)
 	f.write(finalM3Ulist)

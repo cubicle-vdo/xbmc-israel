@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <strings>
     <!-- Category strings -->
+    <string id="10001">כתובת האתר</string>
+    <string id="10002">שימוש ב-proxy</string>
     <string id="20000">כמה זמן להחזיק דפים ב cache</string>
     <string id="20001">הפעל Debug</string>
     <string id="30001">עוד פרקים</string>

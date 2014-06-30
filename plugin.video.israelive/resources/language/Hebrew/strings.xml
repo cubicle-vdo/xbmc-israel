@@ -4,7 +4,7 @@
 	<string id="20102">הצגת הגדרות התוסף</string>
 	<string id="20103">רענון תחנות טלויזיה חיה</string>
 	
-	<string id="30100">הגדרות ISRALIVE</string>
+	<string id="30100">הגדרות התוסף</string>
 	<string id="30101">רשימת ערוצים:</string>
 	<string id="30102">חדשות</string>
 	<string id="30103">מוזיקה</string>
@@ -14,6 +14,11 @@
 	<string id="30107">רוסיה</string>
 	<string id="30108">אחרים</string>
 	
+	<string id="30200">טלויזיה חיה</string>
 	<string id="30201">טלויזיה חיה:</string>
 	<string id="30202">אפשרות תמיכה בטלויזיה חיה</string>
+	<string id="30203">שימוש ברשימה מקובץ</string>
+	<string id="30204">קובץ הרשימה</string>
+	<string id="30205">שימוש ברשימה מכתובת</string>
+	<string id="30206">כתובת הרשימה</string>
 </strings>
