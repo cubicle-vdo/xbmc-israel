@@ -1,3 +1,5 @@
+v3.1.1
+- added support for using additional m3u-list (from file and from url) via addon-settings.
 v3.1.0
 - fix for restart PVR on startup when nothing changed.
 v3.0.9

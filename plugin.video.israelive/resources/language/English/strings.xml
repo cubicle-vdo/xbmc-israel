@@ -4,7 +4,7 @@
 	<string id="20102">Open addon settings</string>
 	<string id="20103">Refresh Live-TV channels</string>
 	
-	<string id="30100">IsraeLive settings</string>
+	<string id="30100">Addon settings</string>
 	<string id="30101">Channel lists:</string>
 	<string id="30102">News</string>
 	<string id="30103">Music</string>
@@ -14,6 +14,11 @@
 	<string id="30107">Russia</string>
 	<string id="30108">Others</string>
 	
+	<string id="30200">Live TV</string>
 	<string id="30201">Live TV:</string>
 	<string id="30202">Enable LiveTV support</string>
+	<string id="30203">Use list from file</string>
+	<string id="30204">List path</string>
+	<string id="30205">Use list from URL</string>
+	<string id="30206">List address</string>
 </strings>
