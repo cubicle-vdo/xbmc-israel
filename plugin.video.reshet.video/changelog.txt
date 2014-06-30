@@ -1,6 +1,3 @@
-[B}Version 1.2.1[/B]
-- Fix from matanelgabsi
-
 [B}Version 1.2[/B]
 - Manage proper UUID and authentication token from appCaster's identity service
 - Support new content and better banners (higher resolution assets)

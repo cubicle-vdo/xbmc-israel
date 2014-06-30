@@ -30,7 +30,7 @@ M3U8_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'm3u
 sys.path.append (LIB_PATH)
 sys.path.append (M3U8_PATH)
 
-__properties = {'pKey':'a25129723d425516a51fe2910c', 'accountId': '32', 'broadcasterId':'1', 'bundle':'com.yourcompany.iReshet', 'bucketId':'507fe8f13b35016f91033bfa'}
+__properties = {'pKey':'a25129723d425516a51fe2910c', 'accountId': '32', 'broadcasterId':'1', 'bundle':'com.applicaster.iReshetandroid', 'bucketId':'507fe8f13b35016f91033bfa'}
 import APCategoryLoader, APAccountLoader, APBroadcaster, APCategoryList, APItemLoader, APChannel, APChannelLoader
 import APEpgLoader, APVodItem, APCategory, APExtensions
 
@@ -136,7 +136,7 @@ def playMovie(item):
     thumbnail = item.getThumbnail()
     
     # falsify a user agent
-    _user_agent = '|User-Agent=' + urllib.quote_plus('%D7%A8%D7%A9%D7%AA/24.8.11.46 CFNetwork/672.0.2')
+    _user_agent = '|User-Agent=' + urllib.quote_plus('stagefright/1.2 (Linux; Android 4.2.2)')
     _dummyHeader = '&Accept-Language=en-US'
 
     # add a specific cookie, if needed (not normally)
@@ -173,10 +173,8 @@ def getParams(arg):
 deviceId = __settings__.getSetting(id = 'deviceId')
 if None == deviceId or '' == deviceId:
     rand1 = int((random.random() * 8999) + 1000)
-    rand2 = int((random.random() * 8999) + 1000)
-    rand3 = int((random.random() * 8999) + 1000)
-
-    deviceId = str(rand1) + str(rand2) + str(rand3) 
+    rand2 = int((random.random() * 89) + 10)
+    deviceId = '1d' + str(rand1) + 'd3b4f71c' + str(rand2)
     
     __settings__.setSetting(id = 'deviceId', value = deviceId)
 

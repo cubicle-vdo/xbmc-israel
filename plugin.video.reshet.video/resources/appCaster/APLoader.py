@@ -31,9 +31,9 @@ def SHA1 (param):
 
 class APLoader(object):
     bundleValue = '' # (OSUtil.getPackageName(CustomApplication.getAppContext()) + "android")
-    bundleVersionValue = '24.8' # OSUtil.getAppVersion(CustomApplication.getAppContext())
-    osVersionValue = '7.0.2' # OSUtil.getAPIVersion()
-    deviceModelValue = 'iPad' # upgraded to Nexus 7
+    bundleVersionValue = '4.0.2' # OSUtil.getAppVersion(CustomApplication.getAppContext())
+    osVersionValue = '17' # OSUtil.getAPIVersion()
+    deviceModelValue = 'Nexus 7' # upgraded to Nexus 7
     pKey = '' # privateKey from the properties
     
     queryUrl = ''
@@ -49,8 +49,8 @@ class APLoader(object):
         self.broadcasterId = settings['broadcasterId'] # .getSetting('broadcasterId')
         self.accountId = settings['accountId'] # .getSetting('accountId')
         self.deviceIdValue = settings['deviceId']
-        if 'UUID' in settings:
-            self.userIdValue = settings['UUID']
+	if 'UUID' in settings:
+	    self.userIdValue = settings['UUID']
 
     def prepareQueryURL(self, paramString = '', paramMap = {}):
         localStringBuffer = str(paramString)
@@ -65,14 +65,14 @@ class APLoader(object):
         now = int(time.time())
         localParamMap[self.prepareAPIKey("bundle")] = self.bundleValue
         localParamMap[self.prepareAPIKey("bver")] = self.bundleVersionValue
-        #localParamMap[self.prepareAPIKey("d")] = "1"
+        localParamMap[self.prepareAPIKey("d")] = "1"
         localParamMap[self.prepareAPIKey("device_model")] = self.deviceModelValue
-        localParamMap[self.prepareAPIKey("os_type")] = "ios"
+        localParamMap[self.prepareAPIKey("os_type")] = "android"
         localParamMap[self.prepareAPIKey("os_version")] = self.osVersionValue
         localParamMap[self.prepareAPIKey("timestamp")] = str(now)
         
-        localParamMap[self.prepareAPIKey("token")] = "123456789123"
-        localParamMap[self.prepareAPIKey("uuid")] = self.userIdValue
+        localParamMap[self.prepareAPIKey("udid")] = self.deviceIdValue
+	localParamMap[self.prepareAPIKey("uuid")] = self.userIdValue
         localParamMap[self.prepareAPIKey("ver")] = "1.2"
         
         localStringBuilder = self.pKey + paramString + self.prepareUrlParams(localParamMap, False) + self.pKey
@@ -101,17 +101,16 @@ class APLoader(object):
     
     def loadURL(self, doPost=False, postData={}):
         try:
-            if doPost == True: # some requests have to be done via POST (even with no data)
-                req = urllib2.Request(self.queryUrl, postData)
-            else:
+	    if doPost == True:	# some requests have to be done via POST (even with no data)
+	        req = urllib2.Request(self.queryUrl, postData)
+	    else:
                 req = urllib2.Request(self.queryUrl)
-            req.add_header('User-Agent', "%D7%A8%D7%A9%D7%AA/24.8.11.46 CFNetwork/672.0.2")
             response = urllib2.urlopen(req)
             jsonData = response.read()
             response.close()
 
-            # uncomment for debug
-            #print 'jsonData: '+jsonData
+	    # uncomment for debug
+	    #print 'jsonData: '+jsonData
             
             datadict = json.loads(jsonData, 'utf-8')
             return datadict

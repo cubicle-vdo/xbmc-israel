@@ -111,29 +111,7 @@ def getData(url, period=__cachePeriod__):
             xbmc.log('Error in getData: ' + str(errno) + ': ' + str(errstr), xbmc.LOGERROR)
             return 'UTF-8', 'unavailable'
         return contentType, data
-
-def getImageNick(series, siteName,url):
-        print url 
-        imageName = str(series)
-        print imageName
-        cacheDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', siteName))
-        cachePath = xbmc.translatePath(os.path.join(cacheDir, imageName))
-        if not os.path.exists(cachePath):
-            # # fetch the image and store it in the cache path
-            if not os.path.exists(cacheDir):
-                os.makedirs(cacheDir)
-            contentType,page = getData(url)
-            xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, "First time loading images please wait...", 5000, __icon__))
-            titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
-            if len(titleMatches) == 0:
-                # try a different possibility
-                titleMatches = re.compile('class="stripe_title w7b white">.*?>(.*?)<.*?src="(.*?)"').findall(page)
-            if titleMatches:
-                    urllib.urlretrieve(titleMatches[0][1], cachePath)
-            
-        return cachePath
-
-        
+    
 def getImage(imageURL, siteName):
         imageName = getImageName(imageURL)
         cacheDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', siteName))
@@ -162,14 +140,7 @@ def getCookie(url, cookiename):
         return data, "ERROR"
         
 def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"'):
-    
     contentType,mainPage = getData(inUrl)
-    if modulename=='nickjr' and not 'page' in inUrl:
-        urlMatch = re.compile('class="w6b" href="(.*?)">').findall(mainPage)
-        print ';;;;' + str( urlMatch[0])
-        if (len(urlMatch[0])) > 0:
-          inUrl='http://nickjr.walla.co.il/'+urlMatch[0]
-          contentType,mainPage = getData(inUrl)
     print "modulename=" + modulename
     print "inUrl=" + inUrl
     Episode = namedtuple('Episode', ['content', 'title', 'url', 'iconImage', 'time', 'epiDetails'])    
@@ -224,7 +195,6 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
         cacheServer.set(cacheKey, repr(episodes))
     
     nextPage = re.compile(patternmore).findall(mainPage)
-    print str (nextPage)
     if (len(nextPage)) > 0:
         addDir('UTF-8', __language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')

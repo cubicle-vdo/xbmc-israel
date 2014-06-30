@@ -32,37 +32,25 @@ class manager_nickjr:
         
         try:
             ## get all the series base url
-            #block=re.compile('<div style="padding: 10px(.*?)folder2_game')
-            contentType,block = common.getMatches(__BASE_URL__,'padding: 10px(.*?)folder2_game')
-            page = re.compile('<a href="(.*?)".*?0px;">(.*?)<').findall(block[0])
-            #contentType,urls = common.getMatches(__BASE_URL__,'margin-left: 0px;">(.*?)</a><a href="(.*?)"')
+            contentType,urls = common.getMatches(__BASE_URL__,'<a id="opc" href="(.*?)"')
             ## for each series we get the series page to parse all the info from
-            idx=1
-            for path in page:
-                
-                print path
-                #contentType,page = common.getData(__BASE_URL__ + path[0])
-                #page = re.compile(__BASE_URL__ + path[0])
-                #titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
-                #if len(titleMatches) == 0:
+            for path in urls:
+                contentType,page = common.getData(__BASE_URL__ + path)
+                titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
+                if len(titleMatches) == 0:
                     # try a different possibility
-                    #titleMatches = re.compile('class="stripe_title w7b white">.*?>(.*?)<.*?src="(.*?)"').findall(page)
-                #details = re.compile('class="w3 nohvr" style="line-height:17px;">(.*?)<').findall(page)
-                #if (len(details)) > 0:
-                    #summary = details[0]
-                #else:
-                summary = ''
-                title=path[1]
-                '''if (len(titleMatches)) == 1:
-                    title = titleMatches[0][0]'''
-                iconImage =common.getImageNick(idx,'nickjr',__BASE_URL__ + path[0])
-                print iconImage
-                idx=idx + 1
-                '''urlMatch = re.compile('class="w6b" href="(.*?)">').findall(page)
-                print urlMatch
-                
-                if (len(urlMatch)) > 0:'''
-                common.addDir(contentType,title, __BASE_URL__ + path[0], self.MODES.GET_EPISODES_LIST, iconImage, __NAME__, summary)
+                    titleMatches = re.compile('class="stripe_title w7b white">.*?>(.*?)<.*?src="(.*?)"').findall(page)
+                details = re.compile('class="w3 nohvr" style="line-height:17px;">(.*?)<').findall(page)
+                if (len(details)) > 0:
+                    summary = details[0]
+                else:
+                    summary = ''
+                if (len(titleMatches)) == 1:
+                    title = titleMatches[0][0]
+                    iconImage = common.getImage(titleMatches[0][1],__NAME__)
+                    urlMatch = re.compile('class="w6b" href="(.*?)">').findall(page)
+                    if (len(urlMatch)) > 0:
+                        common.addDir(contentType,title, __BASE_URL__ + urlMatch[0], self.MODES.GET_EPISODES_LIST, iconImage, __NAME__, summary)
             common.addDir('UTF-8',"ספיישל דייגו בספארי לבקשת הורי הפורום", __BASE_URL__ +'?w=//2562538', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
             common.addDir('UTF-8',"דייגו מציל את חיות הים --מיוחד לאבות מסורים", __BASE_URL__ +'?w=//2545366', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
             common.addDir('UTF-8',"הרפתקאות דורה ודייגו", __BASE_URL__ +'?w=//2505725', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
