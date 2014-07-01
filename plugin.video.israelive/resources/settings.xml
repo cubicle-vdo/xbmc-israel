@@ -9,8 +9,14 @@
 		<setting id="france" type="bool" label="30106" default="false" />
 		<setting id="russia" type="bool" label="30107" default="false" />
 		<setting id="others" type="bool" label="30108" default="false" />
-		<setting type="sep"/>
+	</category>	
+	<category label="30200">
 		<setting label="30201" type="lsep"/>
 		<setting id="useLiveTV" type="bool" label="30202" default="true" />
+		<setting type="sep"/>
+		<setting id="useM3uPath" type="bool" label="30203" default="false" />
+		<setting id="m3uPath" type="file" label="30204" default="" visible="eq(-1,true)"/>
+		<setting id="useM3uUrl" type="bool" label="30205" default="false" />
+		<setting id="m3uUrl" type="text" label="30206" default="" visible="eq(-1,true)"/>
 	</category>
 </settings>

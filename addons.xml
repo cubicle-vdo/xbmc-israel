@@ -20,7 +20,7 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.1.1" provider-name="cubicle">
+<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.1.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>
@@ -66,7 +66,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.0" provider-name="Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.1" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -168,7 +168,7 @@ http://www.hometheater.co.il</description>
   </extension>
 </addon>
 
-<addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.2.1" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
