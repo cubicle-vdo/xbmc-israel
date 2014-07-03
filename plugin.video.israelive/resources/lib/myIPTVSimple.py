@@ -97,7 +97,6 @@ def RefreshIPTVlinks():
 			
 	if Addon.getSetting("useM3uUrl") == "true":	
 		try:
-			f = open(Addon.getSetting("m3uPath"),'r')
 			lines = common.OpenURL(Addon.getSetting("m3uUrl")).replace('\r','').split('\n')
 
 			for line in lines:

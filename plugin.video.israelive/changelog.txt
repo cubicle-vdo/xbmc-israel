@@ -1,3 +1,6 @@
+v3.1.2
+- fix: Using additional m3u-list from url is working now.
+- added : Run a channels scan from addon settings.
 v3.1.1
 - added support for using additional m3u-list (from file and from url) via addon-settings.
 v3.1.0

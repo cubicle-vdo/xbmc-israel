@@ -44,9 +44,10 @@ class MakoTicketLoader(MakoBaseLoader):
 	ticketDict = super(MakoTicketLoader, self).loadURL(True)
 
         # find the ticket in the tickets section
-	ticket = ticketDict['tickets'][0]
-	if 'ticket' in ticket:
-	    self.__ticket = ticket['ticket']
+	if 'tickets' in ticketDict:
+	    ticket = ticketDict['tickets'][0]
+	    if 'ticket' in ticket:
+	        self.__ticket = ticket['ticket']
 
 	return ticketDict   # generally we dont need this
 

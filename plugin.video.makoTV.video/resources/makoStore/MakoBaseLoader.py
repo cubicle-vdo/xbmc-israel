@@ -40,6 +40,8 @@ class MakoBaseLoader(object):
     def loadURL(self, doPost=False, postData=None):
         try:
             if doPost == True:	# some requests have to be done via POST (even with no data)
+		if postData == None:
+		    postData = urllib.urlencode({'dummy':'dummy'})
                 req = urllib2.Request(self.queryUrl, postData)
             else:
                 req = urllib2.Request(self.queryUrl)
