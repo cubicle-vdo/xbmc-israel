@@ -36,6 +36,10 @@ def SettingsCat():
 	addDir(localizedString(20102).encode('utf-8'), 'settings', 11, os.path.join(AddonLogosDir, "settings.jpg"), isFolder=False)
 	addDir(localizedString(20103).encode('utf-8'), 'settings', 12, os.path.join(AddonLogosDir, "settings.jpg"), isFolder=False)
 	
+def RefreshIPTVlinks():
+	if myIPTVSimple.RefreshIPTVlinks():
+		xbmc.executebuiltin('StartPVRManager')
+
 def PlayUrl(name, url, iconimage=None):
 	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
 	listitem.setInfo(type="Video", infoLabels={ "Title": name })
@@ -116,8 +120,9 @@ elif mode== 10:
 elif mode == 11:
 	Addon.openSettings()
 elif mode == 12:
-	if myIPTVSimple.RefreshIPTVlinks():
-		xbmc.executebuiltin('StartPVRManager')
-		#common.OKmsg("IsraeLIVE", "Links updated.", "Please restart XBMC or PVR db.")
+	RefreshIPTVlinks()
+elif mode == 20:
+	RefreshIPTVlinks()
+	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
