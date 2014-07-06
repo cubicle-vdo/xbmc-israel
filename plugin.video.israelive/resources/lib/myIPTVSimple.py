@@ -5,6 +5,7 @@ import common, myFilmon
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
+localizedString = Addon.getLocalizedString
 icon = Addon.getAddonInfo('icon')
 
 addon_data_dir = os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
@@ -87,6 +88,8 @@ def RefreshIPTVlinks():
 			lines = f.readlines()
 			f.close()
 			
+			if len(lines) > 0:
+				finalM3Ulist += '\n#EXTINF:-1 tvg-id="Local list" tvg-name="Local list" group-title="{0}" tvg-logo="",[COLOR white][B]--- {1} ---[/B][/COLOR]\nhttp://127.0.0.1\n\n'.format("ישראלי".decode("windows-1255").encode("utf-8"), localizedString(30207).encode('utf-8'))
 			for line in lines:
 				if line.upper().find('#EXTM3U') == -1:
 					finalM3Ulist += "{0}".format(line)
@@ -99,6 +102,8 @@ def RefreshIPTVlinks():
 		try:
 			lines = common.OpenURL(Addon.getSetting("m3uUrl")).replace('\r','').split('\n')
 
+			if len(lines) > 0:
+				finalM3Ulist += '\n#EXTINF:-1 tvg-id="Remote list" tvg-name="Remote list" group-title="{0}" tvg-logo="",[COLOR white][B]--- {1} ---[/B][/COLOR]\nhttp://127.0.0.1\n\n'.format("ישראלי".decode("windows-1255").encode("utf-8"), localizedString(30208).encode('utf-8'))
 			for line in lines:
 				if line.upper().find('#EXTM3U') == -1:
 					finalM3Ulist += "{0}\n".format(line)
