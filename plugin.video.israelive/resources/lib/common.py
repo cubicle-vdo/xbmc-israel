@@ -29,6 +29,37 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	response.close()
 	return data
 
+def UpdateFile(file, url):
+	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
+	if os.path.isfile(lastModifiedFile):
+		f = open(lastModifiedFile,'r')
+		fileContent = f.read()
+		f.close()
+	else:
+		fileContent = ""
+	
+	req = urllib2.Request(url)
+	response = urllib2.urlopen(req)
+	headers = response.info()
+	etag = headers.getheader("ETag")
+	last_modified = headers.getheader("Last-Modified")
+	if not last_modified:
+		last_modified = etag
+	isNew = fileContent != last_modified
+	
+	if isNew:
+		f = open(lastModifiedFile, 'w')
+		f.write(last_modified)
+		f.close()
+		
+		data = response.read().replace('\r','')
+		f = open(file, 'w')
+		f.write(data)
+		f.close()
+		
+	response.close()
+	return isNew
+	
 def UpdateList(listName):
 	isRanUpdate = False
 	
