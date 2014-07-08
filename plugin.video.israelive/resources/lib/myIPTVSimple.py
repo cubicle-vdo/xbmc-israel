@@ -205,37 +205,10 @@ def MakeM3U(list, isIptvAddonGotham):
 	return M3Ulist
 		
 def RefreshEPG():
-	epgLastETag = os.path.join(addon_data_dir, 'epgLastETag.txt')
-	if os.path.isfile(epgLastETag):
-		f = open(epgLastETag,'r')
-		fileContent = f.read()
-		f.close()
-	else:
-		fileContent = ""
-		
-	URL = "http://thewiz.info/XBMC/_STATIC/guide.xml"
-	req = urllib2.Request(URL)
-	url_handle = urllib2.urlopen(req)
-	headers = url_handle.info()
-	etag = headers.getheader("ETag")
-	#last_modified = headers.getheader("Last-Modified") 
-	
-	isNewEPG = fileContent != etag
-	if isNewEPG:
-		f = open(epgLastETag, 'w')
-		f.write(etag)
-		f.close()
-		
-		try:
-			urlContent = common.OpenURL(URL).replace('\r','')
-		
-			epgFile = os.path.join(addon_data_dir, 'guide.xml')
-			f = open(epgFile, 'w')
-			f.write(urlContent)
-			f.close()
-		except:
-			print "Can't update guide."
-	
+	epgFile = os.path.join(addon_data_dir, 'guide.xml')
+	#epgUrl = "http://thewiz.info/XBMC/_STATIC/guide.xml"
+	epgUrl = "https://dl.dropboxusercontent.com/u/84359548/guide.xml"
+	isNewEPG = common.UpdateFile(epgFile, epgUrl)
 	UpdateIPTVSimpleSettings()
 	return isNewEPG
 
