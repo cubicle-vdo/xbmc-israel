@@ -71,7 +71,7 @@ class APLoader(object):
         localParamMap[self.prepareAPIKey("os_version")] = self.osVersionValue
         localParamMap[self.prepareAPIKey("timestamp")] = str(now)
         
-        localParamMap[self.prepareAPIKey("token")] = "123456789123"
+        localParamMap[self.prepareAPIKey("token")] = self.deviceIdValue
         localParamMap[self.prepareAPIKey("uuid")] = self.userIdValue
         localParamMap[self.prepareAPIKey("ver")] = "1.2"
         
