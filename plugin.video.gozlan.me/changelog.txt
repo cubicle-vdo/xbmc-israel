@@ -1,3 +1,5 @@
+[B]Version 1.1.3[/B]
+- fix for finding media_url part
 [B]Version 1.1.2[/B]
 - HTML changes
 - Changeable site-address (domain) (addon-settings)
