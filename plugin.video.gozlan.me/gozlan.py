@@ -75,10 +75,10 @@ except:
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
 	def http_error_301(self, req, fp, code, msg, headers):  
-		return headers["Location"]									  
+		return urllib.unquote_plus(headers["Location"])					  
 
 	def http_error_302(self, req, fp, code, msg, headers):
-		return headers["Location"]	
+		return urllib.unquote_plus(headers["Location"])
 		
 def GetMediaUrl(video_page_link):
 	if isProxy:
@@ -91,7 +91,7 @@ def GetMediaUrl(video_page_link):
 		opener = urllib2.build_opener(SmartRedirectHandler())
 		request = urllib2.Request(video_page_link)
 		video_page_link = opener.open(request)
-		return urllib.unquote_plus(video_page_link[49:])
+		return video_page_link[video_page_link.find("http://", 7):]
 	
 def gozlan_movie_categories(url):
   page=getData(url+"/",0)
