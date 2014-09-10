@@ -6,17 +6,21 @@
 import urllib, urllib2, re, os, sys, httplib
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 from xml.sax import saxutils as su
+import urlresolver
 
 ##General vars
 __plugin__ = "gozlan.me"
 __author__ = "Cubicle"
 
 __image_path__ = ''
-# Don't forget to set lib/gozlanurlresolver/common.py
 __settings__ = xbmcaddon.Addon(id='plugin.video.gozlan.me')
-addon = __settings__ 
 __language__ = __settings__.getLocalizedString
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
+LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
+sys.path.append (LIB_PATH)
+from gozlancommon import *
+
+__icon__ = __settings__.getAddonInfo('icon')
 __devel__ = 0
 
 base_domain = __settings__.getSetting('domain')
@@ -34,16 +38,6 @@ else:
 	no_prefix = "{0}/".format(full_domain)
 
 #print full_domain
-
-LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'lib' ) )
-sys.path.append (LIB_PATH)
-LIB_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'lib' ) )
-sys.path.append (LIB_PATH)
-
-from gozlancommon import *
-from t0mm0.common.net import Net
-#from gozlanurlresolver import *
-import urlresolver
 
 params = getParams(sys.argv[2])
 url=None
@@ -75,7 +69,7 @@ except:
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
 	def http_error_301(self, req, fp, code, msg, headers):  
-		return urllib.unquote_plus(headers["Location"])					  
+		return urllib.unquote_plus(headers["Location"])
 
 	def http_error_302(self, req, fp, code, msg, headers):
 		return urllib.unquote_plus(headers["Location"])
@@ -141,8 +135,7 @@ def gozlan_series_seasons(url):
 	  #print "season_page="+season_page+"; icon="+icon+"; name="+str(name)
 	  addDir(name ,full_domain+'/'+season_page,'1&icon='+urllib.quote(icon),icon)
   xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
-  
-  
+    
 def gozlan_video_types():
   if __devel__:
 	addVideoLink('test-sockshare', 'http://www.sockshare.com/embed/67CF7956B246AB8E', 2, '' )
@@ -187,48 +180,52 @@ def gozlan_search_page(url):
 	xbmcplugin.setContent(int(sys.argv[1]), content)
 
 def gozlan_play_video(url):
+	try:
+		url = GetMediaUrl(url)
+		url = urlresolver.HostedMediaFile(url=url).resolve()
+	except:
+		print "Cannot play {0}.".format(url)
+		xbmc.executebuiltin('Notification({0}, {1}, {2}, {3})'.format(__plugin__,  "Cannot play this source.", 5000, __icon__))
+		return
+	
+	print "Playing {0}.".format(url)
 	name = url
 	if ("name" in params):
-	  name=params["name"]
+		name=params["name"]
 	image=""
 	if ("image" in params):
-	  image=params["image"]
+		image=params["image"]
 	description=""
 	if "description" in params:  
-	  description=params["description"]
+		description=params["description"]
 
-	#addon.resolve_url(stream_url)
-	#videoPlayListUrl = urllib.unquote(videoUrl[0])
-	listItem = xbmcgui.ListItem(name, image, image, path=url) # + '|' + 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	listItem = xbmcgui.ListItem(name, image, image, path=url)
 	listItem.setInfo(type='Video', infoLabels={ "Title": name})
 	listItem.setProperty('IsPlayable', 'true')
-	#print "video url " + url
-	#xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(videoPlayListUrl)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
 def gozlan_video_page(url):
 	name = urllib.unquote(url)
 	if ("name" in params):
-	  name=urllib.unquote(params["name"])
+		name=urllib.unquote(params["name"])
 	image=""
 	if ("image" in params):
-	  image=params["image"]
+		image=params["image"]
 	description=""
 	if "description" in params:  
-	  description=params["description"]
+		description=params["description"]
 	content="tvshows"
 	if "content" in params:  
-	  content=params["content"]
-	#print "Calling getdata("+no_prefix+url+")\n"
+		content=params["content"]
+		
+	#print "Calling getdata({0}{1})".format(no_prefix, url)
+	
 	page = getData(no_prefix+url,3)
-	curr_source = 0
-	# <meta property="og:description" content="הסרט הרווקה עכשיו לצפייה ישירה עם תרגום מובנה בחינם ובמהירות! תקציר הסרט: בקי מתחנת והיא בוחרת בשלוש חברות שנהגו ללעוג לה בתיכון להיות השושבינות שלה לחתונה ולארגן לה את מסיבת הרווקות.שלוש החברות רגן, קייט וג'נה מתכננות את חתונתה של בקי שהייתה המטרה שלהן להקנטות בתיכון , לאחר שהיא מינתה אותן כשושבינות לחתונה שלה." />
+
 	description= re.compile('<meta property="og:description" content="(.*?)"',re.M+re.I+re.S).findall(page)[0]
-	#<span class="quality_button"><img style="margin-top:-3px;position:relative;width:100px;height:32px" src="http://s.ytimg.com/yts/img/logos/youtube_logo_standard_againstwhite-vflKoO81_.png" alt="Youtube" /></span><span class="quality_button">720p</span><span class="playing_button"><a  href="play/4537/גוללל-סטאר-עונה-1-פרק-29-לצפייה-ישירה-3884.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="גוללל סטאר עונה 1 פרק 29 לצפייה ישירה" /></a><font id="edit_462635"></font></span>
-	#<span class="quality_button"><img style="margin-top:-3px;position:relative;width:110px" src="logo_novamov.jpg" alt="Novamov" /></span><span class="quality_button">DVDRip</span><span class="playing_button"><a  href="play/4826/2-צעדים-למוות-לצפייה-ישירה-4077.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2 צעדים למוות לצפייה ישירה" /></a><font id="edit_462635"></font></span>
 	regexp = 'quality_button">.*?<img.*?src="(.*?)" alt="(.*?)"\s*/></span><span class="quality_button">(.*?)</span><span\s+?class="playing_button"><a.*?href="(.*?)"'
 	matches = re.compile(regexp).findall(page)
-		
+
 	if len(matches) > 0:
 		for match in matches:
 			provider_image=match[0]
@@ -237,35 +234,27 @@ def gozlan_video_page(url):
 			provider_name=match[1]
 			provider_quality=match[2]
 			video_page_link=match[3]
-			media_url = GetMediaUrl(video_page_link)
 
-			#print "\nprovider_image: {0};\nprovider_name: {1};\nprovider_quality: {2};\nvideo_page_link: {3};\nmedia_url: {4};".format(provider_image, provider_name, provider_quality, video_page_link, media_url)
-			try:
-				videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
-				if videoPlayListUrl :
-					addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,videoPlayListUrl,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),full_domain+"/"+image,description)
-			except:
-				pass
+			addVideoLink("[B]{2}[/B] {0} דרך {1} - ".format(name, provider_name, provider_quality), video_page_link, "3&name={0}&image={1}&description={2}".format(urllib.quote(name), urllib.quote(image), urllib.quote(description)), "{0}/{1}".format(full_domain, image), description)
 	else:
-		print "No matches for "+regexp+"\n"
-	#<span class="quality_button"><strong style="font-family:'Cuprum',sans-serif; font-weight:bold; font-size:18px;color:Aqua">VideoSlasher</strong></span><span class="quality_button">BDRip</span><span class="playing_button"><a  href="play/4375/2012--עידן-הקרח-לצפייה-ישירה-3533.html"><img style="margin-top:-3.2px;position:relative" src="index_files/watch.jpg" alt="2012: עידן הקרח לצפייה ישירה" /></a><font id="edit_462635"></font></span>
+		print "No matches for {0}".format(regexp)
+
+	'''
 	regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a  href="(.*?)"'  
 	matches = re.compile(regexp).findall(page)
-	curr_source = 0
+
 	if len(matches) > 0:
-	  for match in matches:
-		provider_image=""
-		provider_name=match[0]
-		provider_quality=match[1]
-		video_page_link=match[2]
-		media_url = GetMediaUrl(video_page_link)
-		
-		#print "provider_image: "+provider_image+"; provider_name: "+provider_name+"; provider_quality: "+provider_quality+"; video_page_link: " + video_page_link
-		videoPlayListUrl = urlresolver.HostedMediaFile(url=media_url).resolve()
-		if videoPlayListUrl :
-						addVideoLink(name + " דרך " + provider_name + " [[B]"+provider_quality+"[/B]]" ,videoPlayListUrl,"3&name="+urllib.quote(name)+"&image="+urllib.quote(image)+"&description="+urllib.quote(description),full_domain+"/"+image,description)
+		for match in matches:
+			provider_image=""
+			provider_name=match[0]
+			provider_quality=match[1]
+			video_page_link=match[2]
+
+			addVideoLink("{0} דרך {1} [[B]{2}[/B]]".format(name, provider_name, provider_quality), video_page_link, "3&name={0}&image={1}&description={2}".format(urllib.quote(name), urllib.quote(image), urllib.quote(description)), "{0}/{1}".format(full_domain, image), description)
 	else:
-	  print "No matches for "+regexp+"\n"
+		print "No matches for {0}".format(regexp)
+	'''
+		
 	xbmcplugin.setContent(int(sys.argv[1]), content)
 	   
 def gozlan_search_dialog(url):
