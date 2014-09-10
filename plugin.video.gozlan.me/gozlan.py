@@ -183,10 +183,13 @@ def gozlan_play_video(url):
 	try:
 		url = GetMediaUrl(url)
 		url = urlresolver.HostedMediaFile(url=url).resolve()
+		if not url or len(url) < 1:
+			raise
 	except:
 		print "Cannot play {0}.".format(url)
 		xbmc.executebuiltin('Notification({0}, {1}, {2}, {3})'.format(__plugin__,  "Cannot play this source.", 5000, __icon__))
 		return
+	
 	
 	print "Playing {0}.".format(url)
 	name = url
