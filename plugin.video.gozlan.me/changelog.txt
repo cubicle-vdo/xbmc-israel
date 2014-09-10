@@ -1,3 +1,5 @@
+[B]Version 1.1.6[/B]
+- fix for a small bug, when urlresolver return not valid url.
 [B]Version 1.1.5[/B]
 - move resolveurl for media url to play_video function instead of video_page function
 - comment some code in video_page function that stack xbmc sometimes for a long time.
