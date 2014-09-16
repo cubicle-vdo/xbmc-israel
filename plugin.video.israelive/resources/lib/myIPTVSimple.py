@@ -204,12 +204,13 @@ def MakeM3U(list, isIptvAddonGotham):
 		M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(item['tvg_id'], tvg_name, item['group_title'].encode("utf-8"), tvg_logo, radio, item['display_name'].encode("utf-8"), item['url'].encode("utf-8"))
 	return M3Ulist
 		
-def RefreshEPG():
+def RefreshEPG(updateIPTVSimple=True):
 	epgFile = os.path.join(addon_data_dir, 'guide.xml')
 	#epgUrl = "http://thewiz.info/XBMC/_STATIC/guide.xml"
 	epgUrl = "https://dl.dropboxusercontent.com/u/84359548/guide.xml"
 	isNewEPG = common.UpdateFile(epgFile, epgUrl)
-	UpdateIPTVSimpleSettings()
+	if updateIPTVSimple:
+		UpdateIPTVSimpleSettings()
 	return isNewEPG
 
 def UpdateLogos():
@@ -233,8 +234,3 @@ def ReadSettings(source, fromFile=False):
 		dict[elem.get('id')] = elem.get('value')
 	
 	return dict
-	
-def getM3uFileLastUpdate():
-	m3uFile = os.path.join(addon_data_dir, 'iptv.m3u')
-	lastUpdate = 0 if not os.path.isfile(m3uFile) else int(os.path.getmtime(m3uFile))
-	return lastUpdate

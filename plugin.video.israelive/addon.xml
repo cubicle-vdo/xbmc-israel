@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.4" provider-name="Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.5" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -11,11 +11,11 @@
     <summary lang="en">Israel Live TV - downloaded for free from:
 http://www.hometheater.co.il</summary>
 	<summary lang="he">צפיה בערוצי טלויזיה ישראלית.
-	הורד בחינם מ- http://www.hometheater.co.il</summary>
+הורד בחינם מ- http://www.hometheater.co.il</summary>
     <description lang="en">Israel Live TV - downloaded for free from:
 http://www.hometheater.co.il</description>
     <description lang="he">צפיה בערוצי טלויזיה ישראלית.
-	הורד בחינם מ- http://www.hometheater.co.il</description>
+הורד בחינם מ- http://www.hometheater.co.il</description>
     <platform>all</platform>
   </extension>
 </addon>

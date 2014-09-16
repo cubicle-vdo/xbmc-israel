@@ -1,3 +1,6 @@
+v3.1.5
+- added: tv-guide for channels from guide.xml and for filmon's channels. - [right-click (context-menu) and choosing "TV-Guide"]
+- added: show current program on channels' list for channels from guide.xml.
 v3.1.4
 - update: new url for guide.xml.
 v3.1.3
