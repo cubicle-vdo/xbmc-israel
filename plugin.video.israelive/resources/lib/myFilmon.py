@@ -51,32 +51,24 @@ def GetChannelGuide(chNum):
 	return channelName, channelDescription, iconimage, tvGuide
 	
 def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, forM3U=False):
-	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
-	pageUrl = "http://www.filmon.com/"
-	swfUrl = 'http://www.filmon.com/tv/modules/FilmOnTV/files/flashapp/filmon/FilmonPlayer.swf'
-	url = prms["serverURL"]
-	i = url.find('/', 7)
-	app = url[i+1:]
-	
 	channelName = ""
 	channelDescription = ""
+	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
+	streamUrl = prms["serverURL"].replace('low','high')
+	server_time = int(prms["server_time"])
+	
 	tvGuide = []
 	
-	if referrerCh <> None:
-		channelName = ChName
-		playPath = '{0}.high.stream'.format(chNum)
-	else:
+	if referrerCh == None:
 		channelName = prms["title"].encode('utf-8')
-		if prms.has_key("description"):
+		if prms.has_key("description") and prms["description"]:
 			channelDescription = prms["description"].encode('utf-8')
-		playPath = prms["streamName"].replace('low','high')
-		
+
 		programmename = ""
 		description = ""
 		startdatetime = 0
 		enddatetime = 0
 	
-		server_time = int(prms["server_time"])
 		if prms.has_key("tvguide") and len(prms["tvguide"]) > 1:
 			tvguide = prms["tvguide"]
 			for prm in tvguide:
@@ -98,12 +90,10 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, forM3U=False):
 				programmename = now_playing["programme_name"]
 				image = None if not prms.has_key("images") or len(prms["images"]) == 0 else prms["images"][0]["url"]
 				tvGuide.append((startdatetime, enddatetime, programmename.encode('utf-8'), description.encode('utf-8'), image))
-	
-	if (forM3U):
-		streamUrl = "{0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
 	else:
-		streamUrl = "{0} tcUrl={0} app={1} playpath={2} swfUrl={3} swfVfy=true pageUrl={4} live=true".format(url, app, playPath, swfUrl, pageUrl)
-	
+		streamUrl = streamUrl.replace("{0}.".format(referrerCh), "{0}.".format(chNum))
+		channelName = ChName
+		
 	return channelName, channelDescription, iconimage, streamUrl, tvGuide
 
 def GetStreamUrl(chNum, headers = None):

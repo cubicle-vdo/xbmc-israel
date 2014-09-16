@@ -5,6 +5,10 @@ Addon = xbmcaddon.Addon(AddonID)
 
 listsDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'lists')
 
+def getFileLastUpdate(fileNmae):
+	lastUpdate = 0 if not os.path.isfile(fileNmae) else int(os.path.getmtime(fileNmae))
+	return lastUpdate
+	
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
 		user_data = urllib.urlencode(user_data)
