@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="10001">Add a new list</string>
-	<string id="10002">Add a new local-list</string>
+	<string id="10002">Select playlist source</string>
 	<string id="10003">Favorites</string>
 	<string id="10004">List name</string>
 	<string id="10005">List URL</string>
@@ -15,4 +15,6 @@
 	<string id="10013">Add a new channel</string>
 	<string id="10014">Channel name</string>
 	<string id="10015">Channel URL</string>
+	<string id="10016">New remote-list</string>
+	<string id="10017">New local-list</string>
 </strings>

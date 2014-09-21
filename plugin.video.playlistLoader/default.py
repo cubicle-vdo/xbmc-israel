@@ -28,7 +28,6 @@ if  not (os.path.isfile(favoritesFile)):
 	
 def Categories():
 	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10001).encode('utf-8')), "settings" , 20, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
-	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10002).encode('utf-8')), "settings" , 21, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
 	AddDir("[COLOR white][B][{0}][/B][/COLOR]".format(localizedString(10003).encode('utf-8')), "favorites" ,30 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"))
 	
 	list = common.ReadList(playlistsFile)
@@ -37,12 +36,16 @@ def Categories():
 		name = item["name"].encode("utf-8")
 		AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,item["url"], mode, "")
 
-def AddNewList(method = "url"):
+def AddNewList():
 	listName = GetKeyboardText(localizedString(10004).encode('utf-8')).strip()
 	if len(listName) < 1:
 		return
 
-	if method == "url":
+	method = GetSourceLocation(localizedString(10002).encode('utf-8'), [localizedString(10016).encode('utf-8'), localizedString(10017).encode('utf-8')])	
+	print method
+	if method == -1:
+		return
+	elif method == 0:
 		listUrl = GetKeyboardText(localizedString(10005).encode('utf-8')).strip()
 	else:
 		listUrl = xbmcgui.Dialog().browse(int(1), localizedString(10006).encode('utf-8'), 'myprograms','.plx|.m3u').decode("utf-8")
@@ -75,8 +78,8 @@ def PlxCategory(url):
 	list = common.plx2list(url)
 	background = list[0]["background"]
 	for channel in list[1:]:
-		iconimage = "" if not channel.has_key("thumb") else channel["thumb"].decode(chardet.detect(channel["thumb"])["encoding"]).encode("utf-8")
-		name = channel["name"].decode(chardet.detect(channel["name"])["encoding"]).encode("utf-8")
+		iconimage = "" if not channel.has_key("thumb") else GetEncodeString(channel["thumb"])
+		name = GetEncodeString(channel["name"])
 		if channel["type"] == 'playlist':
 			AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,channel["url"], 1, iconimage, background=background)
 		else:
@@ -88,15 +91,14 @@ def PlxCategory(url):
 def m3uCategory(url):	
 	tmpList = []
 	list = common.m3u2list(url)
+
 	for channel in list:
-		iconimage = ""
-		#iconimage = "" if not channel.has_key("tvg_logo") else channel["tvg_logo"]
-		name = channel["display_name"].decode(chardet.detect(channel["display_name"])["encoding"]).encode("utf-8")
-		AddDir(name ,channel["url"], 3, iconimage, isFolder=False)
-		tmpList.append({"url": channel["url"], "image": iconimage, "name": name})
-		
+		name = GetEncodeString(channel["display_name"])
+		AddDir(name ,channel["url"], 3, "", isFolder=False)
+		tmpList.append({"url": channel["url"], "image": "", "name": name})
+
 	common.SaveList(tmpListFile, tmpList)
-	
+		
 def PlayUrl(name, url, iconimage=None):
 	print '--- Playing "{0}". {1}'.format(name, url)
 	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
@@ -127,6 +129,11 @@ def GetKeyboardText(title = "", defaultText = ""):
 	text =  "" if not keyboard.isConfirmed() else keyboard.getText()
 	return text
 
+def GetSourceLocation(title, list):
+	dialog = xbmcgui.Dialog()
+	answer = dialog.select(title, list)
+	return answer
+	
 def AddFavorites(url, iconimage, name):
 	favList = common.ReadList(favoritesFile)
 	for item in favList:
@@ -188,6 +195,14 @@ def AddNewFavortie():
 	if common.SaveList(favoritesFile, favList):
 		xbmc.executebuiltin("XBMC.Container.Update('plugin://{0}?mode=30&url=favorites')".format(AddonID))
 		
+def GetEncodeString(str):
+	try:
+		str = str.decode(chardet.detect(str)["encoding"]).encode("utf-8")
+	except:
+		print str
+		print chardet.detect(str)["encoding"]
+	return str
+		
 def get_params():
 	param = []
 	paramstring = sys.argv[2]
@@ -244,9 +259,7 @@ elif mode == 2:
 elif mode == 3 or mode == 32:
 	PlayUrl(name, url, iconimage)
 elif mode == 20:
-	AddNewList("url")
-elif mode == 21:
-	AddNewList("file")
+	AddNewList()
 elif mode == 22:
 	RemoveFromLists(url)
 elif mode == 30:
