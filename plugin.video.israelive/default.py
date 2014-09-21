@@ -17,6 +17,8 @@ AddonLogosDir = os.path.join(addonDir, 'resources', 'logos')
 addon_data_dir = os.path.join(xbmc.translatePath("special://userdata/addon_data" ).decode("utf-8"), AddonID)
 epgFile = os.path.join(addon_data_dir, 'guide.xml')
 
+isOldPy = False if sys.version_info >=  (2, 7) else True
+
 def Categories():
 	addDir("[COLOR orange][{0}][/COLOR]".format(localizedString(20101).encode('utf-8')), "settings", 10, os.path.join(AddonLogosDir, "settings.jpg"))
 	
@@ -68,8 +70,12 @@ def SettingsCat():
 	addDir("[COLOR orange]{0}[/COLOR]".format(localizedString(20103).encode('utf-8')), 'settings', 12, os.path.join(AddonLogosDir, "settings.jpg"), isFolder=False)
 
 def GetProgrammes(epg, channelName ,full=False):
+	programmes = []
 	try:
-		programmes = epg.findall('.//programme[@channel="{0}"]'.format(channelName))
+		#programmes = epg.findall('.//programme[@channel="{0}"]'.format(channelName))
+		for elem in epg.findall(".//programme"):
+			if elem.attrib.get('channel') == channelName:
+				programmes.append(elem)
 	except:
 		return None
 	
@@ -93,7 +99,7 @@ def GetGetProgrammeDetails(programme):
 	stop = programme.get('stop')
 	item_data = {"start": datetime(int(start[:4]), int(start[4:6]), int(start[6:8]), int(start[8:10]), int(start[10:12]), int(start[12:14]))}
 	item_data["stop"] = datetime(int(stop[:4]), int(stop[4:6]), int(stop[6:8]), int(stop[8:10]), int(stop[10:12]), int(stop[12:14]))
-	programmeDetails = list(programme)
+	programmeDetails = programme.getchildren() if isOldPy else list(programme)
 	for PD in programmeDetails:
 		item_data[PD.tag.lower()] = PD.text.encode("utf-8")
 		

@@ -1,3 +1,5 @@
+v3.1.6
+- fix: update 3.1.5 now work on system with old version of python.
 v3.1.5
 - added: tv-guide for channels from guide.xml and for filmon's channels. - [right-click (context-menu) and choosing "TV-Guide"]
 - added: show current program on channels' list for channels from guide.xml.

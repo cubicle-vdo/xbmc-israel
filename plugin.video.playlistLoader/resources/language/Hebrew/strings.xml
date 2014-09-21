@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="10001">הוספת רשימה חדשה</string>
-	<string id="10002">הוספת רשימה חדשה מקובץ</string>
+	<string id="10002">בחירת מקור קובץ הרשימה</string>
 	<string id="10003">מועדפים</string>
 	<string id="10004">שם הרשימה</string>
 	<string id="10005">כתובת הרשימה</string>
@@ -15,4 +15,6 @@
 	<string id="10013">הוספת ערוץ חדש</string>
 	<string id="10014">שם הערוץ</string>
 	<string id="10015">כתובת הערוץ</string>
+	<string id="10016">רשימה מכתובת</string>
+	<string id="10017">רשימה מקובץ</string>
 </strings>
