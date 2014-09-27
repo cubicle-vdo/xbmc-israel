@@ -111,6 +111,8 @@ def getSeason(seasonURL, seasonId):
 	step = int(100 / len(vodItems))
 	perc = 0
 	for vodItem in vodItems:
+	    if progress.iscanceled():
+	        break
 	    # load each item URL since we want all the data available before play
 	    url = vodItem['link']
 	    xbmc.log('***** Mako: loading vod item page: %s' % (url), xbmc.LOGDEBUG)
@@ -196,7 +198,7 @@ if None != deviceId and len(deviceId) == 16:
 if None == deviceId or '' == deviceId:
     rand1 = int((random.random() * 8999) + 1000)
     rand2 = int((random.random() * 89) + 10)
-    deviceId = 'd' + str(rand1) + 'd3b4f71c' + str(rand2)
+    deviceId = 'd' + str(rand1) + 'd6af98ce' + str(rand2)
     
     __settings__.setSetting(id = 'deviceId', value = deviceId)
 

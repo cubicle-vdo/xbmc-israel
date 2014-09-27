@@ -13,8 +13,15 @@ import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.hotVOD.video')
 __cachePeriod__ = __settings__.getSetting("cache")
-__PLUGIN_PATH__ = __settings__.getAddonInfo('path')
+__PLUGIN_PATH__ = __settings__.getAddonInfo('path').decode("utf-8")
 __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
+
+cacheImgDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images'))
+if not os.path.exists(cacheImgDir):
+	os.makedirs(cacheImgDir)
+cachePageDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'pages'))
+if not os.path.exists(cachePageDir):
+	os.makedirs(cachePageDir)
 
 def enum(**enums):
         return type('Enum', (), enums)

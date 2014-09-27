@@ -1,2 +1,17 @@
-v0.0.7:
+1.0.4
+- Fix for channel name in some encodings.
+- Chane: select playlist source after you enter the playlist name.
+1.0.3
+- Added supoort for hebrew
+1.0.2
+- Added support for adding a channel from a list to favorites list (right click on channel)
+- Added support for adding a channel manually to favorites list
+1.0.1
+- Fix for some channels was missing from list 
+- Fix for addind a list with empty url
+1.0.0
+- Added support for local lists (file) and remote lists (url)
+0.0.7:
 - Initial release
+  support plx and m3u lists.
+  you can remove a list by right click on it and choose remove from menu.

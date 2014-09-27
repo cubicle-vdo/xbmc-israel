@@ -5,6 +5,7 @@ import common, myFilmon
 
 AddonID = 'plugin.video.israelive'
 Addon = xbmcaddon.Addon(AddonID)
+localizedString = Addon.getLocalizedString
 icon = Addon.getAddonInfo('icon')
 
 addon_data_dir = os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), AddonID)
@@ -80,6 +81,35 @@ def RefreshIPTVlinks():
 	isIptvAddonGotham = iptvAddon.getAddonInfo('version')  >= "1.9.3"
 	finalList = MakeFinalList(markedLists)
 	finalM3Ulist = MakeM3U(finalList, isIptvAddonGotham)
+	
+	if Addon.getSetting("useM3uPath") == "true":
+		try:
+			f = open(Addon.getSetting("m3uPath"),'r')
+			lines = f.readlines()
+			f.close()
+			
+			if len(lines) > 0:
+				finalM3Ulist += '\n#EXTINF:-1 tvg-id="Local list" tvg-name="Local list" group-title="{0}" tvg-logo="",[COLOR white][B]--- {1} ---[/B][/COLOR]\nhttp://127.0.0.1\n\n'.format("ישראלי".decode("windows-1255").encode("utf-8"), localizedString(30207).encode('utf-8'))
+			for line in lines:
+				if line.upper().find('#EXTM3U') == -1:
+					finalM3Ulist += "{0}".format(line)
+				else:
+					finalM3Ulist += "\n"
+		except:
+			pass
+			
+	if Addon.getSetting("useM3uUrl") == "true":	
+		try:
+			lines = common.OpenURL(Addon.getSetting("m3uUrl")).replace('\r','').split('\n')
+
+			if len(lines) > 0:
+				finalM3Ulist += '\n#EXTINF:-1 tvg-id="Remote list" tvg-name="Remote list" group-title="{0}" tvg-logo="",[COLOR white][B]--- {1} ---[/B][/COLOR]\nhttp://127.0.0.1\n\n'.format("ישראלי".decode("windows-1255").encode("utf-8"), localizedString(30208).encode('utf-8'))
+			for line in lines:
+				if line.upper().find('#EXTM3U') == -1:
+					finalM3Ulist += "{0}\n".format(line)
+		except:
+			pass
+			
 	finalM3Ufilename = os.path.join(addon_data_dir, 'iptv.m3u') # The final m3u file. (static + filmon links)
 	f = open(finalM3Ufilename, 'w') # make the finnal m3u list (this file will used in IPTVSimple)
 	f.write(finalM3Ulist)
@@ -174,39 +204,13 @@ def MakeM3U(list, isIptvAddonGotham):
 		M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(item['tvg_id'], tvg_name, item['group_title'].encode("utf-8"), tvg_logo, radio, item['display_name'].encode("utf-8"), item['url'].encode("utf-8"))
 	return M3Ulist
 		
-def RefreshEPG():
-	epgLastETag = os.path.join(addon_data_dir, 'epgLastETag.txt')
-	if os.path.isfile(epgLastETag):
-		f = open(epgLastETag,'r')
-		fileContent = f.read()
-		f.close()
-	else:
-		fileContent = ""
-		
-	URL = "http://thewiz.info/XBMC/_STATIC/guide.xml"
-	req = urllib2.Request(URL)
-	url_handle = urllib2.urlopen(req)
-	headers = url_handle.info()
-	etag = headers.getheader("ETag")
-	#last_modified = headers.getheader("Last-Modified") 
-	
-	isNewEPG = fileContent != etag
-	if isNewEPG:
-		f = open(epgLastETag, 'w')
-		f.write(etag)
-		f.close()
-		
-		try:
-			urlContent = common.OpenURL(URL).replace('\r','')
-		
-			epgFile = os.path.join(addon_data_dir, 'guide.xml')
-			f = open(epgFile, 'w')
-			f.write(urlContent)
-			f.close()
-		except:
-			print "Can't update guide."
-	
-	UpdateIPTVSimpleSettings()
+def RefreshEPG(updateIPTVSimple=True):
+	epgFile = os.path.join(addon_data_dir, 'guide.xml')
+	#epgUrl = "http://thewiz.info/XBMC/_STATIC/guide.xml"
+	epgUrl = "https://dl.dropboxusercontent.com/u/84359548/guide.xml"
+	isNewEPG = common.UpdateFile(epgFile, epgUrl)
+	if updateIPTVSimple:
+		UpdateIPTVSimpleSettings()
 	return isNewEPG
 
 def UpdateLogos():
@@ -230,8 +234,3 @@ def ReadSettings(source, fromFile=False):
 		dict[elem.get('id')] = elem.get('value')
 	
 	return dict
-	
-def getM3uFileLastUpdate():
-	m3uFile = os.path.join(addon_data_dir, 'iptv.m3u')
-	lastUpdate = 0 if not os.path.isfile(m3uFile) else int(os.path.getmtime(m3uFile))
-	return lastUpdate

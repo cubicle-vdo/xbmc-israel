@@ -20,7 +20,7 @@
     </extension>
  </addon>
 
-<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.1.1" provider-name="cubicle">
+<addon id="plugin.video.gozlan.me" name="gozlan.me" version="1.1.6" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>
@@ -40,10 +40,9 @@
           <content>tvshows</content>
         </supportedcontent>
     </extension>
-
 </addon>
 
-<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.5" provider-name="sbentin">
+<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.6" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -66,7 +65,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.0" provider-name="Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.6" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -78,11 +77,11 @@
     <summary lang="en">Israel Live TV - downloaded for free from:
 http://www.hometheater.co.il</summary>
 	<summary lang="he">צפיה בערוצי טלויזיה ישראלית.
-	הורד בחינם מ- http://www.hometheater.co.il</summary>
+הורד בחינם מ- http://www.hometheater.co.il</summary>
     <description lang="en">Israel Live TV - downloaded for free from:
 http://www.hometheater.co.il</description>
     <description lang="he">צפיה בערוצי טלויזיה ישראלית.
-	הורד בחינם מ- http://www.hometheater.co.il</description>
+הורד בחינם מ- http://www.hometheater.co.il</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -106,7 +105,7 @@ http://www.hometheater.co.il</description>
   </extension>
 </addon>
 
-<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.3" provider-name="sbentin \V Master">
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.31" provider-name="sbentin \V Master">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -152,7 +151,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.playlistLoader" name="Playlist Loader" version="0.0.7" provider-name="Avigdor">
+<addon id="plugin.video.playlistLoader" name="Playlist Loader" version="1.0.4" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -168,7 +167,7 @@ http://www.hometheater.co.il</description>
   </extension>
 </addon>
 
-<addon id="plugin.video.reshet.video" name="רשת" version="1.2" provider-name="sbentin">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.2.2" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>

@@ -22,16 +22,24 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 		else:
 			data = None
 	else:
-		data = response.read()
+		data = response.read().replace("\r", "")
 	
 	response.close()
 	return data
 
-def ReadList(fileName):
+def ReadFile(fileName):
 	try:
 		f = open(fileName,'r')
-		fileContent = f.read()
+		content = f.read().replace("\n\n", "\n")
 		f.close()
+	except:
+		content = ""
+
+	return content
+	
+def ReadList(fileName):
+	try:
+		fileContent = ReadFile(fileName)
 		content = json.loads(fileContent)
 	except:
 		content = []
@@ -52,9 +60,14 @@ def OKmsg(title, line1, line2 = None, line3 = None):
 	dlg.ok(title, line1, line2, line3)
 	
 def plx2list(url, group="Main"):
-	response = OpenURL(url).replace("\r", "")
+	if url.find("http") >= 0:
+		response = OpenURL(url)
+	else:
+		response = ReadFile(url)
+	matches = re.compile("^background=(.*?)$",re.I+re.M+re.U+re.S).findall(response)
+	background = None if len(matches) < 1 else matches[0]
+	list = [{"background": background}]
 	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(response)
-	list = []
 	for match in matches:
 		item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
 		item_data = {}
@@ -80,8 +93,12 @@ def flatten(list):
 '''
 
 def m3u2list(url):
-	response = OpenURL(url).replace("\r", "")
-	matches=re.compile('^#EXTINF:-1(.*?),(.*?)\n(.*?)$',re.I+re.M+re.U+re.S).findall(response)
+	if url.find("http") >= 0:
+		response = OpenURL(url)
+	else:
+		response = ReadFile(url)
+		
+	matches=re.compile('^#EXTINF:-?[0-9]*(.*?),(.*?)\n(.*?)$',re.I+re.M+re.U+re.S).findall(response)
 	li = []
 	for params, display_name, url in matches:
 		item_data = {"params": params, "display_name": display_name, "url": url}
