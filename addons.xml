@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.2" provider-name="hillel">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.4" provider-name="GO BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
