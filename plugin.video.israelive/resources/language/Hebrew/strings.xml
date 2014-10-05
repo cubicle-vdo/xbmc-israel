@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="20101">הגדרות</string>
-	<string id="20102">הצגת הגדרות התוסף</string>
-	<string id="20103">רענון תחנות טלויזיה חיה</string>
+	<string id="20101">הגדרות טלויזיה חיה</string>
+	<string id="20102">הערוצים שלי</string>
+	<string id="20103">עידן פלוס</string>
+	<string id="20104">ילדים</string>
+	<string id="20105">בידור</string>
+	<string id="20106">סרטים</string>
+	<string id="20107">מוזיקה</string>
+	<string id="20108">חדשות</string>
+	<string id="20109">מדע וטבע</string>
+	<string id="20110">ספורט</string>
+	<string id="20111">עולם</string>
 	
-	<string id="30100">הגדרות התוסף</string>
-	<string id="30101">רשימת ערוצים:</string>
-	<string id="30102">חדשות</string>
-	<string id="30103">מוזיקה</string>
-	<string id="30104">רדיו ארצי</string>
-	<string id="30105">רדיו אזורי</string>
-	<string id="30106">צרפת</string>
-	<string id="30107">רוסיה</string>
-	<string id="30108">אחרים</string>
+	<string id="30000">מועדפים</string>
+	<string id="30001">ZipTV</string>
+	<string id="30002">רשימה קלה</string>
+	<string id="30003">רשימה מלאה</string>
 	
-	<string id="30200">טלויזיה חיה</string>
-	<string id="30201">טלויזיה חיה:</string>
-	<string id="30202">אפשרות תמיכה בטלויזיה חיה</string>
-	<string id="30203">שימוש ברשימה מקובץ</string>
-	<string id="30204">קובץ הרשימה</string>
-	<string id="30205">שימוש ברשימה מכתובת</string>
-	<string id="30206">כתובת הרשימה</string>
-	<string id="30207">רשימה מקובץ</string>
-	<string id="30208">רשימה מכתובת</string>
+	<string id="30100">הגדרות ISRALIVE</string>
+	<string id="30101">רשימת ערוצים</string>
+	<string id="30102">שיטת קבלת המקורות</string>
+	<string id="30103">מקורות במנגנון פילמון הרשמי</string>
+	<string id="30104">HLS</string>
+	<string id="30105">RTMP</string>
+	<string id="30106">שמירת מדריך השידורים מקומית?</string>
+	<string id="30107">יצירת מדריך שידורים כעת</string>
 </strings>

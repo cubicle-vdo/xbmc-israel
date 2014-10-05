@@ -65,7 +65,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="3.1.6" provider-name="Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.0.0" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -74,14 +74,8 @@
   </extension>
   <extension point="xbmc.service" library="service.py" start="[login|startup]"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Israel Live TV - downloaded for free from:
-http://www.hometheater.co.il</summary>
-	<summary lang="he">צפיה בערוצי טלויזיה ישראלית.
-הורד בחינם מ- http://www.hometheater.co.il</summary>
-    <description lang="en">Israel Live TV - downloaded for free from:
-http://www.hometheater.co.il</description>
-    <description lang="he">צפיה בערוצי טלויזיה ישראלית.
-הורד בחינם מ- http://www.hometheater.co.il</description>
+    <summary lang="en">Benny123 project + more</summary>
+    <description lang="en">Live TV</description>
     <platform>all</platform>
   </extension>
 </addon>
