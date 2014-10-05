@@ -14,36 +14,53 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,os,sys
 import wallacommon as common
 
 class manager_nick:
-    
     def __init__(self):
         self.MODES = common.enum(GET_SERIES_LIST=1, GET_EPISODES_LIST=2)
-
+       
     def work(self, mode, url='', name='', page=''):
+        
         if (mode==self.MODES.GET_SERIES_LIST):
             self.getSeriesList()
         elif(mode==self.MODES.GET_EPISODES_LIST):
             common.getEpisodeList(__BASE_URL__, url, __PATTERN__, __NAME__, self.MODES.GET_EPISODES_LIST, __PATTERN_FEATURED__, __PATTERN_MORE__)
             
     def getSeriesList(self):
-        ## get all the series base url
-        contentType,urls = common.getMatches(__BASE_URL__,'<a id="opc".*?href="(.*?)">(.*?)<')
-        ## for each series we get the series page to parse all the info from
-        for path in urls:
-            if path[0].startswith("http://"):
-                contentType,page = common.getData(path[0])
-            else:
-                contentType,page = common.getData(__BASE_URL__ + path[0])
-            title = path[1]
-            imageMatch = re.compile('class="stripe_title w7b white">(.*?)img\ssrc="(.*?)"').findall(page)
-            details = re.compile('class="w3 nohvr">(.*?)<').findall(page)
-            if (len(details)) > 0:
-                summary = details[0]
-            else:
+   
+        try:
+            ## get all the series base url
+            #block=re.compile('<div style="padding: 10px(.*?)folder2_game')
+            contentType,block = common.getMatches(__BASE_URL__,'padding: 10px(.*?)folder2_game')
+            page = re.compile('<a href="(.*?)".*?">(.*?)<').findall(block[0])
+            #contentType,urls = common.getMatches(__BASE_URL__,'margin-left: 0px;">(.*?)</a><a href="(.*?)"')
+            ## for each series we get the series page to parse all the info from
+            idx=1
+            for path in page:
+                
+                print path
+                #contentType,page = common.getData(__BASE_URL__ + path[0])
+                #page = re.compile(__BASE_URL__ + path[0])
+                #titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
+                #if len(titleMatches) == 0:
+                    # try a different possibility
+                    #titleMatches = re.compile('class="stripe_title w7b white">.*?>(.*?)<.*?src="(.*?)"').findall(page)
+                #details = re.compile('class="w3 nohvr" style="line-height:17px;">(.*?)<').findall(page)
+                #if (len(details)) > 0:
+                    #summary = details[0]
+                #else:
                 summary = ''
-            if (len(imageMatch)) == 1:
-                iconImage = common.getImage(imageMatch[0][1], __NAME__)
-                urlMatch = re.compile('class="w6b fntclr2" href="(.*?)">').findall(page)
-                if (len(urlMatch)) > 0:
-                    common.addDir(contentType,title, __BASE_URL__ + urlMatch[0], self.MODES.GET_EPISODES_LIST, iconImage, __NAME__, summary)                    
+                title=path[1]
+                '''if (len(titleMatches)) == 1:
+                    title = titleMatches[0][0]'''
+                iconImage =common.getImageNick(idx,'nick',__BASE_URL__ + path[0])
+                print iconImage
+                idx=idx + 1
+                '''urlMatch = re.compile('class="w6b" href="(.*?)">').findall(page)
+                print urlMatch
+                
+                if (len(urlMatch)) > 0:'''
+                common.addDir(contentType,title, __BASE_URL__ + path[0], self.MODES.GET_EPISODES_LIST, iconImage, __NAME__, summary)               
             
-        xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+            xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+        except Exception as e:
+            print "WALLA exception in getSeriesList"
+            raise 

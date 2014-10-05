@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.5" provider-name="sbentin shlomico">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.6" provider-name="sbentin shlomico">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.common.plugin.cache" version="0.9.1"/>
