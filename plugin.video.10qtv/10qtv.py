@@ -231,7 +231,7 @@ def playMovie(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()    
-        media=re.compile('<iframe src="(.*?)"').findall(link)
+        media=re.compile('<a href="(.*?)"<span style').findall(link)
         print ("the vk link is "+  str(media))
         addFinalLink(media[0],str(name))
 
