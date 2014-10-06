@@ -10,7 +10,7 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
 plxListFile = os.path.join(user_dataDir, 'plxList.txt')
-plxListFileUrl = "https://dl.dropboxusercontent.com/u/26001898/XBMC/israelive/plxList.txt"
+plxListFileUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/plxList.txt"
 	
 AddonName = Addon.getAddonInfo("name")
 icon = Addon.getAddonInfo('icon')

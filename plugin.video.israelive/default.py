@@ -34,7 +34,7 @@ if not (os.path.isfile(FAV)):
 	f.close() 
 
 plxListFile = os.path.join(user_dataDir, 'plxList.txt')
-plxListFileUrl = "https://dl.dropboxusercontent.com/u/26001898/XBMC/israelive/plxList.txt"
+plxListFileUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/plxList.txt"
 
 plxType = int(Addon.getSetting("PlxPlaylist"))
 if plxType == 0:
@@ -53,7 +53,7 @@ if useFilmonEPG:
 		useFilmonEPG = False
 	
 def CATEGORIES():
-	addDir("[COLOR yellow][B][{0}][/B][/COLOR]".format(localizedString(20102).encode('utf-8')),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
+	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(20102).encode('utf-8')),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
 	
 	plxList = common.ReadPlxList(plxListFile, plxListFileUrl)
 	if plxList == []:
@@ -68,9 +68,8 @@ def CATEGORIES():
 			addDir('[COLOR blue][B][iLive.to][/B][/COLOR]','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
 			addDir('[COLOR blue][B][Mash Sports][/B][/COLOR]','plugin://plugin.video.movie25/?fanart&genre&iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fskins%2fvector%2fk1m05.png&mode=182&name=K1m05%20Sports&plot&url=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashUpK1m05%2fmaster%2fPlaylists%2fSports%2fSports.xml',7,'http://3.bp.blogspot.com/-gJtkhvtY1EY/UVWwH2iCGfI/AAAAAAAAA-o/b-_qJk5UMiU/s1600/Live-Sports+-+Copie.jpg','')
 		else:
-			addDir('[COLOR yellow][B]לחץ כאן להתקנת תוסף חסר[/B][/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
+			addDir('[COLOR green][B]לחץ כאן להתקנת תוסף חסר[/B][/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
 		
-
 def update_view(url):
 	ok=True		
 	xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
@@ -289,6 +288,20 @@ def removeFavorties(url):
 			outfile.close()
 			xbmc.executebuiltin("XBMC.Container.Update('{0}/?description&iconimage=http%3a%2f%2fcdn3.tnwcdn.com%2ffiles%2f2010%2f07%2fbright_yellow_star.png&mode=15&name=%d7%94%d7%a2%d7%a8%d7%95%d7%a6%d7%99%d7%9d%20%d7%a9%d7%9c%d7%99&url=favorits')".format(AddonID))
 
+def SaveGuide(forceManual=False):
+	try:
+		xbmc.executebuiltin("XBMC.Notification({0}, Making and saving Filmon's guide..., {1}, {2})".format(AddonName, 300000 ,icon))
+		plxList = common.ReadPlxList(plxListFile, plxListFileUrl)
+		if forceManual == False:
+			isNewGuideFile = common.UpdateFile(guideFile, plxList[PlxPlaylist]["guide"])
+			if isNewGuideFile:
+				xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+				return
+		myFilmon.MakePLXguide(plxList[PlxPlaylist]["url"], guideFile)
+		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+	except:
+		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
+
 def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 	ok=True
@@ -403,13 +416,10 @@ elif mode==15:
 elif mode==18:
 	removeFavorties(url)
 elif mode == 20:
-	try:
-		xbmc.executebuiltin("XBMC.Notification({0}, Making and saving Filmon's guide..., {1}, {2})".format(AddonName, 300000 ,icon))
-		plxList = common.ReadPlxList(plxListFile, plxListFileUrl)
-		myFilmon.MakePLXguide(plxList[PlxPlaylist]["url"], guideFile)
-		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
-	except:
-		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
+	SaveGuide()
+	sys.exit()
+elif mode == 21:
+	SaveGuide(forceManual=True)
 	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

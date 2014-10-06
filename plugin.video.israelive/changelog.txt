@@ -1,2 +1,4 @@
+v4.0.1
+- added option to download TV-Guide from server or make one localy (addon setting) 
 v4.0.0
-  - initial release (renew)
+- initial release (renew)

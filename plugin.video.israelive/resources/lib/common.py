@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmc,os,time,json
+import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json
 
 def downloader_is(url,name):
 	import downloader,extract
