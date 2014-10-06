@@ -1,49 +1,83 @@
-import urllib, urllib2, os, xbmc, xbmcaddon, xbmcgui, json
+# -*- coding: utf-8 -*-
+import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json
 
-AddonID = 'plugin.video.israelive'
-Addon = xbmcaddon.Addon(AddonID)
+def downloader_is(url,name):
+	import downloader,extract
+	
+	choice = True
+	dialog = xbmcgui.Dialog()
+	if name.find('repo') < 0:
+		choice = dialog.yesno("IsraeLIVE" , "לחץ כן להתקנת תוסף חסר", name)
+	 
+	if choice == False:
+		return
+		
+	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+	dp = xbmcgui.DialogProgress()
+	dp.create("IsraeLIVE", "Downloading", "", "Please Wait")
+	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
+	try:
+		os.remove(packageFile)
+	except:
+		pass
+	downloader.download(url, packageFile, dp)
+	dp.update(0, "", "Extracting Zip Please Wait")
+	extract.all(packageFile, addonsDir, dp)
+	#dp.update(0, "", "Downloading")
+	#dp.update(0, "", "Extracting Zip Please Wait")
+	xbmc.executebuiltin("UpdateLocalAddons")
+	xbmc.executebuiltin("UpdateAddonRepos")
 
-listsDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'lists')
+def unescape(text):
+		try:			
+			rep = {"&nbsp;": " ",
+				   "\n": "",
+				   "\t": "",
+				   "\r":"",
+				   "&#39;":"",
+				   "&quot;":"\""
+				   }
+			for s, r in rep.items():
+				text = text.replace(s, r)
+				
+			# remove html comments
+			text = re.sub(r"<!--.+?-->", "", text)	
+				
+		except TypeError:
+			pass
 
-def getFileLastUpdate(fileNmae):
-	lastUpdate = 0 if not os.path.isfile(fileNmae) else int(os.path.getmtime(fileNmae))
-	return lastUpdate
+		return text
+
+def OPEN_URL(url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
 	
-def OpenURL(url, headers={}, user_data={}, justCookie=False):
-	if user_data:
-		user_data = urllib.urlencode(user_data)
-		req = urllib2.Request(url, user_data)
-	else:
-		req = urllib2.Request(url)
-	
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
-	for k, v in headers.items():
-		req.add_header(k, v)
-	
-	response = urllib2.urlopen(req)
-	
-	if justCookie == True:
-		if response.info().has_key("Set-Cookie"):
-			data = response.info()['Set-Cookie']
-		else:
-			data = None
-	else:
-		data = response.read()
-	
+	response = urllib2.urlopen(req,timeout=100)
+	link=response.read()
 	response.close()
-	return data
-
+	return link
+	
+def isFileOld(file, deltaInSec):
+	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
+	now = int(time.time())
+	isM3uFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
+	return isM3uFileNotUpdate
+	
 def UpdateFile(file, url):
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
-	if os.path.isfile(lastModifiedFile):
+	if not os.path.isfile(file) or not os.path.isfile(lastModifiedFile):
+		fileContent = ""
+	else:
 		f = open(lastModifiedFile,'r')
 		fileContent = f.read()
 		f.close()
-	else:
-		fileContent = ""
 	
 	req = urllib2.Request(url)
-	response = urllib2.urlopen(req)
+	try:
+		response = urllib2.urlopen(req)
+	except:
+		return False
+		
 	headers = response.info()
 	etag = headers.getheader("ETag")
 	last_modified = headers.getheader("Last-Modified")
@@ -52,129 +86,33 @@ def UpdateFile(file, url):
 	isNew = fileContent != last_modified
 	
 	if isNew:
-		f = open(lastModifiedFile, 'w')
-		f.write(last_modified)
-		f.close()
-		
-		data = response.read().replace('\r','')
+		try:
+			data = response.read().replace('\r','')
+		except:
+			return False
+			
 		f = open(file, 'w')
 		f.write(data)
+		f.close()
+		
+		f = open(lastModifiedFile, 'w')
+		f.write(last_modified)
 		f.close()
 		
 	response.close()
 	return isNew
 	
-def UpdateList(listName):
-	isRanUpdate = False
-	
-	if not os.path.exists(listsDir):
-		os.makedirs(listsDir)
-
-	listsFile = os.path.join(listsDir, "{0}.list".format(listName))
-	if os.path.isfile(listsFile):
-		f = open(listsFile,'r')
-		fileContent = f.read()
-		f.close()
-	else:
-		fileContent = ""
-	
-	try:
-		urlContent = OpenURL("http://thewiz.info/XBMC/_STATIC/{0}.list".format(listName)).replace('\r','')
-	except:
-		print "Can't get {0} list from server.".format(listName)		
-		return False
-	
-	if fileContent != urlContent:
-		f = open(listsFile, 'w')
-		f.write(urlContent)
-		f.close()
-		isRanUpdate = True
-
-	return isRanUpdate
-
-def UpdateLists():
-	isRanUpdate = False
-
-	markedLists = GetMarkedLists()
-	for listName in markedLists:
-		isRanUpdate = UpdateList(listName)
-		
-	return isRanUpdate
-	
 def ReadList(fileName):
 	try:
 		f = open(fileName,'r')
-		fileContent = f.read()
+		fileContent=f.read()
 		f.close()
-		content = json.loads(fileContent)
+		content=json.loads(fileContent)
 	except:
-		content = []
+		content=[]
 
 	return content
 	
-def ReadChannelsList(listName, forceUpdate=False):
-	fileName = os.path.join(listsDir, "{0}.list".format(listName))
-	if forceUpdate or not os.path.isfile(fileName):
-		UpdateList(listName)
-	return ReadList(fileName)
-	
-def GetMarkedLists():
-	list = ["israel"]
-	if (Addon.getSetting('news').lower() == 'true'):
-		list += ["news"]
-	if (Addon.getSetting('music').lower() == 'true'):
-		list += ["music"]
-	if (Addon.getSetting('radio').lower() == 'true'):
-		list += ["radio"]
-	if (Addon.getSetting('localRadio').lower() == 'true'):
-		list += ["localRadio"]
-	if (Addon.getSetting('france').lower() == 'true'):
-		list += ["france"]
-	if (Addon.getSetting('russia').lower() == 'true'):
-		list += ["russia"]
-	if (Addon.getSetting('others').lower() == 'true'):
-		list += ["others"]
-	return list 
-	
-def updateLogos(chList):
-	logosDir = os.path.join(xbmc.translatePath("special://userdata/addon_data").decode("utf-8"), AddonID, 'logos')
-	if not os.path.exists(logosDir):
-		os.makedirs(logosDir)
-		
-	missingLogosList = []
-	for channel in chList:
-		if channel["logo"] == "":
-			continue
-		logo = "{0}.png".format(channel["logo"])
-		logoFile = os.path.join(logosDir, logo)
-		if not os.path.isfile(logoFile):
-			if logo not in missingLogosList:
-				missingLogosList.append(logo)
-	
-	icon = Addon.getAddonInfo('icon')
-	logosCount = len(missingLogosList)	
-	i = 0
-	for logo in missingLogosList: 
-		i = i + 1
-		percent = i * 100 // logosCount 
-		#xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating logos... {0}%, {1}, {2})".format(percent, 5000 ,icon))
-		logoUrl = "http://thewiz.info/XBMC/_STATIC/logo/{0}".format(logo).replace(" ", "%20")
-		logoFile = os.path.join(logosDir, logo)
-
-		try:
-			response = urllib2.urlopen(logoUrl)
-			if response.code != 200:
-				raise
-			xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating logos... {0}%, {1}, {2})".format(percent, 1000 ,icon))
-			#xbmc.executebuiltin("XBMC.Notification(ISRALIVE, Updating '{0}' logo... , {1}, {2})".format(logo, 5000 ,icon))
-			data = response.read()
-			response.close()
-			logoFile = open(logoFile, "wb")
-			logoFile.write(data)
-			logoFile.close()
-		except:
-			pass
-
-def OKmsg(title, line1, line2 = None, line3 = None):
-	dlg = xbmcgui.Dialog()
-	dlg.ok(title, line1, line2, line3)
+def ReadPlxList(file, url):
+	UpdateFile(file, url)
+	return ReadList(file)
