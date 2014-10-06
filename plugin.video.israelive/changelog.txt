@@ -1,3 +1,5 @@
+v4.0.2
+- fixd problem when trying to add hebrew-name (non-english) channels to favorites.
 v4.0.1
 - added option to download TV-Guide from server or make one localy (addon setting) 
 v4.0.0
