@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="20101">Live-TV settings</string>
-	<string id="20102">My Channels</string>
-	<string id="20103">Idan Plus</string>
-	<string id="20104">Kids</string>
-	<string id="20105">Entertainment</string>
-	<string id="20106">Movies</string>
-	<string id="20107">Music</string>
-	<string id="20108">News</string>
-	<string id="20109">Science and Nature</string>
-	<string id="20110">Sport</string>
-	<string id="20111">World</string>
+	<string id="20101">Settings</string>
+	<string id="20102">Open addon settings</string>
+	<string id="20103">Refresh Live-TV channels</string>
 	
-	<string id="30000">Favourites</string>
-	<string id="30001">ZipTV</string>
-	<string id="30002">TV-Light</string>
-	<string id="30003">Full-list</string>
+	<string id="30100">Addon settings</string>
+	<string id="30101">Channel lists:</string>
+	<string id="30102">News</string>
+	<string id="30103">Music</string>
+	<string id="30104">Radio</string>
+	<string id="30105">Local Radio</string>
+	<string id="30106">France</string>
+	<string id="30107">Russia</string>
+	<string id="30108">Others</string>
 	
-	<string id="30100">ISRALIVE Settings</string>
-	<string id="30101">TV-Playlist</string>
-	<string id="30102">Streams method</string>
-	<string id="30103">Original filmon's streams</string>
-	<string id="30104">HLS</string>
-	<string id="30105">RTMP</string>
-	<string id="30106">Save Filmon's EPG localy?</string>
-	<string id="30107">Create Filmon's EPG now</string>
+	<string id="30200">Live TV</string>
+	<string id="30201">Live TV:</string>
+	<string id="30202">Enable LiveTV support</string>
+	<string id="30203">Use list from file</string>
+	<string id="30204">List path</string>
+	<string id="30205">Use list from URL</string>
+	<string id="30206">List address</string>
+	<string id="30207">List from file</string>
+	<string id="30208">List from URL</string>
 </strings>
