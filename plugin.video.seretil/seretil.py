@@ -278,6 +278,7 @@ def CATEGORIES():
     addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
     addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
     addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
+addDir('סרטים מדובבים' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/')
     INDEXSratim('http://seretil.me/')
         
 
