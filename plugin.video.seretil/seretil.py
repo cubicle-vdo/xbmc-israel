@@ -135,15 +135,47 @@ def addDir(name,url,mode,iconimage):
         return ok
     
 def INDEXSratim(url):
+        url2=url
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        match=re.compile('<li id=.*?"><a href="(.*?)">(.*?)</a>').findall(link)
-        for url,name in match:
+        match=re.compile('entry-thumbnails-link".*?href="(.*?)">.*?src="(.*?)".*?bookmark">(.*?)</a>').findall(link)
+        now=re.compile('class=\'current\'>(.*?)<').findall(link)
+        try:
+           now_page =int(str(now[0]))
+        except:now_page=1
+        lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
+        if lastpage:
+            lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1] 
+        else:
+            lastpage=2
+        i= now_page
+        stop=False
+        dp = xbmcgui . DialogProgress ( )
+        dp.create('please wait','סבלנות')
+        while i <= int(lastpage) and not stop  :
+                        
+            link=OPEN_URL(url2)
+            match=re.compile('entry-thumbnails-link".*?href="(.*?)">.*?src="(.*?)".*?bookmark">(.*?)</a>').findall(link)
+            for url,image,name in match:
                 if name!="סדרות" :
-                    addDir(name,url+'page/1/',4,"")
+                    addDir(name,url,211,image)
+             
+            i+=1
+            url2 = url2[:-6]
+            if url2[len(url2)-1]=='p' :
+                    url2= url2[:-1]
+            elif url2[len(url2)-2]=='p' :
+                   url2= url2[:-2]
+                   
+            url2=url2+'page/'+str(i)+'/'
+            print url2
+            if (i%6 ==0):
+                    stop=True
+                    print   "test"  + url2
+                    addDir("תוצאות נוספות",url2,4,"")
 
 
 def SpecialPage(url):
@@ -155,19 +187,24 @@ def SpecialPage(url):
         match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
         print match 
         for name in match:
-                if (name.find('http') != -1 ):
-                        print name
+                if (name.find('<br />') ==-1) and (name.find('http') != -1 ):
+                        #print name
                         match=re.compile('a href="(.*?)"').findall(name)
                         if match:
-                                if (match[0].find('multi')== -1) and (match[0].find('flyer') ==-1) :
-                                        addDir('LINK',str(match[0]),212,'')
+                                match=urlresolver.HostedMediaFile(match[0])
+                                name=match.get_host()
+                                new_url=match.get_url()
+                                if name :
+                                     addDir(name,new_url,212,'')
                                 
                 else :
                         if name !='&nbsp;' and name.find('לצעירים') ==-1 and name.find('span')==-1:
-                                try:
+                           if (name.find('<br />') !=-1):
+                               name=name[-2:]
+                           try:
                                         
-                                        addLink('                 [COLOR red] '+ name+'[/COLOR]','','')
-                                except:pass
+                                addLink('[COLOR red]'+'     '+ name+'[/COLOR]','','')
+                           except:pass
                 
 
 
@@ -273,49 +310,41 @@ def INDEXchooseSeret(url):
         except:
                 pass
                
-def CATEGORIES():   
-    mes()
-    addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
+def CATEGORIES():
+    #addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
     addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
     addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
-    INDEXSratim('http://seretil.me/')
-        
+    addDir('מדובבים ראשי' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/page1/',4,'http://www.in-hebrew.co.il/images/logo-s.jpg')
+    #INDEXSratim('http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/page1/')
+    addDir('סרטי פעולה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%A4%D7%A2%D7%95%D7%9C%D7%94/page1/',4,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYK9pD6O3mwT5TqYXELuSzMHxVnMCRKjxWS-CMw85Ru3dSgafX1A')
+    addDir('סרטי דרמה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%93%D7%A8%D7%9E%D7%94/page1/',4,'http://www.filmsite.org/images/drama-genre.jpg')
+    addDir(' סרטי אימה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%90%D7%99%D7%9E%D7%94/page1/',4,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRgtKPtptcB1sSLVy1KgnB9rXxnyAVFuhy2x7eqMBkXyfqIISIw2w')
+    addDir(' סרטי מדע בדיוני' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%9E%D7%93%D7%A2-%D7%91%D7%93%D7%99%D7%95%D7%A0%D7%99/page1/',4,'http://i.telegraph.co.uk/multimedia/archive/01474/et_1474485b.jpg')
+    addDir('נשיונל גאוגרפיק', 'http://seretil.me/category/%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C-%D7%92%D7%99%D7%90%D7%95%D7%92%D7%A8%D7%A4%D7%99%D7%A7/page1/',4,'http://images.nationalgeographic.com/wpf/sites/common/i/presentation/NGLogo560x430-cb1343821768.png')
+    addDir('2014', 'http://seretil.me/category/2014//page1/',4,'http://www.makingdifferent.com/wp-content/uploads/2013/12/2014-Numbers-Happy-2014-Wallpaper-New-Year-Image-1024x768.jpg')
+    addDir('סרטים ישנים', 'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%99%D7%A9%D7%A0%D7%99%D7%9D/page1/',4,'https://www.guthriegreen.com/sites/default/files/Back-to-the-Future.jpg')
+    addDir('אנימציה -לא הכל מדובב', 'http://seretil.me/category/%D7%90%D7%A0%D7%99%D7%9E%D7%A6%D7%99%D7%94/page1/',4,'http://upload.wikimedia.org/wikipedia/en/thumb/c/c7/DreamWorks_Animation_SKG_logo.svg/1280px-DreamWorks_Animation_SKG_logo.svg.png')
+    addDir('[COLOR blue] סדרות [/COLOR]', 'http://seretil.me/',8,'http://cdn3.tnwcdn.com/wp-content/blogs.dir/1/files/2011/12/itv-android-tablets.jpg')
+    #addDir('', '/page1/',4,'')
+    #addDir('', '/page1/',4,'')
 
-def mes():
 
-        
-	try:
-		link=OPEN_URL('http://goo.gl/cpGAcA')
-		r = re.findall(r'ANNOUNCEMENTWINDOW ="ON"',link)
-		if not r:
-			return
-			
-		match=re.compile('<new>(.*?)\\n</new>',re.I+re.M+re.U+re.S).findall(link)
-		if not match[0]:
-			return
-			
-		version = __settings__.getAddonInfo('version')
-		
-		dire=os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), __plugin__)
-		if not os.path.exists(dire):
-			os.makedirs(dire)
-		
-		aSeenFile = os.path.join(dire, 'announcementSeen.txt')
-		if (os.path.isfile(aSeenFile)): 
-			f = open(aSeenFile, 'r') 
-			content = f.read() 
-			f.close() 
-			if content == match[0] :
-				return
 
-		f = open(aSeenFile, 'w') 
-		f.write(match[0]) 
-		f.close() 
 
-		dp = xbmcgui . Dialog ( )
-		dp.ok("UPDATES", match[0])
-	except:
-		pass
+
+
+def Series(url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    #<li class="cat-item cat-item-23297"><a href="http://seretil.me/category/112211/%d7%94%d7%9c%d7%a7%d7%98%d7%a1/" >הלקטס</a></li>
+    matches=re.compile('http://seretil.me/category/112211/(.*?)/" >(.*?)</a').findall(link)
+    for match in matches:
+       addDir(match[1], 'http://seretil.me/category/112211/'+str(match[0]),4,'')
+
+
 
 def OPEN_URL(url):
     req = urllib2.Request(url)
@@ -332,10 +361,12 @@ if mode==None or url==None or len(url)<1:
        print ""
        CATEGORIES()
 elif mode==4:
-    INDEXchooseSeret(url)
+    INDEXSratim(url)
      
 elif mode==5:
      LinksPage(url)
+elif mode==8:
+     Series(url)
 elif mode==18:
         searchInSeretil()
 elif mode==211:
