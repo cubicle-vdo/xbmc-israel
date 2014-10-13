@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json
+import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon
+
+AddonID = "plugin.video.israelive"
+Addon = xbmcaddon.Addon(AddonID)
 
 def downloader_is(url,name):
 	import downloader,extract
@@ -63,37 +66,44 @@ def isFileOld(file, deltaInSec):
 	isM3uFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
 	return isM3uFileNotUpdate
 	
-def UpdateFile(file, url):
+def UpdateFile(file, url, zip=False):
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
-	if not os.path.isfile(file) or not os.path.isfile(lastModifiedFile):
+	if (zip == False and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
 		fileContent = ""
 	else:
 		f = open(lastModifiedFile,'r')
 		fileContent = f.read()
 		f.close()
 	
-	req = urllib2.Request(url)
+	last_modified = None
 	try:
+		req = urllib2.Request(url)
 		response = urllib2.urlopen(req)
+		headers = response.info()
+		etag = headers.getheader("ETag")
+		last_modified = headers.getheader("Last-Modified")
+		if not last_modified:
+			last_modified = etag
 	except:
 		return False
 		
-	headers = response.info()
-	etag = headers.getheader("ETag")
-	last_modified = headers.getheader("Last-Modified")
-	if not last_modified:
-		last_modified = etag
+	if last_modified is None:
+		return False
+		
 	isNew = fileContent != last_modified
 	
 	if isNew:
-		try:
-			data = response.read().replace('\r','')
-		except:
-			return False
-			
-		f = open(file, 'w')
-		f.write(data)
-		f.close()
+		if zip:
+			urllib.urlretrieve(url, file)
+		else:
+			try:
+				data = response.read().replace('\r','')
+			except:
+				return False
+				
+			f = open(file, 'w')
+			f.write(data)
+			f.close()
 		
 		f = open(lastModifiedFile, 'w')
 		f.write(last_modified)
@@ -112,7 +122,20 @@ def ReadList(fileName):
 		content=[]
 
 	return content
-	
-def ReadPlxList(file, url):
+
+def GetUpdatedList(file, url):
 	UpdateFile(file, url)
 	return ReadList(file)
+	
+def UpdateZipedFile(file, url):
+	import extract
+	zipFile = "{0}.zip".format(file[:file.rfind('.')])
+	if UpdateFile(zipFile, url, zip=True):
+		user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+		extract.all(zipFile, user_dataDir)
+		try:
+			os.remove(zipFile)
+		except:
+			pass
+		return True
+	return False
