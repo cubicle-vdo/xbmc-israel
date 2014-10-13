@@ -2,7 +2,7 @@
 <settings>
 	<category label="30100">
 		<setting label="30100" type="lsep"/>
-		<setting id="PlxPlaylist" type="enum" label="30101" lvalues="30001|30002|30003" default="0" />
+		<setting id="PlxPlaylist" type="enum" label="30101" lvalues="30001|30002|30003" default="2" />
 		<setting id="StreramsMethod" type="enum" label="30102" lvalues="30103|30104|30105" default="0" />
 		<setting id="saveFilmonEPG" type="bool" label="30106" default="true" />
 		<setting type="sep"/>

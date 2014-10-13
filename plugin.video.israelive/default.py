@@ -62,13 +62,17 @@ def CATEGORIES():
 		ListLive(plxList[PlxPlaylist]["url"])
 	else:
 		for sub in plxList[PlxPlaylist]["sub"]:
-			addDir("[COLOR blue][B][{0}][/B][/COLOR]".format(sub[xbmcLang].encode('utf-8')), sub["url"], 2, sub["icon"], '')
+			addDir("[COLOR blue][B][{0}][/B][/COLOR]".format(sub[xbmcLang].encode('utf-8')), sub["url"], 2, sub["icon"], '', background=sub["icon"])
 
 		if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
 			addDir('[COLOR blue][B][iLive.to][/B][/COLOR]','plugin://plugin.video.movie25/?iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fart%2filive.png&mode=119&name=iLive%20Streams&url=ilive',7,'https://raw.github.com/mash2k3/MashupArtwork/master/art/ilive.png','')
 			addDir('[COLOR blue][B][Mash Sports][/B][/COLOR]','plugin://plugin.video.movie25/?fanart&genre&iconimage=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashupArtwork%2fmaster%2fskins%2fvector%2fk1m05.png&mode=182&name=K1m05%20Sports&plot&url=https%3a%2f%2fraw.github.com%2fmash2k3%2fMashUpK1m05%2fmaster%2fPlaylists%2fSports%2fSports.xml',7,'http://3.bp.blogspot.com/-gJtkhvtY1EY/UVWwH2iCGfI/AAAAAAAAA-o/b-_qJk5UMiU/s1600/Live-Sports+-+Copie.jpg','')
 		else:
 			addDir('[COLOR green][B]לחץ כאן להתקנת תוסף חסר[/B][/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
+	
+	if useFilmonEPG:
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+		xbmc.executebuiltin("Container.SetViewMode(504)")
 		
 def update_view(url):
 	ok=True		
@@ -263,7 +267,7 @@ def addFavorites(url, iconimage, name):
 	list=common.ReadList(tmpList)	
 	for item in list:
 		#if urllib.unquote_plus(item["name"].lower()) == name.lower():
-		if item["name"].lower() == name.lower():
+		if item["name"].encode("utf-8").lower() == name.lower():
 			url = item["url"]
 			iconimage = item["image"]
 			type = item["type"]
