@@ -1,10 +1,6 @@
-v4.0.3
-- TV-Guides downloading as zip-files
-- TV-Guide for Israeli's channels.
-- It's now showing TV-Guide at favorites too.
 v4.0.2
-- Fixed problem when trying to add Hebrew-name (non-English) channels to favorites.
+- fixd problem when trying to add hebrew-name (non-english) channels to favorites.
 v4.0.1
-- Added option to download TV-Guide from server or make one localy (addon setting) 
+- added option to download TV-Guide from server or make one localy (addon setting) 
 v4.0.0
-- Initial release (renew)
+- initial release (renew)
