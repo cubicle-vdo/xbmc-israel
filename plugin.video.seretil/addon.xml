@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.seretil" name="seretil" version="1.0.7" provider-name="hillel">
+<addon id="plugin.video.seretil" name="seretil" version="2.1.0" provider-name="NOrdia">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>
