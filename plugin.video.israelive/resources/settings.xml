@@ -6,7 +6,7 @@
 		<setting id="StreramsMethod" type="enum" label="30102" lvalues="30103|30104|30105" default="0" />
 		<setting id="saveFilmonEPG" type="bool" label="30106" default="true" />
 		<setting type="sep"/>
-		<setting type="action" label="30107" action="RunScript($CWD/default.py,,?mode=20&url=settings)" option="close"/>
-		<setting type="action" label="30108" action="RunScript($CWD/default.py,,?mode=21&url=settings)" option="close"/>
+		<setting type="action" label="30107" action="RunScript($CWD/default.py,,?mode=20&url=settings)" option="close" visible="eq(-2,true)"/>
+		<setting type="action" label="30108" action="RunScript($CWD/default.py,,?mode=21&url=settings)" option="close" visible="eq(-3,true)"/>
 	</category>
 </settings>

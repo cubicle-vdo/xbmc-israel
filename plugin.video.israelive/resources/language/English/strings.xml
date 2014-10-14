@@ -14,7 +14,7 @@
 	<string id="30103">Original filmon's streams</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
-	<string id="30106">Save Filmon's EPG localy?</string>
-	<string id="30107">Download Filmon's EPG now - from server</string>
-	<string id="30108">Create Filmon's EPG now (local scan)</string>
+	<string id="30106">Use Guide?</string>
+	<string id="30107">Download Guide now - from server</string>
+	<string id="30108">Create Guide now (local scan)</string>
 </strings>

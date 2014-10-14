@@ -33,35 +33,41 @@ if not (os.path.isfile(FAV)):
 	f.write('[]') 
 	f.close() 
 
-plxListFile = os.path.join(user_dataDir, 'plxList.txt')
-plxListFileUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/plxList.txt"
+remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
+remoteSettingsUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/remoteSettings.txt"
+remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+if remoteSettings == []:
+	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
+	sys.exit()
 
 plxType = int(Addon.getSetting("PlxPlaylist"))
 if plxType == 0:
-	PlxPlaylist = "zip"
-	guideFile = os.path.join(user_dataDir, 'filmonZipGuide.txt')
+	package = remoteSettings["packages"]["zip"]
+	filmonGuideFile = os.path.join(user_dataDir, 'filmonZipGuide.txt')
 elif plxType == 1:
-	PlxPlaylist = "light"
-	guideFile = os.path.join(user_dataDir, 'filmonLightGuide.txt')
+	package = remoteSettings["packages"]["light"]
+	filmonGuideFile = os.path.join(user_dataDir, 'filmonLightGuide.txt')
 else:
-	PlxPlaylist = "full"
-	guideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
-	
+	package = remoteSettings["packages"]["full"]
+	filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
+
 useFilmonEPG = Addon.getSetting("saveFilmonEPG") == "true"
 if useFilmonEPG:
-	if not (os.path.isfile(guideFile)):
+	if not (os.path.isfile(filmonGuideFile)):
 		useFilmonEPG = False
+
+globalGuideFile = os.path.join(user_dataDir, "guide.txt")
+#useEPG = True if os.path.isfile(globalGuideFile) else False
+
 	
 def CATEGORIES():
+	SaveGuide(showNotification=False)
 	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(20102).encode('utf-8')),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
 	
-	plxList = common.ReadPlxList(plxListFile, plxListFileUrl)
-	if plxList == []:
-		return
-	if PlxPlaylist == "zip" or PlxPlaylist == "light":
-		ListLive(plxList[PlxPlaylist]["url"])
+	if plxType == 0 or plxType == 1:
+		ListLive(package["url"])
 	else:
-		for sub in plxList[PlxPlaylist]["sub"]:
+		for sub in package["sub"]:
 			addDir("[COLOR blue][B][{0}][/B][/COLOR]".format(sub[xbmcLang].encode('utf-8')), sub["url"], 2, sub["icon"], '', background=sub["icon"])
 
 		if os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.movie25'):
@@ -70,25 +76,28 @@ def CATEGORIES():
 		else:
 			addDir('[COLOR green][B]לחץ כאן להתקנת תוסף חסר[/B][/COLOR]' ,'https://github.com/o2ri/xbmc-israel/blob/master/mash.zip?raw=true',8,'http://blog.missionmode.com/storage/post-images/critical-factor-missing.jpg','Mash23 addon')
 	
-	if useFilmonEPG:
-		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-		xbmc.executebuiltin("Container.SetViewMode(504)")
+	SetViewMode()
 		
 def update_view(url):
 	ok=True		
 	xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
 	return ok
 
-def ListLive(url):
-	epg = None
+def SetViewMode():
+	if useFilmonEPG:
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+		xbmc.executebuiltin("Container.SetViewMode(504)")
 
+def ListLive(url):
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
 	page = urllib2.urlopen(req)
 	response=page.read().replace("\r", "")
 	page.close()
 	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(response)
-
+	
+	epgFilmon = None
+	epgGlobal = None
 	list = []
 	for match in matches:
 		item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
@@ -103,6 +112,7 @@ def ListLive(url):
 		description = ""
 		channelName = item_data['name'].decode(chardet.detect(item_data['name'])["encoding"]).encode("utf-8")
 		background = None
+		isTvGuide = False
 		if item_data["type"] == 'video' or item_data["type"] == 'audio':
 			channelName = "[COLOR yellow][B]{0}[/B][/COLOR]".format(channelName)
 			displayName = channelName
@@ -112,23 +122,13 @@ def ListLive(url):
 					mode = int(itemMode[0][1])
 				if mode == 1:
 					mode = 3
-					if useFilmonEPG:
-						if epg is None:
-							epg = common.ReadList(guideFile)
-						programmes = GetProgrammes(epg, itemMode[0][0])
-						if programmes is not None:
-							programmeName = "[COLOR orange][B]{0}[/B][/COLOR] [COLOR grey][{1}-{2}][/COLOR]".format(programmes[0]["name"].encode('utf-8'), datetime.datetime.fromtimestamp(programmes[0]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[0]["end"]).strftime('%H:%M'))
-							displayName = "{0} - {1}".format(channelName, programmeName)
-							description = programmes[0]["description"].encode('utf-8')
-							#background = thumb
-							if programmes[0]["image"] is not None:
-								background = programmes[0]["image"]
-							if len(programmes) > 1:
-								displayName = "{0} - [COLOR white]Next: [B]{1}[/B] [{2}-{3}][/COLOR]".format(displayName, programmes[1]["name"].encode('utf-8'), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
+					epgFilmon, displayName, description, background, isTvGuide = GetProgrammeDetails(epgFilmon, itemMode[0][0], channelName, filmon=True)
 			elif url.find('plugin.video.f4mTester') > 0:
 				mode= 12
+				epgGlobal, displayName, description, background, isTvGuide = GetProgrammeDetails(epgGlobal, channelName, channelName)
 			else:
-				mode = 11
+				mode = 10
+				epgGlobal, displayName, description, background, isTvGuide = GetProgrammeDetails(epgGlobal, channelName, channelName)
 		elif item_data["type"] == 'playlist':
 			mode = 2
 			channelName = "[COLOR blue][B][{0}][/B][/COLOR]".format(channelName)
@@ -136,17 +136,15 @@ def ListLive(url):
 		else:
 			continue
 					
-		addDir(displayName, url, mode, thumb, description, channelName = channelName, background=background)
+		addDir(displayName, url, mode, thumb, description, channelName = channelName, background=background, isTvGuide=isTvGuide)
 		list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"]})
 		
 	with open(tmpList, 'w') as outfile:
 		json.dump(list, outfile) 
 	outfile.close()
 	
-	if useFilmonEPG:
-		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-		xbmc.executebuiltin("Container.SetViewMode(504)")
-		
+	SetViewMode()
+
 def Playf4m(url, name=None, iconimage=None):
 	i = url.find('http://')
 	if url.find('keshet') > 0:
@@ -157,7 +155,6 @@ def Playf4m(url, name=None, iconimage=None):
 	else:
 		url = url[i:]
 	
-	print url
 	if name is not None:
 		name = urllib.unquote_plus(name)
 		
@@ -186,42 +183,67 @@ def FilmonChannelGuide(url):
 		return
 		
 	channelName, channelDescription, iconimage, tvGuide = myFilmon.GetChannelGuide(chNum, filmonOldStrerams)
+	ShowGuide(tvGuide, "[COLOR yellow][B]{0}[/B][/COLOR]".format(channelName), iconimage, channelDescription, filmon=True)
 
-	if tvGuide == None:
-		addDir('[COLOR red][B]No TV-Guide for this channel.[/B][/COLOR]', '.', 99, '', '')
-		return
-	elif len(tvGuide) == 0:
-		addDir('[COLOR red][B]No TV-Guide for "{0}".[/B][/COLOR]'.format(channelName), '.', 99, iconimage, channelDescription)
+def ChannelGuide(channelName, iconimage):
+	epg = common.ReadList(globalGuideFile)
+	programmes = GetProgrammes(epg, channelName, full=True)
+	ShowGuide(programmes, channelName, iconimage, "")
+	
+def ShowGuide(programmes, channelName, iconimage, channelDescription, filmon=False):
+	if programmes is None or len(programmes) == 0:
+		addDir('[COLOR red][B]No TV-Guide for[/B] "{0}".[/COLOR]'.format(channelName), '.', 99, iconimage, channelDescription)
 	else:
-		addDir('------- [COLOR yellow][B]{0}[/COLOR] [COLOR orange]- TV-Guide[/B][/COLOR] -------'.format(channelName), '.', 99, iconimage, channelDescription)
+		addDir('------- {0} [B][COLOR orange]- TV-Guide[/COLOR][/B] -------'.format(channelName), '.', 99, iconimage, channelDescription)
 		day = ""
-		for programme in tvGuide:
+		for programme in programmes:
 			startdate = datetime.datetime.fromtimestamp(programme["start"]).strftime('%d/%m/%y')
 			if startdate != day:
 				day = startdate
 				addDir('[COLOR white][B]{0}:[/B][/COLOR]'.format(day), '.', 99, iconimage, channelDescription)
 			startdatetime = datetime.datetime.fromtimestamp(programme["start"]).strftime('%H:%M')
 			enddatetime = datetime.datetime.fromtimestamp(programme["end"]).strftime('%H:%M')
-			programmename = '[COLOR orange][{0}-{1}][/COLOR] [COLOR yellow][B]{2}[/B][/COLOR]'.format(startdatetime,enddatetime,programme["name"])
+			if filmon == False:
+				programme["name"] = programme["name"].encode('utf-8')
+				programme["description"] = programme["description"].encode('utf-8')
+			programmeName = "[COLOR orange][{0}-{1}][/COLOR] [COLOR yellow][B]{2}[/B][/COLOR]".format(startdatetime, enddatetime, programme["name"])
 			description = programme["description"]
 			image = programme["image"] if programme["image"] else iconimage
-			addDir(programmename, chNum, 99, image, description)
+			addDir(programmeName, channelName, 99, image, description)
 		
-	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-	xbmc.executebuiltin("Container.SetViewMode(504)")
+	SetViewMode()
 
-def GetProgrammes(epg, channelName ,full=False):
+def GetProgrammeDetails(epg, channelNum, channelName, filmon=False):
+	displayName = channelName
+	description = ""
+	background = None
+	isTvGuide = False
+	if useFilmonEPG:
+		if epg is None:
+			guideFile = filmonGuideFile if filmon else globalGuideFile
+			epg = common.ReadList(guideFile)
+		programmes = GetProgrammes(epg, channelNum, filmon=filmon)
+		if programmes is not None and len(programmes) > 0:
+			isTvGuide = True
+			programmeName = "[COLOR orange][B]{0}[/B][/COLOR] [COLOR grey][{1}-{2}][/COLOR]".format(programmes[0]["name"].encode('utf-8'), datetime.datetime.fromtimestamp(programmes[0]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[0]["end"]).strftime('%H:%M'))
+			displayName = "{0} - {1}".format(channelName, programmeName)
+			description = programmes[0]["description"].encode('utf-8')
+			#background = thumb
+			if programmes[0]["image"] is not None:
+				background = programmes[0]["image"]
+			if len(programmes) > 1:
+				displayName = "{0} - [COLOR white]Next: [B]{1}[/B] [{2}-{3}][/COLOR]".format(displayName, programmes[1]["name"].encode('utf-8'), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
+				
+	return epg, displayName, description, background, isTvGuide
+		
+def GetProgrammes(epg, channelName ,full=False, filmon=False):
 	programmes = []
 	try:
-		matches = [x["tvGuide"] for x in epg if x["channel"] == int(channelName)]
+		matches = [x["tvGuide"] for x in epg if (filmon and str(x["channel"]) == channelName) or (filmon == False and x["channel"].encode('utf-8') == channelName)]
 		programmes = matches[0]
 	except:
 		pass
 
-	if (full):
-		return programmes
-		
-	retProgrammes = []
 	now = int(time.time())
 	programmesCount = len(programmes)
 
@@ -230,38 +252,54 @@ def GetProgrammes(epg, channelName ,full=False):
 		start = programmes[i]["start"]
 		stop = programmes[i]["end"]
 		if (start < now and now < stop):
-			retProgrammes.append(programme)
-			if i+1 < programmesCount:
-				retProgrammes.append(programmes[i+1])
-			return retProgrammes
-			
-	return None
+			if (full):
+				return programmes[i:]
+			elif i+1 < programmesCount: 
+				return programmes[i:i+2]
+			else:
+				return programmes[i:i+1]
+	return []
 	
 def listFavorites():
 	data=common.ReadList(FAV)
 	if data==[]:
 		addDir('[COLOR red]No channels in your favorits[/COLOR]','',99,'','')
 		addDir('[COLOR red]ADD with right click on any channel[/COLOR]','',99,'','')
+		
+	epgFilmon = None
+	epgGlobal = None
 	for item in data:
+		channelName = item["name"].encode("utf-8")
+		displayName = channelName
 		url = item["url"]
-		print url
-		name = item["name"].encode("utf-8")
 		image = item["image"].encode("utf-8")
+		description = ""
+		background = None
+		isTvGuide = False
 
 		if url.lower().find('israelive') > 0:
-			mode = 17
+			itemMode = re.compile('url=([0-9]*).*?mode=([0-9]*).*?',re.I+re.M+re.U+re.S).findall(url)
+			if len(itemMode) > 0 and itemMode[0] != '':
+				mode = int(itemMode[0][1])
+			if mode == 1:
+				mode = 4
+				epgFilmon, displayName, description, background, isTvGuide = GetProgrammeDetails(epgFilmon, itemMode[0][0], channelName, filmon=True)
 		elif url.lower().find('f4mtester') > 0:
 			mode = 13
+			epgGlobal, displayName, description, background, isTvGuide = GetProgrammeDetails(epgGlobal, channelName, channelName)
 		else:
-			mode = 16
-		addDir('[COLOR yellow]'+ name+'[/COLOR]',url,mode,image,'')   
+			mode = 11
+			epgGlobal, displayName, description, background, isTvGuide = GetProgrammeDetails(epgGlobal, channelName, channelName)
+			
+		addDir(displayName, url, mode, image, description, channelName = channelName, background=background, isTvGuide=isTvGuide)
+		
+	SetViewMode()
 	
 def addFavorites(url, iconimage, name):
 	dirs=common.ReadList(FAV)
-	#print dirs 
 	for item in dirs:
 		if item["url"].lower() == url.lower():
-			xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  Already in  favorites", 5000, __icon2__))
+			xbmc.executebuiltin('Notification({0}, {1} Already in  favorites, {2}, {3})'.format(AddonName, name, 5000, __icon2__))
 			return
 	
 	list=common.ReadList(tmpList)	
@@ -278,13 +316,11 @@ def addFavorites(url, iconimage, name):
 	with open(FAV, 'w') as outfile:
 		json.dump(dirs, outfile) 
 	outfile.close()
-	xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % ('ISRALIVE',  name + "  added to favorites", 5000, __icon__))
-	
+	xbmc.executebuiltin('Notification({0}, {1} added to favorites, {2}, {3})'.format(AddonName, name, 5000, __icon__))
+		
 def removeFavorties(url):
 	dirs=common.ReadList(FAV)
-	#print dirs 
 	for item in dirs:
-		#print item
 		if item["url"].lower() == url.lower():
 		  dirs.remove(item)
 		  with open(FAV, 'w') as outfile:
@@ -292,43 +328,54 @@ def removeFavorties(url):
 			outfile.close()
 			xbmc.executebuiltin("XBMC.Container.Update('{0}/?description&iconimage=http%3a%2f%2fcdn3.tnwcdn.com%2ffiles%2f2010%2f07%2fbright_yellow_star.png&mode=15&name=%d7%94%d7%a2%d7%a8%d7%95%d7%a6%d7%99%d7%9d%20%d7%a9%d7%9c%d7%99&url=favorits')".format(AddonID))
 
-def SaveGuide(forceManual=False):
+def SaveGuide(forceManual=False, showNotification=True):
 	try:
-		xbmc.executebuiltin("XBMC.Notification({0}, Making and saving Filmon's guide..., {1}, {2})".format(AddonName, 300000 ,icon))
-		plxList = common.ReadPlxList(plxListFile, plxListFileUrl)
+		if showNotification:
+			xbmc.executebuiltin("XBMC.Notification({0}, Saving Guide..., {1}, {2})".format(AddonName, 300000 ,icon))
+		common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
 		if forceManual == False:
-			isNewGuideFile = common.UpdateFile(guideFile, plxList[PlxPlaylist]["guide"])
-			if isNewGuideFile:
-				xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+			isNewGuideFile = common.UpdateZipedFile(filmonGuideFile, package["guide"])
+			isGuideFileOld = common.isFileOld(filmonGuideFile, package["refresh"] * 3600) # 24 hours
+			if isNewGuideFile or not isGuideFileOld:
+				if showNotification:
+					xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 				return
-		myFilmon.MakePLXguide(plxList[PlxPlaylist]["url"], guideFile)
-		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+			
+		myFilmon.MakePLXguide(package["url"], filmonGuideFile)
+		if showNotification:
+			xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 	except:
-		xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
+		if showNotification:
+			xbmc.executebuiltin("XBMC.Notification({0}, Guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
 
-def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None):
+def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None, isTvGuide=False):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
-	if mode==3 or mode==6 or mode==7 or mode==8 or mode==11 or mode==12 or mode==16 or mode==17 or mode==99 or mode == 13:
+	if mode==3 or mode==6 or mode==7 or mode==8 or mode==10 or mode==12 or mode==11 or mode==4 or mode==99 or mode == 13:
 		isFolder=False
 	
-	if mode==3 or mode==11 or mode==12 or mode==16 or mode==17 or mode == 13:
+	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13:
 		liz.setProperty("IsPlayable","true")
 		items = []
 
 		if mode == 3:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,channelName)))
-		elif mode == 11 or mode == 12:
-			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=10&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-		elif mode == 16 or mode == 13:
-			items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
-		elif mode == 17:
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=16&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+		elif mode == 4:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2})'.format(sys.argv[0], urllib.quote_plus(url), iconimage)))
-			items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage,name)))
+			items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage, name)))
+		elif mode == 10 or mode == 12:
+			if isTvGuide:
+				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=16&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+		elif mode == 11 or mode == 13:
+			if isTvGuide:
+				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+			items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+		
 
 		liz.addContextMenuItems(items = items)
 	
@@ -364,32 +411,31 @@ iconimage=None
 description=None
 
 try:
-		url=urllib.unquote_plus(params["url"])
+	url=urllib.unquote_plus(params["url"])
 except:
-		pass
+	pass
 try:
-		#name=urllib.unquote_plus(params["name"])
-		name=params["name"]
+	#name=urllib.unquote_plus(params["name"])
+	name=params["name"]
 except:
-		pass
+	pass
 try:
-		iconimage=urllib.unquote_plus(params["iconimage"])
+	iconimage=urllib.unquote_plus(params["iconimage"])
 except:
-		pass
+	pass
 try:		
-		mode=int(params["mode"])
+	mode=int(params["mode"])
 except:
-		pass
+	pass
 try:		
-		description=urllib.unquote_plus(params["description"])
+	description=urllib.unquote_plus(params["description"])
 except:
-		pass
+	pass
 		
-
-print "Mode: "+str(mode)
-print "URL: "+str(url)
-print "Name: "+str(name)
-print "IconImage: "+str(iconimage)
+print "{0} -> Mode: {1}".format(AddonName, mode)
+#print "{0} -> URL: {1}".format(AddonName, url)
+print "{0} -> Name: {1}".format(AddonName, urllib.unquote_plus(str(name)))
+#print "{0} -> IconImage: {1}".format(AddonName, iconimage)
 		 
 #these are the modes which tells the plugin where to go
 if mode==None or url==None or len(url)<1:
@@ -398,8 +444,10 @@ elif mode==1:
 	play_Filmon(sys.argv[2])
 elif mode==2:
 	ListLive(url)
-elif mode==3 or mode==17:
+elif mode==3 or mode==4:
 	play_Filmon(url)
+elif mode == 5:
+	ChannelGuide(name, iconimage)
 elif mode==7:
 	update_view(url) 
 elif mode==8:
@@ -407,16 +455,16 @@ elif mode==8:
 	CATEGORIES()
 elif mode==9:   
 	FilmonChannelGuide(url)
-elif mode==11 or mode==16:
+elif mode==10 or mode==11:
 	#listitem = xbmcgui.ListItem(urllib.unquote_plus(name), iconImage='', thumbnailImage='', path=url)
 	listitem = xbmcgui.ListItem(path=url)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
-elif mode==10: 
-	addFavorites(url, iconimage, name) 
 elif mode==12 or mode==13:
 	Playf4m(url, name, iconimage)
 elif mode==15:
 	listFavorites()
+elif mode==16: 
+	addFavorites(url, iconimage, name) 
 elif mode==18:
 	removeFavorties(url)
 elif mode == 20:
