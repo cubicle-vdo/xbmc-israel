@@ -20,23 +20,10 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None, filmonOldStrerams=Fals
 		return None,None,None,None
 		
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName, filmonOldStrerams, useRtmp)
-
-	channelName = "[COLOR yellow][B]{0}[/B][/COLOR]".format(channelName)
-	programmeName = ""
 	
-	if len(tvGuide) > 0:
-		programme = tvGuide[0]
-		programmeName = '[B]{0}[/B] [{1}-{2}]'.format(programme["name"], datetime.datetime.fromtimestamp(programme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme["end"]).strftime('%H:%M'))
-		#image = programme[4]
-		if len(tvGuide) > 1:
-			nextProgramme = tvGuide[1]
-			channelName = "{0} - [COLOR white]Next: [B]{1}[/B] [{2}-{3}][/COLOR]".format(channelName, nextProgramme["name"], datetime.datetime.fromtimestamp(nextProgramme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(nextProgramme["end"]).strftime('%H:%M'))
-	else:
-		programmeName = channelName
-		#image = iconimage
-
 	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
-	return streamUrl, channelName, programmeName, iconimage #, image
+	#return streamUrl, channelName, programmeName, iconimage #, image
+	return streamUrl, channelName, iconimage, tvGuide
 
 def GetChannelGuide(chNum, filmonOldStrerams=False):
 	prms = GetChannelJson(chNum, filmonOldStrerams)
@@ -98,7 +85,7 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, filmonOldStrera
 	
 	if referrerCh == None:
 		tvGuide = MakeChannelGuide(prms)
-		channelName = prms["title"]
+		channelName = prms["title"].encode("utf-8")
 	else:
 		streamUrl = streamUrl.replace("{0}.".format(referrerCh), "{0}.".format(chNum))
 		channelName = ChName

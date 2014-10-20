@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="20101">הגדרות טלויזיה חיה</string>
-	<string id="20102">הערוצים שלי</string>
-	
 	<string id="30000">מועדפים</string>
 	<string id="30001">ZipTV</string>
 	<string id="30002">רשימה קלה</string>
@@ -17,4 +14,9 @@
 	<string id="30106">שימוש במדריך שידורים?</string>
 	<string id="30107">הורדת מדריך שידורים (מהשרת)</string>
 	<string id="30108">יצירת מדריך שידורים (סריקה מקומית)</string>
+	
+	<string id="30200">לחץ כאן להתקנת תוסף חסר</string>
+	<string id="30201">כנס מחדש לתוסף כדי לראות את השינויים</string>
+	<string id="30202">אין ערוצים ברשימת המועדפים</string>
+	<string id="30203">הוסף ערוץ על ידי קליק ימני על הערוץ</string>
 </strings>
