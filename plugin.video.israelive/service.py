@@ -52,9 +52,9 @@ def CheckUpdates():
 	if isNewGuideFile:
 		return
 		
-	print "{0}: Updating filmonGuide localy.".format(AddonName)
 	isGuideFileOld = common.isFileOld(guideFile, package["refresh"] * 3600) # 24 hours
 	if isGuideFileOld:
+		print "{0}: Updating filmonGuide localy.".format(AddonName)
 		try:
 			xbmc.executebuiltin("XBMC.Notification({0}, Making and saving Filmon's guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 			myFilmon.MakePLXguide(package["url"], guideFile)

@@ -1,3 +1,5 @@
+[B]Version 1.1.7[/B]
+- fix for handling urls from another addon (fix domain name and proxy according to addon settings).
 [B]Version 1.1.6[/B]
 - fix for a small bug, when urlresolver return not valid url.
 [B]Version 1.1.5[/B]

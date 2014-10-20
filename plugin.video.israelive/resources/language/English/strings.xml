@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="20101">Live-TV settings</string>
-	<string id="20102">My Channels</string>
-	
 	<string id="30000">Favourites</string>
 	<string id="30001">ZipTV</string>
 	<string id="30002">TV-Light</string>
@@ -17,4 +14,9 @@
 	<string id="30106">Use Guide?</string>
 	<string id="30107">Download Guide now - from server</string>
 	<string id="30108">Create Guide now (local scan)</string>
+	
+	<string id="30200">Click for install a missing addon</string>
+	<string id="30201">Re-enter the addon to see changes</string>
+	<string id="30202">No channels in your favourites</string>
+	<string id="30203">Add one by right clicking on any channel</string>
 </strings>

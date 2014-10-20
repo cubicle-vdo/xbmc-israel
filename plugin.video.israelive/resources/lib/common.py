@@ -3,21 +3,22 @@ import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
+AddonName = Addon.getAddonInfo("name")
 
-def downloader_is(url,name):
+def downloader_is(url, name):
 	import downloader,extract
 	
-	choice = True
-	dialog = xbmcgui.Dialog()
+	'''
 	if name.find('repo') < 0:
-		choice = dialog.yesno("IsraeLIVE" , "לחץ כן להתקנת תוסף חסר", name)
-	 
-	if choice == False:
-		return
-		
+		dialog = xbmcgui.Dialog()
+		choice = dialog.yesno(AddonName , "לחץ כן להתקנת תוסף חסר", name)
+		if choice == False:
+			return
+	'''
+	
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 	dp = xbmcgui.DialogProgress()
-	dp.create("IsraeLIVE", "Downloading", "", "Please Wait")
+	dp.create(AddonName, "Downloading", "", "Please Wait")
 	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
 	try:
 		os.remove(packageFile)
@@ -26,8 +27,6 @@ def downloader_is(url,name):
 	downloader.download(url, packageFile, dp)
 	dp.update(0, "", "Extracting Zip Please Wait")
 	extract.all(packageFile, addonsDir, dp)
-	#dp.update(0, "", "Downloading")
-	#dp.update(0, "", "Extracting Zip Please Wait")
 	xbmc.executebuiltin("UpdateLocalAddons")
 	xbmc.executebuiltin("UpdateAddonRepos")
 
