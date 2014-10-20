@@ -1,7 +1,3 @@
-v4.0.4
-- Better support for tv-gude.
-- Install missing addons (mashUp, Teledunet) with their repos from inside the addon.
-- Fix some problems.
 v4.0.3
 - TV-Guides downloading as zip-files
 - TV-Guide for Israeli's channels.

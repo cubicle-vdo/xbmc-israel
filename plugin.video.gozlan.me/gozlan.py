@@ -272,7 +272,6 @@ def gozlan_search_dialog(url):
 if mode==None:
 	gozlan_video_types()	  
 elif mode==1:
-	url = "{0}{1}".format(full_domain, url[url.find("/search.html"):])
 	gozlan_search_page(url)
 elif mode==2:
 	gozlan_video_page(url)

@@ -323,16 +323,15 @@ class f4mProxy():
 
 class f4mProxyHelper():
 
-    def playF4mLink(self,url,programmeName,proxy=None,use_proxy_for_chunks=False, maxbitrate=0, simpleDownloader=False, auth=None, iconimage=None, channelName=None):
+    def playF4mLink(self,url,name,proxy=None,use_proxy_for_chunks=False, maxbitrate=0, simpleDownloader=False, auth=None, iconimage=None):
         print "URL: " + url
         stopPlaying=threading.Event()
         #progress = xbmcgui.DialogProgress()
-        listitem = xbmcgui.ListItem(programmeName)
+        listitem = xbmcgui.ListItem(name)
         if iconimage is not None:
             #listitem.setIconImage(iconimage)
             listitem.setThumbnailImage(iconimage)
-        listitem.setInfo('video', {'Title': programmeName})
-        listitem.setInfo("video", {"tvshowtitle": channelName, "episode": "0", "season": "0"})
+        listitem.setInfo('video', {'Title': name})
         
         f4m_proxy=f4mProxy()
         stopPlaying.clear()

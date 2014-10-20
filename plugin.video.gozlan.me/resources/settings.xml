@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 <category>
-<setting id="domain" type="text" label="10001" default="http://gozlan.eu" />
+<setting id="domain" type="text" label="10001" default="http://gozlan.be" />
 <setting id="useProxy" label="10002" type="bool" default="false"/>
 </category>
 <category label="youtube">
