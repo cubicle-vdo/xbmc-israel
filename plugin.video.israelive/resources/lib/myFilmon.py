@@ -71,7 +71,7 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, filmonOldStrera
 	channelName = ""
 	channelDescription = ""
 	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
-	url = ""
+	url = None
 	tvGuide = []
 	
 	if filmonOldStrerams:
@@ -81,8 +81,8 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, filmonOldStrera
 		if useRtmp:
 			url = hls2rtmp(url)
 		
-	streamUrl = url.replace('low','high')
-	
+	streamUrl = None if url is None else url.replace('low','high')
+		
 	if referrerCh == None:
 		tvGuide = MakeChannelGuide(prms)
 		channelName = prms["title"].encode("utf-8")
@@ -128,10 +128,14 @@ def getChannelHtml(cookie, chNum):
 	return OpenURL('http://www.filmon.com/ajax/getChannelInfo', headers, user_data)
 	
 def GetChannelParams(html):
-	resultJSON = json.loads(html)
-	if len(resultJSON) < 1 or not resultJSON.has_key("title"):
-		return None
-	
+	resultJSON = None
+	try:
+		resultJSON = json.loads(html)
+		if len(resultJSON) < 1 or not resultJSON.has_key("title"):
+			return None
+	except:
+		pass
+		
 	return resultJSON
 	
 def GetChannelJson(chNum, filmonOldStrerams=False):
@@ -271,12 +275,12 @@ def GetFilmonChannelsList(url, includePlaylists=False):
 			if item_data["type"] == 'video':
 				url = item_data['url']
 				if url.find(AddonID) > 0:
-					chNum = re.compile('url=([0-9]*).*?mode=1.*?',re.I+re.M+re.U+re.S).findall(url)
-					if len(chNum) > 0 and chNum[0] != '':
+					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
+					if len(channel) > 0 and channel[0][0] != "" and channel[0][1] != "&ignorefilmonguide=1":
 						if includePlaylists:
-							list.append({"type": "filmon", "url": int(chNum[0])})
+							list.append({"type": "filmon", "url": int(channel[0][0])})
 						else:
-							list.append(int(chNum[0]))
+							list.append(int(channel[0][0]))
 			elif includePlaylists and item_data["type"] == 'playlist':
 				list.append({"type": "playlist", "url": item_data["url"]})
 	except:
@@ -311,12 +315,12 @@ def MakePLXguide(url, file):
 		return
 
 	for item in randList:
+		prms = None
 		html =  getChannelHtml(cookie, item["channel"])
-		if html is None:
-			filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": []}
-			continue
-		prms = GetChannelParams(html)
-		tvGuide = MakeChannelGuide(prms)
+		if html is not None:
+			prms = GetChannelParams(html)
+
+		tvGuide = [] if prms is None else MakeChannelGuide(prms)
 		filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": tvGuide}
 			
 	with open(file, 'w') as outfile:

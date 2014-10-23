@@ -37,16 +37,8 @@ def CheckUpdates():
 		
 	common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
 	
-	plxType = int(Addon.getSetting("PlxPlaylist"))
-	if plxType == 0:
-		package = remoteSettings["packages"]["zip"]
-		guideFile = os.path.join(user_dataDir, 'filmonZipGuide.txt')
-	elif plxType == 1:
-		package = remoteSettings["packages"]["light"]
-		guideFile = os.path.join(user_dataDir, 'filmonLightGuide.txt')
-	else:
-		package = remoteSettings["packages"]["full"]
-		guideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
+	package = remoteSettings["packages"]["full"]
+	guideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 	
 	isNewGuideFile = common.UpdateZipedFile(guideFile, package["guide"])
 	if isNewGuideFile:

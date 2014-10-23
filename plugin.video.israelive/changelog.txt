@@ -1,14 +1,17 @@
-v4.0.4
+[B]v4.0.5[/B]
+- Support ignore/override guides for specific filmon's channels. 
+- Bugs fix.
+[B]v4.0.4[/B]
 - Better support for tv-gude.
-- Install missing addons (mashUp, Teledunet) with their repos from inside the addon.
+- Install missing addons
 - Fix some problems.
-v4.0.3
+[B]v4.0.3[/B]
 - TV-Guides downloading as zip-files
 - TV-Guide for Israeli's channels.
 - It's now showing TV-Guide at favorites too.
-v4.0.2
+[B]v4.0.2[/B]
 - Fixed problem when trying to add Hebrew-name (non-English) channels to favorites.
-v4.0.1
+[B]v4.0.1[/B]
 - Added option to download TV-Guide from server or make one localy (addon setting) 
-v4.0.0
+[B]v4.0.0[/B]
 - Initial release (renew)
