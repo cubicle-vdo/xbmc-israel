@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="30000">מועדפים</string>
-	<string id="30001">ZipTV</string>
-	<string id="30002">רשימה קלה</string>
-	<string id="30003">רשימה מלאה</string>
 	
 	<string id="30100">הגדרות ISRALIVE</string>
-	<string id="30101">רשימת ערוצים</string>
 	<string id="30102">שיטת קבלת המקורות</string>
 	<string id="30103">מקורות במנגנון פילמון הרשמי</string>
 	<string id="30104">HLS</string>

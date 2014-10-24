@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="30000">Favourites</string>
-	<string id="30001">ZipTV</string>
-	<string id="30002">TV-Light</string>
-	<string id="30003">Full-list</string>
 	
 	<string id="30100">ISRALIVE Settings</string>
-	<string id="30101">TV-Playlist</string>
 	<string id="30102">Streams method</string>
 	<string id="30103">Original filmon's streams</string>
 	<string id="30104">HLS</string>

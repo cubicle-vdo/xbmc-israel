@@ -5,28 +5,32 @@ AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 
-def downloader_is(url, name):
-	import downloader,extract
-	
-	'''
-	if name.find('repo') < 0:
-		dialog = xbmcgui.Dialog()
-		choice = dialog.yesno(AddonName , "לחץ כן להתקנת תוסף חסר", name)
-		if choice == False:
-			return
-	'''
-	
+def downloader_is(url, name, showProgress=True):
+	import downloader, extract
+
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
-	dp = xbmcgui.DialogProgress()
-	dp.create(AddonName, "Downloading", "", "Please Wait")
 	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
+	'''
 	try:
 		os.remove(packageFile)
 	except:
 		pass
-	downloader.download(url, packageFile, dp)
-	dp.update(0, "", "Extracting Zip Please Wait")
-	extract.all(packageFile, addonsDir, dp)
+	'''	
+	if showProgress:
+		dp = xbmcgui.DialogProgress()
+		dp.create(AddonName, "Downloading", name, "Please Wait")
+		downloader.download(url, packageFile, dp)
+		dp.update(0, "", "Extracting Zip Please Wait")
+		extract.all(packageFile, addonsDir, dp)
+	else:
+		urllib.urlretrieve(url, packageFile)
+		extract.all(packageFile, addonsDir)
+		
+	try:
+		os.remove(packageFile)
+	except:
+		pass
+			
 	xbmc.executebuiltin("UpdateLocalAddons")
 	xbmc.executebuiltin("UpdateAddonRepos")
 
@@ -113,15 +117,23 @@ def UpdateFile(file, url, zip=False):
 	
 def ReadList(fileName):
 	try:
-		f = open(fileName,'r')
-		fileContent=f.read()
-		f.close()
-		content=json.loads(fileContent)
+		with open(fileName, 'r') as handle:
+			content = json.load(handle)
 	except:
 		content=[]
 
 	return content
 
+def WriteList(filname, list):
+	try:
+		with open(filname, 'w') as handle:
+			json.dump(list, handle, indent=4) 
+		success = True
+	except:
+		success = False
+		
+	return success
+	
 def GetUpdatedList(file, url):
 	UpdateFile(file, url)
 	return ReadList(file)
@@ -138,3 +150,11 @@ def UpdateZipedFile(file, url):
 			pass
 		return True
 	return False
+	
+def GetEncodeString(str):
+	import chardet
+	try:
+		str = str.decode(chardet.detect(str)["encoding"]).encode("utf-8")
+	except:
+		pass
+	return str
