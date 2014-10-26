@@ -1,3 +1,6 @@
+[B]Version 1.1.8[/B]
++seretil new category
++sdarot animated category
 [B]Version 1.1.7[/B]
 fix loop for playlists and double listing 
 [B]Version 1.1.6[/B]
