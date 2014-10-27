@@ -240,4 +240,3 @@ def getImage(imageURL, siteName):
 def getImageName(imageURL):
         idx = int(imageURL.rfind("/")) + 1
         return imageURL[idx:]
-

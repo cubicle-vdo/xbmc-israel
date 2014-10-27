@@ -95,9 +95,25 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.israelsports" name="israelsports" version="2.1.0" provider-name="XAVI">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Plays episodes from sport5 and one.co.il site</summary>
+    <description lang="en">This addon parse sport5 site and one.co.il  you should check sport5 TOS before you using. It's as is</description>
+	 <description lang="he">יש לבדוק תנאי השימוש באתר- התוסף נבנה לצרכי לימוד פייטון</description>
+	<disclaimer>This addon parse sport5 site, you should check sport5 TOS before you using. It's as is</disclaimer>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.1.7"
+       version="1.1.8"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -199,12 +215,9 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.7" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.1.8" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-		 	<import addon="script.common.plugin.cache" version="2.5.2" />
-    		<import addon="script.module.parsedom" version="2.5.1" />
-    		<import addon="script.module.simple.downloader" version="1.9.4" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="sdarottv.py">
         <provides>video</provides>
