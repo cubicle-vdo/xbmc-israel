@@ -1,9 +1,12 @@
 xbmc-israel
 ===========
 
-XBMC Israeli streaming repo for streaming sites
+XBMC Israeli streaming sites repo.
 
 
-The addons now available through the TheWiz repository
-http://www.hometheater.co.il/vp2068379
+The repository can be installed from zip 
+
+https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip
+
+
 
