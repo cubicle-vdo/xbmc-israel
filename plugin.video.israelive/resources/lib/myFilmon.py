@@ -52,7 +52,7 @@ def MakeChannelGuide(prms):
 				continue
 			description = prm["programme_description"]
 			programmename = prm["programme_name"]
-			image = None if not prm.has_key("images") or len(prm["images"]) == 0 else prm["images"][0]["url"]
+			image = None if not prm.has_key("images") or len(prm["images"]) == 0 or not prm["images"][0].has_key("url") else prm["images"][0]["url"]
 			tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
 	elif prms.has_key("now_playing") and len(prms["now_playing"]) > 0:
 		now_playing = prms["now_playing"]
@@ -62,8 +62,16 @@ def MakeChannelGuide(prms):
 		if startdatetime < server_time and server_time < enddatetime:
 			description = now_playing["programme_description"]
 			programmename = now_playing["programme_name"]
-			image = None if not prms.has_key("images") or len(prms["images"]) == 0 else prms["images"][0]["url"]
+			image = None if not now_playing.has_key("images") or len(now_playing["images"]) == 0 or not now_playing["images"][0].has_key("url") else now_playing["images"][0]["url"]
 			tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
+			if prms.has_key("next_playing") and len(prms["next_playing"]) > 0:
+				next_playing = prms["next_playing"]
+				startdatetime = int(next_playing["startdatetime"])
+				enddatetime = int(next_playing["enddatetime"])
+				description = next_playing["programme_description"]
+				programmename = next_playing["programme_name"]
+				image = None if not next_playing.has_key("images") or len(next_playing["images"]) == 0 or not next_playing["images"][0].has_key("url") else next_playing["images"][0]["url"]
+				tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
 			
 	return tvGuide
 			
@@ -310,13 +318,19 @@ def MakePLXguide(url, file):
 	random.seed()
 	random.shuffle(randList)
 	
-	cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
-	if cookie == None:
-		return
+	#cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
+	#if cookie == None:
+	#	return
+	html = OpenURL("http://www.filmon.com/api/init/")
+	if html is None:
+		return None
+	resultJSON = json.loads(html)
+	session_key = resultJSON["session_key"]
 
 	for item in randList:
 		prms = None
-		html =  getChannelHtml(cookie, item["channel"])
+		#html =  getChannelHtml(cookie, item["channel"])
+		html = OpenURL("http://www.filmon.com/api/channel/{0}?session_key={1}".format(item["channel"] , session_key))
 		if html is not None:
 			prms = GetChannelParams(html)
 
