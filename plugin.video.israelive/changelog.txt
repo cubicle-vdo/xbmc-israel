@@ -1,3 +1,5 @@
+[B]v4.0.7[/B]
+- Changes in the method of getting filmon's TV-Guide (due to filmon's site changes).
 [B]v4.0.6[/B]
 - Move remote-settings url to addon-settings.
 [B]v4.0.5[/B]

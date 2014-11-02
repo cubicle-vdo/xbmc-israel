@@ -143,7 +143,7 @@ def PlayChannel(url, name, iconimage):
 def Playf4m(url, name=None, iconimage=None):
 	i = url.find('http://')
 	if url.find('keshet') > 0:
-		makoTicket = common.OPEN_URL('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai')
+		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
 		result = json.loads(makoTicket)
 		ticket = result['tickets'][0]['ticket']
 		url = "{0}%3F{1}%26hdcore%3D3.0.3".format(url[i:], ticket)
@@ -220,7 +220,7 @@ def FilmonChannelGuide(url, channelName, iconimage, ignoreFilmonGuide=False):
 		chNum, referrerCh, chName = myFilmon.GetUrlParams(url)
 		if referrerCh is None:
 			filmon = True
-			chName, channelDescription, iconimage, programmes = myFilmon.GetChannelGuide(chNum, filmonOldStrerams)
+			chName, channelDescription, iconimage, programmes = myFilmon.GetChannelGuide(chNum, filmonOldStrerams=True)
 	
 	if not filmon:
 		epg = common.ReadList(globalGuideFile)

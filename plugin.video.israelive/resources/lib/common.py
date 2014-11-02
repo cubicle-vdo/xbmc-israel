@@ -10,12 +10,7 @@ def downloader_is(url, name, showProgress=True):
 
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
-	'''
-	try:
-		os.remove(packageFile)
-	except:
-		pass
-	'''	
+
 	if showProgress:
 		dp = xbmcgui.DialogProgress()
 		dp.create(AddonName, "Downloading", name, "Please Wait")
@@ -34,35 +29,6 @@ def downloader_is(url, name, showProgress=True):
 	xbmc.executebuiltin("UpdateLocalAddons")
 	xbmc.executebuiltin("UpdateAddonRepos")
 
-def unescape(text):
-		try:			
-			rep = {"&nbsp;": " ",
-				   "\n": "",
-				   "\t": "",
-				   "\r":"",
-				   "&#39;":"",
-				   "&quot;":"\""
-				   }
-			for s, r in rep.items():
-				text = text.replace(s, r)
-				
-			# remove html comments
-			text = re.sub(r"<!--.+?-->", "", text)	
-				
-		except TypeError:
-			pass
-
-		return text
-
-def OPEN_URL(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	
-	response = urllib2.urlopen(req,timeout=100)
-	link=response.read()
-	response.close()
-	return link
-	
 def isFileOld(file, deltaInSec):
 	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
 	now = int(time.time())
