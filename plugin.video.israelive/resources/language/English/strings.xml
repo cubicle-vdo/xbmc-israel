@@ -3,6 +3,7 @@
 	<string id="30000">Favourites</string>
 	
 	<string id="30100">ISRALIVE Settings</string>
+	<string id="30101">Remote Settings URL</string>
 	<string id="30102">Streams method</string>
 	<string id="30103">Original filmon's streams</string>
 	<string id="30104">HLS</string>

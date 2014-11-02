@@ -1,3 +1,5 @@
+[B]v4.0.6[/B]
+- Move remote-settings url to addon-settings.
 [B]v4.0.5[/B]
 - Support ignore/override guides for specific filmon's channels. 
 - Bugs fix.

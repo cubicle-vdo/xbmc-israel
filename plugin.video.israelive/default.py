@@ -34,7 +34,7 @@ if not (os.path.isfile(FAV)):
 	f.close() 
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-remoteSettingsUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/remoteSettings.txt"
+remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
 if remoteSettings == []:
 	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))

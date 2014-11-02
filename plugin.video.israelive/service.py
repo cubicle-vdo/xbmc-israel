@@ -12,7 +12,7 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-remoteSettingsUrl = "https://dl.dropboxusercontent.com/u/94071174/israelive/SUB/remoteSettings.txt"
+remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
 checkInterval = 6
 	

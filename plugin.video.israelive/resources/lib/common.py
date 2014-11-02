@@ -119,7 +119,8 @@ def ReadList(fileName):
 	try:
 		with open(fileName, 'r') as handle:
 			content = json.load(handle)
-	except:
+	except Exception as ex:
+		print ex
 		content=[]
 
 	return content
