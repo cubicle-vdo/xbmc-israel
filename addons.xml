@@ -80,6 +80,29 @@
     </extension>
  </addon>
 
+<addon id="plugin.video.ilten" name="ערוץ 10" version="1.2.0" provider-name="vmaster">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="ten.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary lang="en">Watch video content from Channel 10.</summary>
+        <summary lang="he">צפה בתוכניות מאפליקציית אנדרויד של ערוץ 10</summary>
+        <description lang="en">Watch contents from Channel 10's android application.</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה דרך אפליקצית האנדרויד של ערוץ 10</description>
+        <disclaimer>This addon parses Channel 10 android application, you should check Ch. 10 TOS before you using. It's as is.</disclaimer>
+        <supportedcontent>
+          <content>tvshows</content>
+          <content>episodes</content>
+          <content>movies</content>
+        </supportedcontent>
+    </extension>
+</addon>
+
 <addon id="plugin.video.israelive" name="IsraeLIVE" version="4.0.7" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
