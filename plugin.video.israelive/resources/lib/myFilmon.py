@@ -83,7 +83,7 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, filmonOldStrera
 	tvGuide = []
 	
 	if filmonOldStrerams:
-		url = GetFilmonOldStreram(prms['streams'])
+		url = GetFilmonOldStreram(prms['streams'], useHls=not useRtmp)
 	else:
 		url = prms["serverURL"]
 		if useRtmp:
@@ -203,7 +203,7 @@ def GetUrlParams(url):
 		ChName = None
 	return 	chNum, referrerCh, ChName
 	
-def GetFilmonOldStreram(streams):
+def GetFilmonOldStreram(streams, useHls=False):
 	selectedStream = None
 	for stream in streams:
 		if stream ['quality'].lower() == "low":
@@ -213,6 +213,11 @@ def GetFilmonOldStreram(streams):
 	if selectedStream is not None:
 		streamUrl = selectedStream['url'] + '<'
 		streamName = selectedStream['name'].replace("low", "high")
+		
+		if useHls:
+			regx = re.compile('rtmp://(.+?)\?id=(.+?)<')
+			match = regx.search(streamUrl)
+			return "http://{0}{1}/playlist.m3u8?id={2}".format(match.group(1), streamName, match.group(2))
 
 		if re.search('mp4', streamName, re.IGNORECASE):
 			regx = re.compile('rtmp://(.+?)/(.+?)/(.+?)/<')

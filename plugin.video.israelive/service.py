@@ -32,27 +32,19 @@ def CheckUpdates():
 	except:
 		pass
 		
-	if Addon.getSetting("saveFilmonEPG") == "false":
-		return
-		
-	common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
-	
 	package = remoteSettings["packages"]["full"]
-	guideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 	
-	isNewGuideFile = common.UpdateZipedFile(guideFile, package["guide"])
-	if isNewGuideFile:
+	common.UpdatePlx(package["url"], "wow", refreshInterval=package["plxRefresh"] * 3600) # in hours
+	
+	if Addon.getSetting("useEPG") == "false":
 		return
 		
-	isGuideFileOld = common.isFileOld(guideFile, package["refresh"] * 3600) # 24 hours
-	if isGuideFileOld:
-		print "{0}: Updating filmonGuide localy.".format(AddonName)
-		try:
-			xbmc.executebuiltin("XBMC.Notification({0}, Making and saving Filmon's guide..., {1}, {2})".format(AddonName, 300000 ,icon))
-			myFilmon.MakePLXguide(package["url"], guideFile)
-			xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
-		except:
-			xbmc.executebuiltin("XBMC.Notification({0}, Filmon's guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
+	if common.isFileOld(globalGuideFile, remoteSettings["globalGuide"]["refresh"] * 3600) : # in hours
+		common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
+
+	filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
+	if common.isFileOld(filmonGuideFile, package["refresh"] * 3600): # in hours
+		common.UpdateZipedFile(filmonGuideFile, package["guide"])
 		
 CheckUpdates()
 

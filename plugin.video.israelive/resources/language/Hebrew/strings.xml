@@ -4,13 +4,16 @@
 	
 	<string id="30100">הגדרות ISRALIVE</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
-	<string id="30102">שיטת קבלת המקורות</string>
-	<string id="30103">מקורות במנגנון פילמון הרשמי</string>
+	<string id="30102">מנגנון קבלת פרטי ערוצי פילמון</string>
+	<string id="30103">פילמון הרשמי</string>
+	<string id="30109">פילמון החדש</string>
+	<string id="30110">פרוטוקול ניגון ערוצי פילמון</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">שימוש במדריך שידורים?</string>
 	<string id="30107">הורדת מדריך שידורים (מהשרת)</string>
 	<string id="30108">יצירת מדריך שידורים (סריקה מקומית)</string>
+	<string id="30111">עדכון רשימות ערוצים</string>
 	
 	<string id="30200">לחץ כאן להתקנת תוסף חסר</string>
 	<string id="30201">כנס מחדש לתוסף כדי לראות את השינויים</string>
