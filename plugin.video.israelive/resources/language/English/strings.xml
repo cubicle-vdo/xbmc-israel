@@ -4,13 +4,16 @@
 	
 	<string id="30100">ISRALIVE Settings</string>
 	<string id="30101">Remote Settings URL</string>
-	<string id="30102">Streams method</string>
-	<string id="30103">Original filmon's streams</string>
+	<string id="30102">Filmon's "channel details" method</string>
+	<string id="30103">Original</string>
+	<string id="30109">New</string>
+	<string id="30110">Filmon's stream protocol</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">Use Guide?</string>
 	<string id="30107">Download Guide now - from server</string>
 	<string id="30108">Create Guide now (local scan)</string>
+	<string id="30111">Update Channels Lists now</string>
 	
 	<string id="30200">Click for install a missing addon</string>
 	<string id="30201">Re-enter the addon to see changes</string>

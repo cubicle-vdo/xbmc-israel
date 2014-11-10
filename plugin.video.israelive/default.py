@@ -14,9 +14,8 @@ libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', '
 sys.path.insert(0, libDir)
 import myFilmon, common
 
-StreramsMethod = Addon.getSetting("StreramsMethod")
-filmonOldStrerams = StreramsMethod == "0"
-useRtmp = StreramsMethod == "2"
+filmonOldStrerams = Addon.getSetting("StreramsMethod") == "0"
+useRtmp = Addon.getSetting("StreramProtocol") == "1"
 __icon__='http://static2.wikia.nocookie.net/__cb20121121053458/spongebob/images/f/f4/Check-icon.png'
 __icon2__='https://svn.apache.org/repos/asf/openoffice/symphony/trunk/main/extras/source/gallery/symbols/Sign-QuestionMark02-Red.png'
 icon = Addon.getAddonInfo('icon')
@@ -25,6 +24,8 @@ AddonName = Addon.getAddonInfo("name")
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
+	
+listsDir = os.path.join(user_dataDir, 'lists')
 
 tmpList = os.path.join(user_dataDir, 'tempList.txt')
 FAV = os.path.join(user_dataDir, 'favorites.txt')
@@ -35,37 +36,34 @@ if not (os.path.isfile(FAV)):
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
-remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+if os.path.isfile(remoteSettingsFile):
+	remoteSettings = common.ReadList(remoteSettingsFile)
+else:
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+
 if remoteSettings == []:
 	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 	sys.exit()
 
 package = remoteSettings["packages"]["full"]
-filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
-
-useFilmonEPG = Addon.getSetting("saveFilmonEPG") == "true"
-if useFilmonEPG:
-	if not (os.path.isfile(filmonGuideFile)):
-		useFilmonEPG = False
 
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
-#useEPG = True if os.path.isfile(globalGuideFile) else False
-
-epgFilmon = None
+filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 epgGlobal = None
+epgFilmon = None
 
-	
+useEPG = Addon.getSetting("useEPG") == "true"
+
 def CATEGORIES():
-	SaveGuide(showNotification=False)
+	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'repository.xbmc-israel')):
+		common.downloader_is("https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip", "", showProgress=False)
+	
 	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'plugin.video.teledunet')):
 		common.downloader_is("https://github.com/hadynz/repository.arabic.xbmc-addons/blob/master/repo/plugin.video.teledunet/plugin.video.teledunet-2.3.7.zip?raw=true", "", showProgress=False)
 		common.downloader_is("http://srp.nu/gotham/regional/arabic/repository.superrepo.org.gotham.regional.arabic-0.5.205.zip", "", showProgress=False)
 		
 	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
-	
-	for sub in package["sub"]:
-		addDir("[COLOR blue][B][{0}][/B][/COLOR]".format(sub[xbmcLang].encode('utf-8')), sub["url"], 2, sub["icon"], '', background=sub["icon"])
-	
+	ListLive(package["url"], "wow", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	SetViewMode()
 		
 def update_view(url):
@@ -74,17 +72,19 @@ def update_view(url):
 	return ok
 
 def SetViewMode():
-	if useFilmonEPG:
+	if useEPG:
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		xbmc.executebuiltin("Container.SetViewMode(504)")
 
-def ListLive(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
-	page = urllib2.urlopen(req)
-	response=page.read().replace("\r", "")
-	page.close()
-	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(response)
+def ListLive(url, name, iconimage=None):
+	file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
+	if not os.path.isfile(file):
+		common.UpdatePlx(url, name, includeSubPlx=False)
+	
+	f = open(file,'r')
+	data = f.read()
+	f.close()
+	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
 	
 	list = []
 	for match in matches:
@@ -125,13 +125,15 @@ def ListLive(url):
 		
 		elif item_data["type"] == 'playlist':
 			mode = 2
-			channelName = "[COLOR blue][B][{0}][/B][/COLOR]".format(channelName)
-			displayName = channelName
+			displayName = "[COLOR blue][B][{0}][/B][/COLOR]".format(channelName)
+			background = thumb
 		else:
 			continue
 					
+		if background is None or background == "":
+			background = iconimage
 		addDir(displayName, url, mode, thumb, description, channelName = channelName, background=background, isTvGuide=isTvGuide)
-		list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"]})
+		list.append({"url": url, "image": thumb, "name": channelName.decode("utf-8"), "type": item_data["type"]})
 
 	common.WriteList(tmpList, list)
 	SetViewMode()
@@ -188,7 +190,7 @@ def GetPlayingDetails(channelName, channelNum=None, filmon=False, ignoreFilmonGu
 			return None, None, None, None
 		
 	if not filmon or (filmon and ignoreFilmonGuide):
-		if not useFilmonEPG:
+		if not useEPG:
 			programmeName = channelName
 			return url, channelName, programmeName, iconimage
 
@@ -263,7 +265,7 @@ def GetProgrammeDetails(channelName, channelNum=None, filmon=False):
 	description = ""
 	background = None
 	isTvGuide = False
-	if useFilmonEPG:
+	if useEPG:
 		if filmon:
 			if epgFilmon is None:
 				epgFilmon = common.ReadList(filmonGuideFile)
@@ -368,7 +370,7 @@ def addFavorites(url, iconimage, name):
 			type = item["type"]
 	if not iconimage:
 		iconimage = ""
-	data = {"url": url, "image": iconimage, "name": name, "type": type}
+	data = {"url": url, "image": iconimage, "name": name.decode("utf-8"), "type": type}
 	dirs.append(data)
 	common.WriteList(FAV, dirs)
 	xbmc.executebuiltin('Notification({0}, {1} added to favorites, {2}, {3})'.format(AddonName, name, 5000, __icon__))
@@ -386,20 +388,22 @@ def SaveGuide(forceManual=False, showNotification=True):
 		if showNotification:
 			xbmc.executebuiltin("XBMC.Notification({0}, Saving Guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 		common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
-		if not forceManual:
-			isNewGuideFile = common.UpdateZipedFile(filmonGuideFile, package["guide"])
-			isGuideFileOld = common.isFileOld(filmonGuideFile, package["refresh"] * 3600) # 24 hours
-			if isNewGuideFile or not isGuideFileOld:
+		if forceManual:
+			myFilmon.MakePLXguide(package["url"], filmonGuideFile)
+			if showNotification:
+				xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+		else:
+			if common.UpdateZipedFile(filmonGuideFile, package["guide"]):
 				if showNotification:
 					xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
-				return
-			
-		myFilmon.MakePLXguide(package["url"], filmonGuideFile)
-		if showNotification:
-			xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
+			else:
+				if showNotification:
+					xbmc.executebuiltin("XBMC.Notification({0}, Guide is up to date., {1}, {2})".format(AddonName, 5000 ,icon))
+		return True
 	except:
 		if showNotification:
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
+		return False
 
 def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None, isTvGuide=False):
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
@@ -464,6 +468,12 @@ def get_params():
 							
 	return param
 		
+		
+if useEPG and (not os.path.isfile(filmonGuideFile) or not os.path.isfile(globalGuideFile)):
+	if not SaveGuide():
+		useEPG = False
+		
+		
 params = get_params()
 url = None
 name = None
@@ -503,9 +513,9 @@ try:
 except:
 	pass
 		
-print "{0} -> Mode: {1}".format(AddonName, mode)
+#print "{0} -> Mode: {1}".format(AddonName, mode)
 #print "{0} -> URL: {1}".format(AddonName, url)
-print "{0} -> Name: {1}".format(AddonName, urllib.unquote_plus(str(name)))
+#print "{0} -> Name: {1}".format(AddonName, urllib.unquote_plus(str(name)))
 #print "{0} -> IconImage: {1}".format(AddonName, iconimage)
 		 
 if mode==None or url==None or len(url)<1:
@@ -513,7 +523,7 @@ if mode==None or url==None or len(url)<1:
 elif mode==1:
 	PlayFilmon(sys.argv[2])
 elif mode==2:
-	ListLive(url)
+	ListLive(url, urllib.unquote_plus(displayname), iconimage)
 elif mode==3 or mode==4:
 	PlayFilmon(url, displayname, ignoreFilmonGuide)
 elif mode == 5:
@@ -534,11 +544,21 @@ elif mode==16:
 	addFavorites(url, iconimage, name) 
 elif mode==18:
 	removeFavorties(url)
-elif mode == 20:
+elif mode == 20: # Download Guide now - from server
 	SaveGuide()
 	sys.exit()
-elif mode == 21:
+elif mode == 21: # Create Guide now (local scan)
 	SaveGuide(forceManual=True)
+	sys.exit()
+elif mode == 22: # Update Channels Lists now
+	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+	if remoteSettings == []:
+		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
+		sys.exit()
+	package = remoteSettings["packages"]["full"]
+	common.UpdatePlx(package["url"], "wow")
+	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
 	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

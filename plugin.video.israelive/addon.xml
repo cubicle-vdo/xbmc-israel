@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.0.7" provider-name="Benny123, Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.0.8" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>

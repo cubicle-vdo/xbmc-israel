@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon
+import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
+
+user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+listsDir = os.path.join(user_dataDir, 'lists')
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -69,7 +72,7 @@ def UpdateFile(file, url, zip=False):
 				data = response.read().replace('\r','')
 			except:
 				return False
-				
+			
 			f = open(file, 'w')
 			f.write(data)
 			f.close()
@@ -93,10 +96,11 @@ def ReadList(fileName):
 
 def WriteList(filname, list):
 	try:
-		with open(filname, 'w') as handle:
-			json.dump(list, handle, indent=4) 
+		with io.open(filname, 'w', encoding='utf-8') as handle:
+			handle.write(unicode(json.dumps(list, indent=4, ensure_ascii=False)))
 		success = True
-	except:
+	except Exception as ex:
+		print ex
 		success = False
 		
 	return success
@@ -125,3 +129,47 @@ def GetEncodeString(str):
 	except:
 		pass
 	return str
+	
+def Plx2list(url, name, refreshInterval=0):
+	list = []
+	try:
+		file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
+		if isFileOld(file, refreshInterval):
+			UpdateFile(file, url)
+
+		f = open(file, 'r')
+		data = f.read()
+		f.close()
+
+		matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
+		for match in matches:
+			item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
+			item_data = {}
+			for field, value in item:
+				item_data[field.strip().lower()] = value.strip()
+			if item_data["type"] != 'playlist':
+				continue
+
+			list.append(item_data)
+			
+	except Exception as e:
+		print e
+		pass
+		
+	return list
+
+flattenList = []
+def FlatPlxList(list, refreshInterval=0):
+	global flattenList
+	for item in list:
+		flattenList.append(item)
+		list2 = Plx2list(item['url'], item['name'])
+		FlatPlxList(list2, refreshInterval=refreshInterval)
+
+def UpdatePlx(url, name, refreshInterval=0, includeSubPlx=True):
+	if not os.path.exists(listsDir):
+		os.makedirs(listsDir)
+	
+	list = Plx2list(url, name, refreshInterval=refreshInterval)
+	if includeSubPlx:
+		FlatPlxList(list, refreshInterval=refreshInterval)
