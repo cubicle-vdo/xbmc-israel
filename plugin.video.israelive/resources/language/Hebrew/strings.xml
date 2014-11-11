@@ -19,4 +19,10 @@
 	<string id="30201">כנס מחדש לתוסף כדי לראות את השינויים</string>
 	<string id="30202">אין ערוצים ברשימת המועדפים</string>
 	<string id="30203">הוסף ערוץ על ידי קליק ימני על הערוץ</string>
+	
+	<string id="30300">טלויזיה חיה</string>
+	<string id="30301">שימוש בטלויזיה חיה</string>
+	<string id="30302">יצירת רשימת ערוצים ומדריך שידורים</string>
+	<string id="30303">הורדת סמלי ערוצים</string>
+	<string id="30304">עדכון הגדרות IPTVSimple</string>
 </strings>

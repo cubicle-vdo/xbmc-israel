@@ -1,3 +1,5 @@
+[B]v4.0.9[/B]
+- Support LiveTV (IPTVSimple) for Windows based platforms.
 [B]v4.0.8[/B]
 - Addon run faster after saving all necessaries files locally.
 [B]v4.0.7[/B]

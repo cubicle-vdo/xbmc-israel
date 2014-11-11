@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
-import sys, os, time, datetime, re
+import sys, os, time, datetime, re, platform
 import urllib ,urllib2, json
 
 AddonID = "plugin.video.israelive"
@@ -143,6 +143,13 @@ def PlayChannel(url, name, iconimage):
 	Play(url, channelName, programmeName, iconimage)
 	
 def Playf4m(url, name=None, iconimage=None):
+	if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows":
+		if name is None:
+			name = ""
+		url = "http://localhost:88/{0}".format(url[url.find('?'):])
+		PlayChannel(url, name, iconimage)
+		return
+		
 	i = url.find('http://')
 	if url.find('keshet') > 0:
 		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
@@ -450,6 +457,43 @@ def InstallAddon(url, description):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(AddonName, localizedString(30201).encode('utf-8'))
 	
+def UpdateChannelsLists():
+	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+	if remoteSettings == []:
+		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
+		sys.exit()
+	package = remoteSettings["packages"]["full"]
+	common.UpdatePlx(package["url"], "wow")
+	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
+
+def MakeIPTVlists():
+	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV channels list..., {1}, {2})".format(AddonName, 300000 ,icon))
+	import myIPTV
+	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
+		common.UpdatePlx(package['url'], "wow", includeSubPlx=False)
+	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"))
+	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
+	myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
+	xbmc.executebuiltin("XBMC.Notification({0}, IPTV channels list and TV-guide created., {1}, {2})".format(AddonName, 5000 ,icon))
+	if myIPTV.IsIPTVuseIsraelive(os.path.join(user_dataDir, "iptv.m3u")):
+		xbmc.executebuiltin('StartPVRManager')
+	
+def DownloadLogos():
+	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
+	import myIPTV
+	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
+		common.UpdatePlx(package['url'], "wow", includeSubPlx=False)
+	myIPTV.SaveChannelsLogos(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "logos"))
+	xbmc.executebuiltin("XBMC.Notification({0}, Chhannels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
+
+def UpdateIPTVSimple():
+	xbmc.executebuiltin("XBMC.Notification({0}, Updating IPTVSimple settings..., {1}, {2})".format(AddonName, 300000 ,icon))
+	import myIPTV
+	myIPTV.UpdateIPTVSimpleSettings(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
+	xbmc.executebuiltin("XBMC.Notification({0}, IPTVSimple settings Updated., {1}, {2})".format(AddonName, 5000 ,icon))
+	xbmc.executebuiltin('StartPVRManager')
+
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -551,14 +595,16 @@ elif mode == 21: # Create Guide now (local scan)
 	SaveGuide(forceManual=True)
 	sys.exit()
 elif mode == 22: # Update Channels Lists now
-	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
-	if remoteSettings == []:
-		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
-		sys.exit()
-	package = remoteSettings["packages"]["full"]
-	common.UpdatePlx(package["url"], "wow")
-	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
+	UpdateChannelsLists()
+	sys.exit()
+elif mode == 30: # Make IPTV channels list and TV-guide
+	MakeIPTVlists()
+	sys.exit()
+elif mode == 31: # Download channels logos
+	DownloadLogos()
+	sys.exit()
+elif mode == 32: # Update IPTVSimple settings
+	UpdateIPTVSimple()
 	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

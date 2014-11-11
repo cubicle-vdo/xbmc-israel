@@ -19,4 +19,10 @@
 	<string id="30201">Re-enter the addon to see changes</string>
 	<string id="30202">No channels in your favourites</string>
 	<string id="30203">Add one by right clicking on any channel</string>
+	
+	<string id="30300">Live TV</string>
+	<string id="30301">Enable Live TV</string>
+	<string id="30302">Make IPTV channels list and TV-Guide</string>
+	<string id="30303">Download channels logos</string>
+	<string id="30304">Update IPTVSimple settings</string>
 </strings>
