@@ -1,4 +1,4 @@
-import xbmc, xbmcaddon, xbmcgui, os, sys
+import xbmc, xbmcaddon, xbmcgui, os, sys, platform
 
 Addon = xbmcaddon.Addon()
 AddonName = Addon.getAddonInfo("name")
@@ -7,6 +7,12 @@ libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', '
 sys.path.insert(0, libDir)
 import common, myFilmon
 
+useIPTV = False
+if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows":
+	import livestreamersrv, myIPTV
+	livestreamersrv.start()
+	useIPTV = True
+
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
@@ -14,7 +20,8 @@ if not os.path.exists(user_dataDir):
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
-checkInterval = 6
+filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
+checkInterval = 12
 	
 def sleepFor(timeS):
     while((not xbmc.abortRequested) and (timeS > 0)):
@@ -32,19 +39,27 @@ def CheckUpdates():
 	except:
 		pass
 		
+	useIPTV = True if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows" else False
+
 	package = remoteSettings["packages"]["full"]
 	
-	common.UpdatePlx(package["url"], "wow", refreshInterval=package["plxRefresh"] * 3600) # in hours
-	
+	if common.UpdatePlx(package["url"], "wow", refreshInterval=package["plxRefresh"] * 3600) and useIPTV:
+		myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"))
+		
 	if Addon.getSetting("useEPG") == "false":
 		return
 		
-	if common.isFileOld(globalGuideFile, remoteSettings["globalGuide"]["refresh"] * 3600) : # in hours
-		common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
+	isGuideUpdated = False
+	if common.isFileOld(globalGuideFile, remoteSettings["globalGuide"]["refresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"]):
+		isGuideUpdated = True
 
-	filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
-	if common.isFileOld(filmonGuideFile, package["refresh"] * 3600): # in hours
-		common.UpdateZipedFile(filmonGuideFile, package["guide"])
+	if common.isFileOld(filmonGuideFile, package["refresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, package["guide"]):
+		isGuideUpdated = True
+		
+	if isGuideUpdated and useIPTV:
+		myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
+		if myIPTV.IsIPTVuseIsraelive(os.path.join(user_dataDir, "iptv.m3u")):
+			xbmc.executebuiltin('StartPVRManager')
 		
 CheckUpdates()
 

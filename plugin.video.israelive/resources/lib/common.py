@@ -173,3 +173,7 @@ def UpdatePlx(url, name, refreshInterval=0, includeSubPlx=True):
 	list = Plx2list(url, name, refreshInterval=refreshInterval)
 	if includeSubPlx:
 		FlatPlxList(list, refreshInterval=refreshInterval)
+		
+def OKmsg(title, line1, line2 = None, line3 = None):
+	dlg = xbmcgui.Dialog()
+	dlg.ok(title, line1, line2, line3)
