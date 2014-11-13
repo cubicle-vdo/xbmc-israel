@@ -229,6 +229,11 @@ def FilmonChannelGuide(url, channelName, iconimage, ignoreFilmonGuide=False):
 		epg = common.ReadList(globalGuideFile)
 		programmes = GetProgrammes(epg, channelName, full=True)
 
+	if iconimage is None:
+		iconimage = ""
+	if channelDescription is None:
+		channelDescription = ""
+		
 	ShowGuide(programmes, channelName, iconimage, channelDescription, filmon=filmon)
 
 def ChannelGuide(channelName, iconimage):
@@ -492,6 +497,7 @@ def UpdateIPTVSimple():
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTVSimple settings Updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def CleanLogosFolder():
+	xbmc.executebuiltin("XBMC.Notification({0}, Cleaning channels logos folder..., {1}, {2})".format(AddonName, 300000 ,icon))
 	logosFolder = os.path.join(user_dataDir, "logos")
 	for the_file in os.listdir(logosFolder):
 		file_path = os.path.join(logosFolder, the_file)
@@ -500,6 +506,7 @@ def CleanLogosFolder():
 				os.unlink(file_path)
 		except Exception, e:
 			print e
+	xbmc.executebuiltin("XBMC.Notification({0}, Chhannels logos filder cleaned., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def get_params():
 	param=[]
