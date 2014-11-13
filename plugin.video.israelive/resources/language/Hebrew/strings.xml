@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="30000">מועדפים</string>
+	<string id="30001">כן</string>
+	<string id="30002">לא</string>
+	<string id="30003">כן, שאל בפעם הבאה</string>
+	<string id="30004">לא, שאל בפעם הבאה</string>
 	
 	<string id="30100">הגדרות ISRALIVE</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
@@ -25,4 +29,7 @@
 	<string id="30302">יצירת רשימת ערוצים ומדריך שידורים</string>
 	<string id="30303">הורדת סמלי ערוצים</string>
 	<string id="30304">עדכון הגדרות IPTVSimple</string>
+	<string id="30305">LiveStreamer Port</string>
+	<string id="30306">עדכון אוטומטי עבור IPTVSimple?</string>
+	<string id="30307">ניקוי תיקיית סמלי ערוצים</string>
 </strings>

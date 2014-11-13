@@ -16,7 +16,11 @@ except ImportError:
 try:
     from collections import OrderedDict
 except ImportError:
-    from ordereddict import OrderedDict
+	# --------- 
+	import os, sys
+	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'requests', 'packages', 'urllib3', 'packages')))
+	# --------- 
+	from ordered_dict import OrderedDict
 try:
     from thread import get_ident
 except ImportError:

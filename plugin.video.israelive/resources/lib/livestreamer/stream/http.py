@@ -1,6 +1,7 @@
 import inspect
 
-import requests
+#import requests
+from .. import requests
 
 from .stream import Stream
 from .wrappers import StreamIOThreadWrapper, StreamIOIterWrapper

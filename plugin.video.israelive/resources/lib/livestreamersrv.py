@@ -5,21 +5,15 @@ from SocketServer import ThreadingMixIn
 from livestreamer import Livestreamer
 from urllib import unquote
 
-import xbmcaddon, os
-Addon = xbmcaddon.Addon("plugin.video.israelive")
-
-HOST_NAME = "localhost"
-PORT_NUMBER = 88
 LIVESTREAMER = None
 
-		
+	
 def Stream(wfile, url, quality):
 	try:
 		Streamer(wfile, url, quality)
 	except Exception as e:
 		#print "Got Exception: ", str(e)
-		offlineFile = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib', 'offline.mp4')
-		wfile.write(open(offlineFile, "r").read())
+		pass
 	wfile.close()
 
 def Streamer(wfile, url, quality):
@@ -67,14 +61,14 @@ class StreamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
 
-def start():
+def start(portNum):
 	global LIVESTREAMER
 	LIVESTREAMER = Livestreamer()
-	httpd = ThreadedHTTPServer((HOST_NAME, PORT_NUMBER), StreamHandler)
-	print "Livestreamer: Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
+	httpd = ThreadedHTTPServer(("localhost", portNum), StreamHandler)
+	print "Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum)
 	try:
 		httpd.serve_forever()
 	except KeyboardInterrupt:
 		pass
 	httpd.server_close()
-	print "Livestreamer: Server Stops - %s:%s" % (HOST_NAME, PORT_NUMBER)
+	print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)

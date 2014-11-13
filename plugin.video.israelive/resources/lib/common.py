@@ -177,3 +177,8 @@ def UpdatePlx(url, name, refreshInterval=0, includeSubPlx=True):
 def OKmsg(title, line1, line2 = None, line3 = None):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
+	
+def GetMenuSelected(title, list):
+	dialog = xbmcgui.Dialog()
+	answer = dialog.select(title, list)
+	return answer

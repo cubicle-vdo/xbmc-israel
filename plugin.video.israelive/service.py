@@ -7,10 +7,16 @@ libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', '
 sys.path.insert(0, libDir)
 import common, myFilmon
 
+portNum = 65007
+try:
+	portNum = int(Addon.getSetting("LiveStreamerPort"))
+except:
+	pass
+	
 useIPTV = False
-if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows":
+if Addon.getSetting("useIPTV") == "true":# and platform.system().lower() == "windows":
 	import livestreamersrv, myIPTV
-	livestreamersrv.start()
+	livestreamersrv.start(portNum)
 	useIPTV = True
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
@@ -39,7 +45,8 @@ def CheckUpdates():
 	except:
 		pass
 		
-	useIPTV = True if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows" else False
+	#useIPTV = True if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows" else False
+	useIPTV = True if Addon.getSetting("useIPTV") == "true" else False
 
 	package = remoteSettings["packages"]["full"]
 	
@@ -58,8 +65,7 @@ def CheckUpdates():
 		
 	if isGuideUpdated and useIPTV:
 		myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
-		if myIPTV.IsIPTVuseIsraelive(os.path.join(user_dataDir, "iptv.m3u")):
-			xbmc.executebuiltin('StartPVRManager')
+		myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
 		
 CheckUpdates()
 

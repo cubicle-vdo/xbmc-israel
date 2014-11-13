@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<string id="30000">Favourites</string>
+	<string id="30001">Yes</string>
+	<string id="30002">No</string>
+	<string id="30003">Yes, Ask next time</string>
+	<string id="30004">No, Ask next time</string>
 	
 	<string id="30100">ISRALIVE Settings</string>
 	<string id="30101">Remote Settings URL</string>
@@ -25,4 +29,7 @@
 	<string id="30302">Make IPTV channels list and TV-Guide</string>
 	<string id="30303">Download channels logos</string>
 	<string id="30304">Update IPTVSimple settings</string>
+	<string id="30305">LiveStreamer Port</string>
+	<string id="30306">Auto-update IPTVSimple?</string>
+	<string id="30307">Empty channels logos folder</string>
 </strings>

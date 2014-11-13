@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, re, os, time, datetime
+import urllib, re, os, time, datetime, hashlib
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
 import common
@@ -7,6 +7,7 @@ import common
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
+localizedString = Addon.getLocalizedString
 
 flattenList = []
 
@@ -50,7 +51,7 @@ def flatten(listsDir, list):
 			flatten(listsDir, list2)
 	return flattenList
 			
-def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile):
+def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile, portNum):
 	list = plx2channels(os.path.join(listsDir, mainPlxFile), groupName)
 	list = flatten(listsDir, list)
 
@@ -64,16 +65,16 @@ def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile):
 		
 		if url.find('plugin.video.israelive') > 0:
 			urlParams = url[url.find('?'):]
-			url = "http://localhost:88/{0}".format(urlParams)
+			url = "http://localhost:{0}/{1}".format(portNum, urlParams)
 			tvg_id = "fil-{0}".format(urlParams[5:urlParams.find('&')])
 		elif url.find('plugin.video.f4mTester') > 0:
-			url = "http://localhost:88/{0}".format(url[url.find('?'):])
+			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
 		elif url.find('plugin.video.youtube') > 0:
-			url = "http://localhost:88/?url=http://youtu.be/{0}".format(url[url.rfind('=') + 1:])
+			url = "http://localhost:{0}/?url=http://youtu.be/{1}".format(portNum, url[url.rfind('=') + 1:])
 		tvg_name = item['name'].replace(' ','_')
 		view_name = item['name']
 			
-		tvg_logo = tvg_name.replace('_',' ')
+		tvg_logo = hashlib.md5(item['name']).hexdigest()
 		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 		#M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
 		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}.png"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
@@ -141,9 +142,9 @@ def SaveChannelsLogos(listsDir, mainPlxFile, groupName, logosDir):
 	
 	for item in flattenList:
 		try:
-			tvg_logo = item['name'].replace('_',' ')
 			if item.has_key('thumb') and item['thumb'] is not None and item['thumb'] != "":
-				logoFile = "{0}\\{1}.png".format(logosDir, tvg_logo)
+				tvg_logo = hashlib.md5(item['name']).hexdigest()
+				logoFile = "{0}.png".format(os.path.join(logosDir, tvg_logo))
 				if not os.path.isfile(logoFile):
 					urllib.urlretrieve(item['thumb'], logoFile)
 		except Exception as e:
@@ -230,11 +231,22 @@ def ReadSettings(source, fromFile=False):
 			dict[elem.get('id')] = elem.get('value')
 	except:
 		dict = None
-	
+
 	return dict
+		
+def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
+	if autoIPTV == 0:
+		Addon.setSetting("autoIPTV", "0")
+	else:
+		autoIPTV = int(Addon.getSetting("autoIPTV"))
+	print autoIPTV
+	if autoIPTV == 2 or autoIPTV == 3:
+		autoIPTV = common.GetMenuSelected(localizedString(30306).encode('utf-8'), [localizedString(30001).encode('utf-8'), localizedString(30002).encode('utf-8'), localizedString(30003).encode('utf-8'), localizedString(30004).encode('utf-8')])
+		if autoIPTV == -1:
+			autoIPTV = 3
+		else:
+			Addon.setSetting("autoIPTV", str(autoIPTV))
 	
-def IsIPTVuseIsraelive(israeliveM3U):
-	iptvAddon = GetIptvAddon()
-	if iptvAddon is None:
-		return False
-	return iptvAddon.getSetting("m3uPath") == israeliveM3U and iptvAddon.getSetting("m3uPathType") == "0"
+	if autoIPTV == 0 or autoIPTV == 2:
+		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
+		xbmc.executebuiltin('StartPVRManager')

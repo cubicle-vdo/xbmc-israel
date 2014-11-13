@@ -143,19 +143,13 @@ def PlayChannel(url, name, iconimage):
 	Play(url, channelName, programmeName, iconimage)
 	
 def Playf4m(url, name=None, iconimage=None):
-	if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows":
-		if name is None:
-			name = ""
-		url = "http://localhost:88/{0}".format(url[url.find('?'):])
-		PlayChannel(url, name, iconimage)
-		return
-		
 	i = url.find('http://')
 	if url.find('keshet') > 0:
 		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
 		result = json.loads(makoTicket)
 		ticket = result['tickets'][0]['ticket']
-		url = "{0}%3F{1}%26hdcore%3D3.0.3".format(url[i:], ticket)
+		#url = "{0}%3F{1}%26hdcore%3D3.0.3".format(url[i:], ticket)
+		url = "{0}?{1}&hdcore=3.0.3".format(url[i:], ticket)
 	else:
 		url = url[i:]
 	
@@ -469,15 +463,19 @@ def UpdateChannelsLists():
 
 def MakeIPTVlists():
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV channels list..., {1}, {2})".format(AddonName, 300000 ,icon))
+	portNum = 65007
+	try:
+		portNum = int(Addon.getSetting("LiveStreamerPort"))
+	except:
+		pass
 	import myIPTV
 	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
 		common.UpdatePlx(package['url'], "wow", includeSubPlx=False)
-	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"))
+	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
+	myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTV channels list and TV-guide created., {1}, {2})".format(AddonName, 5000 ,icon))
-	if myIPTV.IsIPTVuseIsraelive(os.path.join(user_dataDir, "iptv.m3u")):
-		xbmc.executebuiltin('StartPVRManager')
 	
 def DownloadLogos():
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
@@ -490,9 +488,18 @@ def DownloadLogos():
 def UpdateIPTVSimple():
 	xbmc.executebuiltin("XBMC.Notification({0}, Updating IPTVSimple settings..., {1}, {2})".format(AddonName, 300000 ,icon))
 	import myIPTV
-	myIPTV.UpdateIPTVSimpleSettings(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
+	myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"), 0)
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTVSimple settings Updated., {1}, {2})".format(AddonName, 5000 ,icon))
-	xbmc.executebuiltin('StartPVRManager')
+
+def CleanLogosFolder():
+	logosFolder = os.path.join(user_dataDir, "logos")
+	for the_file in os.listdir(logosFolder):
+		file_path = os.path.join(logosFolder, the_file)
+		try:
+			if os.path.isfile(file_path):
+				os.unlink(file_path)
+		except Exception, e:
+			print e
 
 def get_params():
 	param=[]
@@ -605,6 +612,9 @@ elif mode == 31: # Download channels logos
 	sys.exit()
 elif mode == 32: # Update IPTVSimple settings
 	UpdateIPTVSimple()
+	sys.exit()
+elif mode == 33: # Empty channels logos folder
+	CleanLogosFolder()
 	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
