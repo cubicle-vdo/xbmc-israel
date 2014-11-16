@@ -13,8 +13,11 @@
 	<category label="30300">
 		<setting id="useIPTV" type="bool" label="30301" default="true" />
 		<setting type="sep"/>
-		<setting id="action" type="action" label="30302" action="RunScript($CWD/default.py,,?mode=30&url=settings)" option="close" visible="eq(-2,true)"/>
-		<setting id="action" type="action" label="30303" action="RunScript($CWD/default.py,,?mode=31&url=settings)" option="close" visible="eq(-3,true)"/>
-		<setting id="action" type="action" label="30304" action="RunScript($CWD/default.py,,?mode=32&url=settings)" option="close" visible="eq(-4,true)"/>
+		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-2,true)"/>
+		<setting id="action" type="action" label="30302" action="RunScript($CWD/default.py,,?mode=30&url=settings)" option="close" visible="eq(-3,true)"/>
+		<setting id="action" type="action" label="30303" action="RunScript($CWD/default.py,,?mode=31&url=settings)" option="close" visible="eq(-4,true)"/>
+		<setting id="action" type="action" label="30307" action="RunScript($CWD/default.py,,?mode=33&url=settings)" option="close" visible="eq(-5,true)"/>
+		<setting id="autoIPTV" type="enum" label="30306" lvalues="30001|30002|30003|30004" default="2" visible="eq(-6,true)" />
+		<setting id="action" type="action" label="30304" action="RunScript($CWD/default.py,,?mode=32&url=settings)" option="close" visible="eq(-7,true)"/>
 	</category>
 </settings>

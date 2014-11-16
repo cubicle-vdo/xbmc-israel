@@ -1,3 +1,7 @@
+[B]v4.1.0[/B]
+- support LiveTV for none Windows based platforms.
+- added some customize to addon-settings.
+- bug fixed
 [B]v4.0.9[/B]
 - Support LiveTV (IPTVSimple) for Windows based platforms.
 [B]v4.0.8[/B]

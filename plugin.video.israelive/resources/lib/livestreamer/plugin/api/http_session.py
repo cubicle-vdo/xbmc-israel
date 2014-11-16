@@ -1,6 +1,6 @@
-from requests import Session, __build__ as requests_version
-from requests.adapters import HTTPAdapter
-from requests.exceptions import RequestException
+from ...requests import Session, __build__ as requests_version
+from ...requests.adapters import HTTPAdapter
+from ...requests.exceptions import RequestException
 
 try:
     from requests.packages.urllib3.util import Timeout
@@ -9,7 +9,7 @@ except ImportError:
     TIMEOUT_ADAPTER_NEEDED = False
 
 try:
-    from requests.packages import urllib3
+    from ...requests.packages import urllib3
 
     # We tell urllib3 to disable warnings about unverified HTTPS requests,
     # because in some plugins we have to do unverified requests intentionally.

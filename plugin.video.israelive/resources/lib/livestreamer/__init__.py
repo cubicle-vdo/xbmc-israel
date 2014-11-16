@@ -26,7 +26,7 @@ __credits__ = [
     "medina", "Michael Cheah", "Jaime Marquinez Ferrandiz"
 ]
 
-
+#import requests
 from .api import streams
 from .exceptions import (LivestreamerError, PluginError, NoStreamsError,
                          NoPluginError, StreamError)
