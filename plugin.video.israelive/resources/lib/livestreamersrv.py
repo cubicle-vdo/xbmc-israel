@@ -6,7 +6,7 @@ from livestreamer import Livestreamer
 from urllib import unquote
 
 LIVESTREAMER = None
-
+httpd = None
 	
 def Stream(wfile, url, quality):
 	try:
@@ -64,11 +64,21 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 def start(portNum):
 	global LIVESTREAMER
 	LIVESTREAMER = Livestreamer()
+	global httpd
 	httpd = ThreadedHTTPServer(("localhost", portNum), StreamHandler)
 	print "Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum)
 	try:
 		httpd.serve_forever()
-	except KeyboardInterrupt:
+	except:
 		pass
-	httpd.server_close()
-	print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
+	#httpd.server_close()
+	#print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
+	
+def stop():
+	global httpd
+	try:
+		if httpd is not None:
+			httpd.server_close()
+			print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
+	except:
+		pass
