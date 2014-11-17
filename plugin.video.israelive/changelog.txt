@@ -1,3 +1,5 @@
+[B]v4.1.1[/B]
+- bug fix: livestreamer is now starts in a new thread (it was kidnaps the service.py thread..)
 [B]v4.1.0[/B]
 - support LiveTV for none Windows based platforms.
 - added some customize to addon-settings.

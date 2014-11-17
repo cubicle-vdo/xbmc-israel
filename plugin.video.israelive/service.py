@@ -13,11 +13,17 @@ try:
 except:
 	pass
 	
+i = 0
 useIPTV = False
-if Addon.getSetting("useIPTV") == "true":# and platform.system().lower() == "windows":
-	import livestreamersrv, myIPTV
-	livestreamersrv.start(portNum)
-	useIPTV = True
+if Addon.getSetting("useIPTV") == "true":
+	import livestreamersrv, myIPTV, threading
+	try:
+		t1 = threading.Thread(target = livestreamersrv.start, args = (portNum,))
+		t1.daemon = True
+		t1.start()
+		useIPTV = True
+	except Exception, e:
+		print e
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
@@ -45,7 +51,6 @@ def CheckUpdates():
 	except:
 		pass
 		
-	#useIPTV = True if Addon.getSetting("useIPTV") == "true" and platform.system().lower() == "windows" else False
 	useIPTV = True if Addon.getSetting("useIPTV") == "true" else False
 
 	package = remoteSettings["packages"]["full"]
@@ -74,3 +79,5 @@ while (not xbmc.abortRequested):
 	if (not xbmc.abortRequested):
 		CheckUpdates()
 	
+if useIPTV:
+	livestreamersrv.stop()
