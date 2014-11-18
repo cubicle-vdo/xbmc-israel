@@ -239,7 +239,7 @@ def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
 		Addon.setSetting("autoIPTV", "0")
 	else:
 		autoIPTV = int(Addon.getSetting("autoIPTV"))
-	print autoIPTV
+		
 	if autoIPTV == 2 or autoIPTV == 3:
 		autoIPTV = common.GetMenuSelected(localizedString(30306).encode('utf-8'), [localizedString(30001).encode('utf-8'), localizedString(30002).encode('utf-8'), localizedString(30003).encode('utf-8'), localizedString(30004).encode('utf-8')])
 		if autoIPTV == -1:
