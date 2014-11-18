@@ -21,7 +21,7 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None, filmonOldStrerams=Fals
 		
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName, filmonOldStrerams, useRtmp)
 	
-	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
+	#print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
 	#return streamUrl, channelName, programmeName, iconimage #, image
 	return streamUrl, channelName, iconimage, tvGuide
 

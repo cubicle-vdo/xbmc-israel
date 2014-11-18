@@ -475,7 +475,7 @@ def MakeIPTVlists():
 		pass
 	import myIPTV
 	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package['url'], "wow", includeSubPlx=False)
+		common.UpdatePlx(package['url'], "wow")
 	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
@@ -486,7 +486,7 @@ def DownloadLogos():
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
 	import myIPTV
 	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package['url'], "wow", includeSubPlx=False)
+		common.UpdatePlx(package['url'], "wow")
 	myIPTV.SaveChannelsLogos(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "logos"))
 	xbmc.executebuiltin("XBMC.Notification({0}, Chhannels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
 

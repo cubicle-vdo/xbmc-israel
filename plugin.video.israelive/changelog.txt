@@ -1,3 +1,5 @@
+[B]v4.1.2[/B]
+- bug fix: iptv.m3u list (channels list for LiveTV) wasn't created automatically from service.
 [B]v4.1.1[/B]
 - bug fix: livestreamer is now starts in a new thread (it was kidnaps the service.py thread..)
 [B]v4.1.0[/B]

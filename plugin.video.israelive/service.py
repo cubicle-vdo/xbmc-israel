@@ -55,8 +55,10 @@ def CheckUpdates():
 
 	package = remoteSettings["packages"]["full"]
 	
+	isM3uUpdated = False
 	if common.UpdatePlx(package["url"], "wow", refreshInterval=package["plxRefresh"] * 3600) and useIPTV:
-		myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"))
+		myIPTV.makeIPTVlist(os.path.join(user_dataDir, 'lists'), "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
+		isM3uUpdated = True
 		
 	if Addon.getSetting("useEPG") == "false":
 		return
@@ -70,6 +72,8 @@ def CheckUpdates():
 		
 	if isGuideUpdated and useIPTV:
 		myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
+		
+	if isM3uUpdated or isGuideUpdated:
 		myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
 		
 CheckUpdates()

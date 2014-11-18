@@ -132,10 +132,11 @@ def GetEncodeString(str):
 	
 def Plx2list(url, name, refreshInterval=0):
 	list = []
+	isListUpdated = False
 	try:
 		file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
 		if isFileOld(file, refreshInterval):
-			UpdateFile(file, url)
+			isListUpdated = UpdateFile(file, url)
 
 		f = open(file, 'r')
 		data = f.read()
@@ -156,23 +157,30 @@ def Plx2list(url, name, refreshInterval=0):
 		print e
 		pass
 		
-	return list
+	return list, isListUpdated
 
 flattenList = []
+isFlattenListUpdated = False
 def FlatPlxList(list, refreshInterval=0):
 	global flattenList
+	global isFlattenListUpdated
 	for item in list:
 		flattenList.append(item)
-		list2 = Plx2list(item['url'], item['name'])
+		list2, isListUpdated = Plx2list(item['url'], item['name'])
+		if isListUpdated:
+			isFlattenListUpdated = True
 		FlatPlxList(list2, refreshInterval=refreshInterval)
+	return isFlattenListUpdated
 
 def UpdatePlx(url, name, refreshInterval=0, includeSubPlx=True):
 	if not os.path.exists(listsDir):
 		os.makedirs(listsDir)
 	
-	list = Plx2list(url, name, refreshInterval=refreshInterval)
-	if includeSubPlx:
-		FlatPlxList(list, refreshInterval=refreshInterval)
+	list, isListUpdated = Plx2list(url, name, refreshInterval=refreshInterval)
+	if includeSubPlx and FlatPlxList(list, refreshInterval=refreshInterval):
+		isListUpdated = True
+		
+	return isListUpdated
 		
 def OKmsg(title, line1, line2 = None, line3 = None):
 	dlg = xbmcgui.Dialog()
