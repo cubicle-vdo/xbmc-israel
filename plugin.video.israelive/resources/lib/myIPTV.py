@@ -71,6 +71,8 @@ def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile, portNum):
 			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
 		elif url.find('plugin.video.youtube') > 0:
 			url = "http://localhost:{0}/?url=http://youtu.be/{1}".format(portNum, url[url.rfind('=') + 1:])
+		elif url.find('?mode=2') > 0:
+			url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
 		tvg_name = item['name'].replace(' ','_')
 		view_name = item['name']
 			

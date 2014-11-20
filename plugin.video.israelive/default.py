@@ -12,7 +12,7 @@ if xbmcLang != "he":
 
 libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
 sys.path.insert(0, libDir)
-import myFilmon, common
+import myFilmon, common, myResolver
 
 filmonOldStrerams = Addon.getSetting("StreramsMethod") == "0"
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
@@ -57,12 +57,8 @@ useEPG = Addon.getSetting("useEPG") == "true"
 def CATEGORIES():
 	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'repository.xbmc-israel')):
 		common.downloader_is("https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip", "", showProgress=False)
-	
-	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'plugin.video.teledunet')):
-		common.downloader_is("https://github.com/hadynz/repository.arabic.xbmc-addons/blob/master/repo/plugin.video.teledunet/plugin.video.teledunet-2.3.7.zip?raw=true", "", showProgress=False)
-		common.downloader_is("http://srp.nu/gotham/regional/arabic/repository.superrepo.org.gotham.regional.arabic-0.5.205.zip", "", showProgress=False)
-		
-	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',15,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
+
+	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',16,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
 	ListLive(package["url"], "wow", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	SetViewMode()
 		
@@ -117,7 +113,10 @@ def ListLive(url, name, iconimage=None):
 					if itemMode[0][2] != "&ignorefilmonguide=1":
 						filmon = True
 			elif url.find('plugin.video.f4mTester') > 0:
-				mode= 12
+				mode = 12
+			elif url.find('?mode=2') > 0:
+				mode = 14
+				#url = url[:url.find('?mode')]
 			else:
 				mode = 10
 				
@@ -148,7 +147,6 @@ def Playf4m(url, name=None, iconimage=None):
 		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
 		result = json.loads(makoTicket)
 		ticket = result['tickets'][0]['ticket']
-		#url = "{0}%3F{1}%26hdcore%3D3.0.3".format(url[i:], ticket)
 		url = "{0}?{1}&hdcore=3.0.3".format(url[i:], ticket)
 	else:
 		url = url[i:]
@@ -163,6 +161,11 @@ def Playf4m(url, name=None, iconimage=None):
 	xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
 	#player.playF4mLink(urllib.unquote_plus(url), name, use_proxy_for_chunks=True)
 	player.playF4mLink(urllib.unquote_plus(url), programmeName, use_proxy_for_chunks=True, iconimage=iconimage, channelName=channelName)
+	
+def PlayGLArabLink(url, name, iconimage):
+	url = myResolver.GetGLArabFullLink(url)
+	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
+	Play(url, channelName, programmeName, iconimage)
 	
 def PlayFilmon(chNum, channelName="", ignoreFilmonGuide=False):
 	url, channelName, programmeName, iconimage = GetPlayingDetails(urllib.unquote_plus(channelName), chNum, filmon=True, ignoreFilmonGuide=ignoreFilmonGuide)
@@ -352,6 +355,8 @@ def listFavorites():
 					filmon = True
 		elif url.lower().find('f4mtester') > 0:
 			mode = 13
+		elif url.find('?mode=2') > 0:
+			mode = 15
 		else:
 			mode = 11
 			
@@ -415,24 +420,24 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
-	if mode==3 or mode==6 or mode==7 or mode==8 or mode==10 or mode==12 or mode==11 or mode==4 or mode==99 or mode == 13:
+	if mode==3 or mode==4 or mode==7 or mode==8 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==99:
 		isFolder=False
 	
-	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13:
+	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15:
 		liz.setProperty("IsPlayable","true")
 		items = []
 
 		if mode == 3:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2}&displayname={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
-			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=16&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=17&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 		elif mode == 4:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2}&displayname={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})".format(sys.argv[0], urllib.quote_plus(url), iconimage, name)))
-		elif mode == 10 or mode == 12:
+		elif mode == 10 or mode == 12 or mode == 14:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
-			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=16&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
-		elif mode == 11 or mode == 13:
+			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=17&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
+		elif mode == 11 or mode == 13 or mode == 15:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
@@ -596,9 +601,11 @@ elif mode==10 or mode==11:
 	PlayChannel(url, displayname, iconimage)
 elif mode==12 or mode==13:
 	Playf4m(url, displayname, iconimage)
-elif mode==15:
+elif mode==14 or mode==15:
+	PlayGLArabLink(url[:url.find('?mode')], displayname, iconimage)
+elif mode==16:
 	listFavorites()
-elif mode==16: 
+elif mode==17: 
 	addFavorites(url, iconimage, name) 
 elif mode==18:
 	removeFavorties(url)
