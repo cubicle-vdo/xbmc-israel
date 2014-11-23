@@ -169,7 +169,7 @@ More addons on The Israeli repo:
   </extension>
 </addon>
 
-<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.3.2" provider-name="sbentin \V Master">
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.32" provider-name="sbentin \V Master">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -182,7 +182,7 @@ More addons on The Israeli repo:
         <summary lang="en">Watch Mako video contents.</summary>
         <summary lang="he">צפה בתוכניות מאתר מאקו</summary>
         <description lang="en">Watch Mako Video contents from Mako Application for cellular.</description>
-        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה באמצעות אפךיקציית מאקו בטלפון הסלולרי</description>
+        <description lang="he">צפה במגוון התכניות והסדרות הניתנות לצפיה באמצעות אפליקציית מאקו בטלפון הסלולרי</description>
         <disclaimer>This addon connects to Mako site, you should check Mako's TOS on android before using. It's as is</disclaimer>
         <supportedcontent>
           <content>tvshows</content>
