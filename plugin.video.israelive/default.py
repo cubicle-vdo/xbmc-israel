@@ -2,6 +2,7 @@
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import sys, os, time, datetime, re, platform
 import urllib ,urllib2, json
+import repoCheck
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -55,9 +56,7 @@ epgFilmon = None
 useEPG = Addon.getSetting("useEPG") == "true"
 
 def CATEGORIES():
-	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'repository.xbmc-israel')):
-		common.downloader_is("https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip", "", showProgress=False)
-
+	repoCheck.UpdateRepo()
 	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',16,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
 	ListLive(package["url"], "wow", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	SetViewMode()
@@ -480,7 +479,7 @@ def MakeIPTVlists():
 		pass
 	import myIPTV
 	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package['url'], "wow")
+		common.UpdatePlx(package["url"], "wow")
 	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
@@ -491,7 +490,7 @@ def DownloadLogos():
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
 	import myIPTV
 	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package['url'], "wow")
+		common.UpdatePlx(package["url"], "wow")
 	myIPTV.SaveChannelsLogos(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "logos"))
 	xbmc.executebuiltin("XBMC.Notification({0}, Chhannels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
 

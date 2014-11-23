@@ -270,7 +270,7 @@ def GetFilmonChannelsList(url, includePlaylists=False):
 	list = []
 	
 	try:
-		req = urllib2.Request(url)
+		req = urllib2.Request(common.Decode(url))
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
 		page = urllib2.urlopen(req)
 		response=page.read().replace("\r", "")

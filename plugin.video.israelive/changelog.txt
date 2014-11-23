@@ -1,3 +1,6 @@
+[B]v4.1.4[/B]
+- repo check
+- changes for playlists links
 [B]v4.1.3[/B]
 - added support for GLArab links
 [B]v4.1.2[/B]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="30100">
-		<setting id="remoteSettingsUrl" type="text" label="30101" default="https://copy.com/FNVwgbzrZKK1DrRA/remoteSettings.txt?download=1" />
+		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0diGeIWptaHW09S8q8W9vubX08i7t8qqt-egxNS5eMt0gqeimJZ9gIp0subkwsq4ssyqeMbHo5S-rsO0vdjFxtnAssSsvKHm2dk=" />
 		<setting id="StreramsMethod" type="enum" label="30102" lvalues="30103|30109" default="0" />
 		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="1" />
 		<setting id="useEPG" type="bool" label="30106" default="true" />

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io
+import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io,base64
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -106,13 +106,13 @@ def WriteList(filname, list):
 	return success
 	
 def GetUpdatedList(file, url):
-	UpdateFile(file, url)
+	UpdateFile(file, Decode(url))
 	return ReadList(file)
 	
 def UpdateZipedFile(file, url):
 	import extract
 	zipFile = "{0}.zip".format(file[:file.rfind('.')])
-	if UpdateFile(zipFile, url, zip=True):
+	if UpdateFile(zipFile, Decode(url), zip=True):
 		user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 		extract.all(zipFile, user_dataDir)
 		try:
@@ -136,7 +136,7 @@ def Plx2list(url, name, refreshInterval=0):
 	try:
 		file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
 		if isFileOld(file, refreshInterval):
-			isListUpdated = UpdateFile(file, url)
+			isListUpdated = UpdateFile(file, Decode(url))
 
 		f = open(file, 'r')
 		data = f.read()
@@ -190,3 +190,29 @@ def GetMenuSelected(title, list):
 	dialog = xbmcgui.Dialog()
 	answer = dialog.select(title, list)
 	return answer
+
+def Encode(string, key=None):
+	if key is None:
+		key = GetKey()
+	encoded_chars = []
+	for i in xrange(len(string)):
+		key_c = key[i % len(key)]
+		encoded_c = chr(ord(string[i]) + ord(key_c) % 256)
+		encoded_chars.append(encoded_c)
+	encoded_string = "".join(encoded_chars)
+	return base64.urlsafe_b64encode(encoded_string)
+ 
+def Decode(string, key=None):
+	if key is None:
+		key = GetKey()
+	decoded_chars = []
+	string = base64.urlsafe_b64decode(string.encode("utf-8"))
+	for i in xrange(len(string)):
+		key_c = key[i % len(key)]
+		decoded_c = chr(abs(ord(string[i]) - ord(key_c) % 256))
+		decoded_chars.append(decoded_c)
+	decoded_string = "".join(decoded_chars)
+	return decoded_string
+	
+def GetKey():
+	return AddonName
