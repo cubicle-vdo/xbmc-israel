@@ -30,7 +30,7 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
+remoteSettingsUrl = common.GetRemoteSettingsUrl()
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
 filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 checkInterval = 12

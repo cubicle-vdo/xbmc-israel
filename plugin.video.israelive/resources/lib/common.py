@@ -216,3 +216,27 @@ def Decode(string, key=None):
 	
 def GetKey():
 	return AddonName
+	
+def GetAddonDefaults(addon):
+	try:
+		f = open(os.path.join(addon.getAddonInfo("path").decode("utf-8"), 'resources', 'settings.xml') ,'r')
+		data = f.read()
+		f.close()
+		matches = re.compile('^.*?<setting id="(.*?)".*?default="(.*?)".*?$',re.I+re.M+re.U+re.S).findall(data)
+		dict = {}
+		for match in matches:
+			dict[match[0]] = match[1]
+		return dict
+
+	except Exception as ex:
+		print ex
+	return dict
+	
+def GetRemoteSettingsUrl():
+	remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
+	if Addon.getSetting("forceRemoteDefaults") == "true":
+		defaultRemoteSettingsUrl = GetAddonDefaults(Addon)["remoteSettingsUrl"]
+		if defaultRemoteSettingsUrl != remoteSettingsUrl:
+			remoteSettingsUrl = defaultRemoteSettingsUrl
+			Addon.setSetting("remoteSettingsUrl", remoteSettingsUrl)
+	return remoteSettingsUrl
