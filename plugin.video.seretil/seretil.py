@@ -3,9 +3,10 @@
 """
     Plugin for streaming video content from seretil.me
 """
-import urllib, urllib2, re, os, sys
+import urllib, urllib2, re, os, sys,htmlentitydefs
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
-import urlresolver
+import urlresolver, repoCheck
+
 from xml.sax import saxutils as su
 #import StorageServer
 from xgoogle.search import GoogleSearch, SearchError
@@ -13,12 +14,31 @@ __plugin__ = 'plugin.video.seretil'
 __author__ = "Hillel"
 __settings__ = xbmcaddon.Addon(id='plugin.video.seretil')
 __language__ = __settings__.getLocalizedString
-__cachePeriod__ = __settings__.getSetting("cache")
+Pages = int(__settings__.getSetting("pages"))
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
 #cacheServer = StorageServer.StorageServer("plugin.video.seretil",__cachePeriod__ )
 
+def unescape(text):
+	try:			
+		rep = {"&nbsp;": " ",
+			  "\n": "",
+			  "\t": "",
+			  "\r":"",
+			  "&#39;":"",
+			  "&quot;":"\"",
+			  "&#8211;":"-"
+			  }
+		for s, r in rep.items():
+			text = text.replace(s, r)
+			
+		# remove html comments
+		text = re.sub(r"<!--.+?-->", "", text)	
+			
+	except TypeError:
+		pass
 
+	return text
 
 def searchInSeretil():
         search_entered =''
@@ -160,9 +180,10 @@ def INDEXSratim(url):
             link=OPEN_URL(url2)
             match=re.compile('entry-thumbnails-link".*?href="(.*?)">.*?src="(.*?)".*?bookmark">(.*?)</a>').findall(link)
             for url,image,name in match:
+                name=unescape(name)
                 if name!="סדרות" :
                     addDir(name,url,211,image)
-             
+            
             i+=1
             url2 = url2[:-6]
             if url2[len(url2)-1]=='p' :
@@ -171,10 +192,10 @@ def INDEXSratim(url):
                    url2= url2[:-2]
                    
             url2=url2+'page/'+str(i)+'/'
-            print url2
-            if (i%6 ==0):
+            #print url2
+            if (i%Pages ==0):
                     stop=True
-                    print   "test"  + url2
+                    #print   "test"  + url2
                     addDir("תוצאות נוספות",url2,4,"")
 
 
@@ -185,8 +206,9 @@ def SpecialPage(url):
         link=response.read()
         response.close()
         match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
-        print match 
+        #print match 
         for name in match:
+                name=unescape(name) 
                 if (name.find('<br />') ==-1) and (name.find('http') != -1 ):
                         #print name
                         match=re.compile('a href="(.*?)"').findall(name)
@@ -245,7 +267,7 @@ def LinksPage(url):
 
 
 def INDEXchooseSeret(url):
-        print url
+        #print url
         url2=url
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -260,7 +282,7 @@ def INDEXchooseSeret(url):
         now_page =int(str(now[0]))
         lastpage=re.compile('<span class=.?pages.?>(.*?)<').findall(link)
         lastpage= [int(s) for s in lastpage[0].split() if s.isdigit()][1]
-        print lastpage
+        #print lastpage
         i= now_page
         stop=False
         dp = xbmcgui . DialogProgress ( )
@@ -273,6 +295,7 @@ def INDEXchooseSeret(url):
             match=re.compile('<h2 class="title"><a href="(.*?)".*?mark">(.*?)</a').findall(link)
             
             for url,name  in match:
+                name=unescape(name)
                 req = urllib2.Request(url)
                 req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
                 response = urllib2.urlopen(req)
@@ -286,7 +309,7 @@ def INDEXchooseSeret(url):
                 else: 
                     addDir(name,url,5,str(images[0]))
                 #addDir(name,url,5,"")
-            print name
+            #print name
             i+=1
             url2 = url2[:-7]
             if url2[len(url2)-1]=='p' :
@@ -295,10 +318,10 @@ def INDEXchooseSeret(url):
                    url2= url2[:-2]
                    
             url2=url2+'page/'+str(i)+'/'
-            print url2
+            #print url2
             if (i%10 ==0):
                     stop=True
-                    print   "test"  + url2
+                    #print   "test"  + url2
                     addDir("תוצאות נוספות",url2,4,"")
                         
                         
@@ -311,6 +334,7 @@ def INDEXchooseSeret(url):
                 pass
                
 def CATEGORIES():
+    repoCheck.UpdateRepo()
     #addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
     addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
     addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
@@ -358,7 +382,7 @@ print "checkMode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 if mode==None or url==None or len(url)<1:
-       print ""
+       #print ""
        CATEGORIES()
 elif mode==4:
     INDEXSratim(url)

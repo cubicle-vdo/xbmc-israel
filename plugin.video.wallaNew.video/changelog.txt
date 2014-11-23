@@ -1,3 +1,6 @@
+[B]Version 2.1.7[/B]
+- repo check
+
 [B]Version 2.1.5[/B]
 -Bug fixing ,now showing "more episodes" correctly
 
