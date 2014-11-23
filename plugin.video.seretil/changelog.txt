@@ -1,3 +1,7 @@
+[B]Version 2.1.1[/B]
+- repo check
+- import simpeljson
+- limit page to load from addon settings
 [B]Version 2.1.0[/B]
 -Major site Change
 [B]Version 1.0.4[/B]

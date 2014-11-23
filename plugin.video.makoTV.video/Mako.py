@@ -29,14 +29,17 @@ M3U8_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'm3u
 sys.path.append (LIB_PATH)
 sys.path.append (M3U8_PATH)
 
+
 import MakoVodIndexLoader, MakoProgramNode, MakoProgramLoader, MakoSeasonNode, MakoSeasonLoader, MakoVodItemLoader, MakoVodItemNode
 import MakoTicketLoader
+import repoCheck
 
 # define properties dictionary to be delivered down the hierarchy
 __properties = { 'consumer':'android4', 'appId':'0c4f6ec6-9194-450e-a963-e524bb6404g2', 'appVer':'3.0.3' }
 
 def getProgramsIndex():
     # obtain VOD index
+    repoCheck.UpdateRepo()
     indexLoader = MakoVodIndexLoader.MakoVodIndexLoader(__properties)
     jsonProgramsIndex = indexLoader.loadURL()
     if None == jsonProgramsIndex:

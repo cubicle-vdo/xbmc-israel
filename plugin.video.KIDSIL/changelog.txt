@@ -1,3 +1,6 @@
+[B]Version 1.1.9[/B]
+- repo check
+- icons for addons
 [B]Version 1.1.8[/B]
 +seretil new category
 +sdarot animated category
