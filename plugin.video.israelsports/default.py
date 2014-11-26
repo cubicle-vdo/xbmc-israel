@@ -3,10 +3,34 @@ import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, os, json
 import repoCheck
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
+libDir = os.path.join(ADDON.getAddonInfo("path").decode("utf-8"), 'resources')
+sys.path.insert(0, libDir)
+
+def update_view(url):
+
+    ok=True        
+    xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
+    return ok
 
 def CATEGORIES():
 	repoCheck.UpdateRepo()
+	repoCheck.UpdateRepo('http://fusion.tvaddons.ag/xbmc-repos/repository.p2p-streams.xbmc-1.0.3.zip','repository.p2p-streams.xbmc')
+	repoCheck.UpdateRepo('http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.SportsDevil/plugin.video.SportsDevil-1.8.8.0.zip','plugin.video.SportsDevil')
 	
+	runp2p=ADDON.getSetting("P2Parsers") == "true"
+	#repoCheck.UpdateRepo('https://p2p-strm.googlecode.com/svn/addons/plugin.video.p2p-streams/plugin.video.p2p-streams-1.1.5.zip','plugin.video.p2p-streams')
+	#addDir('ptp','plugin://plugin.video.p2p-streams/',1,'','')
+	print str(runp2p) + "lll"
+	if runp2p:
+		update_view('plugin://plugin.video.p2p-streams/')
+		if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'plugin.video.p2p-streams')):
+			xbmc.sleep(500)
+			setupP2P()
+			
+			ADDON.setSetting("P2Parsers","false")
+	
+	addDir('PTP STREAMS *LIVE*','plugin://plugin.video.p2p-streams/?iconimage=C%3a%5cUsers%5cori%5cAppData%5cRoaming%5cKodi%5caddons%5cplugin.video.p2p-streams%2fresources%2fart%2fweb-parsers-menu.png&mode=400&name=-Addon%20Website-parsers&url=https%3a%2f%2fcode.google.com%2fp%2fp2p-strm%2f',1,'http://addons.superrepo.org/repository.p2p-streams.xbmc/icon.png','')
+	addDir('SPORTS DEVIL  *LIVE*','plugin://plugin.video.SportsDevil/?item=title%3dLive%2bSports%26url%3dlivesports.cfg%26definedIn%3dmainMenu.cfg%26director%3dSportsDevil%26genre%3dLive%2bSports%26type%3drss&mode=1 ',1,'http://xbmc-development-with-passion.googlecode.com/svn/branches/repo/plugin.video.SportsDevil/icon.png','')
 	addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
 	addDir('ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5375&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 	addDir('ליגה ספרדית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5385&page=',2,'http://blog.tapuz.co.il/tlv1/images/%7B0B4BDB70-5D9B-463A-B894-0D5762E59AA0%7D.jpg','1')
@@ -29,7 +53,17 @@ def CATEGORIES():
 	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
 
 	setView('movies', 'default')
+
+	
+def setupP2P():
+	all_modules = [ 'http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/arenavision.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballvideo.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballws.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/onetorrenttv.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/rojadirecta.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/sopcastucoz.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvruall.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvrusports.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/wiziwig.tar.gz']
+
+	for parser in all_modules:
+		xbmc.executebuiltin('XBMC.RunPlugin("plugin://plugin.video.p2p-streams/?mode=405&name=p2p&url=' + urllib.quote(parser) + '")')
+		xbmc.sleep(1000)
 		
+
+	
 def ListPlaylist(playlistid): 
 	url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
 	
@@ -226,7 +260,9 @@ def addDir(name,url,mode,iconimage,description):
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-	if mode==3 or mode==5:
+	if mode==1:
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+	elif mode==3 or mode==5:
 		liz.setProperty("IsPlayable","true")
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	else:
@@ -289,7 +325,8 @@ print "IconImage: "+str(iconimage)
 #these are the modes which tells the plugin where to go
 if mode==None or url==None or len(url)<1:
 	CATEGORIES()
-
+elif mode==1:
+	update_view(url)
 elif mode==2:
 	list_videos(url,description)
 elif mode==3:
