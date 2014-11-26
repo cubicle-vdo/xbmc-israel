@@ -105,7 +105,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.1.5" provider-name="Benny123, Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.1.6" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -152,7 +152,7 @@ More addons on The Israeli repo:
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.1.9"
+       version="1.2.0"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -182,7 +182,7 @@ More addons on The Israeli repo:
         <summary lang="en">Watch Mako video contents.</summary>
         <summary lang="he">צפה בתוכניות מאתר מאקו</summary>
         <description lang="en">Watch Mako Video contents from Mako Application for cellular.</description>
-        <description lang="he">צפה במגוון התכניות והסדרות הניתנות לצפיה באמצעות אפליקציית מאקו בטלפון הסלולרי</description>
+        <description lang="he">צפה במגוון התוכניות והסדרות הניתנות לצפיה באמצעות אפךיקציית מאקו בטלפון הסלולרי</description>
         <disclaimer>This addon connects to Mako site, you should check Mako's TOS on android before using. It's as is</disclaimer>
         <supportedcontent>
           <content>tvshows</content>

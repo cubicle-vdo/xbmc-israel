@@ -48,6 +48,36 @@ def CATEGORIES():
 	addDir('יוטיוב מחינוכית 23','23tv',16,'','')
 	setView('movies', 'default')
 
+def ListLive(url):
+	link=OPEN_URL(url)
+	link=unescape(link)
+	#print link
+	matches1=re.compile('pe=(.*?)#',re.I+re.M+re.U+re.S).findall(link)
+	#print str(matches1[0]) + '\n'
+	for match in matches1 :
+		#print "match=" + str(match)
+		match=match+'#'
+		if match.find('playlist') != 0 :
+			regex='name=(.*?)URL=(.*?)#'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			#print str(matches)
+			for name,url in  matches:
+				thumb=''
+				i=name.find('thumb')
+				if i>0:
+					thumb=name[i+6:]
+					name=name[0:i]
+		#print url
+				addLink('[COLOR yellow]'+ name+'[/COLOR]',url,thumb,'')  
+			
+		else:
+			regex='name=(.*?)URL=(.*?).plx'
+			matches=re.compile(regex,re.I+re.M+re.U+re.S).findall(match)
+			for name,url in matches:
+				url=url+'.plx'
+				if name.find('Radio') < 0 :
+					addDir('[COLOR blue]'+name+'[/COLOR]',url,2,'','')
+					
 # reads  user names from my subscriptions 
 
 def ShowFromUser(user):

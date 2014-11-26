@@ -6,7 +6,7 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-listsDir = os.path.join(user_dataDir, 'lists')
+plxFile = os.path.join(user_dataDir, "israelive.plx")
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -35,8 +35,8 @@ def downloader_is(url, name, showProgress=True):
 def isFileOld(file, deltaInSec):
 	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
 	now = int(time.time())
-	isM3uFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
-	return isM3uFileNotUpdate
+	isFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
+	return isFileNotUpdate
 	
 def UpdateFile(file, url, zip=False):
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
@@ -129,57 +129,12 @@ def GetEncodeString(str):
 	except:
 		pass
 	return str
-	
-def Plx2list(url, name, refreshInterval=0):
-	list = []
+
+def UpdatePlx(url, file, refreshInterval=0):
 	isListUpdated = False
-	try:
-		file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
-		if isFileOld(file, refreshInterval):
-			isListUpdated = UpdateFile(file, Decode(url))
+	if isFileOld(file, refreshInterval):
+		isListUpdated = UpdateFile(file, Decode(url))
 
-		f = open(file, 'r')
-		data = f.read()
-		f.close()
-
-		matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
-		for match in matches:
-			item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-			item_data = {}
-			for field, value in item:
-				item_data[field.strip().lower()] = value.strip()
-			if item_data["type"] != 'playlist':
-				continue
-
-			list.append(item_data)
-			
-	except Exception as e:
-		print e
-		pass
-		
-	return list, isListUpdated
-
-flattenList = []
-isFlattenListUpdated = False
-def FlatPlxList(list, refreshInterval=0):
-	global flattenList
-	global isFlattenListUpdated
-	for item in list:
-		flattenList.append(item)
-		list2, isListUpdated = Plx2list(item['url'], item['name'])
-		if isListUpdated:
-			isFlattenListUpdated = True
-		FlatPlxList(list2, refreshInterval=refreshInterval)
-	return isFlattenListUpdated
-
-def UpdatePlx(url, name, refreshInterval=0, includeSubPlx=True):
-	if not os.path.exists(listsDir):
-		os.makedirs(listsDir)
-	
-	list, isListUpdated = Plx2list(url, name, refreshInterval=refreshInterval)
-	if includeSubPlx and FlatPlxList(list, refreshInterval=refreshInterval):
-		isListUpdated = True
-		
 	return isListUpdated
 		
 def OKmsg(title, line1, line2 = None, line3 = None):
@@ -240,3 +195,44 @@ def GetRemoteSettingsUrl():
 			remoteSettingsUrl = defaultRemoteSettingsUrl
 			Addon.setSetting("remoteSettingsUrl", remoteSettingsUrl)
 	return remoteSettingsUrl
+	
+def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=True, fullScan=False):
+	f = open(plxFile,'r')
+	data = f.read()
+	f.close()
+	
+	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
+	
+	categories = ["israelive"]
+	list = []
+	for match in matches:
+		item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
+		item_data = {}
+		for field, value in item:
+			item_data[field.strip().lower()] = value.strip()
+		if not item_data.has_key("type"):
+			continue
+		
+		url = item_data['url']
+		thumb = "" if not item_data.has_key("thumb") else item_data['thumb']
+		channelName = GetEncodeString(item_data['name'])
+		
+		if item_data["type"] == 'audio' and item_data["url"] == '':
+			if channelName.find("-") != 0:
+				categories.append(channelName)
+				item_data["type"] = "playlist"
+				if not includeCatNames:
+					continue
+			else:
+				del categories[-1]
+				continue
+		elif not includeChannels:
+			continue
+		
+		lenCat = len(categories)
+		subCat = categories[lenCat-1] if item_data["type"] != "playlist" else categories[lenCat-2]
+
+		if subCat == filterCat or fullScan:
+			list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"], "group": subCat})
+		
+	return list

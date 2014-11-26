@@ -31,6 +31,7 @@ if not os.path.exists(user_dataDir):
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 remoteSettingsUrl = common.GetRemoteSettingsUrl()
+plxFile = os.path.join(user_dataDir, "israelive.plx")
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
 filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 checkInterval = 12
@@ -56,8 +57,8 @@ def CheckUpdates():
 	package = remoteSettings["packages"]["full"]
 	
 	isM3uUpdated = False
-	if common.UpdatePlx(package["url"], "wow", refreshInterval=package["plxRefresh"] * 3600) and useIPTV:
-		myIPTV.makeIPTVlist(os.path.join(user_dataDir, 'lists'), "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
+	if common.UpdatePlx(package["url"], plxFile, refreshInterval=package["plxRefresh"] * 3600) and useIPTV:
+		myIPTV.makeIPTVlist(os.path.join(user_dataDir, 'lists'), "israelive.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
 		isM3uUpdated = True
 		
 	if Addon.getSetting("useEPG") == "false":

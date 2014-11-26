@@ -25,8 +25,6 @@ AddonName = Addon.getAddonInfo("name")
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
-	
-listsDir = os.path.join(user_dataDir, 'lists')
 
 tmpList = os.path.join(user_dataDir, 'tempList.txt')
 FAV = os.path.join(user_dataDir, 'favorites.txt')
@@ -48,6 +46,10 @@ if remoteSettings == []:
 
 package = remoteSettings["packages"]["full"]
 
+plxFile = os.path.join(user_dataDir, "israelive.plx")
+if not os.path.isfile(plxFile):
+	common.UpdatePlx(package["url"], plxFile)
+
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
 filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
 epgGlobal = None
@@ -58,7 +60,7 @@ useEPG = Addon.getSetting("useEPG") == "true"
 def CATEGORIES():
 	repoCheck.UpdateRepo()
 	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',16,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
-	ListLive(package["url"], "wow", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
+	ListLive("israelive", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	SetViewMode()
 		
 def update_view(url):
@@ -71,31 +73,17 @@ def SetViewMode():
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		xbmc.executebuiltin("Container.SetViewMode(504)")
 
-def ListLive(url, name, iconimage=None):
-	file = "{0}.plx".format(os.path.join(listsDir, name.replace(" ", "_")))
-	if not os.path.isfile(file):
-		common.UpdatePlx(url, name, includeSubPlx=False)
-	
-	f = open(file,'r')
-	data = f.read()
-	f.close()
-	matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
-	
+def ListLive(name, iconimage=None):
 	list = []
-	for match in matches:
-		item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-		item_data = {}
-		for field, value in item:
-			item_data[field.strip().lower()] = value.strip()
-		if not item_data.has_key("type") or (item_data["type"]=='playlist' and item_data['name'].find('Scripts section') >= 0):
-			continue
-		
+	list1 = common.GetListFromPlx(filterCat=name)
+	for item_data in list1:
 		url = item_data['url']
-		thumb = "" if not item_data.has_key("thumb") else item_data['thumb']
+		image = item_data['image']
 		description = ""
 		channelName = common.GetEncodeString(item_data['name'])
 		background = None
 		isTvGuide = False
+		
 		if item_data["type"] == 'video' or item_data["type"] == 'audio':
 			channelName = "[COLOR yellow][B]{0}[/B][/COLOR]".format(channelName)
 			displayName = channelName
@@ -124,14 +112,14 @@ def ListLive(url, name, iconimage=None):
 		elif item_data["type"] == 'playlist':
 			mode = 2
 			displayName = "[COLOR blue][B][{0}][/B][/COLOR]".format(channelName)
-			background = thumb
+			background = image
 		else:
 			continue
 					
 		if background is None or background == "":
 			background = iconimage
-		addDir(displayName, url, mode, thumb, description, channelName = channelName, background=background, isTvGuide=isTvGuide)
-		list.append({"url": url, "image": thumb, "name": channelName.decode("utf-8"), "type": item_data["type"]})
+		addDir(displayName, url, mode, image, description, channelName = channelName, background=background, isTvGuide=isTvGuide)
+		list.append({"url": url, "image": image, "name": channelName.decode("utf-8"), "type": item_data["type"]})
 
 	common.WriteList(tmpList, list)
 	SetViewMode()
@@ -399,7 +387,8 @@ def SaveGuide(forceManual=False, showNotification=True):
 			xbmc.executebuiltin("XBMC.Notification({0}, Saving Guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 		common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"])
 		if forceManual:
-			myFilmon.MakePLXguide(package["url"], filmonGuideFile)
+			common.UpdatePlx(package["url"], plxFile)
+			myFilmon.MakePLXguide(filmonGuideFile)
 			if showNotification:
 				xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 		else:
@@ -467,7 +456,7 @@ def UpdateChannelsLists():
 		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 		sys.exit()
 	package = remoteSettings["packages"]["full"]
-	common.UpdatePlx(package["url"], "wow")
+	common.UpdatePlx(package["url"], plxFile)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def MakeIPTVlists():
@@ -478,9 +467,9 @@ def MakeIPTVlists():
 	except:
 		pass
 	import myIPTV
-	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package["url"], "wow")
-	myIPTV.makeIPTVlist(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
+	if not os.path.isfile(plxFile):
+		common.UpdatePlx(package["url"], plxFile)
+	myIPTV.makeIPTVlist(user_dataDir, "israelive.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
 	myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
@@ -489,9 +478,9 @@ def MakeIPTVlists():
 def DownloadLogos():
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
 	import myIPTV
-	if not os.path.isfile(os.path.join(listsDir, "wow.plx")):
-		common.UpdatePlx(package["url"], "wow")
-	myIPTV.SaveChannelsLogos(listsDir, "wow.plx", "Main", os.path.join(user_dataDir, "logos"))
+	if not os.path.isfile(plxFile):
+		common.UpdatePlx(package["url"], plxFile)
+	myIPTV.SaveChannelsLogos(user_dataDir, "israelive.plx", "Main", os.path.join(user_dataDir, "logos"))
 	xbmc.executebuiltin("XBMC.Notification({0}, Chhannels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def UpdateIPTVSimple():
@@ -580,12 +569,12 @@ except:
 #print "{0} -> Name: {1}".format(AddonName, urllib.unquote_plus(str(name)))
 #print "{0} -> IconImage: {1}".format(AddonName, iconimage)
 		 
-if mode==None or url==None or len(url)<1:
+if mode==None:# or url==None or len(url)<1:
 	CATEGORIES()
 elif mode==1:
 	PlayFilmon(sys.argv[2])
 elif mode==2:
-	ListLive(url, urllib.unquote_plus(displayname), iconimage)
+	ListLive(urllib.unquote_plus(displayname), iconimage)
 elif mode==3 or mode==4:
 	PlayFilmon(url, displayname, ignoreFilmonGuide)
 elif mode == 5:

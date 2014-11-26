@@ -9,51 +9,9 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 
-flattenList = []
 
-def plx2channels(file, group=None):
-	list = []
-	try:
-		f = open(file,'r')
-		data = f.read()
-		f.close()
-		
-		matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(data)
-		for match in matches:
-			item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-			item_data = {}
-			for field, value in item:
-				item_data[field.strip().lower()] = value.strip()
-			if not item_data.has_key("type") or (item_data["type"]=='playlist' and item_data['name'].find('Scripts section') >= 0) or item_data['url'] == '' or item_data['url'].find('teled')>=0:
-				continue
-
-			if group is not None:
-				item_data['group'] = group
-			
-			list.append(item_data)
-			
-	except Exception as e:
-		print e
-		pass
-		
-	return list
-
-def flatten(listsDir, list):
-	global flattenList
-	for item in list:
-		if item['type'] != 'playlist':
-			flattenList.append(item)
-		else:
-			plxFile = os.path.join(listsDir, "{0}.plx".format(item['name'].replace(" ", "_")))
-			if not os.path.isfile(plxFile):
-				common.UpdatePlx(item['url'], item['name'], includeSubPlx=False)
-			list2 = plx2channels(plxFile, item['name'])
-			flatten(listsDir, list2)
-	return flattenList
-			
 def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile, portNum):
-	list = plx2channels(os.path.join(listsDir, mainPlxFile), groupName)
-	list = flatten(listsDir, list)
+	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
 
 	changeLog = ""
 	#M3Ulist = '#EXTM3U\n'
@@ -139,16 +97,15 @@ def SaveChannelsLogos(listsDir, mainPlxFile, groupName, logosDir):
 	if not os.path.exists(logosDir):
 		os.makedirs(logosDir)
 		
-	list = plx2channels(os.path.join(listsDir, mainPlxFile), groupName)
-	list = flatten(listsDir, list)
+	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
 	
-	for item in flattenList:
+	for item in list:
 		try:
-			if item.has_key('thumb') and item['thumb'] is not None and item['thumb'] != "":
+			if item.has_key('image') and item['image'] is not None and item['image'] != "":
 				tvg_logo = hashlib.md5(item['name']).hexdigest()
 				logoFile = "{0}.png".format(os.path.join(logosDir, tvg_logo))
 				if not os.path.isfile(logoFile):
-					urllib.urlretrieve(item['thumb'], logoFile)
+					urllib.urlretrieve(item['image'], logoFile)
 		except Exception as e:
 			print e
 			pass
