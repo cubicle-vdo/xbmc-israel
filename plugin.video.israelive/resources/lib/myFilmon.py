@@ -1,5 +1,6 @@
 import xbmcaddon, re, random, time, datetime
 import urllib, urllib2, json
+import common
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -266,58 +267,29 @@ def hls2rtmp(urlhls):
 	urlrtmp = "{0}/{1} playpath={1} swfUrl={2} pageUrl=http://www.filmon.com/ live=true timeout=45 swfVfy=true".format(urlrtmp, playpath, swfUrl)
 	return urlrtmp
 	
-def GetFilmonChannelsList(url, includePlaylists=False):
+def GetFilmonChannelsList(url):
 	list = []
 	
 	try:
-		req = urllib2.Request(common.Decode(url))
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
-		page = urllib2.urlopen(req)
-		response=page.read().replace("\r", "")
-		page.close()
-		
-		matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(response)
-		for match in matches:
-			item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-			item_data = {}
-			for field, value in item:
-				item_data[field.strip().lower()] = value.strip()
-			if not item_data.has_key("type") or (item_data["type"]=='playlist' and item_data['name'].find('Scripts section') >= 0):
-				continue
-			
-			if item_data["type"] == 'video':
-				url = item_data['url']
+		list1 = common.GetListFromPlx(includeCatNames=False, fullScan=True)
+		for item in list1:
+			if item["type"] == 'video':
+				url = item['url']
 				if url.find(AddonID) > 0:
 					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
 					if len(channel) > 0 and channel[0][0] != "" and channel[0][1] != "&ignorefilmonguide=1":
-						if includePlaylists:
-							list.append({"type": "filmon", "url": int(channel[0][0])})
-						else:
-							list.append(int(channel[0][0]))
-			elif includePlaylists and item_data["type"] == 'playlist':
-				list.append({"type": "playlist", "url": item_data["url"]})
+						list.append(int(channel[0][0]))
 	except:
 		pass
 		
 	return list
 
-flattenList = []	
-def flatten(list):
-	global flattenList
-	for item in list:
-		if item['type'] == 'playlist':
-			list2 = GetFilmonChannelsList(item['url'], includePlaylists=True)
-			flatten(list2)
-		else:
-			flattenList.append(item['url'])
-	return flattenList
 
-def MakePLXguide(url, file):
+def MakePLXguide(filmonGuideFile):
 	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
 	if filmonlist == []:
 		return
 		
-	filmonlist = flatten(filmonlist)
 	filmonlist = list(set(filmonlist))
 	randList =  [{ "index": filmonlist.index(item), "channel": item} for item in filmonlist]
 	random.seed()
@@ -342,6 +314,6 @@ def MakePLXguide(url, file):
 		tvGuide = [] if prms is None else MakeChannelGuide(prms)
 		filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": tvGuide}
 			
-	with open(file, 'w') as outfile:
+	with open(filmonGuideFile, 'w') as outfile:
 		json.dump(filmonlist, outfile) 
 	outfile.close()

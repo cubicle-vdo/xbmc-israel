@@ -1,3 +1,5 @@
+[B]v4.1.6[/B]
+- merge all plx-lists to one list
 [B]v4.1.5[/B]
 - auto-update remote-settings-url in addon settings while service is starting up.
 [B]v4.1.4[/B]
