@@ -1,3 +1,5 @@
+v.2.1.2
++Auto install + setup for p2p and sportsdevil + links to them
 v.2.1.1
 +one from youtube
 v.1.0.8
