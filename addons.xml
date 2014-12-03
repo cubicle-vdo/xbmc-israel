@@ -105,7 +105,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.1.6" provider-name="Benny123, Avigdor">
+<addon id="plugin.video.israelive" name="IsraeLIVE" version="4.1.7" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
