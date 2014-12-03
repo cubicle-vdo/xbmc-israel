@@ -97,13 +97,12 @@ def ListLive(name, iconimage=None):
 				if mode == 1:
 					mode = 3
 					chNum = itemMode[0][0]
-					if itemMode[0][2] != "&ignorefilmonguide=1":
+					if itemMode[0][2].find("&ignorefilmonguide=1") < 0:
 						filmon = True
 			elif url.find('plugin.video.f4mTester') > 0:
 				mode = 12
 			elif url.find('?mode=2') > 0:
 				mode = 14
-				#url = url[:url.find('?mode')]
 			else:
 				mode = 10
 				
@@ -210,7 +209,7 @@ def FilmonChannelGuide(url, channelName, iconimage, ignoreFilmonGuide=False):
 	channelDescription = ""
 
 	if not ignoreFilmonGuide:
-		chNum, referrerCh, chName = myFilmon.GetUrlParams(url)
+		chNum, referrerCh, chName, filmonMethod = myFilmon.GetUrlParams(url)
 		if referrerCh is None:
 			filmon = True
 			chName, channelDescription, iconimage, programmes = myFilmon.GetChannelGuide(chNum, filmonOldStrerams=True)
@@ -338,7 +337,7 @@ def listFavorites():
 			if mode == 1:
 				mode = 4
 				chNum = itemMode[0][0]
-				if itemMode[0][2] != "&ignorefilmonguide=1":
+				if itemMode[0][2].find("&ignorefilmonguide=1") < 0:
 					filmon = True
 		elif url.lower().find('f4mtester') > 0:
 			mode = 13

@@ -7,7 +7,9 @@ Addon = xbmcaddon.Addon(AddonID)
 icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url, filmonOldStrerams=False, useRtmp=False):
-	chNum, referrerCh, ChName = GetUrlParams(url)
+	chNum, referrerCh, ChName, filmonMethod = GetUrlParams(url)
+	if filmonMethod is not None:
+		filmonOldStrerams = (filmonMethod == 0)
 	return GetChannelStream(chNum, referrerCh, ChName, filmonOldStrerams, useRtmp)
 
 def GetChannelStream(chNum, referrerCh=None, ChName=None, filmonOldStrerams=False, useRtmp=False):
@@ -188,21 +190,26 @@ def GetUrlParams(url):
 	chNum = None
 	referrerCh = None
 	ChName = None
+	filmonMethod = None
 	
 	try:
-		chNum = urllib.unquote_plus(params["url"])
+		chNum = int(params["url"])
 	except:
 		pass
 	try:
 		referrerCh = int(params["referrerch"])
 	except:
-		referrerCh = None
+		pass
 	try:
 		ChName = str(params["chname"])
-		#ChName = urllib.unquote_plus(params["chname"])
 	except:
-		ChName = None
-	return 	chNum, referrerCh, ChName
+		pass
+	try:
+		filmonMethod = int(params["filmonmethod"])
+	except:
+		pass
+		
+	return chNum, referrerCh, ChName, filmonMethod
 	
 def GetFilmonOldStreram(streams, useHls=False):
 	selectedStream = None
@@ -277,13 +284,12 @@ def GetFilmonChannelsList(url):
 				url = item['url']
 				if url.find(AddonID) > 0:
 					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
-					if len(channel) > 0 and channel[0][0] != "" and channel[0][1] != "&ignorefilmonguide=1":
+					if len(channel) > 0 and channel[0][0] != "" and channel[0][1].find("&ignorefilmonguide=1") < 0:
 						list.append(int(channel[0][0]))
 	except:
 		pass
 		
 	return list
-
 
 def MakePLXguide(filmonGuideFile):
 	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
