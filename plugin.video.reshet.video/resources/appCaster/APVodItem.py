@@ -13,7 +13,7 @@
 
     @author: shai
 '''
-import urllib2
+import urllib2, json
 from APModel import APModel
 import resources.m3u8 as m3u8
 
@@ -27,8 +27,10 @@ class APVodItem(APModel):
     __description = ''
     __thumbnail = ''
     __stream = ''
+    __season = ''
     __hls_cookie = ''
     __isHls = False
+    __airDate = ''
     
     def __init__(self, params = {}):
         self.innerDictionary = params
@@ -39,8 +41,26 @@ class APVodItem(APModel):
             self.__title = self.get('title')
             self.__thumbnail = self.get('thumbnail')
             self.__stream = self.get('stream_url')
-        except:
-            pass
+	    self.__airDate = self.get('order_date')
+	    self.__season = self.get('season_name')
+	except:
+	    pass
+
+	# for the new incarnation of the plugin we'll have an images_json section
+	imagesStr = self.get('images_json')
+	#print '***** imagesStr is: ' + imagesStr
+	if None != imagesStr and '' != imagesStr:
+	    images = json.loads(imagesStr, 'utf-8')
+
+	    # find large thumbnail
+	    if 'large_thumbnail' in images:
+	        self.__thumbnail = images['large_thumbnail']
+	    if self.__thumbnail == '' and 'Carousel_smartphone_image' in images:
+	        # if not, try carousel image (based on new UI)
+	        self.__thumbnail = images['Carousel_smartphone_image']
+
+        #except:
+        #    pass
         
     def isFree(self):
         return self.__free
@@ -62,6 +82,12 @@ class APVodItem(APModel):
 	In newer builds of Gotham (13.0), ffmpeg 1.2 is included. It supports cookies better now and doesn't probe the input via HEAD (only GET) so work normally
 	'''
 	return self.__stream
+
+    def getAirDate(self):
+        return self.__airDate
+
+    def getSeasonName(self):
+        return self.__season
 
     def getHLSCookie(self):
         return self.__hls_cookie
