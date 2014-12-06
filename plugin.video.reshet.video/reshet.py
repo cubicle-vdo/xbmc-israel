@@ -30,7 +30,7 @@ M3U8_PATH = xbmc.translatePath( os.path.join( __PLUGIN_PATH__, 'resources', 'm3u
 sys.path.append (LIB_PATH)
 sys.path.append (M3U8_PATH)
 
-__properties = {'pKey':'a25129723d425516a51fe2910c', 'accountId': '32', 'broadcasterId':'1', 'bundle':'com.yourcompany.iReshet', 'bucketId':'507fe8f13b35016f91033bfa'}
+__properties = {'pKey':'a25129723d425516a51fe2910c', 'accountId': '32', 'broadcasterId':'1', 'bundle':'com.applicaster.iReshetandroid', 'bucketId':'507fe8f13b35016f91033bfa'}
 import APCategoryLoader, APAccountLoader, APBroadcaster, APCategoryList, APItemLoader, APChannel, APChannelLoader
 import APEpgLoader, APVodItem, APCategory, APExtensions
 
@@ -40,25 +40,23 @@ def getMainCategoryList():
     ## account
     accountLoader = APAccountLoader.APAccountLoader(__properties)
     jsonAccountDictionary = accountLoader.loadURL()    
-    if __DEBUG__:
-        xbmc.log('accountURL --> %s' % (accountLoader.getQuery()), xbmc.LOGERROR)
+    xbmc.log('accountURL --> %s' % (accountLoader.getQuery()), xbmc.LOGDEBUG)
     
     # get programs category
     rootCategoryId = ''
-    try:
-        extensionsStr = jsonAccountDictionary["account"]["extensions"]
-        extensions = APExtensions.APExtensions(json.loads(extensionsStr, 'utf-8'))
-	rootCategoryId = extensions.getProgramsCategoryId()
-	if __DEBUG__:
-	    xbmc.log('Programs category id --> %s' % rootCategoryId, xbmc.LOGERROR)
-    except:
-        pass
+    #try:
+    #    extensionsStr = jsonAccountDictionary["account"]["extensions"]
+    #    extensions = APExtensions.APExtensions(json.loads(extensionsStr, 'utf-8'))
+    #    rootCategoryId = extensions.getProgramsCategoryId()
+    #    if __DEBUG__:
+    #        xbmc.log('Programs category id --> %s' % rootCategoryId, xbmc.LOGERROR)
+    #except:
+    #    pass
     
     if '' == rootCategoryId:
         ## broadcaster and main category from previous incarnation of the plugin
         broadcaster = APBroadcaster.APBroadcaster(__properties['broadcasterId'], jsonAccountDictionary["account"]["broadcasters"])
-        if __DEBUG__:
-            xbmc.log('Main Category --> %s' % (broadcaster.getRootCategory()), xbmc.LOGERROR)
+        xbmc.log('Main Category --> %s' % (broadcaster.getRootCategory()), xbmc.LOGDEBUG)
         rootCategoryId = broadcaster.getRootCategory()
     
     # get the main categories list
@@ -68,11 +66,20 @@ def getMainCategoryList():
 def getCategory(categoryId):
     # get the main categories list
     categoryLoader = APCategoryLoader.APCategoryLoader(__properties, categoryId)
-    if __DEBUG__:
-        xbmc.log('CategoryURL --> %s' % (categoryLoader.getQuery()), xbmc.LOGERROR)
+    xbmc.log('CategoryURL --> %s' % (categoryLoader.getQuery()), xbmc.LOGDEBUG)
     jsonCategoryDictionary = categoryLoader.loadURL()
     categories = APCategoryList.APCategoryList(jsonCategoryDictionary["category"])
-    
+
+    # detect all shows and expand it. patchy for now, we may remove this later to support more features
+    if (categories.hasSubCategories()):
+        allCategory = categories.getSubCategories()[0]
+	name = allCategory.getName()
+	if name == 'All Shows':
+	    # reload category list
+	    categoryLoader = APCategoryLoader.APCategoryLoader(__properties, allCategory.getId())
+	    jsonCategoryDictionary = categoryLoader.loadURL()
+	    categories = APCategoryList.APCategoryList(jsonCategoryDictionary["category"])
+ 
     if (categories.hasSubCategories()):
         for category in categories.getSubCategories():
             if category.getId() not in ['36', '3103']: # omit the non video stuff
@@ -86,16 +93,14 @@ def getCategory(categoryId):
 def getItem(itemId):
     # get the item and load it's movie
     itemLoader = APItemLoader.APItemLoader(__properties, itemId)
-    if __DEBUG__:
-        xbmc.log('ItemURL --> %s' % (itemLoader.getQuery()), xbmc.LOGERROR)
+    xbmc.log('ItemURL --> %s' % (itemLoader.getQuery()), xbmc.LOGDEBUG)
     jsonItemDictionary = itemLoader.loadURL()
     item = APVodItem.APVodItem(jsonItemDictionary["vod_item"])
     playMovie(item)
     
           
 def addCategoryView(category):
-    if __DEBUG__:        
-        xbmc.log('category --> %s' % (category.getId()), xbmc.LOGERROR)
+    xbmc.log('category --> %s' % (category.getId()), xbmc.LOGDEBUG)
     _url = sys.argv[0] + "?category=" + category.getId()    
 
     title = category.getTitle().encode('UTF-8')
@@ -110,16 +115,17 @@ def addCategoryView(category):
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=liz, isFolder=True)
 
 def addItemView(item):
-    if __DEBUG__:
-        xbmc.log('item --> %s' % (item.getId()), xbmc.LOGERROR)
+    xbmc.log('item --> %s' % (item.getId()), xbmc.LOGDEBUG)
     _url = sys.argv[0] + "?item=" + item.getId()    
 
     title = item.getTitle().encode('UTF-8')
     summary = item.getDescription().encode('UTF-8')
     thumbnail = item.getThumbnail()
+    season = item.getSeasonName()
+    airdate = item.getAirDate()
     
     listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
-    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
+    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary), "Season": urllib.unquote(season), "Aired": urllib.unquote(airdate)})
     listItem.setProperty("Fanart_Image", thumbnail)
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
@@ -127,9 +133,8 @@ def addItemView(item):
 def playMovie(item):    
     _url = item.getStreamUrl()
     _hls_cookie = item.getHLSCookie()
-    if __DEBUG__:
-        xbmc.log('vod_item --> %s' % (item.getId()), xbmc.LOGERROR)
-        xbmc.log('playable _url --> %s' % (_url), xbmc.LOGERROR)
+    xbmc.log('vod_item --> %s' % (item.getId()), xbmc.LOGDEBUG)
+    xbmc.log('playable _url --> %s' % (_url), xbmc.LOGDEBUG)
     
     title = item.getTitle().encode('UTF-8')
     summary = item.getDescription().encode('UTF-8')
@@ -181,29 +186,28 @@ if None == deviceId or '' == deviceId:
     __settings__.setSetting(id = 'deviceId', value = deviceId)
 
 __properties['deviceId'] = deviceId
-if __DEBUG__:
-    xbmc.log('deviceId --> %s' % (__properties['deviceId']), xbmc.LOGERROR)
+xbmc.log('*****: deviceId --> %s' % (__properties['deviceId']), xbmc.LOGDEBUG)
 
 
 # if we dont have a unique user ID and token yet, make it so
+uuid = ''
+token = ''
 uuid = __settings__.getSetting(id = 'UUID')
 token = __settings__.getSetting(id = 'deviceAuthToken')
-if __DEBUG__:
-    xbmc.log('UUID from settings --> %s, auth token from settings --> %s', uuid, token, xbmc.LOGERROR)
+xbmc.log('*****: UUID from settings --> %s, auth token from settings --> %s' % (uuid, token), xbmc.LOGDEBUG)
 if None == uuid or '' == uuid:
     accountLoader = APAccountLoader.APAccountLoader(__properties)
     uuidDict = accountLoader.loadURL()
-    id = uuidDict['id']
+    uuid = uuidDict['id']
     token = uuidDict['token']
     if None != id and '' != id:
-        __settings__.setSetting(id = 'UUID', value = id)
+        __settings__.setSetting(id = 'UUID', value = uuid)
     if None != token and '' != token:
         __settings__.setSetting(id = 'deviceAuthToken', value = token)
 
 __properties['UUID'] = uuid
 __properties['deviceAuthToken'] = token
-if __DEBUG__:
-    xbmc.log('final UUID --> %s, final auth token --> %s', uuid, token, xbmc.LOGERROR)
+xbmc.log('*****: final UUID --> %s, final auth token --> %s' % (uuid, token), xbmc.LOGDEBUG)
 
 params = getParams(sys.argv[2])
 categoryId = None

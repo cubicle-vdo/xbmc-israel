@@ -7,7 +7,7 @@ import urllib, urllib2, re, os, sys, httplib
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 from xml.sax import saxutils as su
 import urlresolver
-
+import repoCheck
 ##General vars
 __plugin__ = "gozlan.me"
 __author__ = "Cubicle"
@@ -47,28 +47,28 @@ module=None
 page=None
 
 try:
-		url=urllib.unquote_plus(params["url"])
+	url=urllib.unquote_plus(params["url"])
 except:
-		pass
+	pass
 try:
-		name=urllib.unquote_plus(params["name"])
+	name=urllib.unquote_plus(params["name"])
 except:
-		pass
+	pass
 try:
-		mode=int(params["mode"])
+	mode=int(params["mode"])
 except:
-		pass
+	pass
 try:
-		module=urllib.unquote_plus(params["module"])
+	module=urllib.unquote_plus(params["module"])
 except:
-		pass
+	pass
 try:
-		page=urllib.unquote_plus(params["page"])
+	page=urllib.unquote_plus(params["page"])
 except:
-		pass
+	pass
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
-	def http_error_301(self, req, fp, code, msg, headers):  
+	def http_error_301(self, req, fp, code, msg, headers):
 		return urllib.unquote_plus(headers["Location"])
 
 	def http_error_302(self, req, fp, code, msg, headers):
@@ -88,73 +88,74 @@ def GetMediaUrl(video_page_link):
 		return video_page_link[video_page_link.find("http://", 7):]
 	
 def gozlan_movie_categories(url):
-  page=getData(url+"/",0)
-  #<li><a href="search.html?g=הרפתקאות">סרטי הרפתקאות</a></li>
-  #regexp='<li><a href="search.html\?(\w+)=(.*?)">(.*?)</a></li>'
-  regexp='<li><a href="{0}search.html\?(\w+)=(.*?)">(.*?)</a></li>'.format(prefix)
-  matches = re.compile(regexp).findall(page)
-  for match in matches:
-	  results_cat=match[0]
-	  results_crit=match[1]
-	  results_page=match[0]+"="+urllib.quote(results_crit)
-	  cat_name=match[2]
-	  #print "results_page="+results_page+"; cat_name="+cat_name
-	  addDir(cat_name,full_domain+"/search.html?"+results_page,"1&content=movies",'')
-  xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+	page=getData(url+"/",0)
+	#<li><a href="search.html?g=הרפתקאות">סרטי הרפתקאות</a></li>
+	#regexp='<li><a href="search.html\?(\w+)=(.*?)">(.*?)</a></li>'
+	regexp='<li><a href="{0}search.html\?(\w+)=(.*?)">(.*?)</a></li>'.format(prefix)
+	matches = re.compile(regexp).findall(page)
+	for match in matches:
+		results_cat=match[0]
+		results_crit=match[1]
+		results_page=match[0]+"="+urllib.quote(results_crit)
+		cat_name=match[2]
+		#print "results_page="+results_page+"; cat_name="+cat_name
+		addDir(cat_name,full_domain+"/search.html?"+results_page,"1&content=movies",'')
+	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 def gozlan_series(url):
-  page=getData(url,1)
-  #<a href="ser.php?ser=האגדה%20של%20קורה">
+	page=getData(url,1)
+	#<a href="ser.php?ser=האגדה%20של%20קורה">
 	#		<img src="movpics/4feddfb532688.jpg" alt="seriesImage" />
 	#		<span class="serName">האגדה של קורה</span>
 	#<li style="width:153px"><div class="pic_top_movie2"><a href="vseries.html?id=127"><img src="http://gozlan.me/uploads/50c9cfb938aab.jpg" alt="The Voice ישראל לצפייה ישירה" /></a></div><div class="text_banner_top2"><a href="vseries.html?id=127">The Voice ישראל</a></div>
-  regexp='<a href="({0}vser.*?)"><img src="(.*?)" alt=".*?<a href.*?">(.*?)</a></div>'.format(prefix)
-  matches = re.compile(regexp).findall(page)
-  for match in matches:
-	  series_page=match[0]
-	  icon=match[1]
-	  name=match[2]
-	  #print "series_page="+series_page+"; icon="+icon+"; name="+str(name)
-	  addDir(name ,no_prefix+series_page,'6&icon='+urllib.quote(icon),icon)
-  xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+	regexp='<a href="({0}vser.*?)"><img src="(.*?)" alt=".*?<a href.*?">(.*?)</a></div>'.format(prefix)
+	matches = re.compile(regexp).findall(page)
+	for match in matches:
+		series_page=match[0]
+		icon=match[1]
+		name=match[2]
+		#print "series_page="+series_page+"; icon="+icon+"; name="+str(name)
+		addDir(name ,no_prefix+series_page,'6&icon='+urllib.quote(icon),icon)
+	xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 
 def gozlan_series_seasons(url):
-  page=getData(url,7)
-  #						<div class="bmovie4">
+	page=getData(url,7)
+	#						<div class="bmovie4">
 	#						<a href="ser.php?ser=24&se=1">עונה: 1</a>
 	#					</div>
-  block_regexp='<h2>עונות:</h2>(.*?)<div class="foot" style="height:35px">'
-  block_matches = re.compile(block_regexp).findall(page)
-  #print block_matches[0]
-  regexp='href="{0}search.html\?s=(.+?)">'.format(prefix)
-  icon=urllib.unquote_plus(params["icon"])
-  matches = re.compile(regexp).findall(block_matches[0])
-  for match in matches:
-	  season_page="search.html?s="+urllib.quote(match)
-	  name=match
-	  #print "season_page="+season_page+"; icon="+icon+"; name="+str(name)
-	  addDir(name ,full_domain+'/'+season_page,'1&icon='+urllib.quote(icon),icon)
-  xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
-    
+	block_regexp='<h2>עונות:</h2>(.*?)<div class="foot" style="height:35px">'
+	block_matches = re.compile(block_regexp).findall(page)
+	#print block_matches[0]
+	regexp='href="{0}search.html\?s=(.+?)">'.format(prefix)
+	icon=urllib.unquote_plus(params["icon"])
+	matches = re.compile(regexp).findall(block_matches[0])
+	for match in matches:
+		season_page="search.html?s="+urllib.quote(match)
+		name=match
+		#print "season_page="+season_page+"; icon="+icon+"; name="+str(name)
+		addDir(name ,full_domain+'/'+season_page,'1&icon='+urllib.quote(icon),icon)
+	xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
 def gozlan_video_types():
-  if __devel__:
-	addVideoLink('test-sockshare', 'http://www.sockshare.com/embed/67CF7956B246AB8E', 2, '' )
-	addVideoLink('test-novamov', 'http://embed.novamov.com/embed.php?v=tverz6xc4slbe&px=1', 2, '' )
-	addVideoLink('test-series-novamov', 'http://www.moviex-il.com/series.php?serid=2303', 2, '' )
-	#http://www.youtube.com/embed/jzCYuflJWas
-	addVideoLink('test-youtube', 'http://www.moviex-il.com/movie-%D7%A7%D7%95%D7%A4%D7%99%D7%9D-%D7%91%D7%97%D7%9C%D7%9C-2.html', 2, '' )
-	addDir('search: תזיזו', 'תזיזו', 8, '' )
-  addDir('סרטים',full_domain,4,'')
-  addDir('סדרות',full_domain+'/series.html',5,'')
-  addDir('חיפוש סרטים',full_domain,9,'')
+	repoCheck.UpdateRepo()
+	if __devel__:
+		addVideoLink('test-sockshare', 'http://www.sockshare.com/embed/67CF7956B246AB8E', 2, '' )
+		addVideoLink('test-novamov', 'http://embed.novamov.com/embed.php?v=tverz6xc4slbe&px=1', 2, '' )
+		addVideoLink('test-series-novamov', 'http://www.moviex-il.com/series.php?serid=2303', 2, '' )
+		#http://www.youtube.com/embed/jzCYuflJWas
+		addVideoLink('test-youtube', 'http://www.moviex-il.com/movie-%D7%A7%D7%95%D7%A4%D7%99%D7%9D-%D7%91%D7%97%D7%9C%D7%9C-2.html', 2, '' )
+		addDir('search: תזיזו', 'תזיזו', 8, '' )
+	addDir('סרטים',full_domain,4,'')
+	addDir('סדרות',full_domain+'/series.html',5,'')
+	addDir('חיפוש סרטים',full_domain,9,'')
 
 def gozlan_search_page(url):
 	content="tvshows"
-	if "content" in params:  
-	  content=params["content"]
+	if "content" in params:
+		content=params["content"]
 	page_no=1
 	if ("page_no" in params):
-	  page_no=int(params["page_no"])
+		page_no=int(params["page_no"])
 	next_page_no=str(page_no+1)
 	page=getData(url,0)
 	#print page
@@ -162,21 +163,21 @@ def gozlan_search_page(url):
 	regexp = '<div class="movie_pic">.*?<img src="(.*?)" width.*?<strong>.*?<h2><a href="(.*?)">(.*?)</a></h2>'
 	matches = re.compile(regexp,re.M+re.I+re.S).findall(page)
 	for match in matches:
-	  image=match[0]
-	  page_link=match[1]
-	  name=match[2]
-	  #print "page_link="+page_link+"\n"
-	  #print "page_link="+page_link+"; name="+name+"; image="+image+"\n"
-	  addDir(name,page_link,"2&conetnt="+urllib.quote(content)+"&name="+urllib.quote(name)+"&image="+urllib.quote(image),no_prefix+image, '')
-	#class="pagenum"><a href="/search.html?s=%D7%9E%D7%93%D7%95%D7%91%D7%91&p=2">2</a>  
+		image=match[0]
+		page_link=match[1]
+		name=match[2]
+		#print "page_link="+page_link+"\n"
+		#print "page_link="+page_link+"; name="+name+"; image="+image+"\n"
+		addDir(name,page_link,"2&conetnt="+urllib.quote(content)+"&name="+urllib.quote(name)+"&image="+urllib.quote(image),no_prefix+image, '')
+	#class="pagenum"><a href="/search.html?s=%D7%9E%D7%93%D7%95%D7%91%D7%91&p=2">2</a>	
 	next_page_regexp='<span class="currentSC">{0}</span><a href="(.+?)">{1}</a>'.format(page_no, next_page_no)
 	next_page_matches = re.compile(next_page_regexp).findall(page)
 	if (len(next_page_matches) > 0):
-	  next_page_url=no_prefix+ su.unescape(next_page_matches[0])
-	  #print "\nNext Page: "+next_page_url+" (matches="+next_page_matches[0]+")\n"
-	  addDir("עוד...",next_page_url,"1&conetnt="+urllib.quote(content)+"&page_no="+next_page_no,'')
+		next_page_url=no_prefix+ su.unescape(next_page_matches[0])
+		#print "\nNext Page: "+next_page_url+" (matches="+next_page_matches[0]+")\n"
+		addDir("עוד...",next_page_url,"1&conetnt="+urllib.quote(content)+"&page_no="+next_page_no,'')
 	else:
-	  print "No next page. URL=" + url + ";regexp=" + next_page_regexp + "\n"
+		print "No next page. URL=" + url + ";regexp=" + next_page_regexp + "\n"
 	xbmcplugin.setContent(int(sys.argv[1]), content)
 
 def gozlan_play_video(url):
@@ -187,7 +188,7 @@ def gozlan_play_video(url):
 			raise
 	except:
 		print "Cannot play {0}.".format(url)
-		xbmc.executebuiltin('Notification({0}, {1}, {2}, {3})'.format(__plugin__,  "Cannot play this source.", 5000, __icon__))
+		xbmc.executebuiltin('Notification({0}, {1}, {2}, {3})'.format(__plugin__, "Cannot play this source.", 5000, __icon__))
 		return
 	
 	
@@ -199,7 +200,7 @@ def gozlan_play_video(url):
 	if ("image" in params):
 		image=params["image"]
 	description=""
-	if "description" in params:  
+	if "description" in params:
 		description=params["description"]
 
 	listItem = xbmcgui.ListItem(name, image, image, path=url)
@@ -215,10 +216,10 @@ def gozlan_video_page(url):
 	if ("image" in params):
 		image=params["image"]
 	description=""
-	if "description" in params:  
+	if "description" in params:
 		description=params["description"]
 	content="tvshows"
-	if "content" in params:  
+	if "content" in params:
 		content=params["content"]
 		
 	#print "Calling getdata({0}{1})".format(no_prefix, url)
@@ -243,7 +244,7 @@ def gozlan_video_page(url):
 		print "No matches for {0}".format(regexp)
 
 	'''
-	regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a  href="(.*?)"'  
+	regexp = 'quality_button.*?<strong.*?>(.*?)</strong></span>.*?_button">(.*?)</span><span class="playing_button"><a href="(.*?)"'
 	matches = re.compile(regexp).findall(page)
 
 	if len(matches) > 0:
@@ -259,7 +260,7 @@ def gozlan_video_page(url):
 	'''
 		
 	xbmcplugin.setContent(int(sys.argv[1]), content)
-	   
+
 def gozlan_search_dialog(url):
 	searchtext=""
 	keyboard = xbmc.Keyboard(searchtext, 'חיפוש סרט')
@@ -270,8 +271,9 @@ def gozlan_search_dialog(url):
 
 
 if mode==None:
-	gozlan_video_types()	  
+	gozlan_video_types()
 elif mode==1:
+	url = "{0}{1}".format(full_domain, url[url.find("/search.html"):])
 	gozlan_search_page(url)
 elif mode==2:
 	gozlan_video_page(url)

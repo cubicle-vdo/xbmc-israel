@@ -1,0 +1,20 @@
+v.2.1.2
++Auto install + setup for p2p and sportsdevil + links to them
+v.2.1.1
++one from youtube
+v.1.0.8
++ live channels + בובה של לילה 
+v.1.0.5
+minor fix in live 
+v.1.0.3
+-more channels to live
+v.1.0.3
+-added live section
+v.1.0.1
+-added premier league
+-fixed two sections 
+-add support for next page .
+- + few minor changes 
+
+v1.0.0
+Initial Release

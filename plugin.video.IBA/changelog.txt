@@ -1,0 +1,6 @@
+[B]Version 1.0.2[/B]
+- fix some Gibberish
+[B]Version 1.0.1[/B]
+- repo check
+[B]Version 1.0.0[/B]
+- Initial release

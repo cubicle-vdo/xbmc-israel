@@ -1,6 +1,44 @@
-v4.0.2
-- fixd problem when trying to add hebrew-name (non-english) channels to favorites.
-v4.0.1
-- added option to download TV-Guide from server or make one localy (addon setting) 
-v4.0.0
-- initial release (renew)
+[B]v4.1.7[/B]
+- added optional parameter (filmonmethod) to filmons' channel links, to force method for this channel.
+[B]v4.1.6[/B]
+- merge all plx-lists to one list
+[B]v4.1.5[/B]
+- auto-update remote-settings-url in addon settings while service is starting up.
+[B]v4.1.4[/B]
+- repo check
+- changes for playlists links
+[B]v4.1.3[/B]
+- added support for GLArab links
+[B]v4.1.2[/B]
+- bug fix: iptv.m3u list (channels list for LiveTV) wasn't created automatically from service.
+[B]v4.1.1[/B]
+- bug fix: livestreamer is now starts in a new thread (it was kidnaps the service.py thread..)
+[B]v4.1.0[/B]
+- support LiveTV for none Windows based platforms.
+- added some customize to addon-settings.
+- bug fixed
+[B]v4.0.9[/B]
+- Support LiveTV (IPTVSimple) for Windows based platforms.
+[B]v4.0.8[/B]
+- Addon run faster after saving all necessaries files locally.
+[B]v4.0.7[/B]
+- Changes in the method of getting filmon's TV-Guide (due to filmon's site changes).
+[B]v4.0.6[/B]
+- Move remote-settings url to addon-settings.
+[B]v4.0.5[/B]
+- Support ignore/override guides for specific filmon's channels. 
+- Bugs fix.
+[B]v4.0.4[/B]
+- Better support for tv-gude.
+- Install missing addons
+- Fix some problems.
+[B]v4.0.3[/B]
+- TV-Guides downloading as zip-files
+- TV-Guide for Israeli's channels.
+- It's now showing TV-Guide at favorites too.
+[B]v4.0.2[/B]
+- Fixed problem when trying to add Hebrew-name (non-English) channels to favorites.
+[B]v4.0.1[/B]
+- Added option to download TV-Guide from server or make one localy (addon setting) 
+[B]v4.0.0[/B]
+- Initial release (renew)

@@ -63,9 +63,9 @@ class manager_nickjr:
                 
                 if (len(urlMatch)) > 0:'''
                 common.addDir(contentType,title, __BASE_URL__ + path[0], self.MODES.GET_EPISODES_LIST, iconImage, __NAME__, summary)
-            common.addDir('UTF-8',"ספיישל דייגו בספארי לבקשת הורי הפורום", __BASE_URL__ +'?w=//2562538', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
-            common.addDir('UTF-8',"דייגו מציל את חיות הים --מיוחד לאבות מסורים", __BASE_URL__ +'?w=//2545366', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
-            common.addDir('UTF-8',"הרפתקאות דורה ודייגו", __BASE_URL__ +'?w=//2505725', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
+            common.addDir('UTF-8',"דורה ביער המכושף", __BASE_URL__ +'?w=//1887291', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
+            common.addDir('UTF-8',"ספיישל דורה", __BASE_URL__ +'?w=//2630476', self.MODES.GET_EPISODES_LIST, "", __NAME__, summary)
+            
             
             xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
         except Exception as e:

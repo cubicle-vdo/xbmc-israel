@@ -3,8 +3,31 @@ import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
 
+def downloader_israel(url, name, showProgress=True):
+	import downloader, extract
 
-#using xunity downloader with changes from me
+	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
+
+	if showProgress:
+		dp = xbmcgui.DialogProgress()
+		dp.create(AddonName, "Downloading", name, "Please Wait")
+		downloader.download(url, packageFile, dp)
+		dp.update(0, "", "Extracting Zip Please Wait")
+		extract.all(packageFile, addonsDir, dp)
+	else:
+		urllib.urlretrieve(url, packageFile)
+		extract.all(packageFile, addonsDir)
+		
+	try:
+		os.remove(packageFile)
+	except:
+		pass
+			
+	xbmc.executebuiltin("UpdateLocalAddons")
+	xbmc.executebuiltin("UpdateAddonRepos")
+
+#using xunity downloader with changes 
 def downloader_is (url,name ) :
  import downloader,extract   
  i1iIIII = xbmc . getInfoLabel ( "System.ProfileName" )

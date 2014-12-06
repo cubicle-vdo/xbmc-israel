@@ -25,6 +25,7 @@ class APCategory(APModel):
     __fanArtImageURL = ''
     __title = ''
     __description= ''
+    __name = ''
 
     def __init__(self, params):
         '''
@@ -37,6 +38,7 @@ class APCategory(APModel):
         self.__thumbNameImageURL = self.get('large')
         self.__title = self.get('name')
         self.__description = self.get('description')
+	self.__name = self.get('name')
 
 	# for the new incarnation of the plugin we'll have an images_json section
 	imagesStr = self.get('images_json')
@@ -45,16 +47,26 @@ class APCategory(APModel):
 	    # find large fan art
 	    if 'category_big_ipad' in images:
 	        self.__fanArtImageURL = images['category_big_ipad']
-	    elif 'category_big_android_b' in images:
+	    if self.__fanArtImageURL == '' and 'category_big_android_b' in images:
 	        self.__fanArtImageURL = images['category_big_android_b']
 	    
-	    # find a large enough thumb (but not too large as it degrades perf.)
-	    if 'category_big_iphone' in images:
-	        self.__thumbNameImageURL = images['category_big_iphone']
-	    elif 'category_big_android_m' in images:
-	        self.__thumbNameImageURL = images['category_big_android_m']
-	    elif 'category_small_android_b' in images:
+	    # if we couldnt find a large promoted thumb, go for the regulars
+	    if self.__fanArtImageURL == '' and 'large_thumbnail' in images:
+	        self.__fanArtImageURL = images['large_thumbnail']
+	    
+	    # large carousel is used in the new UI. only use if nothing was found
+	    if self.__fanArtImageURL == '' and 'Carousel_smartphone_image' in images:
+	        self.__fanArtImageURL = images['Carousel_smartphone_image']
+	    
+	    # parse thumbnail
+	    if 'category_small_android_b' in images:
 	        self.__thumbNameImageURL = images['category_small_android_b']
+	    if self.__thumbNameImageURL == '' and 'vod_small_ipad' in images:
+	        self.__thumbNameImageURL = images['vod_small_ipad']
+
+            # if all else fails use the fan art which should already be cached (might degradfe performance a bit)
+	    if self.__thumbNameImageURL == '':
+	        self.__thumbNameImageURL = self.__fanArtImageURL
 	
     def getId(self):
         return self.__id
@@ -70,3 +82,6 @@ class APCategory(APModel):
     
     def getDescription(self):
         return self.__description
+
+    def getName(self):
+        return self.__name

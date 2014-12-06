@@ -91,17 +91,25 @@ def MAIN_MENU():
     
     # check's if login  is required.
     print "check if logged in already"
-    page = getData(DOMAIN,referer="")
-    match = re.compile('<span class="blue" id="logout"><a href="/log(.*?)">').findall(page)
+    page = getData(DOMAIN+'/series',referer="")
+    match = re.compile('<span class="button blue" id="logout"><a href="/log(.*?)">').findall(page)
     
     if len(match)!= 1 :
         print "login required"
         LOGIN()
     else:
         print "already logged in."
-    addDir("הכל א-ת","all-heb",2,'');
-    addDir("הכל a-z","all-eng",2,'');
-    addDir("חפש",DOMAIN+"/search",6,'')
+    addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
+    addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
+    addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
+    matches = re.compile('<li><a href="/series/genre/(.*?)">').findall(page)
+    for match in matches:
+         a=str(match)
+         sp=a.split('-',1)
+         print sp , a
+         addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
+	
+
 	
 def SearchSdarot(url):
 	search_entered = ''
@@ -124,8 +132,8 @@ def SearchSdarot(url):
 	  series_link=DOMAIN+"/watch/"+str(match[0])+"/"+match[1]
 	  addDir(link_name,series_link,"3&image="+urllib.quote(image_link)+"&series_id="+series_id+"&series_name="+urllib.quote(link_name),image_link)
 		
-def INDEX_AZ(url):
-    page = getData(DOMAIN+'/series');
+def INDEX_AZ(url,page):
+    page = getData(page);
     matches = re.compile('<a href="/watch/(\d+)-(.*?)">.*?</noscript>.*?<div>(.*?)</div>').findall(page)
     sr_arr = []
     idx = 0
@@ -256,7 +264,7 @@ def sdarot_movie(url):
     title = series_name + "עונה " + season_id + " פרק" + episode_id
    
     finalUrl,VID = getFinalVideoUrl(series_id,season_id,episode_id)
-    print "finalUrl" + finalUrl
+    #print "finalUrl" + finalUrl
         
     player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
     liz = xbmcgui.ListItem(title, path=finalUrl, iconImage=params["image"], thumbnailImage=params["image"])
@@ -301,7 +309,7 @@ if mode==None or url==None or len(url)<1:
     MAIN_MENU()
 
 elif mode==2:
-    INDEX_AZ(url)
+    INDEX_AZ(url,module)
 
 elif mode==3:
     sdarot_series(url)

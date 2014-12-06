@@ -1,12 +1,15 @@
 import xbmcaddon, re, random, time, datetime
 import urllib, urllib2, json
+import common
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url, filmonOldStrerams=False, useRtmp=False):
-	chNum, referrerCh, ChName = GetUrlParams(url)
+	chNum, referrerCh, ChName, filmonMethod = GetUrlParams(url)
+	if filmonMethod is not None:
+		filmonOldStrerams = (filmonMethod == 0)
 	return GetChannelStream(chNum, referrerCh, ChName, filmonOldStrerams, useRtmp)
 
 def GetChannelStream(chNum, referrerCh=None, ChName=None, filmonOldStrerams=False, useRtmp=False):
@@ -20,23 +23,10 @@ def GetChannelStream(chNum, referrerCh=None, ChName=None, filmonOldStrerams=Fals
 		return None,None,None,None
 		
 	channelName, channelDescription, iconimage, streamUrl, tvGuide = GetChannelDetails(prms, chNum, referrerCh, ChName, filmonOldStrerams, useRtmp)
-
-	channelName = "[COLOR yellow][B]{0}[/B][/COLOR]".format(channelName)
-	programmeName = ""
 	
-	if len(tvGuide) > 0:
-		programme = tvGuide[0]
-		programmeName = '[B]{0}[/B] [{1}-{2}]'.format(programme["name"], datetime.datetime.fromtimestamp(programme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme["end"]).strftime('%H:%M'))
-		#image = programme[4]
-		if len(tvGuide) > 1:
-			nextProgramme = tvGuide[1]
-			channelName = "{0} - [COLOR white]Next: [B]{1}[/B] [{2}-{3}][/COLOR]".format(channelName, nextProgramme["name"], datetime.datetime.fromtimestamp(nextProgramme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(nextProgramme["end"]).strftime('%H:%M'))
-	else:
-		programmeName = channelName
-		#image = iconimage
-
-	print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
-	return streamUrl, channelName, programmeName, iconimage #, image
+	#print '--------- Playing: ch="{0}", name="{1}" ----------'.format(chNum, channelName)
+	#return streamUrl, channelName, programmeName, iconimage #, image
+	return streamUrl, channelName, iconimage, tvGuide
 
 def GetChannelGuide(chNum, filmonOldStrerams=False):
 	prms = GetChannelJson(chNum, filmonOldStrerams)
@@ -65,7 +55,7 @@ def MakeChannelGuide(prms):
 				continue
 			description = prm["programme_description"]
 			programmename = prm["programme_name"]
-			image = None if not prm.has_key("images") or len(prm["images"]) == 0 else prm["images"][0]["url"]
+			image = None if not prm.has_key("images") or len(prm["images"]) == 0 or not prm["images"][0].has_key("url") else prm["images"][0]["url"]
 			tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
 	elif prms.has_key("now_playing") and len(prms["now_playing"]) > 0:
 		now_playing = prms["now_playing"]
@@ -75,8 +65,16 @@ def MakeChannelGuide(prms):
 		if startdatetime < server_time and server_time < enddatetime:
 			description = now_playing["programme_description"]
 			programmename = now_playing["programme_name"]
-			image = None if not prms.has_key("images") or len(prms["images"]) == 0 else prms["images"][0]["url"]
+			image = None if not now_playing.has_key("images") or len(now_playing["images"]) == 0 or not now_playing["images"][0].has_key("url") else now_playing["images"][0]["url"]
 			tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
+			if prms.has_key("next_playing") and len(prms["next_playing"]) > 0:
+				next_playing = prms["next_playing"]
+				startdatetime = int(next_playing["startdatetime"])
+				enddatetime = int(next_playing["enddatetime"])
+				description = next_playing["programme_description"]
+				programmename = next_playing["programme_name"]
+				image = None if not next_playing.has_key("images") or len(next_playing["images"]) == 0 or not next_playing["images"][0].has_key("url") else next_playing["images"][0]["url"]
+				tvGuide.append({"start": startdatetime, "end": enddatetime, "name": programmename.encode('utf-8'), "description": description.encode('utf-8'), "image": image})
 			
 	return tvGuide
 			
@@ -84,21 +82,21 @@ def GetChannelDetails(prms, chNum, referrerCh=None, ChName=None, filmonOldStrera
 	channelName = ""
 	channelDescription = ""
 	iconimage = 'http://static.filmon.com/couch/channels/{0}/extra_big_logo.png'.format(chNum)
-	url = ""
+	url = None
 	tvGuide = []
 	
 	if filmonOldStrerams:
-		url = GetFilmonOldStreram(prms['streams'])
+		url = GetFilmonOldStreram(prms['streams'], useHls=not useRtmp)
 	else:
 		url = prms["serverURL"]
 		if useRtmp:
 			url = hls2rtmp(url)
 		
-	streamUrl = url.replace('low','high')
-	
+	streamUrl = None if url is None else url.replace('low','high')
+		
 	if referrerCh == None:
 		tvGuide = MakeChannelGuide(prms)
-		channelName = prms["title"]
+		channelName = prms["title"].encode("utf-8")
 	else:
 		streamUrl = streamUrl.replace("{0}.".format(referrerCh), "{0}.".format(chNum))
 		channelName = ChName
@@ -141,10 +139,14 @@ def getChannelHtml(cookie, chNum):
 	return OpenURL('http://www.filmon.com/ajax/getChannelInfo', headers, user_data)
 	
 def GetChannelParams(html):
-	resultJSON = json.loads(html)
-	if len(resultJSON) < 1 or not resultJSON.has_key("title"):
-		return None
-	
+	resultJSON = None
+	try:
+		resultJSON = json.loads(html)
+		if len(resultJSON) < 1 or not resultJSON.has_key("title"):
+			return None
+	except:
+		pass
+		
 	return resultJSON
 	
 def GetChannelJson(chNum, filmonOldStrerams=False):
@@ -188,23 +190,28 @@ def GetUrlParams(url):
 	chNum = None
 	referrerCh = None
 	ChName = None
+	filmonMethod = None
 	
 	try:
-		chNum = urllib.unquote_plus(params["url"])
+		chNum = int(params["url"])
 	except:
 		pass
 	try:
 		referrerCh = int(params["referrerch"])
 	except:
-		referrerCh = None
+		pass
 	try:
 		ChName = str(params["chname"])
-		#ChName = urllib.unquote_plus(params["chname"])
 	except:
-		ChName = None
-	return 	chNum, referrerCh, ChName
+		pass
+	try:
+		filmonMethod = int(params["filmonmethod"])
+	except:
+		pass
+		
+	return chNum, referrerCh, ChName, filmonMethod
 	
-def GetFilmonOldStreram(streams):
+def GetFilmonOldStreram(streams, useHls=False):
 	selectedStream = None
 	for stream in streams:
 		if stream ['quality'].lower() == "low":
@@ -214,6 +221,11 @@ def GetFilmonOldStreram(streams):
 	if selectedStream is not None:
 		streamUrl = selectedStream['url'] + '<'
 		streamName = selectedStream['name'].replace("low", "high")
+		
+		if useHls:
+			regx = re.compile('rtmp://(.+?)\?id=(.+?)<')
+			match = regx.search(streamUrl)
+			return "http://{0}{1}/playlist.m3u8?id={2}".format(match.group(1), streamName, match.group(2))
 
 		if re.search('mp4', streamName, re.IGNORECASE):
 			regx = re.compile('rtmp://(.+?)/(.+?)/(.+?)/<')
@@ -262,76 +274,52 @@ def hls2rtmp(urlhls):
 	urlrtmp = "{0}/{1} playpath={1} swfUrl={2} pageUrl=http://www.filmon.com/ live=true timeout=45 swfVfy=true".format(urlrtmp, playpath, swfUrl)
 	return urlrtmp
 	
-def GetFilmonChannelsList(url, includePlaylists=False):
+def GetFilmonChannelsList(url):
 	list = []
 	
 	try:
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
-		page = urllib2.urlopen(req)
-		response=page.read().replace("\r", "")
-		page.close()
-		
-		matches = re.compile('^type(.*?)#$',re.I+re.M+re.U+re.S).findall(response)
-		for match in matches:
-			item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-			item_data = {}
-			for field, value in item:
-				item_data[field.strip().lower()] = value.strip()
-			if not item_data.has_key("type") or (item_data["type"]=='playlist' and item_data['name'].find('Scripts section') >= 0):
-				continue
-			
-			if item_data["type"] == 'video':
-				url = item_data['url']
+		list1 = common.GetListFromPlx(includeCatNames=False, fullScan=True)
+		for item in list1:
+			if item["type"] == 'video':
+				url = item['url']
 				if url.find(AddonID) > 0:
-					chNum = re.compile('url=([0-9]*).*?mode=1.*?',re.I+re.M+re.U+re.S).findall(url)
-					if len(chNum) > 0 and chNum[0] != '':
-						if includePlaylists:
-							list.append({"type": "filmon", "url": int(chNum[0])})
-						else:
-							list.append(int(chNum[0]))
-			elif includePlaylists and item_data["type"] == 'playlist':
-				list.append({"type": "playlist", "url": item_data["url"]})
+					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
+					if len(channel) > 0 and channel[0][0] != "" and channel[0][1].find("&ignorefilmonguide=1") < 0:
+						list.append(int(channel[0][0]))
 	except:
 		pass
 		
 	return list
 
-flattenList = []	
-def flatten(list):
-	global flattenList
-	for item in list:
-		if item['type'] == 'playlist':
-			list2 = GetFilmonChannelsList(item['url'], includePlaylists=True)
-			flatten(list2)
-		else:
-			flattenList.append(item['url'])
-	return flattenList
-
-def MakePLXguide(url, file):
+def MakePLXguide(filmonGuideFile):
 	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
 	if filmonlist == []:
 		return
 		
-	filmonlist = flatten(filmonlist)
 	filmonlist = list(set(filmonlist))
 	randList =  [{ "index": filmonlist.index(item), "channel": item} for item in filmonlist]
 	random.seed()
 	random.shuffle(randList)
 	
-	cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
-	if cookie == None:
-		return
+	#cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
+	#if cookie == None:
+	#	return
+	html = OpenURL("http://www.filmon.com/api/init/")
+	if html is None:
+		return None
+	resultJSON = json.loads(html)
+	session_key = resultJSON["session_key"]
 
 	for item in randList:
-		html =  getChannelHtml(cookie, item["channel"])
-		if html is None:
-			filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": []}
-			continue
-		prms = GetChannelParams(html)
-		tvGuide = MakeChannelGuide(prms)
+		prms = None
+		#html =  getChannelHtml(cookie, item["channel"])
+		html = OpenURL("http://www.filmon.com/api/channel/{0}?session_key={1}".format(item["channel"] , session_key))
+		if html is not None:
+			prms = GetChannelParams(html)
+
+		tvGuide = [] if prms is None else MakeChannelGuide(prms)
 		filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": tvGuide}
 			
-	with open(file, 'w') as outfile:
+	with open(filmonGuideFile, 'w') as outfile:
 		json.dump(filmonlist, outfile) 
 	outfile.close()

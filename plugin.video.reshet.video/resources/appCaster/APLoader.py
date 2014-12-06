@@ -31,9 +31,9 @@ def SHA1 (param):
 
 class APLoader(object):
     bundleValue = '' # (OSUtil.getPackageName(CustomApplication.getAppContext()) + "android")
-    bundleVersionValue = '24.8' # OSUtil.getAppVersion(CustomApplication.getAppContext())
-    osVersionValue = '7.0.2' # OSUtil.getAPIVersion()
-    deviceModelValue = 'iPad' # upgraded to Nexus 7
+    bundleVersionValue = '5.0' # OSUtil.getAppVersion(CustomApplication.getAppContext())
+    osVersionValue = '19' # OSUtil.getAPIVersion()
+    deviceModelValue = 'Nexus 7' # upgraded to Nexus 7
     pKey = '' # privateKey from the properties
     
     queryUrl = ''
@@ -67,7 +67,7 @@ class APLoader(object):
         localParamMap[self.prepareAPIKey("bver")] = self.bundleVersionValue
         #localParamMap[self.prepareAPIKey("d")] = "1"
         localParamMap[self.prepareAPIKey("device_model")] = self.deviceModelValue
-        localParamMap[self.prepareAPIKey("os_type")] = "ios"
+        localParamMap[self.prepareAPIKey("os_type")] = "android"
         localParamMap[self.prepareAPIKey("os_version")] = self.osVersionValue
         localParamMap[self.prepareAPIKey("timestamp")] = str(now)
         
