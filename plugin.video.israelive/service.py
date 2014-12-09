@@ -22,18 +22,23 @@ if Addon.getSetting("useIPTV") == "true":
 		t1.daemon = True
 		t1.start()
 		useIPTV = True
-	except Exception, e:
-		print e
+	except Exception as ex:
+		print ex
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
-remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 remoteSettingsUrl = common.GetRemoteSettingsUrl()
+remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 plxFile = os.path.join(user_dataDir, "israelive.plx")
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
-filmonGuideFile = os.path.join(user_dataDir, 'filmonFullGuide.txt')
+filmonGuideFile = os.path.join(user_dataDir, 'filmonGuide.txt')
+fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
+iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
+iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
+iptvLogosDir = os.path.join(user_dataDir, "logos")
+
 checkInterval = 12
 	
 def sleepFor(timeS):
@@ -52,30 +57,31 @@ def CheckUpdates():
 	except:
 		pass
 		
-	useIPTV = True if Addon.getSetting("useIPTV") == "true" else False
+	isPlxUpdated = False
+	if common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600):
+		isPlxUpdated = True
 
-	package = remoteSettings["packages"]["full"]
-	
-	isM3uUpdated = False
-	if common.UpdatePlx(package["url"], plxFile, refreshInterval=package["plxRefresh"] * 3600) and useIPTV:
-		myIPTV.makeIPTVlist(os.path.join(user_dataDir, 'lists'), "israelive.plx", "Main", os.path.join(user_dataDir, "iptv.m3u"), portNum)
-		isM3uUpdated = True
+	if Addon.getSetting("useEPG") == "true":
+		isGuideUpdated = False
+		if common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"]):
+			isGuideUpdated = True
+		if common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"]):
+			isGuideUpdated = True
 		
-	if Addon.getSetting("useEPG") == "false":
-		return
+		if isGuideUpdated:
+			common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
+		if Addon.getSetting("useIPTV") == "true":
+			if isPlxUpdated:
+				myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
+				
+			if isGuideUpdated:
+				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
+				
+			if isPlxUpdated or isGuideUpdated:
+				myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 		
-	isGuideUpdated = False
-	if common.isFileOld(globalGuideFile, remoteSettings["globalGuide"]["refresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuide"]["url"]):
-		isGuideUpdated = True
-
-	if common.isFileOld(filmonGuideFile, package["refresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, package["guide"]):
-		isGuideUpdated = True
-		
-	if isGuideUpdated and useIPTV:
-		myIPTV.MakeChannelsGuide(globalGuideFile, remoteSettings["globalGuide"]["url"], filmonGuideFile, package["guide"], os.path.join(user_dataDir, "guide.xml"))
-		
-	if isM3uUpdated or isGuideUpdated:
-		myIPTV.RefreshPVR(os.path.join(user_dataDir, "iptv.m3u"), os.path.join(user_dataDir, "guide.xml"), os.path.join(user_dataDir, "logos"))
+	if isPlxUpdated:
+		myIPTV.SaveChannelsLogos(iptvLogosDir)
 		
 CheckUpdates()
 

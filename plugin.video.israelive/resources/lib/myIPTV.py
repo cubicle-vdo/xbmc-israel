@@ -10,21 +10,16 @@ AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 
 
-def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile, portNum):
+def makeIPTVlist(iptvFile, portNum):
 	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
-
-	changeLog = ""
-	#M3Ulist = '#EXTM3U\n'
 	iptvList = '#EXTM3U\n'
 
 	for item in list:
 		url = item['url']
 		tvg_id = item['name']
-		
 		if url.find('plugin.video.israelive') > 0:
 			urlParams = url[url.find('?'):]
 			url = "http://localhost:{0}/{1}".format(portNum, urlParams)
-			tvg_id = "fil-{0}".format(urlParams[5:urlParams.find('&')])
 		elif url.find('plugin.video.f4mTester') > 0:
 			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
 		elif url.find('plugin.video.youtube') > 0:
@@ -33,16 +28,29 @@ def makeIPTVlist(listsDir, mainPlxFile, groupName, iptvFile, portNum):
 			url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
 		tvg_name = item['name'].replace(' ','_')
 		view_name = item['name']
-			
-		tvg_logo = hashlib.md5(item['name']).hexdigest()
+		tvg_logo = GetLogoFileName(item)
 		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
-		#M3Ulist += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
-		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}.png"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
+		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
 
 	f = open(iptvFile, 'w')
-	f.write("{0}\n".format(iptvList))
+	f.write(iptvList)
 	f.close()
 	
+def GetLogoFileName(item):
+	if item.has_key('image') and item['image'] is not None and item['image'] != "":
+		ext = item['image'][item['image'].rfind('.')+1:]
+		i = ext.rfind('?')
+		if i > 0: 
+			ext = ext[:ext.rfind('?')]
+		if len(ext) > 4:
+			ext = "png"
+		tvg_logo = hashlib.md5(item['image'].strip()).hexdigest()
+		logoFile = "{0}.{1}".format(tvg_logo, ext)
+	else:
+		logoFile = ""
+		
+	return logoFile
+
 def EscapeXML(str):
 	return str.replace("<", "&lt;").replace(">", "&gt;")
 	
@@ -55,17 +63,8 @@ def GetTZ():
 		delta = -delta
 		return "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
 	
-def MakeChannelsGuide(guideFile, guideUrl, filmonGuideFile, filmonGuideUrl, xmlFile):
-	guideList = common.ReadList(guideFile)
-	if len(guideList) == 0:
-		common.UpdateZipedFile(guideFile, guideUrl)
-		guideList = common.ReadList(guideFile)
-	filmonGuideList = common.ReadList(filmonGuideFile)
-	if len(filmonGuideList) == 0:
-		common.UpdateZipedFile(filmonGuideFile, filmonGuideUrl)
-		filmonGuideList = common.ReadList(filmonGuideFile)
-
-	FullGuideList = guideList + filmonGuideList
+def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
+	FullGuideList = common.ReadList(fullGuideFile)
 	if len(FullGuideList) == 0:
 		return
 		
@@ -74,11 +73,8 @@ def MakeChannelsGuide(guideFile, guideUrl, filmonGuideFile, filmonGuideUrl, xmlF
 	channelsList = ""
 	programmeList = ""
 	for channel in FullGuideList:
-		if type(channel["channel"]) is int:
-			chName = "fil-{0}".format(channel["channel"])
-		else:
-			item = re.compile('^\[COLOR yellow\]\[B\](.*?)\[/B\]\[/COLOR\]$',re.I+re.M+re.U+re.S).findall(channel["channel"].encode("utf-8"))
-			chName = item[0] if item != [] else None
+		item = re.compile('^\[COLOR yellow\]\[B\](.*?)\[/B\]\[/COLOR\]$',re.I+re.M+re.U+re.S).findall(channel["channel"].encode("utf-8"))
+		chName = item[0] if item != [] else None
 		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
 
 		for programme in channel["tvGuide"]:
@@ -89,27 +85,37 @@ def MakeChannelsGuide(guideFile, guideUrl, filmonGuideFile, filmonGuideUrl, xmlF
 			programmeList += "\t<programme start=\"{0} {5}\" stop=\"{1} {5}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(time.strftime("%Y%m%d%H%M%S", start), time.strftime("%Y%m%d%H%M%S", end), chName, name, description, tz)
 
 	xmlList = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tv>\n{0}{1}</tv>".format(channelsList, programmeList)
-	f = open(xmlFile, 'w')
+	f = open(iptvGuideFile, 'w')
 	f.write(xmlList)
 	f.close()
 	
-def SaveChannelsLogos(listsDir, mainPlxFile, groupName, logosDir):
+def SaveChannelsLogos(logosDir):
 	if not os.path.exists(logosDir):
 		os.makedirs(logosDir)
 		
+	newFilesList = []
 	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
 	
 	for item in list:
 		try:
-			if item.has_key('image') and item['image'] is not None and item['image'] != "":
-				tvg_logo = hashlib.md5(item['name']).hexdigest()
-				logoFile = "{0}.png".format(os.path.join(logosDir, tvg_logo))
+			logoFile = GetLogoFileName(item)
+			if logoFile != "":
+				newFilesList.append(logoFile)
+				logoFile = format(os.path.join(logosDir, logoFile))
 				if not os.path.isfile(logoFile):
+					#print "---------\n{0}\n{1}".format(item['name'], item['image'])
 					urllib.urlretrieve(item['image'], logoFile)
 		except Exception as e:
 			print e
-			pass
-			
+	
+	for the_file in os.listdir(logosDir):
+		file_path = os.path.join(logosDir, the_file)
+		try:
+			if os.path.isfile(file_path) and the_file not in newFilesList:
+				os.unlink(file_path)
+		except Exception as e:
+			print e
+
 def GetIptvAddon():
 	iptvAddon = None
 	

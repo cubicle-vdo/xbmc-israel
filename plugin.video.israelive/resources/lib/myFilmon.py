@@ -285,7 +285,7 @@ def GetFilmonChannelsList(url):
 				if url.find(AddonID) > 0:
 					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
 					if len(channel) > 0 and channel[0][0] != "" and channel[0][1].find("&ignorefilmonguide=1") < 0:
-						list.append(int(channel[0][0]))
+						list.append({"channel": int(channel[0][0]), "name": "[COLOR yellow][B]{0}[/B][/COLOR]".format(item["name"])})
 	except:
 		pass
 		
@@ -294,10 +294,10 @@ def GetFilmonChannelsList(url):
 def MakePLXguide(filmonGuideFile):
 	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
 	if filmonlist == []:
-		return
+		return False
 		
 	filmonlist = list(set(filmonlist))
-	randList =  [{ "index": filmonlist.index(item), "channel": item} for item in filmonlist]
+	randList =  [{ "index": filmonlist.index(item), "channel": item["channel"]} for item in filmonlist]
 	random.seed()
 	random.shuffle(randList)
 	
@@ -306,7 +306,7 @@ def MakePLXguide(filmonGuideFile):
 	#	return
 	html = OpenURL("http://www.filmon.com/api/init/")
 	if html is None:
-		return None
+		return False
 	resultJSON = json.loads(html)
 	session_key = resultJSON["session_key"]
 
@@ -318,8 +318,10 @@ def MakePLXguide(filmonGuideFile):
 			prms = GetChannelParams(html)
 
 		tvGuide = [] if prms is None else MakeChannelGuide(prms)
-		filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": tvGuide}
+		filmonlist[item["index"]] = {"channel": filmonlist[item["index"]]["name"], "tvGuide": tvGuide}
 			
 	with open(filmonGuideFile, 'w') as outfile:
 		json.dump(filmonlist, outfile) 
 	outfile.close()
+	
+	return True
