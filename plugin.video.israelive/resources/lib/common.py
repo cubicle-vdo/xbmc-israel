@@ -4,9 +4,7 @@ import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io,base64
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
-
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-plxFile = os.path.join(user_dataDir, "israelive.plx")
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -58,7 +56,8 @@ def UpdateFile(file, url, zip=False):
 		last_modified = headers.getheader("Last-Modified")
 		if not last_modified:
 			last_modified = etag
-	except:
+	except Exception as ex:
+		print ex
 		return False
 		
 	if last_modified is None:
@@ -199,6 +198,7 @@ def GetRemoteSettingsUrl():
 	return remoteSettingsUrl
 	
 def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=True, fullScan=False):
+	plxFile = os.path.join(user_dataDir, "israelive.plx")
 	f = open(plxFile,'r')
 	data = f.read()
 	f.close()
@@ -237,3 +237,9 @@ def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=
 			list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"], "group": subCat})
 		
 	return list
+	
+def MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile):
+	guideList = ReadList(globalGuideFile)
+	filmonGuideList = ReadList(filmonGuideFile)
+	return WriteList(fullGuideFile, guideList + filmonGuideList)
+	

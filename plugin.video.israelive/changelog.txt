@@ -1,3 +1,7 @@
+[B]v4.1.8[/B]
+- fix adding channels to favorites.
+- merge global guide and filmon guide.
+- auto update logos dir when channels' list updates.
 [B]v4.1.7[/B]
 - added optional parameter (filmonmethod) to filmons' channel links, to force method for this channel.
 [B]v4.1.6[/B]
