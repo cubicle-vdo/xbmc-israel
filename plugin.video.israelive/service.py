@@ -1,4 +1,7 @@
 import xbmc, xbmcaddon, xbmcgui, os, sys, platform
+import repoCheck
+
+repoCheck.UpdateRepo()
 
 Addon = xbmcaddon.Addon()
 AddonName = Addon.getAddonInfo("name")
@@ -13,7 +16,6 @@ try:
 except:
 	pass
 	
-i = 0
 useIPTV = False
 if Addon.getSetting("useIPTV") == "true":
 	import livestreamersrv, myIPTV, threading
@@ -47,6 +49,7 @@ def sleepFor(timeS):
         timeS -= 1
 		
 def CheckUpdates():
+	common.CheckNewVersion()
 	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
 	if remoteSettings == []:
 		return
