@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
-import sys, os, time, datetime, re, platform
-import urllib ,urllib2, json
+import sys, os, time, datetime, re
+import urllib, json
 import repoCheck
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 localizedString = Addon.getLocalizedString
-xbmcLang = xbmc.getLanguage(0)
-if xbmcLang != "he":
-	xbmcLang = "en"
 
 libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
 sys.path.insert(0, libDir)
@@ -60,10 +57,11 @@ epg = None
 
 def CATEGORIES():
 	repoCheck.UpdateRepo()
+	common.CheckNewVersion()
 	addDir("[COLOR green][B][{0}][/B][/COLOR]".format(localizedString(30000).encode('utf-8')),'favorits',16,'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png','')
 	ListLive("israelive", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	SetViewMode()
-		
+
 def update_view(url):
 	ok=True		
 	xbmc.executebuiltin('XBMC.Container.Update({0})'.format(url))
@@ -442,8 +440,7 @@ def InstallAddon(url, description):
 	urls = url.split(';')
 	for url in urls:
 		common.downloader_is(url, description)
-	dlg = xbmcgui.Dialog()
-	dlg.ok(AddonName, localizedString(30201).encode('utf-8'))
+	xbmc.executebuiltin("XBMC.Container.Refresh()")
 	
 def UpdateChannelsLists():
 	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))

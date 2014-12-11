@@ -1,3 +1,5 @@
+[B]v4.1.9[/B]
+- added message for user to restart xbmc/kodi after addon updates.
 [B]v4.1.8[/B]
 - fix adding channels to favorites.
 - merge global guide and filmon guide.

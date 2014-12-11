@@ -4,6 +4,7 @@ import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io,base64
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
+localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def downloader_is(url, name, showProgress=True):
@@ -243,3 +244,18 @@ def MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile):
 	filmonGuideList = ReadList(filmonGuideFile)
 	return WriteList(fullGuideFile, guideList + filmonGuideList)
 	
+def CheckNewVersion():
+	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
+	if not os.path.isfile(versionFile):
+		version = ""
+	else:
+		f = open(versionFile,'r')
+		version = f.read()
+		f.close()
+	
+	newVersion = Addon.getAddonInfo("version")
+	if version != newVersion:
+		OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
+		f = open(versionFile, 'w')
+		f.write(newVersion)
+		f.close()
