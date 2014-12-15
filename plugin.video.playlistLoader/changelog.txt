@@ -1,3 +1,5 @@
+1.0.6
+- Fix for checking if file exist before backup.
 1.0.5
 - Fix for names in some encodings.
 - Added backup for files is there was problems while trying to read data.
