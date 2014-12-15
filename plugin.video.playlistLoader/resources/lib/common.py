@@ -1,7 +1,9 @@
-import urllib, urllib2, os, xbmc, xbmcaddon, xbmcgui, json, re
+import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re
 
 AddonID = 'plugin.video.playlistLoader'
 Addon = xbmcaddon.Addon(AddonID)
+icon = Addon.getAddonInfo('icon')
+AddonName = Addon.getAddonInfo("name")
 
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
@@ -39,21 +41,27 @@ def ReadFile(fileName):
 	
 def ReadList(fileName):
 	try:
-		fileContent = ReadFile(fileName)
-		content = json.loads(fileContent)
-	except:
-		content = []
+		with open(fileName, 'r') as handle:
+			content = json.load(handle)
+	except Exception as ex:
+		print ex
+		import shutil
+		shutil.copyfile(fileName, "{0}_bak.txt".format(fileName[:fileName.rfind('.')]))
+		xbmc.executebuiltin('Notification({0}, Cannot read file: "{1}". \nBackup createad, {2}, {3})'.format(AddonName, os.path.basename(fileName), 5000, icon))
+		content=[]
 
 	return content
 
-def SaveList(fileName, list):
+def SaveList(filname, list):
 	try:
-		with open(fileName, 'w') as outfile:
-			json.dump(list, outfile) 
-		outfile.close()
-		return True
-	except:
-		return False
+		with io.open(filname, 'w', encoding='utf-8') as handle:
+			handle.write(unicode(json.dumps(list, indent=4, ensure_ascii=False)))
+		success = True
+	except Exception as ex:
+		print ex
+		success = False
+		
+	return success
 
 def OKmsg(title, line1, line2 = None, line3 = None):
 	dlg = xbmcgui.Dialog()
@@ -112,3 +120,21 @@ def m3u2list(url):
 			item_data[field.strip().lower().replace('-', '_')] = value.strip()
 		list.append(item_data)
 	return list
+	
+def GetEncodeString(str):
+	try:
+		import chardet
+		str = str.decode(chardet.detect(str)["encoding"]).encode("utf-8")
+	except:
+		try:
+			str = str.encode("utf-8")
+		except:
+			pass
+	return str
+
+def DelFile(filname):
+	try:
+		if os.path.isfile(filname):
+			os.unlink(filname)
+	except Exception as e:
+		print e

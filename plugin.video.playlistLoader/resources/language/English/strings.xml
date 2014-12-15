@@ -17,4 +17,7 @@
 	<string id="10015">Channel URL</string>
 	<string id="10016">New remote-list</string>
 	<string id="10017">New local-list</string>
+	
+	<string id="10101">Delete Playlists file</string>
+	<string id="10102">Delete Favourites file</string>
 </strings>
