@@ -1,6 +1,10 @@
+1.0.5
+- Fix for names in some encodings.
+- Added backup for files is there was problems while trying to read data.
+- Added option to delete playlist file and favourites file from addon settings.
 1.0.4
 - Fix for channel name in some encodings.
-- Chane: select playlist source after you enter the playlist name.
+- Change: select playlist source after you enter the playlist name.
 1.0.3
 - Added supoort for hebrew
 1.0.2

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+		<setting id="action" type="action" label="10101" action="RunScript($CWD/default.py,,?mode=40&url=settings)" option="close"/>
+		<setting id="action" type="action" label="10102" action="RunScript($CWD/default.py,,?mode=41&url=settings)" option="close"/>
+</settings>
