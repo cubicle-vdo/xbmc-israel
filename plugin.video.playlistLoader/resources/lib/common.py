@@ -45,9 +45,10 @@ def ReadList(fileName):
 			content = json.load(handle)
 	except Exception as ex:
 		print ex
-		import shutil
-		shutil.copyfile(fileName, "{0}_bak.txt".format(fileName[:fileName.rfind('.')]))
-		xbmc.executebuiltin('Notification({0}, Cannot read file: "{1}". \nBackup createad, {2}, {3})'.format(AddonName, os.path.basename(fileName), 5000, icon))
+		if os.path.isfile(fileName):
+			import shutil
+			shutil.copyfile(fileName, "{0}_bak.txt".format(fileName[:fileName.rfind('.')]))
+			xbmc.executebuiltin('Notification({0}, Cannot read file: "{1}". \nBackup createad, {2}, {3})'.format(AddonName, os.path.basename(fileName), 5000, icon))
 		content=[]
 
 	return content
