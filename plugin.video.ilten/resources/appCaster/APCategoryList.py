@@ -18,13 +18,13 @@ from APVodItem import APVodItem
 from APCategory import APCategory
 
 class APCategoryList(APModel):
-
+    
     def __init__(self, params = {}):
-        self.innerDictionary = params
-	self.__hasCategories = True
+        self.__hasCategories = True
 	self.__hasVodItems = False
 	self.__vodItems = []
 	self.__children = []
+        self.innerDictionary = params
 
         try:
             items = self.innerDictionary['children']
@@ -33,16 +33,13 @@ class APCategoryList(APModel):
         except:
             self.__hasCategories = False
             pass
-
         try:
-	    items = self.innerDictionary['vod_items']
+            items = self.innerDictionary['vod_items']
             self.__hasVodItems = True
-        except:
-            pass
-	
-	if self.__hasVodItems == True:
             for vod in items:
                 self.__vodItems.append(APVodItem(vod))
+        except:
+            pass
         
     def hasSubCategories(self):
         return self.__hasCategories

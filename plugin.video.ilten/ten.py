@@ -132,15 +132,9 @@ def addItemView(item):
     title = item.getTitle().encode('UTF-8')
     summary = item.getDescription().encode('UTF-8')
     thumbnail = item.getThumbnail()
-    season = item.getSeasonName()
-    if season == None:
-        season = ''
-    airdate = item.getAirDate()
-    if airdate == None:
-        airdate = ''
     
     listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
-    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary), "Season": urllib.unquote(season), "Aired": urllib.unquote(airdate)})
+    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
     listItem.setProperty("Fanart_Image", thumbnail)
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
@@ -212,10 +206,10 @@ xbmc.log('***** UUID from settings --> %s, auth token from settings --> %s' % (u
 if None == uuid or '' == uuid:
     accountLoader = APAccountLoader.APAccountLoader(__properties)
     uuidDict = accountLoader.loadURL()
-    uuid = uuidDict['id']
+    id = uuidDict['id']
     token = uuidDict['token']
     if None != id and '' != id:
-        __settings__.setSetting(id = 'UUID', value = uuid)
+        __settings__.setSetting(id = 'UUID', value = id)
     if None != token and '' != token:
         __settings__.setSetting(id = 'deviceAuthToken', value = token)
 

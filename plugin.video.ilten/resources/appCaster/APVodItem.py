@@ -19,48 +19,35 @@ import resources.m3u8 as m3u8
 
 class APVodItem(APModel):
     '''
-    classdocs
+    One VOD item
     '''
-    __free = False
-    __id = ''
-    __title = ''
-    __description = ''
-    __thumbnail = ''
-    __stream = ''
-    __season = ''
-    __hls_cookie = ''
-    __isHls = False
-    __airDate = ''
-    
     def __init__(self, params = {}):
         self.innerDictionary = params
+	self.__free = False
+	self.__id = ''
+	self.__title = ''
+	self.__description = ''
+	self.__thumbnail = ''
+	self.__stream = ''
+	self.__hls_cookie = ''
+	self.__isHls = False
         try:
             self.__free = self.get('free')
             self.__id = str(self.get('id'))
             self.__description = self.get('summary')
             self.__title = self.get('title')
-            self.__thumbnail = self.get('thumbnail')
             self.__stream = self.get('stream_url')
-	    self.__airDate = self.get('order_date')
-	    self.__season = self.get('season_name')
-	except:
-	    pass
 
-	# for the new incarnation of the plugin we'll have an images_json section
-	imagesStr = self.get('images_json')
-	#print '***** imagesStr is: ' + imagesStr
-	if None != imagesStr and '' != imagesStr:
-	    images = json.loads(imagesStr, 'utf-8')
+	    # for the new incarnation of the plugin we'll have an images_json section
+	    imagesStr = self.get('images_json')
+	    if None != imagesStr and '' != imagesStr:
+	        images = json.loads(imagesStr, 'utf-8')
 
-	    # find large thumbnail
-	    if 'large_thumbnail' in images:
-	        self.__thumbnail = images['large_thumbnail']
-	    if self.__thumbnail == '' and 'Carousel_smartphone_image' in images:
-	        # if not, try carousel image (based on new UI)
-	        self.__thumbnail = images['Carousel_smartphone_image']
-
-        #except:
-        #    pass
+		# find large thumbnail
+		if 'large_thumbnail' in images:
+		    self.__thumbnail = images['large_thumbnail']
+        except:
+            pass
         
     def isFree(self):
         return self.__free
@@ -82,12 +69,6 @@ class APVodItem(APModel):
 	In newer builds of Gotham (13.0), ffmpeg 1.2 is included. It supports cookies better now and doesn't probe the input via HEAD (only GET) so work normally
 	'''
 	return self.__stream
-
-    def getAirDate(self):
-        return self.__airDate
-
-    def getSeasonName(self):
-        return self.__season
 
     def getHLSCookie(self):
         return self.__hls_cookie
