@@ -33,6 +33,7 @@ class APCategory(APModel):
 	imagesStr = self.get('images_json')
 	if None != imagesStr and '' != imagesStr:
 	    images = json.loads(imagesStr, 'utf-8')
+
 	    # find large fan art
 	    if 'large_thumbnail' in images:
 	        self.__fanArtImageURL = images['large_thumbnail']
@@ -40,6 +41,13 @@ class APCategory(APModel):
 	    # find a large enough thumb (but not too large as it degrades perf.)
 	    if 'small_thumbnail' in images:
 	        self.__thumbNameImageURL = images['small_thumbnail']
+
+	    # fine tab icon. if found this represents a special tab in the app
+	    if 'tab_icon_ipad_on' in images:
+	        icon = images['tab_icon_ipad_on']
+		if icon != '' and icon != None:
+	            self.__thumbNameImageURL = images['tab_icon_ipad_on']
+		    self.__fanArtImageURL = ''
 	
     def getId(self):
         return self.__id
