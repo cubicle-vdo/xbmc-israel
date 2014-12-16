@@ -1,10 +1,8 @@
-import xbmcaddon, re, random, time, datetime
+import re, random, time
 import urllib, urllib2, json
 import common
 
 AddonID = "plugin.video.israelive"
-Addon = xbmcaddon.Addon(AddonID)
-icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url, filmonOldStrerams=False, useRtmp=False):
 	chNum, referrerCh, ChName, filmonMethod = GetUrlParams(url)

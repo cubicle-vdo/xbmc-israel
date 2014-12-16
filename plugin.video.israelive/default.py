@@ -52,6 +52,7 @@ iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
 iptvLogosDir = os.path.join(user_dataDir, "logos")
 
+useIPTV = Addon.getSetting("useIPTV") == "true"
 useEPG = Addon.getSetting("useEPG") == "true"
 epg = None
 
@@ -98,6 +99,11 @@ def ListLive(name, iconimage=None):
 				mode = 12
 			elif url.find('?mode=2') > 0:
 				mode = 14
+			elif url.find('?mode=3') > 0:
+				if useIPTV:
+					mode = 40
+				else:
+					continue
 			else:
 				mode = 10
 				
@@ -145,7 +151,18 @@ def Playf4m(url, name=None, iconimage=None):
 	player.playF4mLink(urllib.unquote_plus(url), programmeName, use_proxy_for_chunks=True, iconimage=iconimage, channelName=channelName)
 	
 def PlayGLArabLink(url, name, iconimage):
-	url = myResolver.GetGLArabFullLink(url)
+	url = myResolver.GetGLArabFullLink(url[:url.find('?mode')])
+	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
+	Play(url, channelName, programmeName, iconimage)
+	
+def PlayLivestreamerLink(url, name, iconimage):
+	portNum = 65007
+	try:
+		portNum = int(Addon.getSetting("LiveStreamerPort"))
+	except:
+		pass
+		
+	url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
 	Play(url, channelName, programmeName, iconimage)
 	
@@ -329,6 +346,11 @@ def listFavorites():
 			mode = 13
 		elif url.find('?mode=2') > 0:
 			mode = 15
+		elif url.find('?mode=3') > 0:
+			if useIPTV:
+				mode = 41
+			else:
+				continue
 		else:
 			mode = 11
 			
@@ -402,10 +424,10 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
-	if mode==3 or mode==4 or mode==7 or mode==8 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==99:
+	if mode==3 or mode==4 or mode==7 or mode==8 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==40 or mode==41 or mode==99:
 		isFolder=False
 	
-	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15:
+	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==40 or mode==41:
 		liz.setProperty("IsPlayable","true")
 		items = []
 
@@ -415,11 +437,11 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 		elif mode == 4:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2}&displayname={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append(('Remove from israelive-favorites', "XBMC.RunPlugin({0}?url={1}&mode=18)".format(sys.argv[0], urllib.quote_plus(url))))
-		elif mode == 10 or mode == 12 or mode == 14:
+		elif mode == 10 or mode == 12 or mode == 14 or mode==40:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append(('Add to israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=17)'.format(sys.argv[0], listIndex)))
-		elif mode == 11 or mode == 13 or mode == 15:
+		elif mode == 11 or mode == 13 or mode == 15 or mode==41:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append(('Remove from israelive-favorites', 'XBMC.RunPlugin({0}?url={1}&mode=18)'.format(sys.argv[0], urllib.quote_plus(url))))
@@ -583,7 +605,9 @@ elif mode==10 or mode==11:
 elif mode==12 or mode==13:
 	Playf4m(url, displayname, iconimage)
 elif mode==14 or mode==15:
-	PlayGLArabLink(url[:url.find('?mode')], displayname, iconimage)
+	PlayGLArabLink(url, displayname, iconimage)
+elif mode==40 or mode==41:
+	PlayLivestreamerLink(url, displayname, iconimage)
 elif mode==16:
 	listFavorites()
 elif mode==17: 
