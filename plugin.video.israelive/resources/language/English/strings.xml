@@ -6,6 +6,13 @@
 	<string id="30003">Yes, Ask next time</string>
 	<string id="30004">No, Ask next time</string>
 	
+	<string id="30010">Favourites text color</string>
+	<string id="30011">Categories text color</string>
+	<string id="30012">Channels text color</string>
+	<string id="30013">Now playing programs text color</string>
+	<string id="30014">Next playing programs text color</string>
+	<string id="30015">Times text color</string>
+	
 	<string id="30100">ISRALIVE Settings</string>
 	<string id="30101">Remote Settings URL</string>
 	<string id="30102">Filmon's "channel details" method</string>
@@ -24,6 +31,10 @@
 	<string id="30201">Please restart XBMC/Kodi</string>
 	<string id="30202">No channels in your favourites</string>
 	<string id="30203">Add one by right clicking on any channel</string>
+	<string id="30204">No TV-Guide for</string>
+	<string id="30205">TV-Guide</string>
+	<string id="30206">Add to IsraeLIVE favourites</string>
+	<string id="30207">Remove from IsraeLIVE favourites</string>
 	
 	<string id="30300">Live TV</string>
 	<string id="30301">Enable Live TV</string>
@@ -33,4 +44,6 @@
 	<string id="30305">LiveStreamer Port</string>
 	<string id="30306">Auto-update IPTVSimple?</string>
 	<string id="30307">Empty channels logos folder</string>
+	
+	<string id="30400">Appearance</string>
 </strings>

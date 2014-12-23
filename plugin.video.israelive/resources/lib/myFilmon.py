@@ -272,7 +272,7 @@ def hls2rtmp(urlhls):
 	urlrtmp = "{0}/{1} playpath={1} swfUrl={2} pageUrl=http://www.filmon.com/ live=true timeout=45 swfVfy=true".format(urlrtmp, playpath, swfUrl)
 	return urlrtmp
 	
-def GetFilmonChannelsList(url):
+def GetFilmonChannelsList():
 	list = []
 	
 	try:
@@ -283,22 +283,21 @@ def GetFilmonChannelsList(url):
 				if url.find(AddonID) > 0:
 					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
 					if len(channel) > 0 and channel[0][0] != "" and channel[0][1].find("&ignorefilmonguide=1") < 0:
-						list.append({"channel": int(channel[0][0]), "name": "[COLOR yellow][B]{0}[/B][/COLOR]".format(item["name"])})
+						list.append({"channel": int(channel[0][0]), "name": item["name"]})
 	except:
 		pass
 		
 	return list
 
 def MakePLXguide(filmonGuideFile):
-	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
+	filmonlist = GetFilmonChannelsList()
 	if filmonlist == []:
 		return False
-		
-	filmonlist = list(set(filmonlist))
+
 	randList =  [{ "index": filmonlist.index(item), "channel": item["channel"]} for item in filmonlist]
 	random.seed()
 	random.shuffle(randList)
-	
+
 	#cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
 	#if cookie == None:
 	#	return
