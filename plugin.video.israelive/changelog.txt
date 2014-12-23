@@ -1,3 +1,6 @@
+[B]v4.2.1[/B]
+- added support to customize text colors from addon settings
+- bugfixes
 [B]v4.2.0[/B]
 - added support for playing more channels.
 [B]v4.1.9[/B]

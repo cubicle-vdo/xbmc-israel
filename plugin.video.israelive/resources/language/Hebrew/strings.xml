@@ -6,6 +6,13 @@
 	<string id="30003">כן, שאל בפעם הבאה</string>
 	<string id="30004">לא, שאל בפעם הבאה</string>
 	
+	<string id="30010">צבע טקסט מועדפים</string>
+	<string id="30011">צבע טקסט קטגוריות</string>
+	<string id="30012">צבע טקסט ערוצים</string>
+	<string id="30013">צבע טקסט התוכנית המשודרת</string>
+	<string id="30014">צבע טקסט התוכנית הבאה</string>
+	<string id="30015">צבע טקסט זמנים</string>
+	
 	<string id="30100">הגדרות ISRALIVE</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
 	<string id="30102">מנגנון קבלת פרטי ערוצי פילמון</string>
@@ -24,6 +31,10 @@
 	<string id="30201">נא להפעיל מחדש את XBMC/Kodi</string>
 	<string id="30202">אין ערוצים ברשימת המועדפים</string>
 	<string id="30203">הוסף ערוץ על ידי קליק ימני על הערוץ</string>
+	<string id="30204">אין מדריך שידורים לערוץ</string>
+	<string id="30205">מדריך שידורים</string>
+	<string id="30206">הוספה למועדפי IsraeLIVE</string>
+	<string id="30207">הסרה ממועדפי IsraeLIVE</string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>
@@ -33,4 +44,6 @@
 	<string id="30305">LiveStreamer Port</string>
 	<string id="30306">עדכון אוטומטי עבור IPTVSimple?</string>
 	<string id="30307">ניקוי תיקיית סמלי ערוצים</string>
+	
+	<string id="30400">מראה</string>
 </strings>
