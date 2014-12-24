@@ -1,3 +1,5 @@
+[B]v4.2.2[/B]
+- fix problems on android devices (string.format method in old version)
 [B]v4.2.1[/B]
 - added support to customize text colors from addon settings
 - bugfixes
