@@ -139,7 +139,7 @@ def UpdatePlx(url, file, refreshInterval=0):
 
 	return isListUpdated
 		
-def OKmsg(title, line1, line2 = None, line3 = None):
+def OKmsg(title, line1, line2 = "", line3 = ""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
 	

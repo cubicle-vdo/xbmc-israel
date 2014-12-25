@@ -409,7 +409,7 @@ def SaveGuide(forceManual=False, showNotification=True):
 					xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 				isGuideUpdated = True
 			else:
-				if showNotification:
+				if showNotification and not isGuideUpdated:
 					xbmc.executebuiltin("XBMC.Notification({0}, Guide is up to date., {1}, {2})".format(AddonName, 5000 ,icon))
 		
 		if isGuideUpdated:
@@ -517,6 +517,12 @@ def CleanLogosFolder():
 		except Exception as ex:
 			print ex
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels logos folder cleaned., {1}, {2})".format(AddonName, 5000 ,icon))
+
+def RefreshLiveTV():
+	UpdateChannelsLists()
+	SaveGuide()
+	MakeIPTVlists()
+	DownloadLogos()
 
 def get_params():
 	param=[]
@@ -636,6 +642,9 @@ elif mode == 32: # Update IPTVSimple settings
 	sys.exit()
 elif mode == 33: # Empty channels logos folder
 	CleanLogosFolder()
+	sys.exit()
+elif mode == 34: # Refresh ALL Live TV required resources
+	RefreshLiveTV()
 	sys.exit()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -1,3 +1,6 @@
+[B]v4.2.3[/B]
+- added a new action-button to addon settings (in Live TV tab): Refresh ALL Live TV required resources on one click.
+- bugfix for xbmc 12.x versions (Frodo)
 [B]v4.2.2[/B]
 - fix problems on android devices (string.format method in old version)
 [B]v4.2.1[/B]
