@@ -21,9 +21,9 @@
 	<string id="30110">Filmon's stream protocol</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
-	<string id="30106">Use Guide?</string>
-	<string id="30107">Download Guide now - from server</string>
-	<string id="30108">Create Guide now (local scan)</string>
+	<string id="30106">Use TV-Guide?</string>
+	<string id="30107">Download TV-Guide now - from server</string>
+	<string id="30108">Create TV-Guide now (local scan)</string>
 	<string id="30111">Update Channels Lists now</string>
 	<string id="30112">Force remote-settings default URL</string>
 	
@@ -44,6 +44,7 @@
 	<string id="30305">LiveStreamer Port</string>
 	<string id="30306">Auto-update IPTVSimple?</string>
 	<string id="30307">Empty channels logos folder</string>
+	<string id="30308">Refresh ALL Live TV required resources</string>
 	
 	<string id="30400">Appearance</string>
 </strings>
