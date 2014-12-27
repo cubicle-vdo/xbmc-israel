@@ -24,6 +24,7 @@ def Streamer(wfile, url, quality):
 		raise Exception("No Stream Found!")
 	
 	stream = streams[quality]
+	#print stream
 	fd = stream.open()
 	while True:
 		buff = fd.read(4096)

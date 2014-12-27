@@ -1,10 +1,8 @@
-import xbmcaddon, re, random, time, datetime
+import re, random, time
 import urllib, urllib2, json
 import common
 
 AddonID = "plugin.video.israelive"
-Addon = xbmcaddon.Addon(AddonID)
-icon = Addon.getAddonInfo('icon')
 
 def GetUrlStream(url, filmonOldStrerams=False, useRtmp=False):
 	chNum, referrerCh, ChName, filmonMethod = GetUrlParams(url)
@@ -274,7 +272,7 @@ def hls2rtmp(urlhls):
 	urlrtmp = "{0}/{1} playpath={1} swfUrl={2} pageUrl=http://www.filmon.com/ live=true timeout=45 swfVfy=true".format(urlrtmp, playpath, swfUrl)
 	return urlrtmp
 	
-def GetFilmonChannelsList(url):
+def GetFilmonChannelsList():
 	list = []
 	
 	try:
@@ -285,28 +283,27 @@ def GetFilmonChannelsList(url):
 				if url.find(AddonID) > 0:
 					channel = re.compile('url=([0-9]*).*?mode=1(.*?)$',re.I+re.M+re.U+re.S).findall(url)
 					if len(channel) > 0 and channel[0][0] != "" and channel[0][1].find("&ignorefilmonguide=1") < 0:
-						list.append(int(channel[0][0]))
+						list.append({"channel": int(channel[0][0]), "name": item["name"]})
 	except:
 		pass
 		
 	return list
 
 def MakePLXguide(filmonGuideFile):
-	filmonlist = GetFilmonChannelsList(url, includePlaylists=True)
+	filmonlist = GetFilmonChannelsList()
 	if filmonlist == []:
-		return
-		
-	filmonlist = list(set(filmonlist))
-	randList =  [{ "index": filmonlist.index(item), "channel": item} for item in filmonlist]
+		return False
+
+	randList =  [{ "index": filmonlist.index(item), "channel": item["channel"]} for item in filmonlist]
 	random.seed()
 	random.shuffle(randList)
-	
+
 	#cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
 	#if cookie == None:
 	#	return
 	html = OpenURL("http://www.filmon.com/api/init/")
 	if html is None:
-		return None
+		return False
 	resultJSON = json.loads(html)
 	session_key = resultJSON["session_key"]
 
@@ -318,8 +315,10 @@ def MakePLXguide(filmonGuideFile):
 			prms = GetChannelParams(html)
 
 		tvGuide = [] if prms is None else MakeChannelGuide(prms)
-		filmonlist[item["index"]] = {"channel": item["channel"], "tvGuide": tvGuide}
+		filmonlist[item["index"]] = {"channel": filmonlist[item["index"]]["name"], "tvGuide": tvGuide}
 			
 	with open(filmonGuideFile, 'w') as outfile:
 		json.dump(filmonlist, outfile) 
 	outfile.close()
+	
+	return True

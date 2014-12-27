@@ -31,6 +31,7 @@ class APUUIDCreateRequest(APLoader):
 	self.queryUrl = self.queryUrl + '&device[os_version]=' + self.osVersionValue
 	self.queryUrl = self.queryUrl + '&device[bundle_id]=' + self.bundleValue
 	self.queryUrl = self.queryUrl + '&device[bundle_version]=' + self.bundleVersionValue
+	self.queryUrl = self.queryUrl + '&device[app_id]=1969'
 	# create a seed from the device ID and bundle value, used to generate a UUID by the identiity service
 	seed = AISUtil.getUUIDSeed(settings)
 	self.queryUrl = self.queryUrl + '&device[uuid]=' + seed

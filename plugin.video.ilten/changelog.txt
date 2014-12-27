@@ -1,2 +1,7 @@
+[B]Version 1.3.0[/B]
+- Fixed UUID creation code
+- Fixed empty addon after first login
+- Fixed some promoted show assets
+
 [B]Version 1.2.0[/B]
 - New version, applicaster based

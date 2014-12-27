@@ -4,9 +4,8 @@ import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io,base64
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
-
+localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-plxFile = os.path.join(user_dataDir, "israelive.plx")
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -58,7 +57,8 @@ def UpdateFile(file, url, zip=False):
 		last_modified = headers.getheader("Last-Modified")
 		if not last_modified:
 			last_modified = etag
-	except:
+	except Exception as ex:
+		print ex
 		return False
 		
 	if last_modified is None:
@@ -139,7 +139,7 @@ def UpdatePlx(url, file, refreshInterval=0):
 
 	return isListUpdated
 		
-def OKmsg(title, line1, line2 = None, line3 = None):
+def OKmsg(title, line1, line2 = "", line3 = ""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
 	
@@ -199,6 +199,7 @@ def GetRemoteSettingsUrl():
 	return remoteSettingsUrl
 	
 def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=True, fullScan=False):
+	plxFile = os.path.join(user_dataDir, "israelive.plx")
 	f = open(plxFile,'r')
 	data = f.read()
 	f.close()
@@ -237,3 +238,24 @@ def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=
 			list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"], "group": subCat})
 		
 	return list
+	
+def MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile):
+	guideList = ReadList(globalGuideFile)
+	filmonGuideList = ReadList(filmonGuideFile)
+	return WriteList(fullGuideFile, guideList + filmonGuideList)
+	
+def CheckNewVersion():
+	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
+	if not os.path.isfile(versionFile):
+		version = ""
+	else:
+		f = open(versionFile,'r')
+		version = f.read()
+		f.close()
+	
+	newVersion = Addon.getAddonInfo("version")
+	if version != newVersion:
+		OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
+		f = open(versionFile, 'w')
+		f.write(newVersion)
+		f.close()
