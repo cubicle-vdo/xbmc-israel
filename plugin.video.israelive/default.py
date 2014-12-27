@@ -192,7 +192,10 @@ def GetPlayingDetails(channelName, channelNum=None, filmon=False, ignoreFilmonGu
 		if url is None:
 			return None, None, None, None
 		
-	if not filmon or (filmon and ignoreFilmonGuide):
+	if ignoreFilmonGuide:
+		filmon = False
+		
+	if not filmon:
 		if not useEPG:
 			return url, programmeName, programmeName, iconimage
 

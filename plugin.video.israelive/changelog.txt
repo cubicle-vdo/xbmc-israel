@@ -1,3 +1,5 @@
+[B]v4.2.4[/B]
+- fix for playing filmon channels with alternative TV-Guide.
 [B]v4.2.3[/B]
 - added a new action-button to addon settings (in Live TV tab): Refresh ALL Live TV required resources on one click.
 - bugfix for xbmc 12.x versions (Frodo)
