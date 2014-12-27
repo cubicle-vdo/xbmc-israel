@@ -211,7 +211,7 @@ class manager_wallavod:
             
             print "subtitleUrl=" + subtitlesUrl
             
-        videoUrl = resultJSON["video_src_tv"]
+        videoUrl = resultJSON["video_src_ipad"]
         #videoSrc = item["src"]
         #videoUrl = "rtmp://waflaWBE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://isc.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf tcurl=rtmp://waflaWBE.walla.co.il/vod/ pageurl=http://vod.walla.co.il playpath=" + videoSrc
         

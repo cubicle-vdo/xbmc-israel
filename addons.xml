@@ -265,7 +265,7 @@ http://www.hometheater.co.il</description>
     </extension>
  </addon>
 
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.7" provider-name="sbentin shlomico">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.8" provider-name="sbentin shlomico">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.common.plugin.cache" version="0.9.1"/>
