@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urllib, json, xbmcaddon
+import myFilmon, myResolver
 
 def get_params(url):
 	param=[]
@@ -18,7 +20,6 @@ def get_params(url):
 	return param
 	
 def GetMakoUrl(url):
-	import urllib, json
 	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
 	result = json.loads(makoTicket)
 	ticket = result['tickets'][0]['ticket']
@@ -26,9 +27,6 @@ def GetMakoUrl(url):
 	return url
 	
 def GetFilmonUrl(channelNum):
-	import xbmcaddon
-	import myFilmon
-	
 	AddonID = "plugin.video.israelive"
 	Addon = xbmcaddon.Addon(AddonID)
 	StreramsMethod = Addon.getSetting("StreramsMethod")
@@ -39,11 +37,10 @@ def GetFilmonUrl(channelNum):
 	return url
 	
 def GetGLArabFullLink(url):
-	import myResolver
 	url = myResolver.GetGLArabFullLink(url)
 	url = "hlsvariant://{0}".format(url)
 	return url
-	
+
 def GetStreamUrl(url):
 	try:
 		params = get_params(url)

@@ -2,7 +2,7 @@
 import urllib, re, os, time, datetime, hashlib
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
-import common
+import common, myResolver
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -17,20 +17,25 @@ def makeIPTVlist(iptvFile, portNum):
 	for item in list:
 		url = item['url']
 		tvg_id = item['name']
+		view_name = item['name']
+		
 		if url.find('plugin.video.israelive') > 0:
 			urlParams = url[url.find('?'):]
 			url = "http://localhost:{0}/{1}".format(portNum, urlParams)
 		elif url.find('plugin.video.f4mTester') > 0:
 			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
-		elif url.find('plugin.video.youtube') > 0:
-			url = "http://localhost:{0}/?url=http://www.youtube.com/watch?v{1}".format(portNum, url[url.rfind('='):])
+		elif url.find('www.youtube.com') > 0:
+			url = "http://localhost:{0}/?url={1}".format(portNum, url)
 		elif url.find('?mode=2') > 0:
 			url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
 		elif url.find('?mode=3') > 0:
 			url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
+		elif url.find('?mode=4') > 0:
+			url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
+			if url == "down":
+				view_name += " (down)"
 			
 		tvg_name = item['name'].replace(' ','_')
-		view_name = item['name']
 		tvg_logo = GetLogoFileName(item)
 		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
