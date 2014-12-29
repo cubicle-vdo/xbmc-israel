@@ -86,24 +86,14 @@ def ListLive(name, iconimage=None):
 		isTvGuide = False
 		
 		if item_data["type"] == 'video' or item_data["type"] == 'audio':
-			#channelName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
-			#displayName = channelName
-			
 			if url.find(AddonID) > 0:
 				itemMode = re.compile('url=([0-9]*).*?mode=([0-9]*).*?$',re.I+re.M+re.U+re.S).findall(url)
 				if len(itemMode) > 0 and itemMode[0] != '':
 					mode = int(itemMode[0][1])
 				if mode == 1:
 					mode = 3
-			elif url.find('plugin.video.f4mTester') > 0:
-				mode = 12
-			elif url.find('?mode=2') > 0:
-				mode = 14
-			elif url.find('?mode=3') > 0:
-				if useIPTV:
-					mode = 40
-				else:
-					continue
+			elif url.find('?mode=3') > 0 and not useIPTV:
+				continue
 			else:
 				mode = 10
 				
@@ -126,6 +116,21 @@ def ListLive(name, iconimage=None):
 	SetViewMode()
 
 def PlayChannel(url, name, iconimage):
+	if url.find('plugin.video.f4mTester') > 0:
+		Playf4m(url, name, iconimage)
+		return
+		
+	if url.find('www.youtube.com') > 0:
+		url = myResolver.GetYoutubeFullLink(url)
+	elif url.find('?mode=2') > 0:
+		url = myResolver.GetGLArabFullLink(url[:url.find('?mode')])
+	elif url.find('?mode=3') > 0 and useIPTV:
+		url = GetLivestreamerLink(url[:url.find('?mode')])
+	elif url.find('?mode=4') > 0:
+		url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
+		if url == "down":
+			return
+	
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
 	Play(url, channelName, programmeName, iconimage)
 	
@@ -150,21 +155,15 @@ def Playf4m(url, name=None, iconimage=None):
 	#player.playF4mLink(urllib.unquote_plus(url), name, use_proxy_for_chunks=True)
 	player.playF4mLink(urllib.unquote_plus(url), programmeName, use_proxy_for_chunks=True, iconimage=iconimage, channelName=channelName)
 	
-def PlayGLArabLink(url, name, iconimage):
-	url = myResolver.GetGLArabFullLink(url[:url.find('?mode')])
-	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
-	Play(url, channelName, programmeName, iconimage)
-	
-def PlayLivestreamerLink(url, name, iconimage):
+def GetLivestreamerLink(url):
 	portNum = 65007
 	try:
 		portNum = int(Addon.getSetting("LiveStreamerPort"))
 	except:
 		pass
 		
-	url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
-	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
-	Play(url, channelName, programmeName, iconimage)
+	url = "http://localhost:{0}/?url={1}".format(portNum, url)
+	return url
 	
 def PlayFilmon(chNum, channelName="", ignoreFilmonGuide=False):
 	url, channelName, programmeName, iconimage = GetPlayingDetails(urllib.unquote_plus(channelName), chNum, filmon=True, ignoreFilmonGuide=ignoreFilmonGuide)
@@ -331,7 +330,6 @@ def listFavorites():
 		
 	for item in data:
 		channelName = item["name"].encode("utf-8").replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
-		#displayName = channelName
 		url = item["url"]
 		image = item["image"].encode("utf-8")
 		description = ""
@@ -344,16 +342,8 @@ def listFavorites():
 				mode = int(itemMode[0][1])
 			if mode == 1:
 				mode = 4
-
-		elif url.lower().find('f4mtester') > 0:
-			mode = 13
-		elif url.find('?mode=2') > 0:
-			mode = 15
-		elif url.find('?mode=3') > 0:
-			if useIPTV:
-				mode = 41
-			else:
-				continue
+		elif url.find('?mode=3') > 0 and not useIPTV:
+			continue
 		else:
 			mode = 11
 			
@@ -429,10 +419,10 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
-	if mode==3 or mode==4 or mode==7 or mode==8 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==40 or mode==41 or mode==99:
+	if mode==3 or mode==4 or mode==7 or mode==8 or mode==10 or mode==11 or mode==99:
 		isFolder=False
 	
-	if mode==3 or mode==4 or mode==10 or mode==11 or mode==12 or mode == 13 or mode == 14 or mode==15 or mode==40 or mode==41:
+	if mode==3 or mode==4 or mode==10 or mode==11 :
 		liz.setProperty("IsPlayable","true")
 		items = []
 
@@ -442,11 +432,11 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 		elif mode == 4:
 			items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=9&iconimage={2}&displayname={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append((localizedString(30207).encode('utf-8'), "XBMC.RunPlugin({0}?url={1}&mode=18)".format(sys.argv[0], urllib.quote_plus(url))))
-		elif mode == 10 or mode == 12 or mode == 14 or mode==40:
+		elif mode == 10:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append((localizedString(30206).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=17)'.format(sys.argv[0], listIndex)))
-		elif mode == 11 or mode == 13 or mode == 15 or mode==41:
+		elif mode == 11:
 			if isTvGuide:
 				items.append(('TV Guide', 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3})'.format(sys.argv[0], urllib.quote_plus(url), iconimage, channelName)))
 			items.append((localizedString(30207).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=18)'.format(sys.argv[0], urllib.quote_plus(url))))
@@ -613,12 +603,6 @@ elif mode==9:
 	FilmonChannelGuide(url, displayname, iconimage, ignoreFilmonGuide)
 elif mode==10 or mode==11:
 	PlayChannel(url, displayname, iconimage)
-elif mode==12 or mode==13:
-	Playf4m(url, displayname, iconimage)
-elif mode==14 or mode==15:
-	PlayGLArabLink(url, displayname, iconimage)
-elif mode==40 or mode==41:
-	PlayLivestreamerLink(url, displayname, iconimage)
 elif mode==16:
 	listFavorites()
 elif mode==17: 

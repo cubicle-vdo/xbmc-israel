@@ -1,3 +1,6 @@
+[B]v4.2.5[/B]
+- fix for playing youtube channels from inside the addon.
+- added support for more kind of channels.
 [B]v4.2.4[/B]
 - fix for playing filmon channels with alternative TV-Guide.
 [B]v4.2.3[/B]
