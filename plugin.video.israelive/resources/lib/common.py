@@ -115,7 +115,6 @@ def UpdateZipedFile(file, url):
 	import extract
 	zipFile = "{0}.zip".format(file[:file.rfind('.')])
 	if UpdateFile(zipFile, Decode(url), zip=True):
-		user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 		extract.all(zipFile, user_dataDir)
 		try:
 			os.remove(zipFile)
