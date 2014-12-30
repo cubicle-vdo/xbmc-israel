@@ -1,3 +1,5 @@
+[B]v4.2.6[/B]
+- fix for TV-Guide on Live TV.
 [B]v4.2.5[/B]
 - fix for playing youtube channels from inside the addon.
 - added support for more kind of channels.

@@ -81,8 +81,11 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	channelsList = ""
 	programmeList = ""
 	for channel in FullGuideList:
-		item = re.compile('^\[COLOR yellow\]\[B\](.*?)\[/B\]\[/COLOR\]$',re.I+re.M+re.U+re.S).findall(channel["channel"].encode("utf-8"))
-		chName = item[0] if item != [] else None
+		chName = channel["channel"].encode("utf-8")
+		if chName.find("[COLOR yellow") > -1:
+			item = re.compile('^\[COLOR yellow\]\[B\](.*?)\[/B\]\[/COLOR\]$',re.I+re.M+re.U+re.S).findall(chName)
+			chName = item[0] if item != [] else None
+		
 		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
 
 		for programme in channel["tvGuide"]:
