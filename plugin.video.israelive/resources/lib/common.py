@@ -37,7 +37,7 @@ def isFileOld(file, deltaInSec):
 	isFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
 	return isFileNotUpdate
 	
-def UpdateFile(file, url, zip=False):
+def UpdateFile(file, url, zip=False, forceUpdate=False):
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
 	if (zip == False and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
 		fileContent = ""
@@ -64,7 +64,7 @@ def UpdateFile(file, url, zip=False):
 	if last_modified is None:
 		return False
 		
-	isNew = fileContent != last_modified
+	isNew = forceUpdate or (fileContent != last_modified)
 	
 	if isNew:
 		if zip:
@@ -107,14 +107,14 @@ def WriteList(filname, list):
 		
 	return success
 	
-def GetUpdatedList(file, url):
-	UpdateFile(file, Decode(url))
+def GetUpdatedList(file, url, forceUpdate=False):
+	UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
 	return ReadList(file)
 	
-def UpdateZipedFile(file, url):
+def UpdateZipedFile(file, url, forceUpdate=False):
 	import extract
 	zipFile = "{0}.zip".format(file[:file.rfind('.')])
-	if UpdateFile(zipFile, Decode(url), zip=True):
+	if UpdateFile(zipFile, Decode(url), zip=True, forceUpdate=forceUpdate):
 		extract.all(zipFile, user_dataDir)
 		try:
 			os.remove(zipFile)
@@ -131,10 +131,10 @@ def GetEncodeString(str):
 		pass
 	return str
 
-def UpdatePlx(url, file, refreshInterval=0):
+def UpdatePlx(url, file, refreshInterval=0, forceUpdate=False):
 	isListUpdated = False
 	if isFileOld(file, refreshInterval):
-		isListUpdated = UpdateFile(file, Decode(url))
+		isListUpdated = UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
 
 	return isListUpdated
 		

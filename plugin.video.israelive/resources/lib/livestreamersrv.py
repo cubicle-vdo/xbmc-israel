@@ -4,6 +4,7 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from livestreamer import Livestreamer
 from urllib import unquote
+import player
 
 LIVESTREAMER = None
 httpd = None
@@ -52,7 +53,6 @@ class StreamHandler(BaseHTTPRequestHandler):
 
 		quality = "best"
 		try: 
-			import player
 			url, quality = player.GetStreamUrl(unquote(s.path[1:]))
 		except:
 			url = None
@@ -70,16 +70,18 @@ def start(portNum):
 	print "Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum)
 	try:
 		httpd.serve_forever()
-	except:
-		pass
+	except Exception as ex:
+		print ex
+		#pass
 	#httpd.server_close()
 	#print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
 	
-def stop():
+def stop(portNum):
 	global httpd
 	try:
 		if httpd is not None:
 			httpd.server_close()
 			print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
-	except:
-		pass
+	except Exception as ex:
+		print ex
+		#pass

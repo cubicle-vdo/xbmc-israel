@@ -94,4 +94,4 @@ while (not xbmc.abortRequested):
 		CheckUpdates()
 	
 if useIPTV:
-	livestreamersrv.stop()
+	livestreamersrv.stop(portNum)
