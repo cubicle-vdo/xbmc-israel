@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="30100">
-		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eL20uKHZzZSandCrmqY=" />
+		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eL20uKHZzZSVrqSHw8c=" />
 		<setting id="forceRemoteDefaults" type="bool" label="30112" default="true" />
 		<setting id="StreramsMethod" type="enum" label="30102" lvalues="30103|30109" default="0" />
 		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="1" />

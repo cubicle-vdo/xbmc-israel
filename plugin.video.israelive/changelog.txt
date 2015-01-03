@@ -1,3 +1,5 @@
+[B]v4.2.8[/B]
+- Maintenance
 [B]v4.2.7[/B]
 - skip check for last modified on server when user press update from addon settings.
 [B]v4.2.6[/B]
