@@ -20,7 +20,6 @@ def CATEGORIES():
 	runp2p=ADDON.getSetting("P2Parsers") == "true"
 	#repoCheck.UpdateRepo('https://p2p-strm.googlecode.com/svn/addons/plugin.video.p2p-streams/plugin.video.p2p-streams-1.1.5.zip','plugin.video.p2p-streams')
 	#addDir('ptp','plugin://plugin.video.p2p-streams/',1,'','')
-	print str(runp2p) + "lll"
 	if runp2p:
 		update_view('plugin://plugin.video.p2p-streams/')
 		if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'plugin.video.p2p-streams')):
@@ -36,9 +35,11 @@ def CATEGORIES():
 	addDir('ליגה ספרדית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5385&page=',2,'http://blog.tapuz.co.il/tlv1/images/%7B0B4BDB70-5D9B-463A-B894-0D5762E59AA0%7D.jpg','1')
 	addDir('תקצירי בארסה','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5383&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYF9lIm6fqSM3cysKy_EqnRFyDOycA8lexCn7dSqp_4Av4vw1mcA','1')
 	addDir('תקצירי מדריד','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5384&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTJtSGna8A2FmzVH3WQyBLx6HGwEGqUKeBzPqvzn7cmcKvpkv8D','1')
-	#addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
+	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5403&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
-	#addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
+	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
+	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
+	
 	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5459&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
 	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5452&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
 	addDir('חמישיות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5463&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTSYYoacn3zS6w4JwqPORpGCDBqytoJOko8bc6usF3kQ_yoJgwS','1')
@@ -218,24 +219,21 @@ def YOUList(name,url,description):
 def play_one(name,url,iconimage,description):
 	url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
 	link = OPEN_URL(url1)
-	#source file="http://streambk.one.co.il/2013_2/33266.mp4" label="360p" /><jwplayer:source file="http://streambk.one.co.il/2013_2_HD/33266.mp4" label="720p HD" />
-	list2=[]
-	regex='source file="(.*?)"'
+	regex='playlist(.*?)" label="(.*?)"'
 	direct=re.compile(regex).findall(link)
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title":name} )
-	#liz.setProperty("IsPlayable","true")
 	
 	for item in direct:
-		if item.find("ds") ==-1 :
 			if description=='True':
-				if item.find("HD")>0 :
-					liz.setPath(item)
+				if item[1].find("HD")>0 :
+					link="http://playlist"+str(item[0])
+					liz.setPath(link)
 					xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
 			else:
-				addLink(name,item,iconimage,'')
+				addLink(name,"http://playlist"+str(item[0]),iconimage,'')
 
 def OPEN_URL(url,host=None):
 	req = urllib2.Request(url)
