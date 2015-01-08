@@ -130,7 +130,11 @@ def PlayChannel(url, name, iconimage):
 		url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
 		if url == "down":
 			return
-	
+	elif url.find('?mode=5') > 0:
+		url = myResolver.GetSatElitFullLink(url[:url.find('?mode')])
+	elif url.find('?mode=6') > 0:	
+		url = myResolver.GetGinkoFullLink(url[:url.find('?mode')])
+			
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name))
 	Play(url, channelName, programmeName, iconimage)
 	
@@ -294,8 +298,7 @@ def GetProgrammeDetails(channelName):
 def GetProgrammes(epg, channelName ,full=False):
 	programmes = []
 	try:
-		# delete replace after update making guide method (server)
-		matches = [x["tvGuide"] for x in epg if x["channel"].encode('utf-8').replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "") == channelName]
+		matches = [x["tvGuide"] for x in epg if x["channel"].encode('utf-8') == channelName]
 		programmes = matches[0]
 	except Exception, e:
 		pass
