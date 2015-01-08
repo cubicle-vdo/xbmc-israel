@@ -11,6 +11,8 @@ localizedString = Addon.getLocalizedString
 
 
 def makeIPTVlist(iptvFile, portNum):
+	#satElitKey = None
+	
 	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
 	iptvList = '#EXTM3U\n'
 
@@ -26,7 +28,7 @@ def makeIPTVlist(iptvFile, portNum):
 			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
 		elif url.find('www.youtube.com') > 0:
 			url = "http://localhost:{0}/?url={1}".format(portNum, url)
-		elif url.find('?mode=2') > 0:
+		elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0:
 			url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
 		elif url.find('?mode=3') > 0:
 			url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
@@ -34,6 +36,10 @@ def makeIPTVlist(iptvFile, portNum):
 			url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
 			if url == "down":
 				view_name += " (down)"
+		#elif url.find('?mode=5') > 0:
+		#	if satElitKey is None:
+		#		satElitKey = myResolver.GetSatElitKeyOnly()
+		#	url = myResolver.GetSatElitFullLink(url[:url.find('?mode')], satElitKey)
 			
 		tvg_name = item['name'].replace(' ','_')
 		tvg_logo = GetLogoFileName(item)
@@ -82,10 +88,6 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	programmeList = ""
 	for channel in FullGuideList:
 		chName = channel["channel"].encode("utf-8")
-		if chName.find("[COLOR yellow") > -1:
-			item = re.compile('^\[COLOR yellow\]\[B\](.*?)\[/B\]\[/COLOR\]$',re.I+re.M+re.U+re.S).findall(chName)
-			chName = item[0] if item != [] else None
-		
 		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
 
 		for programme in channel["tvGuide"]:
@@ -226,3 +228,4 @@ def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
 	if autoIPTV == 0 or autoIPTV == 2:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
 		xbmc.executebuiltin('StartPVRManager')
+		

@@ -36,9 +36,13 @@ def GetFilmonUrl(channelNum):
 	url = "hlsvariant://{0}".format(url)
 	return url
 	
-def GetGLArabFullLink(url):
-	url = myResolver.GetGLArabFullLink(url)
-	url = "hlsvariant://{0}".format(url)
+def GetFullLink(url, mode):
+	if mode == 2:
+		url = "hlsvariant://{0}".format(myResolver.GetGLArabFullLink(url))
+	elif mode == 5:
+		url = "hls://{0}".format(myResolver.GetSatElitFullLink(url))
+	elif mode == 6:
+		url = "hlsvariant://{0}".format(myResolver.GetGinkoFullLink(url))
 	return url
 
 def GetStreamUrl(url):
@@ -60,10 +64,11 @@ def GetStreamUrl(url):
 	except:
 		mode = 0
 	
+	
 	if mode == 1:
 		streamUrl = GetFilmonUrl(url)
-	elif mode == 2:
-		streamUrl = GetGLArabFullLink(streamUrl)
+	elif mode == 2 or mode == 5 or mode == 6:
+		streamUrl = GetFullLink(streamUrl, mode)
 	elif streamUrl.find('f4m') > 0:
 		if streamUrl.find('keshet') > 0:
 			streamUrl = GetMakoUrl(streamUrl)
@@ -72,3 +77,4 @@ def GetStreamUrl(url):
 		streamUrl = url[5:]
 
 	return streamUrl, quality
+	

@@ -8,7 +8,7 @@ AddonName = Addon.getAddonInfo("name")
 icon = Addon.getAddonInfo('icon')
 libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common, myFilmon
+import common
 
 portNum = 65007
 try:
@@ -18,11 +18,9 @@ except:
 	
 useIPTV = False
 if Addon.getSetting("useIPTV") == "true":
-	import livestreamersrv, myIPTV, threading
+	import livestreamersrv, myIPTV
 	try:
-		t1 = threading.Thread(target = livestreamersrv.start, args = (portNum,))
-		t1.daemon = True
-		t1.start()
+		livestreamersrv.start(portNum)
 		useIPTV = True
 	except Exception as ex:
 		print ex
@@ -94,4 +92,7 @@ while (not xbmc.abortRequested):
 		CheckUpdates()
 	
 if useIPTV:
-	livestreamersrv.stop(portNum)
+	try:
+		livestreamersrv.stop(portNum)
+	except Exception as ex:
+		print ex
