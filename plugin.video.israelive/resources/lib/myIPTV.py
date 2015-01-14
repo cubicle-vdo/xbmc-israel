@@ -9,14 +9,14 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 
+user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def makeIPTVlist(iptvFile, portNum):
 	#satElitKey = None
-	
-	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
 	iptvList = '#EXTM3U\n'
-
-	for item in list:
+	
+	channelsList = GetIptvChannels()
+	for item in channelsList:
 		url = item['url']
 		tvg_id = item['name']
 		view_name = item['name']
@@ -44,7 +44,8 @@ def makeIPTVlist(iptvFile, portNum):
 		tvg_name = item['name'].replace(' ','_')
 		tvg_logo = GetLogoFileName(item)
 		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
-		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}" group-title="{2}" tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, item['group'], tvg_logo, radio, view_name, url)
+		group = ' group-title="{0}"'.format(item['group'].encode("utf-8")) if item.has_key('group') else ''
+		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
 
 	f = open(iptvFile, 'w')
 	f.write(iptvList)
@@ -78,7 +79,7 @@ def GetTZ():
 		return "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
 	
 def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
-	FullGuideList = common.ReadList(fullGuideFile)
+	FullGuideList = GetIptvGuide()
 	if len(FullGuideList) == 0:
 		return
 		
@@ -107,17 +108,17 @@ def SaveChannelsLogos(logosDir):
 		os.makedirs(logosDir)
 		
 	newFilesList = []
-	list = common.GetListFromPlx(includeCatNames=False, fullScan=True)
+	channelsList = GetIptvChannels()
 	
-	for item in list:
+	for channel in channelsList:
 		try:
-			logoFile = GetLogoFileName(item)
+			logoFile = GetLogoFileName(channel)
 			if logoFile != "":
 				newFilesList.append(logoFile)
 				logoFile = format(os.path.join(logosDir, logoFile))
 				if not os.path.isfile(logoFile):
-					#print "---------\n{0}\n{1}".format(item['name'], item['image'])
-					urllib.urlretrieve(item['image'], logoFile)
+					#print "---------\n{0}\n{1}".format(channel['name'], channel['image'])
+					urllib.urlretrieve(channel['image'], logoFile)
 		except Exception as e:
 			print e
 	
@@ -229,3 +230,47 @@ def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
 		xbmc.executebuiltin('StartPVRManager')
 		
+def GetCategories():
+	useCategories = Addon.getSetting("useCategories") == "true"
+	iptvList = int(Addon.getSetting("iptvList"))
+
+	if not useCategories or iptvList == 2:
+		categories = common.ReadList(os.path.join(user_dataDir, 'lists', 'categories.list'))
+	elif iptvList == 0:
+		categories = [{"name": "Favourites"}]
+	elif iptvList == 1:
+		categories = common.ReadList(os.path.join(user_dataDir, 'lists', 'selectedCategories.list'))
+	
+	return categories
+		
+def GetIptvChannels():
+	categories = GetCategories()
+	channelsList = []
+	for category in categories:
+		channels = common.GetChannels(category["name"].encode("utf-8")) if category["name"] != "Favourites" else common.ReadList(os.path.join(user_dataDir, 'favorites.txt'))
+		for channel in channels:
+			if channel["type"] == 'video' or channel["type"] == 'audio':
+				channel['name'] = channel['name'].encode("utf-8").replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
+				#channel['name'] = channel['name'].replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
+				try:
+					channelsList.append(channel)
+				except Exception, e:
+					pass
+					
+	return channelsList
+	
+def GetIptvGuide():
+	categories = GetCategories()
+	epg = []
+	for category in categories:
+		fileName = os.path.join(user_dataDir, 'lists', "{0}.guide".format(hashlib.md5(category["name"].encode("utf-8").strip()).hexdigest()))
+		channels = common.ReadList(fileName)
+		
+		for channel in channels:
+			try:
+				if not any(d.get('channel', '').encode('utf-8') == channel["channel"].encode("utf-8") for d in epg):
+					epg.append(channel)
+			except Exception, e:
+				pass
+					
+	return epg

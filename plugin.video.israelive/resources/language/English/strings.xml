@@ -47,4 +47,13 @@
 	<string id="30308">Refresh ALL Live TV required resources</string>
 	
 	<string id="30400">Appearance</string>
+	
+	<string id="30500">Groups</string>
+	<string id="30501">Filter groups</string>
+	<string id="30502">Select groups</string>
+	<string id="30503">Select groups (scrolling list)</string>
+	<string id="30504">Choose groups for LiveTV</string>
+	<string id="30505">Favourites</string>
+	<string id="30506">Selected</string>
+	<string id="30507">All</string>
 </strings>

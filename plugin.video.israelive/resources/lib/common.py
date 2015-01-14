@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcgui,xbmc,os,time,json,xbmcaddon,io,base64
+import sys, os, io, re, time, base64, hashlib
+import urllib, urllib2, json
+import xbmc, xbmcgui, xbmcaddon
+import multiChoiceDialog
+import itertools, operator
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+listsDir = os.path.join(user_dataDir, 'lists')
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -96,10 +101,10 @@ def ReadList(fileName):
 
 	return content
 
-def WriteList(filname, list):
+def WriteList(filename, list):
 	try:
-		with io.open(filname, 'w', encoding='utf-8') as handle:
-			handle.write(unicode(json.dumps(list, indent=4, ensure_ascii=False)))
+		with io.open(filename, 'w', encoding='utf-8') as handle:
+			handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
 		print ex
@@ -136,17 +141,42 @@ def UpdatePlx(url, file, refreshInterval=0, forceUpdate=False):
 	if isFileOld(file, refreshInterval):
 		isListUpdated = UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
 
+	if isListUpdated:
+		if not os.path.exists(listsDir):
+			os.makedirs(listsDir)
+	
+		dic_list = GetListFromPlx(fullScan=True)
+		dic_list.sort(key=operator.itemgetter('group'))
+		categories_list = []
+		for key, group in itertools.groupby(dic_list, lambda item: item["group"]):
+			list1 = [{"url": item["url"], "image": item["image"], "name": item["name"].decode("utf-8"), "type": item["type"], "group": item["group"].decode("utf-8")} for item in group]
+			filename = os.path.join(listsDir, "{0}.list".format(hashlib.md5(key.strip()).hexdigest()))
+			WriteList(filename, list1)
+			categories = [{"name": item["name"], "image": item["image"], "group": item["group"]} for item in list1 if item['type'] == "playlist"]
+			if len(categories) > 0:
+				for category in categories:
+					categories_list.append(category)
+
+		WriteList(os.path.join(listsDir, "categories.list"), categories_list)
+		
 	return isListUpdated
 		
-def OKmsg(title, line1, line2 = "", line3 = ""):
+def OKmsg(title, line1, line2="", line3=""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
 	
-def GetMenuSelected(title, list):
+def GetMenuSelected(title, list, autoclose=0):
 	dialog = xbmcgui.Dialog()
-	answer = dialog.select(title, list)
+	answer = dialog.select(title, list, autoclose=autoclose)
 	return answer
 
+def GetMultiChoiceSelected(title, list):
+	dialog = multiChoiceDialog.MultiChoiceDialog(title, list)
+	dialog.doModal()
+	selected = dialog.selected[:]
+	del dialog #You need to delete your instance when it is no longer needed because underlying xbmcgui classes are not grabage-collected. 
+	return selected
+	
 def Encode(string, key=None):
 	if key is None:
 		key = GetKey()
@@ -238,10 +268,49 @@ def GetListFromPlx(filterCat="israelive", includeChannels=True, includeCatNames=
 		
 	return list
 	
+def GetChannels(categoryName):
+	fileName = os.path.join(listsDir, "{0}.list".format(hashlib.md5(categoryName.strip()).hexdigest()))
+	return ReadList(fileName)
+	
 def MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile):
 	guideList = ReadList(globalGuideFile)
 	filmonGuideList = ReadList(filmonGuideFile)
-	return WriteList(fullGuideFile, guideList + filmonGuideList)
+	WriteList(fullGuideFile, guideList + filmonGuideList)
+	MakeCatGuides(fullGuideFile, os.path.join(listsDir, "categories.list"))
+	
+def MakeCatGuides(fullGuideFile, categoriesFile):
+	if not os.path.exists(listsDir):
+		os.makedirs(listsDir)
+		
+	epg = ReadList(fullGuideFile)
+	
+	categories = ReadList(categoriesFile)
+	categories.append({"name": "Favourites"})
+
+	for category in categories:
+		MakeCatGuide(fullGuideFile, category["name"], epg)
+	
+def MakeCatGuide(fullGuideFile, categoryName, epg=None):
+	if epg is None:
+		epg = ReadList(fullGuideFile)
+		
+	filename = os.path.join(listsDir, "{0}.guide".format(hashlib.md5(categoryName.encode("utf-8").strip()).hexdigest()))
+	channels = GetChannels(categoryName.encode("utf-8")) if categoryName != "Favourites" else ReadList(os.path.join(user_dataDir, 'favorites.txt'))
+	categoryEpg = []
+	for channel in channels:
+		if channel["type"] == 'video' or channel["type"] == 'audio':
+			channelName = channel['name'].encode("utf-8").replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
+			try:
+				ch = [x for x in epg if x["channel"].encode('utf-8') == channelName]
+				if not any(d.get('channel', '').encode('utf-8') == channelName for d in categoryEpg):
+					categoryEpg.append(ch[0])
+			except Exception, e:
+				pass
+	WriteList(filename, categoryEpg)
+		
+def GetGuide(categoryName):
+	fileName = os.path.join(listsDir, "{0}.guide".format(hashlib.md5(categoryName.strip()).hexdigest()))
+	return ReadList(fileName)
 	
 def CheckNewVersion():
 	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
@@ -254,7 +323,8 @@ def CheckNewVersion():
 	
 	newVersion = Addon.getAddonInfo("version")
 	if version != newVersion:
-		OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
+		if Addon.getSetting("useIPTV") == "true":
+			OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
 		f = open(versionFile, 'w')
 		f.write(newVersion)
 		f.close()

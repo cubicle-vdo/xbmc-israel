@@ -1,3 +1,6 @@
+[B]v4.3.0[/B]
+- added option to filter Groups to display in addon (from tab "Groups" inside addon-settings)
+- added option to filter Groups to display in Live TV (from tab "Groups" inside addon-settings)
 [B]v4.2.9[/B]
 - added support for more kind of channels.
 [B]v4.2.8[/B]
