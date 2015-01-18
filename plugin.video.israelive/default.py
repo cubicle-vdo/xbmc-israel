@@ -147,7 +147,9 @@ def PlayChannel(url, name, iconimage, categoryName):
 		url = myResolver.GetSatElitFullLink(url[:url.find('?mode')])
 	elif url.find('?mode=6') > 0:	
 		url = myResolver.GetGinkoFullLink(url[:url.find('?mode')])
-			
+	elif url.find('?mode=7') > 0:		
+		url = myResolver.aatw(url[:url.find('?mode')])
+	
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	Play(url, channelName, programmeName, iconimage)
 	

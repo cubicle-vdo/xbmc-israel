@@ -40,6 +40,8 @@ def makeIPTVlist(iptvFile, portNum):
 		#	if satElitKey is None:
 		#		satElitKey = myResolver.GetSatElitKeyOnly()
 		#	url = myResolver.GetSatElitFullLink(url[:url.find('?mode')], satElitKey)
+		elif url.find('?mode=7') > 0:
+			url = myResolver.aatw(url[:url.find('?mode')])
 			
 		tvg_name = item['name'].replace(' ','_')
 		tvg_logo = GetLogoFileName(item)
