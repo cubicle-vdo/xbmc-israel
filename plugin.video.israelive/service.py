@@ -72,14 +72,14 @@ def CheckUpdates():
 		if isGuideUpdated:
 			common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
 		if Addon.getSetting("useIPTV") == "true":
-			if isPlxUpdated:
-				myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
-				
+			#if isPlxUpdated:
+			#	myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
+			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
 			if isGuideUpdated:
 				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-				
-			if isPlxUpdated or isGuideUpdated:
-				myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+			#if isPlxUpdated or isGuideUpdated:
+			#	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 		
 	if isPlxUpdated:
 		myIPTV.SaveChannelsLogos(iptvLogosDir)

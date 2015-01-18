@@ -141,10 +141,11 @@ def UpdatePlx(url, file, refreshInterval=0, forceUpdate=False):
 	if isFileOld(file, refreshInterval):
 		isListUpdated = UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
 
+	if not os.path.exists(listsDir):
+		os.makedirs(listsDir)
+		isListUpdated = True
+			
 	if isListUpdated:
-		if not os.path.exists(listsDir):
-			os.makedirs(listsDir)
-	
 		dic_list = GetListFromPlx(fullScan=True)
 		dic_list.sort(key=operator.itemgetter('group'))
 		categories_list = []
@@ -322,7 +323,7 @@ def CheckNewVersion():
 		f.close()
 	
 	newVersion = Addon.getAddonInfo("version")
-	if version != newVersion:
+	if newVersion > version:
 		if Addon.getSetting("useIPTV") == "true":
 			OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
 		f = open(versionFile, 'w')
