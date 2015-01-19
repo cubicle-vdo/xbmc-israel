@@ -1,3 +1,8 @@
+[B]v4.3.2[/B]
+- add selected channels from group to favourites at once (right click on group)
+- remove selected channels from favourites at once (right click on favourites)
+- channels in favourites will update when channels-file wpdate.
+- (if you select group to filter in earlier verson, you need to make the selection again. - changes in file structure)
 [B]v4.3.1[/B]
 - added support for more kind of channels.
 [B]v4.3.0[/B]
