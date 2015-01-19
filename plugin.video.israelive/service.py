@@ -59,30 +59,37 @@ def CheckUpdates():
 		pass
 		
 	isPlxUpdated = False
-	if common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600):
-		isPlxUpdated = True
+	#if common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600):
+	#	isPlxUpdated = True
+	common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600)
 
 	if Addon.getSetting("useEPG") == "true":
-		isGuideUpdated = False
-		if common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"]):
-			isGuideUpdated = True
-		if common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"]):
-			isGuideUpdated = True
-		
-		if isGuideUpdated:
-			common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
+		'''
+		#isGuideUpdated = False
+		#if common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"]):
+		#	isGuideUpdated = True
+		#if common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"]):
+		#	isGuideUpdated = True
+		#if isGuideUpdated:
+		#	common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
+		'''
+		common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"])
+		common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"])
+		common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
+			
 		if Addon.getSetting("useIPTV") == "true":
-			#if isPlxUpdated:
-			#	myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
-			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
+			'''
+			if isPlxUpdated:
+				myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
 			if isGuideUpdated:
 				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-			#if isPlxUpdated or isGuideUpdated:
-			#	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+			if isPlxUpdated or isGuideUpdated:
+				myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+			'''
+			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
+			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
 			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
-		
-	if isPlxUpdated:
-		myIPTV.SaveChannelsLogos(iptvLogosDir)
+			myIPTV.SaveChannelsLogos(iptvLogosDir)
 		
 CheckUpdates()
 

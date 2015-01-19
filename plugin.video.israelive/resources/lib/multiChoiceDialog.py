@@ -21,7 +21,7 @@ class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
 
 	def set_controls(self):
 		self.listing = pyxbmct.List(_imageWidth=15)
-		self.placeControl(self.listing, 0, 1, rowspan=9, columnspan=3)
+		self.placeControl(self.listing, 0, 0, rowspan=9, columnspan=4)
 		self.ok_button = pyxbmct.Button("OK")
 		self.placeControl(self.ok_button, 9, 1)
 		self.cancel_button = pyxbmct.Button("Cancel")
