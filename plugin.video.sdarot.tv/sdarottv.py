@@ -84,21 +84,25 @@ def LOGIN():
     
     
     print "Trying to login to sdarot tv site username:" + username
-    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/");
+    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/login");
    
  
 def MAIN_MENU():
     
     # check's if login  is required.
-    print "check if logged in already"
+    #print "check if logged in already"
     page = getData(DOMAIN+'/series',referer="")
-    match = re.compile('<span class="button blue" id="logout"><a href="/log(.*?)">').findall(page)
-    
-    if len(match)!= 1 :
-        print "login required"
-        LOGIN()
+    match = re.compile('<span class="button blue" id="logout"><a href=".*?/log(.*?)">').findall(page)
+    #print match
+    if match:
+         if str(match[0])!='out':
+            print "login required"
+            LOGIN()
+         else:
+            print "already logged in."
     else:
-        print "already logged in."
+      LOGIN()
+    
     addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
     addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
     addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
@@ -106,25 +110,25 @@ def MAIN_MENU():
     for match in matches:
          a=str(match)
          sp=a.split('-',1)
-         print sp , a
+         #print sp , a
          addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
 	
 
 	
-def SearchSdarot(url):
-	search_entered = ''
-	keyboard = xbmc.Keyboard(search_entered, "חפש כאן")
-	keyboard.doModal()
-	if keyboard.isConfirmed():
-		search_entered = keyboard.getText()
+def SearchSdarot(url,search_entered):
+	if 'חפש' in  search_entered :
+		keyboard = xbmc.Keyboard(search_entered, "חפש כאן")
+		keyboard.doModal()
+		if keyboard.isConfirmed():
+			search_entered = keyboard.getText()
 	page = getData(url=url,timeout=0,postData="search=" + search_entered)
 #	print page
 	matches = re.compile('<a href="/watch/(\d+)-(.*?)">').findall(page)
-	print matches
+	#print matches
 
 	#needs to remove duplicted result (originaly in site
 	matches = [ matches[i] for i,x in enumerate(matches) if x not in matches[i+1:]]
-	print matches
+	#print matches
 	for match in matches:
 	  series_id = match[0]
 	  link_name = match[1]
@@ -204,7 +208,7 @@ def sdarot_season(url):
         xbmcgui.Dialog().ok('Error occurred',"לא נמצאו פרקים לעונה")
         return
     
-    print episodes
+    #print episodes
     for i in range (0, len(episodes)) :
         epis= str(episodes[i]['episode'])
         addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link, '')         
@@ -320,7 +324,7 @@ elif mode==4:
 elif mode==5:
     sdarot_season(url)
 elif mode==6:
-	SearchSdarot(url)
+	SearchSdarot(url,name)
 elif mode==7:
     download_season(url)
 

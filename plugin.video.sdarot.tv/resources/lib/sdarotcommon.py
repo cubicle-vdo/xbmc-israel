@@ -184,12 +184,15 @@ def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
     
     page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
    
-    print "Sdarot processing JSON:" + str(page)
+    token = None
+    
+    #print "Sdarot processing JSON:" + str(page)
     #print cookiejar
     try:
        
         #try to see if 
         prms=json.loads(page)
+        #print str(prms)
         if prms.has_key("error"):
             
             #encoding needed for hebrew to appear right
@@ -204,15 +207,28 @@ def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
         vid_url = str(prms["url"])
         #vid_name = str(prms["name"])
         #print "vid_name: "+vid_name+"\n"
-        print "vid_url: "+vid_url+"\n"
+        
+        hd=False
+        #if str(prms["hd"])=='0':
+        if (not prms.has_key("hd")) or prms["hd"] == False or str(prms["hd"])=='0':
+            token = prms["watch"]["sd"]
+        else:
+            token = prms["watch"]["hd"]
+            hd=True
+        
+        #print "vid_url: "+vid_url+"\n"
         VID = str(prms["VID"])
-        print "VID: "+VID+"\n"
+        #print "VID: "+VID+"\n"
         
         
         vid_time = str(prms["time"])
-        print "Time: "+ vid_time +"\n"
-        token = prms["watch"]["sd"]
-        print "Token: "+token +"\n"        
+        #print "Time: "+ vid_time +"\n"
+        token=None
+        if hd:
+            token = prms["watch"]["hd"]
+        else:
+            token = prms["watch"]["sd"]
+        #print "Token: "+token +"\n"        
     
     except Exception as e:
         print e
@@ -221,8 +237,10 @@ def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
         if not silent:
             xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
         return None,None
-    
-    finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
+    if hd:
+          finalUrl = "http://" + vid_url + "/watch/hd/"+VID+'.mp4?token='+token+'&time='+vid_time
+    else:
+          finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
     
     return finalUrl,VID
 
