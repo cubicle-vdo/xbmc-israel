@@ -117,7 +117,7 @@ def MAIN_MENU():
 	
 def SearchSdarot(url,search_entered):
 	if 'חפש' in  search_entered :
-		keyboard = xbmc.Keyboard(search_entered, "חפש כאן")
+		keyboard = xbmc.Keyboard("", "חפש כאן")
 		keyboard.doModal()
 		if keyboard.isConfirmed():
 			search_entered = keyboard.getText()
