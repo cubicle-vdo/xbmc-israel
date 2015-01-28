@@ -261,7 +261,7 @@ def GetFilmonOldStreram(streams, useHls=False):
 				pass
 				
 		tcUrl = selectedStream['url']
-		url = "{0} playpath={1} app={2} swfUrl={3} tcUrl={4} pageurl=http://www.filmon.com/ live=true".format(url, streamName, app, swfUrl, tcUrl)
+		url = "{0} playpath={1} app={2} swfUrl={3} tcUrl={4} pageurl=http://www.filmon.com/ live=true timeout=45 swfVfy=true".format(url, streamName, app, swfUrl, tcUrl)
 	return url
 	
 def hls2rtmp(urlhls):

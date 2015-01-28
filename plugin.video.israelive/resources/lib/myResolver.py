@@ -70,8 +70,14 @@ def GetGinkoFullLink(id):
 		finalUrl = "{0}{1}/{1}.stream/playlist.m3u8{2}".format(common.Decode('sefm0Z97eMSutt_b18p9d72ut9zd0JOvuMN0'), parts[1], url[0][url[0].find('?'):])
 	return finalUrl  
 	
-def aatw(channel):
-	p = getUrl('http://rrr.sz.xlcdn.com/?account=AATW&file={0}&type=live&service=wowza&output=smil'.format(channel))
+def GetAatwFullLink(channel):
+	p = getUrl('{0}?account=AATW&file={1}&type=live&service=wowza&output=smil'.format(common.Decode('sefm0Z97eMi3u6Hl25PEtbmpt6HV0NJ7'), channel))
 	matches = re.compile(' base="(.*?)".*?src="(.*?)"',re.I+re.M+re.U+re.S).findall(p)
-	finalurl = "{0} playpath={1}".format(matches[0][0], matches[0][1])
-	return finalurl
+	finalUrl = "{0} playpath={1}".format(matches[0][0], matches[0][1])
+	return finalUrl
+
+def GetStreamliveToFullLink(url):
+	import livestreamer
+	streams = livestreamer.streams(url)
+	stream = streams["best"]
+	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])

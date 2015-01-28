@@ -119,7 +119,8 @@ class ASPrettyPrinter(object):
     pformat = classmethod(pformat)
 
     def pprint(cls, val):
-        print cls.pformat(val)
+        cls.pformat(val)
+        #print cls.pformat(val)
     pprint = classmethod(pprint)
 
     def pprint_lookup(cls, val, ident):

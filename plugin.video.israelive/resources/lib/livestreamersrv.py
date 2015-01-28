@@ -93,6 +93,7 @@ def start(portNum):
 	LIVESTREAMER.set_option('hls-segment-threads', '3')
 	LIVESTREAMER.set_option('hds-segment-threads', '3')
 	LIVESTREAMER.set_option('stream-segment-threads', '3')
+
 	global httpd
 	#httpd = ThreadedHTTPServer(('', portNum), StreamHandler)
 	httpd = StoppableHTTPServer(('', portNum), StreamHandler)
