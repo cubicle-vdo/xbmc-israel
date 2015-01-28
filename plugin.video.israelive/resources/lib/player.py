@@ -27,12 +27,7 @@ def GetMakoUrl(url):
 	return url
 	
 def GetFilmonUrl(channelNum):
-	AddonID = "plugin.video.israelive"
-	Addon = xbmcaddon.Addon(AddonID)
-	StreramsMethod = Addon.getSetting("StreramsMethod")
-	filmonOldStrerams = StreramsMethod == "0"
-	
-	url, chName, iconimage, programmes = myFilmon.GetUrlStream(channelNum, filmonOldStrerams, useRtmp=False)
+	url, chName, iconimage, programmes = myFilmon.GetUrlStream(channelNum, filmonOldStrerams=True, useRtmp=False)
 	url = "hlsvariant://{0}".format(url)
 	return url
 	

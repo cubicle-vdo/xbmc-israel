@@ -68,7 +68,7 @@ class interalSimpleDownloader():
 
             return response
         except:
-            print 'Error in getUrl'
+            #print 'Error in getUrl'
             traceback.print_exc()
         return None
 
@@ -100,7 +100,7 @@ class interalSimpleDownloader():
             return data
 
         except:
-            print 'Error in getUrl'
+            #print 'Error in getUrl'
             traceback.print_exc()
         return None
             
@@ -122,7 +122,7 @@ class interalSimpleDownloader():
                 self.clientHeader = sp[1]
                 self.clientHeader= urlparse.parse_qsl(self.clientHeader)
                 
-            print 'header recieved now url and headers are',url, self.clientHeader 
+            #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
             #self.downloadInternal(  url)
@@ -168,16 +168,16 @@ class interalSimpleDownloader():
                             if firstBlock:
                                 firstBlock=False
                                 if self.maxbitRate and self.maxbitRate>0:# this is for being sports for time being
-                                    print 'maxbitrate',self.maxbitRate
+                                    #print 'maxbitrate',self.maxbitRate
                                     ec=EdgeClass(buf,url,'http://www.en.beinsports.net/i/PerformConsole_BEIN/player/bin-release/PerformConsole.swf',sendToken=False)                                
                                     ec.switchStream(self.maxbitRate,"DOWN")
                         except:
                             traceback.print_exc()
                     response.close()
                     fileout.close()
-                    print time.asctime(), "Closing connection"
+                    #print time.asctime(), "Closing connection"
                 except socket.error, e:
-                    print time.asctime(), "Client Closed the connection."
+                    #print time.asctime(), "Client Closed the connection."
                     try:
                         response.close()
                         fileout.close()
@@ -201,9 +201,9 @@ class EdgeClass():
         self.onEdge = self.extractTags(data,onEdge=True)
         self.sessionID=self.onEdge['session']
         self.path=self.onEdge['streamName']
-        print 'session',self.onEdge['session']
-        print 'Edge variable',self.onEdge
-        print 'self.control',self.control
+        #print 'session',self.onEdge['session']
+        #print 'Edge variable',self.onEdge
+        #print 'self.control',self.control
         #self.MetaData = self.extractTags(data,onMetaData=True)
         if sendToken:
             self.sendNewToken(self.onEdge['session'],self.onEdge['streamName'],self.swfUrl,self.control)
@@ -211,7 +211,7 @@ class EdgeClass():
 
     def getURL(self, url, post=False, sessionID=False, sessionToken=False):
         try:
-            print 'GetURL --> url = '+url
+            #print 'GetURL --> url = '+url
             opener = urllib2.build_opener()
             if sessionID and sessionToken:
                 opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:14.0) Gecko/20100101 Firefox/14.0.1' ),
@@ -232,7 +232,7 @@ class EdgeClass():
             response=usock.read()
             usock.close()
         except urllib2.URLError, e:
-            print 'Error reason: ', e
+            #print 'Error reason: ', e
             return False
         else:
             return response
@@ -290,9 +290,9 @@ class EdgeClass():
         
     def switchStream(self, bitrate, upDown="UP"):
         newStream=self.path
-        print 'newStream before ',newStream
+        #print 'newStream before ',newStream
         newStream=re.sub('_[0-9]*@','_'+str(bitrate)+'@',newStream)
-        print 'newStream after ',newStream,bitrate
+        #print 'newStream after ',newStream,bitrate
         sessionToken =None# self.makeToken(sessionID,swf)
         commandUrl = self.control+newStream+'?cmd=&reason=SWITCH_'+upDown+',1784,1000,1.3,2,'+self.path+'v=2.11.3'
         self.getURL(commandUrl,True,self.sessionID,sessionToken)

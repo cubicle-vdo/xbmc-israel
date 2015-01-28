@@ -129,7 +129,7 @@ class FlvReader(io.BytesIO):
         islive=False
         if (streamType & 0x20) >> 5:
             islive=True
-        print 'LIVE',streamType,islive
+        #print 'LIVE',streamType,islive
         time_scale = self.read_unsigned_int()
         current_media_time = self.read_unsigned_long_long()
         smpteTimeCodeOffset = self.read_unsigned_long_long()
@@ -224,7 +224,7 @@ def build_fragments_list(boot_info, startFromFregment=None, live=True):
         if (not startFromFregment==None) and startFromFregment>=first_frag_number and startFromFregment<=frag_end:
             segment_to_start=current
         first_frag_number+=fregCount
-    print 'current status',segment_run_table['segment_run']
+    #print 'current status',segment_run_table['segment_run']
     #if we have no index then take the last segment
     if segment_to_start==None:
         segment_to_start=len(segment_run_table['segment_run'])-1
@@ -250,7 +250,7 @@ def build_fragments_list(boot_info, startFromFregment=None, live=True):
         #print 'frag_start',frag_start,frag_end
         for currentFreg in range(frag_start,frag_end+1):
              res.append((seg,currentFreg ))
-    print 'fragmentlist',res,boot_info
+    #print 'fragmentlist',res,boot_info
     return res
 
     
@@ -312,7 +312,7 @@ class F4MDownloader():
     def getUrl(self,url, ischunkDownloading=False):
         try:
             post=None
-            print 'url',url
+            #print 'url',url
             
             openner = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler)
             #cookie_handler = urllib2.HTTPCookieProcessor(self.cookieJar)
@@ -341,7 +341,7 @@ class F4MDownloader():
             return data
 
         except:
-            print 'Error in getUrl'
+            #print 'Error in getUrl'
             traceback.print_exc()
             return None
             
@@ -397,7 +397,7 @@ class F4MDownloader():
                 self.clientHeader = sp[1]
                 self.clientHeader= urlparse.parse_qsl(self.clientHeader)
                 
-                print 'header recieved now url and headers are',url, self.clientHeader 
+                #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
             #self.downloadInternal(  url)
@@ -416,14 +416,14 @@ class F4MDownloader():
             self.live=False #todo find if its Live or not
             man_url = self.url
             url=self.url
-            print 'Downloading f4m manifest'
+            #print 'Downloading f4m manifest'
             manifest = self.getUrl(man_url)#.read()
             if not manifest:
                 return False
-            print len(manifest)
-            try:
-                print manifest
-            except: pass
+            #print len(manifest)
+            #try:
+                #print manifest
+            #except: pass
             self.status='manifest done'
             #self.report_destination(filename)
             #dl = ReallyQuietDownloader(self.ydl, {'continuedl': True, 'quiet': True, 'noprogress':True})
@@ -436,13 +436,13 @@ class F4MDownloader():
             self.auth20=''
             if auth_obj and len(auth_obj)>0:
                 self.auth20=auth_obj[0] #not doing anything for time being
-            print 'auth',self.auth,self.auth20
+            #print 'auth',self.auth,self.auth20
             #quick for one example where the xml was wrong.
             if '\"bootstrapInfoId' in manifest:
                 manifest=manifest.replace('\"bootstrapInfoId','\" bootstrapInfoId')
 
             doc = etree.fromstring(manifest)
-            print doc
+            #print doc
             
             # Added the-one 05082014
             # START
@@ -452,7 +452,7 @@ class F4MDownloader():
                 man_url = baseURL_tag.text
                 url = man_url
                 self.url = url
-                print 'base url defined as: %s' % man_url
+                #print 'base url defined as: %s' % man_url
             # END
             
             try:
@@ -462,7 +462,7 @@ class F4MDownloader():
                     vtype=f.attrib.get('type', '')
                     if f.attrib.get('type', '')=='video' or vtype=='' :
                         formats.append([int(f.attrib.get('bitrate', -1)),f])
-                print 'format works',formats
+                #print 'format works',formats
             except:
                 formats=[(int(0),f) for f in doc.findall(_add_ns('media'))]
             #print 'formats',formats
@@ -487,11 +487,11 @@ class F4MDownloader():
                 
             
             dest_stream =  self.out_stream
-            print 'rate selected',rate
+            #print 'rate selected',rate
             self.metadata=None
             try:
                 self.metadata = base64.b64decode(media.find(_add_ns('metadata')).text)
-                print 'metadata stream read done'#,media.find(_add_ns('metadata')).text
+                #print 'metadata stream read done'#,media.find(_add_ns('metadata')).text
 
                 #self._write_flv_header(dest_stream, metadata)
                 #dest_stream.flush()
@@ -513,27 +513,27 @@ class F4MDownloader():
             # if media url/href points to another f4m file
             if '.f4m' in mediaUrl:
                 sub_f4m_url = join(man_url,mediaUrl)
-                print 'media points to another f4m file: %s' % sub_f4m_url
+                #print 'media points to another f4m file: %s' % sub_f4m_url
                 
-                print 'Downloading f4m sub manifest'
+                #print 'Downloading f4m sub manifest'
                 sub_manifest = self.getUrl(sub_f4m_url)#.read()
                 if not sub_manifest:
                     return False
-                print len(sub_manifest)
-                try:
-                    print sub_manifest
-                except: pass
+                #print len(sub_manifest)
+                #try:
+                    #print sub_manifest
+                #except: pass
                 self.status='sub manifest done'
                 F4Mversion =re.findall(version_fine, sub_manifest)[0]
                 doc = etree.fromstring(sub_manifest)
-                print doc
+                #print doc
                 media = doc.find(_add_ns('media'))
                 if media == None:
                     return False
                     
                 try:
                     self.metadata = base64.b64decode(media.find(_add_ns('metadata')).text)
-                    print 'metadata stream read done'
+                    #print 'metadata stream read done'
                 except: pass
                 
                 try:
@@ -553,14 +553,14 @@ class F4MDownloader():
 
             self.base_url=base_url
             bsArray=doc.findall(_add_ns('bootstrapInfo'))
-            print 'bootStrapID',bootStrapID
+            #print 'bootStrapID',bootStrapID
             #bootStrapID='bootstrap_450'
             bootstrap=self.getBootStrapWithId(bsArray,bootStrapID)
             if bootstrap==None: #if not available then find any!
-                print 'bootStrapID NOT Found'
+                #print 'bootStrapID NOT Found'
                 bootstrap=doc.findall(_add_ns('bootstrapInfo'))[0]
-            else:
-                print 'found bootstrap with id',bootstrap
+            #else:
+                #print 'found bootstrap with id',bootstrap
             #print 'bootstrap',bootstrap
             
 
@@ -579,13 +579,13 @@ class F4MDownloader():
             else:
                 from urlparse import urlparse
                 queryString = urlparse(url).query
-                print 'queryString',queryString
+                #print 'queryString',queryString
                 if len(queryString)==0: queryString=None
                 
                 if queryString==None or '?'  in bootstrap.attrib['url']:
                     bootstrapURL = join(man_url,bootstrap.attrib['url'])# take out querystring for later
                     queryString = urlparse(bootstrapURL).query
-                    print 'queryString override',queryString
+                    #print 'queryString override',queryString
                     if len(queryString)==0: 
                         queryString=None
                         if len(self.auth)>0:
@@ -598,7 +598,7 @@ class F4MDownloader():
                         bootstrapURL = join(man_url,bootstrap.attrib['url'])+'?'+authval
                         queryString=authval
 
-            print 'bootstrapURL',bootstrapURL
+            #print 'bootstrapURL',bootstrapURL
             self.bootstrapURL=bootstrapURL
             self.queryString=queryString
             self.bootstrap, self.boot_info, self.fragments_list,self.total_frags=self.readBootStrapInfo(bootstrapURL,bootstrapData)
@@ -622,9 +622,9 @@ class F4MDownloader():
         try:
             #dest_stream =  self.out_stream
             queryString=self.queryString
-            print 'segmentToStart',segmentToStart
+            #print 'segmentToStart',segmentToStart
             if self.live or segmentToStart==0 or segmentToStart==None:
-                print 'writing metadata'#,len(self.metadata)
+                #print 'writing metadata'#,len(self.metadata)
                 self._write_flv_header(dest_stream, self.metadata)
                 dest_stream.flush()
             #elif segmentToStart>0 and not self.live:
@@ -634,7 +634,7 @@ class F4MDownloader():
             url=self.url
   
             bootstrap, boot_info, fragments_list,total_frags=(self.bootstrap, self.boot_info, self.fragments_list,self.total_frags)
-            print  boot_info, fragments_list,total_frags
+            #print  boot_info, fragments_list,total_frags
             self.status='bootstrap done'
 
 
@@ -673,14 +673,14 @@ class F4MDownloader():
                 #print(url),base_url,name
                 #frag_filename = u'%s-%s' % (tmpfilename, name)
                 #success = dl._do_download(frag_filename, {'url': url})
-                print 'downloading....',url
+                #print 'downloading....',url
                 success=False
                 urlTry=0
                 while not success and urlTry<5:
                     success = self.getUrl(url,True)
                     if not success: xbmc.sleep(300)
                     urlTry+=1
-                print 'downloaded',not success==None,url
+                #print 'downloaded',not success==None,url
                 if not success:
                     return False
                 #with open(frag_filename, 'rb') as down:
@@ -735,9 +735,9 @@ class F4MDownloader():
     def getBootStrapWithId (self,BSarray, id):
         try:
             for bs in BSarray:
-                print 'compare val is ',bs.attrib['id'], 'id', id
+                #print 'compare val is ',bs.attrib['id'], 'id', id
                 if bs.attrib['id']==id:
-                    print 'gotcha'
+                    #print 'gotcha'
                     return bs
         except: pass
         return None
@@ -769,7 +769,7 @@ class F4MDownloader():
                 #print lastSegment
                 if updateMode and (len(fragments_list)==0 or (  newFragement and newFragement>fragments_list[0][1])):
                     #todo check lastFragement to see if we got valid data
-                    print 'retrying......'
+                    #print 'retrying......'
                     bootStrapData=None
                     retries+=1
                     xbmc.sleep(2000)
@@ -801,9 +801,9 @@ class F4MDownloader():
         hash = hashlib.sha256()
         hash.update(self.swfdecompress(swf))
         hash = base64.b64encode(hash.digest()).decode("ascii")
-        print 'hash',hash
+        #print 'hash',hash
         hash="96e4sdLWrezE46RaCBzzP43/LEM5en2KujAosbeDimQ="
-        print 'hash',hash
+        #print 'hash',hash
         #data="ZXhwPTE0MDYyMDQ3NjB+YWNsPSUyZip+ZGF0YT1wdmMsc35obWFjPWEzMjBlZDI5YjI1MDkwN2ExODcyMTJlOWJjNGFlNGUzZjA3MTM3ODk1ZDk4NmI2ZDVkMzczNzNhYzNiNDgxOWU="
         msg = "exp=9999999999~acl=%2f%2a~data={0}!{1}".format(data, hash)
         auth = hmac.new(AKAMAIHD_PV_KEY, msg.encode("ascii"), sha256)
@@ -812,7 +812,7 @@ class F4MDownloader():
         # The "hdntl" parameter can be accepted as a cookie or passed in the
         # query string, but the "pvtoken" parameter can only be in the query
         # string
-        print 'pvtoken',pvtoken
+        #print 'pvtoken',pvtoken
 
 
         #return "pvtoken={}&{}".format(
@@ -834,8 +834,8 @@ class F4MDownloader():
         #params.extend(parse_qsl(hdntl, keep_blank_values=True))
         #params='pvtoken=exp%3D9999999999%7Eacl%3D%252f%252a%7Edata%3DZXhwPTE0MDYwMzc2Njl+YWNsPSUyZip+ZGF0YT1wdmMsc35obWFjPWZjYzY5OTVkYjE5ODIxYTJlNDM4YTdhMWNmZjMyN2RhNTViOWNhMWM4NjZhZjYxM2ZkNDI4MTMwNjU4MjFjMjM%3D%2196e4sdLWrezE46RaCBzzP43/LEM5en2KujAosbeDimQ%3D%7Ehmac%3DFA3BCC1CF6466CAFFCC6EF5CB2855ED065F36687CBFCD11570B7D702F71F10A6&hdntl=exp=1406037669~acl=%2f*~data=hdntl~hmac=4ab5ad38849b952ae93721af7451936b4c5906258d575eda11e52a05f78c7d75&als=0,2,0,0,0,NaN,0,0,0,96,f,52027699.57,52027709.89,t,s,RUIDLGQGDHVH,2.11.3,90&hdcore=2.11.3'
         #print '_pv_params params',params
-        print params
-        print "pvtoken=exp%3D9999999999%7Eacl%3D%252f%252a%7Edata%3DZXhwPTE0MDYyODMxOTF+YWNsPSUyZip+ZGF0YT1wdmMsc35obWFjPTgwNTA0N2E1Yjk5ZmFjMjMzMDY0N2MxMzkyNGM0MDNiYzY1YjZmYzgyYTZhMjYyZDIxNDdkZTExZjI1MzQ5ZDI%3D%2196e4sdLWrezE46RaCBzzP43/LEM5en2KujAosbeDimQ%3D%7Ehmac%3D47A2B2AA9570ECFB37966C884174D608D86A7DE2466DE7EB48A6F118A155BD80&hdntl=exp=1406283191~acl=%2f*~data=hdntl~hmac=b65dc0c5ae60570f105984f0cc5ec6ce3a51422a7a1442e09f55513718ba80bf"
+        #print params
+        #print "pvtoken=exp%3D9999999999%7Eacl%3D%252f%252a%7Edata%3DZXhwPTE0MDYyODMxOTF+YWNsPSUyZip+ZGF0YT1wdmMsc35obWFjPTgwNTA0N2E1Yjk5ZmFjMjMzMDY0N2MxMzkyNGM0MDNiYzY1YjZmYzgyYTZhMjYyZDIxNDdkZTExZjI1MzQ5ZDI%3D%2196e4sdLWrezE46RaCBzzP43/LEM5en2KujAosbeDimQ%3D%7Ehmac%3D47A2B2AA9570ECFB37966C884174D608D86A7DE2466DE7EB48A6F118A155BD80&hdntl=exp=1406283191~acl=%2f*~data=hdntl~hmac=b65dc0c5ae60570f105984f0cc5ec6ce3a51422a7a1442e09f55513718ba80bf"
 
         return "pvtoken=exp%3D9999999999%7Eacl%3D%252f%252a%7Edata%3DZXhwPTE0MDYzMDMxMTV+YWNsPSUyZip+ZGF0YT1wdmMsc35obWFjPWQxODA5MWVkYTQ4NDI3NjFjODhjOWQwY2QxNTk3YTI0MWQwOWYwNWI1N2ZmMDE0ZjcxN2QyMTVjZTJkNmJjMDQ%3D%2196e4sdLWrezE46RaCBzzP43/LEM5en2KujAosbeDimQ%3D%7Ehmac%3DACF8A1E4467676C9BCE2721CA5EFF840BD6ED1780046954039373A3B0D942ADC&hdntl=exp=1406303115~acl=%2f*~data=hdntl~hmac=4ab96fa533fd7c40204e487bfc7befaf31dd1f49c27eb1f610673fed9ff97a5f&als=0,2,0,0,0,NaN,0,0,0,37,f,52293145.57,52293155.9,t,s,GARWLHLMHNGA,2.11.3,37&hdcore=2.11.3" 
  

@@ -13,11 +13,16 @@
 	<string id="30014">Next playing programs text color</string>
 	<string id="30015">Times text color</string>
 	
-	<string id="30100">ISRALIVE Settings</string>
+	<string id="30020">Show advanced settings</string>
+	<string id="30021">Move up</string>
+	<string id="30022">Move down</string>
+	<string id="30023">Move to</string>
+	<string id="30024">Select a new location</string>
+	<string id="30025">Select a file</string>
+	<string id="30026">Enter file name</string>
+	
+	<string id="30100">IsraeLIVE Settings</string>
 	<string id="30101">Remote Settings URL</string>
-	<string id="30102">Filmon's "channel details" method</string>
-	<string id="30103">Original</string>
-	<string id="30109">New</string>
 	<string id="30110">Filmon's stream protocol</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
@@ -37,6 +42,16 @@
 	<string id="30207">Remove from IsraeLIVE favourites</string>
 	<string id="30208">Channels to add to favourites</string>
 	<string id="30209">Channels to remove from favourites</string>
+	<string id="30210">Add channels to IsraeLIVE favourites</string>
+	<string id="30211">Remove channels from IsraeLIVE favourites</string>
+	<string id="30212">Add all channels in group to IsraeLIVE favourites</string>
+	<string id="30213">Empty IsraeLIVE favourites</string>
+	<string id="30214">Export IsraeLIVE favourites</string>
+	<string id="30215">Import IsraeLIVE favourites</string>
+	<string id="30216">The current favourites list will be replace by the new list.</string>
+	<string id="30217">The new list contains {0} channels.</string>
+	<string id="30218">Replace favourites?</string>
+	<string id="30219">Select import/export folder</string>
 	
 	<string id="30300">Live TV</string>
 	<string id="30301">Enable Live TV</string>
@@ -52,10 +67,11 @@
 	
 	<string id="30500">Groups</string>
 	<string id="30501">Filter groups</string>
-	<string id="30502">Select groups</string>
+	<string id="30502">Add groups</string>
 	<string id="30503">Select groups (scrolling list)</string>
 	<string id="30504">Choose groups for LiveTV</string>
 	<string id="30505">Favourites</string>
-	<string id="30506">Selected</string>
-	<string id="30507">All</string>
+	<string id="30506">All</string>
+	<string id="30507">Selected</string>
+	<string id="30508">Remove groups</string>
 </strings>

@@ -1,3 +1,12 @@
+[B]v4.3.3[/B]
+- added option to add all channels in group to favourites. right click on group.
+- added option to empty favourites. right click on favourites.
+- rearange addon settings and hide some advance settings.
+- split the "select groups" button in addon settings to 2 buttons: "add groups" and "remove groups".
+- added options to move channels location in favourites. right click on channel in favourites.
+- added options to move groups location when using filter-groups option. right click on groups.
+- added option to import/export favourites list.
+- added option to choose groups to show in LiveTV and still not filter the groups for the addon.
 [B]v4.3.2[/B]
 - add selected channels from group to favourites at once (right click on group)
 - remove selected channels from favourites at once (right click on favourites)

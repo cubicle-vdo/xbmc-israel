@@ -13,11 +13,16 @@
 	<string id="30014">צבע טקסט התוכנית הבאה</string>
 	<string id="30015">צבע טקסט זמנים</string>
 	
-	<string id="30100">הגדרות ISRALIVE</string>
+	<string id="30020">הצגת הגדרות מתקדמות</string>
+	<string id="30021">הזז למעלה</string>
+	<string id="30022">הזז למטה</string>
+	<string id="30023">הזז למיקום</string>
+	<string id="30024">בחר מיקום חדש</string>
+	<string id="30025">בחר קובץ</string>
+	<string id="30025">שם קובץ לשמירה</string>
+	
+	<string id="30100">הגדרות IsraeLIVE</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
-	<string id="30102">מנגנון קבלת פרטי ערוצי פילמון</string>
-	<string id="30103">פילמון הרשמי</string>
-	<string id="30109">פילמון החדש</string>
 	<string id="30110">פרוטוקול ניגון ערוצי פילמון</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
@@ -37,6 +42,16 @@
 	<string id="30207">הסרה ממועדפי IsraeLIVE</string>
 	<string id="30208">ערוצים להוספה למועדפים</string>
 	<string id="30209">ערוצים להסרה ממועדפים</string>
+	<string id="30210">הוספת ערוצים למועדפי IsraeLIVE</string>
+	<string id="30211">הסרת ערוצים ממועדפי IsraeLIVE</string>
+	<string id="30212">הוספת כל הערוצים בקבוצה למועדפי IsraeLIVE</string>
+	<string id="30213">מחיקת כל מועדפי IsraeLIVE</string>
+	<string id="30214">יצוא מועדפי IsraeLIVE</string>
+	<string id="30215">יבוא מועדפי IsraeLIVE</string>
+	<string id="30216">רשימת המועדפים הנוכחית תוחלף ברשימה החדשה.</string>
+	<string id="30217">ברשימה החדשה {0} ערוצים.</string>
+	<string id="30218">להחליף את רשימת המועדפים?</string>
+	<string id="30219">בחירת תיקיה ליבוא/יצוא</string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>
@@ -52,10 +67,11 @@
 	
 	<string id="30500">קבוצות</string>
 	<string id="30501">סינון קבוצות</string>
-	<string id="30502">בחירת קבוצות</string>
+	<string id="30502">הוספת קבוצות</string>
 	<string id="30503">בחירת קבוצות (רשימה נגללת)</string>
 	<string id="30504">בחירת קבוצות להצגה בטלויזיה חיה</string>
 	<string id="30505">מועדפים</string>
-	<string id="30506">קבוצות נבחרות</string>
-	<string id="30507">הכל</string>
+	<string id="30506">הכל</string>
+	<string id="30507">קבוצות נבחרות</string>
+	<string id="30508">הסרת קבוצות</string>
 </strings>
