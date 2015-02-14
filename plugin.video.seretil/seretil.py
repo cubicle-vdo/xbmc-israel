@@ -176,19 +176,21 @@ def SpecialPage(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
+        
         match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
-        #print match 
+        #print link 
         for name in match:
                 name=unescape(name) 
                 if (name.find('<br />') ==-1) and (name.find('http') != -1 ):
                         #print name
                         match=re.compile('a href="(.*?)"').findall(name)
+                        
                         if match:
                                 match=urlresolver.HostedMediaFile(match[0])
-                                name=match.get_host()
                                 new_url=match.get_url()
-                                if name :
-                                     addDir(name,new_url,212,'')
+                                name=re.compile('http://(.*?)\/').findall(new_url)
+                                if match :
+                                   addDir(name[0],new_url,212,'')
                                 
                 else :
                         if name !='&nbsp;' and name.find('לצעירים') ==-1 and name.find('span')==-1:
@@ -216,6 +218,7 @@ def LinksPage(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
+        print link
         sources =[]
         match=re.compile('<p><a href="(.*?)"').findall(link)
         for newurl in match:
