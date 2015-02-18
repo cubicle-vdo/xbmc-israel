@@ -1,3 +1,6 @@
+[B]v4.3.4[/B]
+- Maintenance for more stability.
+- Bugfixes.
 [B]v4.3.3[/B]
 - added option to add all channels in group to favourites. right click on group.
 - added option to empty favourites. right click on favourites.

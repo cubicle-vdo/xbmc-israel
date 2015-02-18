@@ -6,9 +6,9 @@
 		<setting id="action" type="action" label="30107" action="RunScript($CWD/default.py,,?mode=20&url=settings)" option="close" visible="eq(-1,true)"/>
 		<setting type="sep"/>
 		<setting id="israeliveAdvanced" type="bool" label="30020" default="false" />
-		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="1" visible="eq(-1,true)"/>
+		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="0" visible="eq(-1,true)"/>
 		<setting id="action" type="action" label="30108" action="RunScript($CWD/default.py,,?mode=21&url=settings)" option="close" visible="eq(-2,true) + eq(-5,true)"/>
-		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eL20uKHZzZSVrqSHw8c=" visible="eq(-3,true)"/>
+		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eLiuvaHe2pR9jaqKocjh" visible="eq(-3,true)"/>
 		<setting id="forceRemoteDefaults" type="bool" label="30112" default="true" visible="eq(-4,true)"/>
 	</category>
 	
