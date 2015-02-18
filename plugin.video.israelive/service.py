@@ -16,12 +16,17 @@ try:
 except:
 	pass
 	
+pvrStoped = False
 useIPTV = False
 if Addon.getSetting("useIPTV") == "true":
 	import livestreamersrv, myIPTV
 	try:
 		livestreamersrv.start(portNum)
 		useIPTV = True
+		autoIPTV = int(Addon.getSetting("autoIPTV"))
+		if autoIPTV == 0 or autoIPTV == 2:
+			xbmc.executebuiltin('StopPVRManager')
+			pvrStoped = True
 	except Exception as ex:
 		print ex
 
@@ -29,7 +34,6 @@ user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
-remoteSettingsUrl = common.GetRemoteSettingsUrl()
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 plxFile = os.path.join(user_dataDir, "israelive.plx")
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
@@ -38,6 +42,7 @@ fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
 iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
 iptvLogosDir = os.path.join(user_dataDir, "logos")
+remoteSettings = common.GetRemoteSettings(updateDefault=True)
 
 checkInterval = 12
 	
@@ -48,44 +53,36 @@ def sleepFor(timeS):
 		
 def CheckUpdates():
 	common.CheckNewVersion()
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl)
+	global remoteSettings
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
 	if remoteSettings == []:
+		global pvrStoped
+		if pvrStoped:
+			xbmc.executebuiltin('StartPVRManager')
 		return
 		
 	global checkInterval
 	try:
-		checkInterval = remoteSettings["checkInterval"] * 3600 # in hours
+		checkInterval = remoteSettings["remoteSettings"]["refresh"] * 3600 # in hours
 	except:
 		pass
 		
-	isPlxUpdated = False
-	#if common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600):
-	#	isPlxUpdated = True
-	common.UpdatePlx(remoteSettings["plxUrl"], plxFile, refreshInterval=remoteSettings["plxRefresh"] * 3600)
+	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
+	if not refresh is None:
+		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
 
 	if Addon.getSetting("useEPG") == "true":
-		'''
-		#isGuideUpdated = False
-		#if common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"]):
-		#	isGuideUpdated = True
-		#if common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"]):
-		#	isGuideUpdated = True
-		#if isGuideUpdated:
-		#	common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
-		'''
-		common.isFileOld(globalGuideFile, remoteSettings["globalGuideRefresh"] * 3600) and common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"])
-		common.isFileOld(filmonGuideFile, remoteSettings["filmonGuideRefresh"] * 3600) and common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"])
+		refresh = common.GetSubKeyValue(remoteSettings, "globalGuide", "refresh")
+		if not refresh is None:
+			common.isFileOld(globalGuideFile, refresh * 3600) and common.UpdateZipedFile(globalGuideFile, "globalGuide", remoteSettings)
+		
+		refresh = common.GetSubKeyValue(remoteSettings, "filmonGuide", "refresh")
+		if not refresh is None:
+			common.isFileOld(filmonGuideFile, refresh * 3600) and common.UpdateZipedFile(filmonGuideFile, "filmonGuide", remoteSettings)
+		
 		common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
-			
+		
 		if Addon.getSetting("useIPTV") == "true":
-			'''
-			if isPlxUpdated:
-				myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
-			if isGuideUpdated:
-				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-			if isPlxUpdated or isGuideUpdated:
-				myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
-			'''
 			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
 			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
 			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)

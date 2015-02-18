@@ -17,37 +17,40 @@ def makeIPTVlist(iptvFile, portNum):
 	
 	channelsList = GetIptvChannels()
 	for item in channelsList:
-		url = item['url']
-		tvg_id = item['name']
-		view_name = item['name']
-		
-		if url.find('plugin.video.israelive') > 0:
-			urlParams = url[url.find('?'):]
-			url = "http://localhost:{0}/{1}".format(portNum, urlParams)
-		elif url.find('plugin.video.f4mTester') > 0:
-			url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
-		elif url.find('www.youtube.com') > 0:
-			url = "http://localhost:{0}/?url={1}".format(portNum, url)
-		elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0:
-			url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
-		elif url.find('?mode=3') > 0:
-			url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
-		elif url.find('?mode=4') > 0:
-			url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
-			if url == "down":
-				view_name += " (down)"
-		#elif url.find('?mode=5') > 0:
-		#	if satElitKey is None:
-		#		satElitKey = myResolver.GetSatElitKeyOnly()
-		#	url = myResolver.GetSatElitFullLink(url[:url.find('?mode')], satElitKey)
-		elif url.find('?mode=7') > 0:
-			url = myResolver.GetAatwFullLink(url[:url.find('?mode')])
+		try:
+			url = item['url']
+			tvg_id = item['name']
+			view_name = item['name']
 			
-		tvg_name = item['name'].replace(' ','_')
-		tvg_logo = GetLogoFileName(item)
-		radio = ' radio="true"' if item['type'].lower() == "audio" else ''
-		group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
-		iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
+			if url.find('plugin.video.israelive') > 0:
+				urlParams = url[url.find('?'):]
+				url = "http://localhost:{0}/{1}".format(portNum, urlParams)
+			elif url.find('plugin.video.f4mTester') > 0:
+				url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
+			elif url.find('www.youtube.com') > 0:
+				url = "http://localhost:{0}/?url={1}".format(portNum, url)
+			elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0:
+				url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
+			elif url.find('?mode=3') > 0:
+				url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
+			elif url.find('?mode=4') > 0:
+				url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
+				if url == "down":
+					view_name += " (down)"
+			#elif url.find('?mode=5') > 0:
+			#	if satElitKey is None:
+			#		satElitKey = myResolver.GetSatElitKeyOnly()
+			#	url = myResolver.GetSatElitFullLink(url[:url.find('?mode')], satElitKey)
+			elif url.find('?mode=7') > 0:
+				url = myResolver.GetAatwFullLink(url[:url.find('?mode')])
+				
+			tvg_name = item['name'].replace(' ','_')
+			tvg_logo = GetLogoFileName(item)
+			radio = ' radio="true"' if item['type'].lower() == "audio" else ''
+			group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
+			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
+		except Exception as e:
+			print e
 
 	f = open(iptvFile, 'w')
 	f.write(iptvList)

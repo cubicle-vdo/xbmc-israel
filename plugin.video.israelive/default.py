@@ -29,11 +29,11 @@ if not (os.path.isfile(FAV)):
 	f.close() 
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 if os.path.isfile(remoteSettingsFile):
-	remoteSettings = common.ReadList(remoteSettingsFile)
+	remoteSettings = common.GetRemoteSettings()
 else:
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl, forceUpdate=True)
+	remoteSettings = common.GetRemoteSettings(updateDefault=True)
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
 
 if remoteSettings == []:
 	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
@@ -41,7 +41,7 @@ if remoteSettings == []:
 
 plxFile = os.path.join(user_dataDir, "israelive.plx")
 if not os.path.isfile(plxFile):
-	common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+	common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
 
 globalGuideFile = os.path.join(user_dataDir, "guide.txt")
 filmonGuideFile = os.path.join(user_dataDir, 'filmonGuide.txt')
@@ -412,10 +412,10 @@ def SaveGuide(forceManual=False, showNotification=True):
 		if showNotification:
 			xbmc.executebuiltin("XBMC.Notification({0}, Saving Guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 		isGuideUpdated = False
-		if common.UpdateZipedFile(globalGuideFile, remoteSettings["globalGuideUrl"], forceUpdate=True):
+		if common.UpdateZipedFile(globalGuideFile, "globalGuide", remoteSettings, forceUpdate=True):
 			isGuideUpdated = True
 		if forceManual:
-			common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+			common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
 			if myFilmon.MakePLXguide(filmonGuideFile):
 				if showNotification:
 					xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
@@ -426,7 +426,7 @@ def SaveGuide(forceManual=False, showNotification=True):
 				if showNotification:
 					xbmc.executebuiltin("XBMC.Notification({0}, {1}, {2}, {3})".format(AddonName, errMsg, 5000 ,icon))
 		else:
-			if common.UpdateZipedFile(filmonGuideFile, remoteSettings["filmonGuideUrl"], forceUpdate=True):
+			if common.UpdateZipedFile(filmonGuideFile, "filmonGuide", remoteSettings, forceUpdate=True):
 				if showNotification:
 					xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 				isGuideUpdated = True
@@ -512,12 +512,12 @@ def InstallAddon(url, description):
 	
 def UpdateChannelsLists():
 	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, remoteSettingsUrl, forceUpdate=True)
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", forceUpdate=True)
 	if remoteSettings == []:
 		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 		sys.exit()
 
-	common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+	common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def MakeIPTVlists():
@@ -528,7 +528,7 @@ def MakeIPTVlists():
 	except:
 		pass
 	if not os.path.isfile(plxFile):
-		common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
 	myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
@@ -538,7 +538,7 @@ def MakeIPTVlists():
 def DownloadLogos():
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
 	if not os.path.isfile(plxFile):
-		common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
 	myIPTV.SaveChannelsLogos(iptvLogosDir)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
 
@@ -567,7 +567,7 @@ def RefreshLiveTV():
 
 def AddCategories():
 	if not os.path.isfile(categoriesFile):
-		common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
 	
 	allCatList = common.ReadList(categoriesFile)
 	selectedCatList = common.ReadList(selectedCategoriesFile)
@@ -586,7 +586,7 @@ def AddCategories():
 	
 def RemoveCategories():
 	if not os.path.isfile(categoriesFile):
-		common.UpdatePlx(remoteSettings["plxUrl"], plxFile, forceUpdate=True)
+		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
 	
 	selectedCatList = common.ReadList(selectedCategoriesFile)
 	categories = [u"[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), item["name"]) for item in selectedCatList]

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, os, io, re, time, base64
+import sys, os, io, re, time, base64, random
 import urllib, urllib2, json
 import xbmc, xbmcgui, xbmcaddon
 import multiChoiceDialog
@@ -11,6 +11,7 @@ AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 listsDir = os.path.join(user_dataDir, 'lists')
+remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 
 def downloader_is(url, name, showProgress=True):
 	import downloader, extract
@@ -42,7 +43,16 @@ def isFileOld(file, deltaInSec):
 	isFileNotUpdate = True if (now - lastUpdate) > deltaInSec else False 
 	return isFileNotUpdate
 	
-def UpdateFile(file, url, zip=False, forceUpdate=False):
+def GetSubKeyValue(remoteSettings, key, subKey):
+	return remoteSettings[key][subKey] if (remoteSettings.has_key(key) and remoteSettings[key].has_key(subKey)) else None
+	
+def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
+	if remoteSettings is None:
+		remoteSettings = ReadList(os.path.join(user_dataDir, "remoteSettings.txt"))
+	
+	if remoteSettings == []:
+		return False
+			
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
 	if (zip == False and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
 		fileContent = ""
@@ -50,46 +60,51 @@ def UpdateFile(file, url, zip=False, forceUpdate=False):
 		f = open(lastModifiedFile,'r')
 		fileContent = f.read()
 		f.close()
+	last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
+	isNew = forceUpdate or last_modified is None or (fileContent != last_modified)
+	if not isNew:
+		return False
 	
-	last_modified = None
+	urls = GetSubKeyValue(remoteSettings, key, "urls")
+	if urls is None or len(urls) == 0:
+		return False
+		
+	random.seed()
+	random.shuffle(urls)
+	url = Decode(urls[0])
+	
+	response = None
 	try:
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
 		req.add_header('Referer', 'http://www.IsraeLIVE.org/')
 		response = urllib2.urlopen(req)
-		headers = response.info()
-		etag = headers.getheader("ETag")
-		last_modified = headers.getheader("Last-Modified")
-		if not last_modified:
-			last_modified = etag
-	except Exception as ex:
-		print ex
-		return False
-		
-	if last_modified is None:
-		return False
-		
-	isNew = forceUpdate or (fileContent != last_modified)
 	
-	if isNew:
 		if zip:
 			urllib.urlretrieve(url, file)
 		else:
-			try:
-				data = response.read().replace('\r','')
-			except:
-				return False
-			
+			data = response.read().replace('\r','')
 			f = open(file, 'w')
 			f.write(data)
 			f.close()
 		
-		f = open(lastModifiedFile, 'w')
-		f.write(last_modified)
-		f.close()
+		response.close()
+
+	except Exception as ex:
+		print ex
+		if not response is None:
+			response.close()
+		return False
+
+	if key == "remoteSettings":
+		remoteSettings = json.loads(data)
+		last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
 		
-	response.close()
-	return isNew
+	f = open(lastModifiedFile, 'w')
+	f.write(last_modified)
+	f.close()
+	
+	return True
 	
 def ReadList(fileName):
 	try:
@@ -112,14 +127,14 @@ def WriteList(filename, list):
 		
 	return success
 	
-def GetUpdatedList(file, url, forceUpdate=False):
-	UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
+def GetUpdatedList(file, key, remoteSettings=None, forceUpdate=False):
+	UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
 	return ReadList(file)
 	
-def UpdateZipedFile(file, url, forceUpdate=False):
+def UpdateZipedFile(file, key, remoteSettings=None, forceUpdate=False):
 	import extract
 	zipFile = "{0}.zip".format(file[:file.rfind('.')])
-	if UpdateFile(zipFile, Decode(url), zip=True, forceUpdate=forceUpdate):
+	if UpdateFile(zipFile, key, remoteSettings=remoteSettings, zip=True, forceUpdate=forceUpdate):
 		extract.all(zipFile, user_dataDir)
 		try:
 			os.remove(zipFile)
@@ -136,10 +151,10 @@ def GetEncodeString(str):
 		pass
 	return str
 
-def UpdatePlx(url, file, refreshInterval=0, forceUpdate=False):
+def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=False):
 	isListUpdated = False
 	if isFileOld(file, refreshInterval):
-		isListUpdated = UpdateFile(file, Decode(url), forceUpdate=forceUpdate)
+		isListUpdated = UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
 
 	if not os.path.exists(listsDir):
 		os.makedirs(listsDir)
@@ -236,15 +251,24 @@ def GetAddonDefaultRemoteSettingsUrl():
 		print ex
 	return remoteSettingsUrl
 	
-def GetRemoteSettingsUrl():
+def GetRemoteSettings(updateDefault=False):
 	remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 	if Addon.getSetting("forceRemoteDefaults") == "true":
 		defaultRemoteSettingsUrl = GetAddonDefaultRemoteSettingsUrl()
 		if defaultRemoteSettingsUrl != remoteSettingsUrl:
 			remoteSettingsUrl = defaultRemoteSettingsUrl
 			Addon.setSetting("remoteSettingsUrl", remoteSettingsUrl)
-	return remoteSettingsUrl
+			
+	remoteSettings = ReadList(remoteSettingsFile)
+	if remoteSettings == []:
+		remoteSettings = {}
+
+	urls = GetSubKeyValue(remoteSettings, "remoteSettings", "urls")
+	if urls is None or len(urls) == 0:
+		remoteSettings = {"remoteSettings": {"urls": [remoteSettingsUrl], "lastModified": "0", "refresh": 12}}
 	
+	return remoteSettings
+
 def GetListFromPlx(filterCat="9999", includeChannels=True, includeCatNames=True, fullScan=False):
 	plxFile = os.path.join(user_dataDir, "israelive.plx")
 	f = open(plxFile,'r')
