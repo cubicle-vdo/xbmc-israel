@@ -23,11 +23,58 @@ __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
 DOMAIN = __settings__.getSetting("domain")
 HOST = DOMAIN[7:]
 
-print "common domain=" +  DOMAIN
-print "common domain="+ HOST
+#print "common domain=" +  DOMAIN
+#print "common domain="+ HOST
 
 __REFERER__ = DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 
+def LOGIN():
+    #print("LOGIN  is running now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    loginurl = DOMAIN+'/login'
+    if __settings__.getSetting('username')=='':
+        dialog = xbmcgui.Dialog()
+        xbmcgui.Dialog().ok('Sdarot','www.sdarot.tv התוסף דורש חשבון  חינמי באתר' ,' במסך הבא יש להכניס את שם המשתמש והסיסמא')
+    
+    if __settings__.getSetting('username')=='':
+        search_entered = ''
+        keyboard = xbmc.Keyboard(search_entered, 'נא הקלד שם משתמש')
+        keyboard.doModal()
+        if keyboard.isConfirmed():
+            search_entered = keyboard.getText() 
+        __settings__.setSetting('username',search_entered)
+        
+    if __settings__.getSetting('user_password')=='':
+        search_entered = ''
+        keyboard = xbmc.Keyboard(search_entered, 'נא הקלד סיסמא')
+        keyboard.doModal()
+        if keyboard.isConfirmed():
+            search_entered = keyboard.getText()
+        __settings__.setSetting('user_password',search_entered)
+
+    username = __settings__.getSetting('username')
+    password = __settings__.getSetting('user_password')
+    if not username or not password:
+        print "Sdarot tv:no credencials found skipping login"
+        return
+    
+    print "Trying to login to sdarot tv site username:" + username
+    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/login");
+   
+def CHECK_LOGIN():
+	# check's if login  is required.
+	#print "check if logged in already"
+	page = getData(DOMAIN+'/series',referer="")
+	match = re.compile('<span class="button blue" id="logout"><a href=".*?/log(.*?)">').findall(page)
+	#print match
+	if match:
+		if str(match[0])!='out':
+			print "login required"
+			LOGIN()
+		#else:
+			#print "already logged in."
+	else:
+		LOGIN()
+ 
 def enum(**enums):
         return type('Enum', (), enums)
 
@@ -96,7 +143,7 @@ def extractFromZip(gzipData):
     return html
     
 def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
-        print 'getData: url --> ' + url + '\npostData-->' + str(postData)
+        #print 'getData: url --> ' + url + '\npostData-->' + str(postData)
         if __DEBUG__:
             print 'name --> ' + name
         #temporary disabled the cache - cause problems with headers    
@@ -139,7 +186,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
             buf = StringIO.StringIO( response.read())
             f = gzip.GzipFile(fileobj=buf)
             data = f.read()
-            print "received gzip len " + str(len(data))
+            #print "received gzip len " + str(len(data))
            
         else:
             data = response.read()
@@ -148,7 +195,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
             data = data.replace("\n","").replace("\t","").replace("\r","")   
                      
         try:
-            print sys.modules["__main__"].cookiejar
+            #print sys.modules["__main__"].cookiejar
             sys.modules["__main__"].cookiejar.save()
             
         except Exception,e:
@@ -172,7 +219,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
     
 def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
         for i in range(1,3):
-          print "getData: Attempt " + str(i)
+          #print "getData: Attempt " + str(i)
           try:
             return getData_attempt(url, timeout, name, postData,referer)
           except urllib2.URLError, e:
@@ -181,7 +228,7 @@ def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFER
               raise e
 
 def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
-    
+    CHECK_LOGIN()
     page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
    
     token = None
@@ -215,7 +262,8 @@ def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
         else:
             token = prms["watch"]["hd"]
             hd=True
-        
+        #print "Token: "+token +"\n"   
+		
         #print "vid_url: "+vid_url+"\n"
         VID = str(prms["VID"])
         #print "VID: "+VID+"\n"
@@ -223,12 +271,6 @@ def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
         
         vid_time = str(prms["time"])
         #print "Time: "+ vid_time +"\n"
-        token=None
-        if hd:
-            token = prms["watch"]["hd"]
-        else:
-            token = prms["watch"]["sd"]
-        #print "Token: "+token +"\n"        
     
     except Exception as e:
         print e

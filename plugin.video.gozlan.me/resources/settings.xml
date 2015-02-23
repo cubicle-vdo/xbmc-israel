@@ -2,7 +2,7 @@
 <settings>
 <category>
 <setting id="domain" type="text" label="10001" default="http://gozlan.eu" />
-<setting id="useProxy" label="10002" type="bool" default="false"/>
+<setting id="useProxy" label="10002" type="bool" default="true"/>
 </category>
 <category label="youtube">
 <setting id="YoutubeResolver_priority" type="number" label="Priority" default="100"/>
