@@ -1,3 +1,5 @@
+[B]Version 2.2.1[/B]
+-verify login before playing video (support playing video from outside the addon)
 [B]Version 2.2.0[/B]
 -open search screen without text in input field
 -default domain in addon settings is now http://www.sdarot.pm

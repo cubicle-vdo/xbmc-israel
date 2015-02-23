@@ -11,7 +11,6 @@ import cookielib
 import unicodedata
 
 
-ADDON = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 ##General vars        
 __plugin__ = "Sdarot.TV Video"
 __author__ = "Cubicle"
@@ -29,13 +28,13 @@ dbg = False # used for simple downloader logging
 #DOMAIN='http://sdarot.wf'
 DOMAIN = __settings__.getSetting("domain")
 
-print "Sdarot Domain=" + DOMAIN
+#print "Sdarot Domain=" + DOMAIN
 
 from sdarotcommon import *
 
 path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
 cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
-print("Loading cookies from :" + repr(cookie_path))
+#print("Loading cookies from :" + repr(cookie_path))
 cookiejar = cookielib.LWPCookieJar(cookie_path)
 
 if os.path.exists(cookie_path):
@@ -52,68 +51,18 @@ urllib2.install_opener(opener)
 #print "built opener:" + str(opener)
 
 
-
-def LOGIN():
-    #print("LOGIN  is running now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    loginurl = DOMAIN+'/login'
-    if ADDON.getSetting('username')=='':
-        dialog = xbmcgui.Dialog()
-        xbmcgui.Dialog().ok('Sdarot','www.sdarot.tv התוסף דורש חשבון  חינמי באתר' ,' במסך הבא יש להכניס את שם המשתמש והסיסמא')
-    
-    if ADDON.getSetting('username')=='':
-        search_entered = ''
-        keyboard = xbmc.Keyboard(search_entered, 'נא הקלד שם משתמש')
-        keyboard.doModal()
-        if keyboard.isConfirmed():
-            search_entered = keyboard.getText() 
-        ADDON.setSetting('username',search_entered)
-        
-    if ADDON.getSetting('user_password')=='':
-        search_entered = ''
-        keyboard = xbmc.Keyboard(search_entered, 'נא הקלד סיסמא')
-        keyboard.doModal()
-        if keyboard.isConfirmed():
-            search_entered = keyboard.getText()
-        ADDON.setSetting('user_password',search_entered)
-
-    username = ADDON.getSetting('username')
-    password = ADDON.getSetting('user_password')
-    if not username or not password:
-        print "Sdarot tv:no credencials found skipping login"
-        return
-    
-    
-    print "Trying to login to sdarot tv site username:" + username
-    page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/login");
-   
- 
 def MAIN_MENU():
-    
-    # check's if login  is required.
-    #print "check if logged in already"
-    page = getData(DOMAIN+'/series',referer="")
-    match = re.compile('<span class="button blue" id="logout"><a href=".*?/log(.*?)">').findall(page)
-    #print match
-    if match:
-         if str(match[0])!='out':
-            print "login required"
-            LOGIN()
-         else:
-            print "already logged in."
-    else:
-      LOGIN()
-    
+    CHECK_LOGIN()
     addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
     addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
     addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
+    page = getData(DOMAIN+'/series',referer="")
     matches = re.compile('<li><a href="/series/genre/(.*?)">').findall(page)
     for match in matches:
          a=str(match)
          sp=a.split('-',1)
          #print sp , a
          addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
-	
-
 	
 def SearchSdarot(url,search_entered):
 	if 'חפש' in  search_entered :
@@ -162,7 +111,6 @@ def INDEX_AZ(url,page):
       addDir(key[2],series_link,"3&image="+urllib.quote(image_link)+"&series_id="+str(key[0])+"&series_name="+urllib.quote(key[1]),image_link)
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
       
-
 def sdarot_series(url):
     series_id=urllib.unquote_plus(params["series_id"])
     series_name=urllib.unquote_plus(params["series_name"])
@@ -174,7 +122,7 @@ def sdarot_series(url):
   #  print "sdarot_series: Fetching URL:"+url  
     try:
         page = opener.open(url).read()
-        print cookiejar
+        #print cookiejar
     except urllib2.URLError, e:
         print 'sdarot_season: got http error ' +str(e.code) + ' fetching ' + url + "\n"
         raise e
@@ -256,9 +204,6 @@ def download_season(url):
                 print str(e)
                 pass
         
-         
-    
-
 def sdarot_movie(url):
     series_id=urllib.unquote_plus(params["series_id"])
     series_name=urllib.unquote_plus(params["series_name"])
@@ -279,8 +224,8 @@ def sdarot_movie(url):
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=finalUrl, listitem=liz, isFolder=False)
                                   
 params = getParams(sys.argv[2])
-print "params:"
-print params
+#print "params:"
+#print params
 url=None
 name=None
 mode=None
