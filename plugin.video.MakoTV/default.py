@@ -25,9 +25,9 @@ def GetMakoTicket():
 	return ticket+'&hdcore=3.0.3'
 
 def decrypt(encrypted, key):
-    pes = AES(key.decode('base64'))
-    decrypted = pes.decrypt(encrypted.decode('base64'))
-    return decrypted
+	pes = AES(key.decode('base64'))
+	decrypted = pes.decrypt(encrypted.decode('base64'))
+	return decrypted
 
 def GetSeriesList():
 	repoCheck.UpdateRepo()
@@ -144,11 +144,8 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 			link = response.read()
 			response.close()
 			break
-		except urllib2.URLError as e:
-			if e.reason.errno == errno.EINPROGRESS:
-				continue
-			print e
-			return None
+		except Exception as ex:
+			print ex
 
 	return link
 		
@@ -179,8 +176,6 @@ def addDir(name, url, mode, iconimage, description, totalItems=None):
 	else:
 		ok =xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder,totalItems=totalItems)
 	
-	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-	xbmc.executebuiltin("Container.SetViewMode(504)")
 	return ok
 	
 def get_params():
@@ -241,4 +236,6 @@ elif mode == 3:
 	#print "-------------playing episide  -----------------"
 	Play(url,ChName,iconimage)
 
+xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+xbmc.executebuiltin("Container.SetViewMode(504)")
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
