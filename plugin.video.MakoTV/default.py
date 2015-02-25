@@ -1,11 +1,16 @@
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import os, sys, re, errno
+import os, sys, io, re, errno
 import urllib, urllib2, json
 import repoCheck
 
+xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
+isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
 
 AddonID = 'plugin.video.MakoTV'
 Addon = xbmcaddon.Addon(AddonID)
+userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+if isXbmc and not os.path.exists(userDir):
+	os.makedirs(userDir)
 libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
 sys.path.insert(0, libDir)
 from crypto.cipher.aes import AES
@@ -19,12 +24,10 @@ def GetMakoTicket():
 	ticket = result['tickets'][0]['ticket']
 	return ticket+'&hdcore=3.0.3'
 
-
 def decrypt(encrypted, key):
     pes = AES(key.decode('base64'))
     decrypted = pes.decrypt(encrypted.decode('base64'))
     return decrypted
-
 
 def GetSeriesList():
 	repoCheck.UpdateRepo()
@@ -62,6 +65,7 @@ def GetEpisodesList(url):
 	if prms is None or not prms.has_key("channelId") or not prms.has_key("programData") or not prms["programData"].has_key("seasons"):
 		print "Cannot get Seasons list"
 		return
+	urls = []
 	videoChannelId=prms["channelId"]
 	for prm in prms["programData"]["seasons"]:
 		if prm is None or not prm.has_key("vods") or not prm.has_key("current") or prm["current"].lower() != "true":
@@ -75,13 +79,22 @@ def GetEpisodesList(url):
 				url = "http://www.mako.co.il/VodPlaylist?vcmid={0}&videoChannelId={1}".format(vcmid,videoChannelId)
 				iconimage =  episode["picUrl"]
 				description = unicode(episode["subtitle"]).encode("utf-8")
+				if isXbmc:
+					urls.append(url)
+					url = str(len(urls)-1)
 				addDir(name, url, 3, iconimage, description, episodesCount)
 				#print "{0} - {1}".format(name, url)
-			except:
-				pass
+			except Exception as ex:
+				print ex
+				#pass
 			
-		
-def Play(url,name,iconimage):
+	if isXbmc:
+		WriteList(os.path.join(userDir, 'urls.txt'), urls)
+				
+def Play(url, name, iconimage):
+	if isXbmc:
+		urls = ReadList(os.path.join(userDir, 'urls.txt'))
+		url = urls[int(url)]
 	link = OpenURL(url)
 	p = urllib.unquote_plus(decrypt(link, PLAYLIST_KEY))
 	match = re.compile('provider="AKAMAI_HDS"/><Ref href="(.*?)"').findall(p)
@@ -91,7 +104,27 @@ def Play(url,name,iconimage):
 	listItem.setInfo(type='Video', infoLabels={ "Title": name})
 	listItem.setProperty('IsPlayable', 'true')
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+	
+def ReadList(fileName):
+	try:
+		with open(fileName, 'r') as handle:
+			content = json.load(handle)
+	except Exception as ex:
+		print ex
+		content=[]
 
+	return content
+
+def WriteList(filename, list):
+	try:
+		with io.open(filename, 'w', encoding='utf-8') as handle:
+			handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
+		success = True
+	except Exception as ex:
+		print ex
+		success = False
+		
+	return success
 	
 def OpenURL(url, headers={}, user_data={}, retries=3):
 	if user_data:
@@ -103,7 +136,7 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 	req.add_header('User-Agent', UA)
 	for k, v in headers.items():
 		req.add_header(k, v)
-	
+
 	link = None
 	for i in range(retries):
 		try:
@@ -118,8 +151,7 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 			return None
 
 	return link
-	
-	
+		
 def GetJson(url):
 	html = OpenURL(url)
 	if html is None:
@@ -128,7 +160,6 @@ def GetJson(url):
 	if resultJSON is None or len(resultJSON) < 1 or not resultJSON.has_key("root"):
 		return None
 	return resultJSON["root"]
-
 	
 def addDir(name, url, mode, iconimage, description, totalItems=None):
 	u = "{0}?url={1}&mode={2}&iconimage={3}".format(sys.argv[0], urllib.quote_plus(url), str(mode), iconimage)
@@ -151,7 +182,6 @@ def addDir(name, url, mode, iconimage, description, totalItems=None):
 	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 	xbmc.executebuiltin("Container.SetViewMode(504)")
 	return ok
-
 	
 def get_params():
 	param = []

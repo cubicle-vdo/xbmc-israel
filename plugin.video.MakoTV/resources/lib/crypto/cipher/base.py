@@ -61,7 +61,6 @@ class BlockCipher:
     def decrypt(self, cipherText, more = None):
         """ Decrypt a string and return a string """
         self.bytesToDecrypt += cipherText  # append to any bytes from prior decrypt
-
         numBlocks, numExtraBytes = divmod(len(self.bytesToDecrypt), self.blockSize)
         if more == None:  # no more calls to decrypt, should have all the data
             if numExtraBytes  != 0:
