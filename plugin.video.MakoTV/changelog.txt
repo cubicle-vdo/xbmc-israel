@@ -1,4 +1,4 @@
-[B]1.0.2[/B]
+[B]1.0.3[/B]
 - Bugfix, the addon will start faster now.
 [B]1.0.1[/B]
 - Fix for XBMC versions.
