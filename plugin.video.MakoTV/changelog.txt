@@ -1,3 +1,5 @@
+[B]1.0.4[/B]
+- Adjust to APIs' changes.
 [B]1.0.3[/B]
 - Bugfix, the addon will start faster now.
 [B]1.0.1[/B]
