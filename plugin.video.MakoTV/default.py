@@ -1,5 +1,5 @@
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import os, sys, io, re, errno
+import os, sys, io, re
 import urllib, urllib2, json
 import repoCheck
 
@@ -37,14 +37,18 @@ def GetSeriesList():
 		return
 	seriesCount = len(prms["allPrograms"])
 	for prm in prms["allPrograms"]:
-		name = unicode(prm["title"]).encode("utf-8")
-		url = "http://www.mako.co.il{0}".format(prm["url"])
-		iconimage =  prm["pic"]
-		description = prm["brief"]
-		if prm.has_key("plot"):
-			description = "{0} - {1}".format(description, prm["plot"])
-		addDir(name, url, 1, iconimage, description, seriesCount)
-		#print "{0} - {1}".format(name, url)
+		try:
+			name = prm["title"]
+			#name = "{0} - {1}".format(prm["title"].encode("utf-8"), prm["subtitle"].encode("utf-8")).decode("utf-8")
+			url = "http://www.mako.co.il{0}".format(prm["url"])
+			iconimage =  prm["pic"]
+			description = prm["brief"]
+			if prm.has_key("plot"):
+				description = "{0} - {1}".format(description, prm["plot"])
+			infos = {"Title": name, "Plot": description}
+			addDir(name, url, 1, iconimage, infos, totalItems=seriesCount)
+		except Exception as ex:
+			print ex
 	  			
 def GetSeasonsList(url, iconimage):
 	prms = GetJson("{0}?type=service".format(url))
@@ -52,13 +56,16 @@ def GetSeasonsList(url, iconimage):
 		print "Cannot get Seasons list"
 		return
 	for prm in prms["programData"]["seasons"]:
-		if not prm.has_key("vods"):
-			continue
-		name = unicode(prm["name"]).encode("utf-8")
-		url = "http://www.mako.co.il{0}".format(prm["url"])
-		description = unicode(prm["brief"]).encode("utf-8")
-		addDir(name, url, 2, iconimage, description)
-		#print "{0} - {1}".format(name, url)
+		try:
+			if not prm.has_key("vods"):
+				continue
+			name = prm["name"]
+			url = "http://www.mako.co.il{0}".format(prm["url"])
+			description = prm["brief"]
+			infos = {"Title": name, "Plot": description}
+			addDir(name, url, 2, iconimage, infos)
+		except Exception as ex:
+			print ex
 	
 def GetEpisodesList(url):
 	prms = GetJson("{0}?type=service".format(url))
@@ -70,23 +77,21 @@ def GetEpisodesList(url):
 	for prm in prms["programData"]["seasons"]:
 		if prm is None or not prm.has_key("vods") or not prm.has_key("current") or prm["current"].lower() != "true":
 			continue
-		
 		episodesCount = len(prm["vods"])
 		for episode in prm["vods"]:
 			try:
 				vcmid = episode["guid"]
-				name = "{0} - {1}".format(unicode(episode["title"]).encode("utf-8"), unicode(episode["shortSubtitle"]).encode("utf-8"))
+				name = "{0} - {1}".format(episode["title"].encode("utf-8"), episode["shortSubtitle"].encode("utf-8")).decode("utf-8")
 				url = "http://www.mako.co.il/VodPlaylist?vcmid={0}&videoChannelId={1}".format(vcmid,videoChannelId)
 				iconimage =  episode["picUrl"]
-				description = unicode(episode["subtitle"]).encode("utf-8")
+				description = episode["subtitle"]
 				if isXbmc:
 					urls.append(url)
 					url = str(len(urls)-1)
-				addDir(name, url, 3, iconimage, description, episodesCount)
-				#print "{0} - {1}".format(name, url)
+				infos = {"Title": name, "Plot": description, "Aired": episode["date"][episode["date"].find(' ')+1:]}
+				addDir(name, url, 3, iconimage, infos, totalItems=episodesCount)
 			except Exception as ex:
 				print ex
-				#pass
 			
 	if isXbmc:
 		WriteList(os.path.join(userDir, 'urls.txt'), urls)
@@ -97,12 +102,12 @@ def Play(url, name, iconimage):
 		url = urls[int(url)]
 	link = OpenURL(url)
 	p = urllib.unquote_plus(decrypt(link, PLAYLIST_KEY))
-	match = re.compile('provider="AKAMAI_HDS"/><Ref href="(.*?)"').findall(p)
-	base = match[0].replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8')
-	final = base+'?'+urllib.unquote_plus(GetMakoTicket())
-	listItem = xbmcgui.ListItem(name, iconimage, iconimage, path=final)
-	listItem.setInfo(type='Video', infoLabels={ "Title": name})
-	listItem.setProperty('IsPlayable', 'true')
+	match = re.compile('<param name="Provider" value=".*?"/><Ref href="(.*?)" provider="AKAMAI_(.*?)"/>').findall(p)
+	base = match[0][0]
+	if match[0][1] == "HDS":
+		base = base.replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8')
+	final = "{0}?{1}".format(base, urllib.unquote_plus(GetMakoTicket()))
+	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	
 def ReadList(fileName):
@@ -158,15 +163,14 @@ def GetJson(url):
 		return None
 	return resultJSON["root"]
 	
-def addDir(name, url, mode, iconimage, description, totalItems=None):
+def addDir(name, url, mode, iconimage, infos={}, totalItems=None):
 	u = "{0}?url={1}&mode={2}&iconimage={3}".format(sys.argv[0], urllib.quote_plus(url), str(mode), iconimage)
 
 	if (iconimage == None):
 		iconimage = "DefaultFolder.png"
 		
-	liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-	liz.setProperty("Fanart_Image", iconimage)
+	liz = xbmcgui.ListItem(name.encode("utf-8"), iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	liz.setInfo(type="Video", infoLabels=infos)
 	isFolder=True
 	if mode==3 :
 		isFolder=False
