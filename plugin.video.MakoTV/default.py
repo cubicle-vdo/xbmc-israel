@@ -18,11 +18,11 @@ UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (
 PLAYLIST_KEY = 'LTf7r/zM2VndHwP+4So6bw=='
 
 
-def GetMakoTicket():
-	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
+def GetMakoTicket(vodItemId, vodItemURL):
+	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&dv={0}&rv=akamai&lp={1}'.format(vodItemId, urllib.unquote_plus(vodItemURL))).read()
 	result = json.loads(makoTicket)
 	ticket = result['tickets'][0]['ticket']
-	return ticket+'&hdcore=3.0.3'
+	return ticket
 
 def decrypt(encrypted, key):
 	pes = AES(key.decode('base64'))
@@ -106,7 +106,7 @@ def Play(url, name, iconimage):
 	base = match[0][0]
 	if match[0][1] == "HDS":
 		base = base.replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8')
-	final = "{0}?{1}".format(base, urllib.unquote_plus(GetMakoTicket()))
+	final = "{0}?{1}".format(base, urllib.unquote_plus(GetMakoTicket(url[url.find('vcmid=')+6: url.find('&videoChannelId=')], base[base.find('/i/'):])))
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	
