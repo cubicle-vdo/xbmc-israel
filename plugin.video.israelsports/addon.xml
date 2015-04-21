@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelsports" name="israelsports" version="2.1.4" provider-name="ISRALIVE Team">
+<addon id="plugin.video.israelsports" name="israelsports" version="2.1.5" provider-name="ISRALIVE Team">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
