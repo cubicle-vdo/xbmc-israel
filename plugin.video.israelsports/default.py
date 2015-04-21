@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, os, json
+import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, os, json,random
 import repoCheck
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
@@ -138,7 +138,11 @@ def play_video(url,name,iconimage):
 	link=OPEN_URL(secondurl)
 
 	highres=re.compile('http://s5-s.nsacdn.com/sport5_vod/(.*?)</FileURL>',re.M+re.I+re.S).findall(link)
-	direct=  "http://s5-s.nsacdn.com/sport5_vod/" + str (highres[-1])
+	ip=re.compile('<Server priority=.*?>(.*?)<',re.M+re.I+re.S).findall(link)
+	print ip, len(ip)-1
+	random.seed()
+	ip=ip[random.randint(0, len(ip)-1)]
+	direct=  "http://"+ip+"/sport5_vod/" + str (highres[-1])
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
