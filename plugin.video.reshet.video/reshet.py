@@ -123,9 +123,11 @@ def addItemView(item):
     thumbnail = item.getThumbnail()
     season = item.getSeasonName()
     airdate = item.getAirDate()
-    
+	
+    if season is not None:
+		season = urllib.unquote(season)
     listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
-    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary), "Season": urllib.unquote(season), "Aired": urllib.unquote(airdate)})
+    listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary), "Season": season, "Aired": urllib.unquote(airdate)})
     listItem.setProperty("Fanart_Image", thumbnail)
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
