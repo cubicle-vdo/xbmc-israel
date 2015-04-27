@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import urllib2, re
-import jsunpack, common
+import jsunpack, common, json
 
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
@@ -81,3 +81,10 @@ def GetStreamliveToFullLink(url):
 	streams = livestreamer.streams(url)
 	stream = streams["best"]
 	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
+
+def GetCctvLink(name):
+	#p = getUrl('http://vdn.live.cntv.cn/api2/liveHtml5.do?channel=pa://cctv_p2p_hd{0}'.format(name))
+	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW'), name))
+	match=re.compile('var html5VideoData = \'(.*?)\';getHtml5').findall(p)
+	result = json.loads(match[0])
+	return result['hls_url']['hls1']

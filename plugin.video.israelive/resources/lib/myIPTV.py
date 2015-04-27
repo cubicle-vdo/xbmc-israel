@@ -29,7 +29,7 @@ def makeIPTVlist(iptvFile, portNum):
 				url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
 			elif url.find('www.youtube.com') > 0:
 				url = "http://localhost:{0}/?url={1}".format(portNum, url)
-			elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0:
+			elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0 or url.find('?mode=8') > 0:
 				url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
 			elif url.find('?mode=3') > 0:
 				url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
@@ -120,7 +120,7 @@ def SaveChannelsLogos(logosDir):
 			logoFile = GetLogoFileName(channel)
 			if logoFile != "":
 				newFilesList.append(logoFile)
-				logoFile = format(os.path.join(logosDir, logoFile))
+				logoFile = os.path.join(logosDir, logoFile)
 				if not os.path.isfile(logoFile):
 					#print "---------\n{0}\n{1}".format(channel['name'], channel['image'])
 					urllib.urlretrieve(channel['image'], logoFile)

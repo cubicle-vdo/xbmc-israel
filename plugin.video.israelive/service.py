@@ -66,7 +66,7 @@ def CheckUpdates():
 		checkInterval = remoteSettings["remoteSettings"]["refresh"] * 3600 # in hours
 	except:
 		pass
-		
+	
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
 	if not refresh is None:
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
@@ -79,7 +79,7 @@ def CheckUpdates():
 		refresh = common.GetSubKeyValue(remoteSettings, "filmonGuide", "refresh")
 		if not refresh is None:
 			common.isFileOld(filmonGuideFile, refresh * 3600) and common.UpdateZipedFile(filmonGuideFile, "filmonGuide", remoteSettings)
-		
+
 		common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
 		
 		if Addon.getSetting("useIPTV") == "true":

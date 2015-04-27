@@ -10,6 +10,7 @@ def allNoProgress(_in, _out):
 	try:
 		zin = zipfile.ZipFile(_in, 'r')
 		zin.extractall(_out)
+		zin.close()
 	except Exception, e:
 		print str(e)
 		return False
@@ -29,6 +30,7 @@ def allWithProgress(_in, _out, dp):
 			update = count / nFiles * 100
 			dp.update(int(update))
 			zin.extract(item, _out)
+		zin.close()
 	except Exception, e:
 		print str(e)
 		return False
