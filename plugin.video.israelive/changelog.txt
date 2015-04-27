@@ -1,3 +1,6 @@
+[B]v4.3.5[/B]
+- Added support for more kind of channels.
+- Bugfixes.
 [B]v4.3.4[/B]
 - Maintenance for more stability.
 - Bugfixes.

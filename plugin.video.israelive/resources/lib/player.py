@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, json, xbmcaddon
+import urllib, json, xbmcaddon, random
 import myFilmon, myResolver
 
 def get_params(url):
@@ -20,10 +20,16 @@ def get_params(url):
 	return param
 	
 def GetMakoUrl(url):
-	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
+	dvs = urllib.urlopen('http://www.mako.co.il/AjaxPage?jspName=FlashVODOnAir.jsp').read()
+	result = json.loads(dvs)
+	random.seed()
+	random.shuffle(result)
+	dv = result[0]["id"]
+	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai&dv={0}&lp='.format(dv)).read()
 	result = json.loads(makoTicket)
 	ticket = result['tickets'][0]['ticket']
 	url =  "{0}?{1} pvswf=http://images0.kure.tv/jw9/jwplayer.flash.swf".format(url, ticket)
+	#url =  "{0}?{1}&hdcore=3.0.3".format(url, ticket)
 	return url
 	
 def GetFilmonUrl(channelNum):
@@ -38,6 +44,8 @@ def GetFullLink(url, mode):
 		url = "hls://{0}".format(myResolver.GetSatElitFullLink(url))
 	elif mode == 6:
 		url = "hlsvariant://{0}".format(myResolver.GetGinkoFullLink(url))
+	elif mode == 8:
+		url = "hlsvariant://{0}".format(myResolver.GetCctvLink(url))
 	return url
 
 def GetStreamUrl(url):
@@ -62,7 +70,7 @@ def GetStreamUrl(url):
 	
 	if mode == 1:
 		streamUrl = GetFilmonUrl(url)
-	elif mode == 2 or mode == 5 or mode == 6:
+	elif mode == 2 or mode == 5 or mode == 6 or mode == 8:
 		streamUrl = GetFullLink(streamUrl, mode)
 	elif streamUrl.find('f4m') > 0:
 		if streamUrl.find('keshet') > 0:

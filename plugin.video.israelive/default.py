@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
-import sys, os, time, datetime, re
+import sys, os, time, datetime, re, random
 import urllib, json
 import repoCheck
 
@@ -152,6 +152,8 @@ def PlayChannel(url, name, iconimage, categoryName):
 		url = myResolver.GetGinkoFullLink(url[:url.find('?mode')])
 	elif url.find('?mode=7') > 0:		
 		url = myResolver.GetAatwFullLink(url[:url.find('?mode')])
+	elif url.find('?mode=8') > 0:		
+		url = myResolver.GetCctvLink(url[:url.find('?mode')])
 	
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	Play(url, channelName, programmeName, iconimage)
@@ -159,7 +161,12 @@ def PlayChannel(url, name, iconimage, categoryName):
 def Playf4m(url, categoryName, name=None, iconimage=None):
 	i = url.find('http://')
 	if url.find('keshet') > 0:
-		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai').read()
+		dvs = urllib.urlopen('http://www.mako.co.il/AjaxPage?jspName=FlashVODOnAir.jsp').read()
+		result = json.loads(dvs)
+		random.seed()
+		random.shuffle(result)
+		dv = result[0]["id"]
+		makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai&dv={0}&lp='.format(dv)).read()
 		result = json.loads(makoTicket)
 		ticket = result['tickets'][0]['ticket']
 		url = "{0}?{1}&hdcore=3.0.3".format(url[i:], ticket)
@@ -480,13 +487,14 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 		liz.addContextMenuItems(items = items)
 		
 	elif mode == 2:
-		liz.addContextMenuItems(items = 
-			[(localizedString(30210).encode('utf-8'), 'XBMC.Container.Update({0}?mode=37&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))),
-			(localizedString(30212).encode('utf-8'), 'XBMC.Container.Update({0}?mode=38&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))),
-			(localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=-1)'.format(sys.argv[0], channelID)),
-			(localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=1)'.format(sys.argv[0], channelID)),
-			(localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=0)'.format(sys.argv[0], channelID))
-			])
+		items = []
+		items.append((localizedString(30210).encode('utf-8'), 'XBMC.Container.Update({0}?mode=37&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))))
+		items.append((localizedString(30212).encode('utf-8'), 'XBMC.Container.Update({0}?mode=38&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))))
+		if useCategories:
+			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=-1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=0)'.format(sys.argv[0], channelID)))
+		liz.addContextMenuItems(items = items)
 		
 	elif mode == 16:
 		liz.addContextMenuItems(items = 

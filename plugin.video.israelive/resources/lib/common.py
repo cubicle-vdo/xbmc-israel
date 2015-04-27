@@ -7,7 +7,8 @@ import itertools, operator
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
-AddonName = Addon.getAddonInfo("name")
+#AddonName = Addon.getAddonInfo("name")
+AddonName = "IsraeLIVE"
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 listsDir = os.path.join(user_dataDir, 'lists')
