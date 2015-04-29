@@ -1,3 +1,5 @@
+[B]1.0.6[/B]
+- Fix playing problems for few users.
 [B]1.0.5[/B]
 - Adjust to APIs' changes (again).
 [B]1.0.4[/B]

@@ -1,5 +1,5 @@
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import os, sys, io, re
+import os, sys, io, re, random
 import urllib, urllib2, json
 import repoCheck
 
@@ -21,9 +21,22 @@ PLAYLIST_KEY = 'LTf7r/zM2VndHwP+4So6bw=='
 def GetMakoTicket(vodItemId, vodItemURL):
 	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&dv={0}&rv=akamai&lp={1}'.format(vodItemId, urllib.unquote_plus(vodItemURL))).read()
 	result = json.loads(makoTicket)
+	if not result.has_key("tickets"):
+		result = GetMakoTicketPlanB()
+		if not result.has_key("tickets"):
+			return ""
 	ticket = result['tickets'][0]['ticket']
 	return ticket
 
+def GetMakoTicketPlanB():
+	dvs = urllib.urlopen('http://www.mako.co.il/AjaxPage?jspName=FlashVODOnAir.jsp').read()
+	result = json.loads(dvs)
+	random.seed()
+	dv = result[random.randint(0, len(result)-1)]["id"]
+	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai&dv={0}&lp='.format(dv)).read()
+	result = json.loads(makoTicket)
+	return result
+		
 def decrypt(encrypted, key):
 	pes = AES(key.decode('base64'))
 	decrypted = pes.decrypt(encrypted.decode('base64'))
