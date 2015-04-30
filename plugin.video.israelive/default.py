@@ -154,6 +154,10 @@ def PlayChannel(url, name, iconimage, categoryName):
 		url = myResolver.GetAatwFullLink(url[:url.find('?mode')])
 	elif url.find('?mode=8') > 0:		
 		url = myResolver.GetCctvLink(url[:url.find('?mode')])
+	elif url.find('?mode=9') > 0:		
+		url = myResolver.GetFirstOnTv(url[:url.find('?mode')])
+	elif url.find('?mode=10') > 0:		
+		url = myResolver.GetOhozaa(url[:url.find('?mode')])
 	
 	u, channelName, programmeName, icon = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	Play(url, channelName, programmeName, iconimage)
