@@ -83,8 +83,17 @@ def GetStreamliveToFullLink(url):
 	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
 
 def GetCctvLink(name):
-	#p = getUrl('http://vdn.live.cntv.cn/api2/liveHtml5.do?channel=pa://cctv_p2p_hd{0}'.format(name))
 	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW'), name))
 	match=re.compile('var html5VideoData = \'(.*?)\';getHtml5').findall(p)
 	result = json.loads(match[0])
 	return result['hls_url']['hls1']
+
+def GetFirstOnTv(name):
+	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpQ='), name))
+	match = re.compile("HLSurl = '(.*?)'").findall(p)
+	return match[0]
+	
+def GetOhozaa(name):
+	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroU='), name))
+	match = re.compile("streamer':'(.*?)'.*?file'.*?'(.*?)'",re.I+re.M+re.U+re.S).findall(p)
+	return "{0} playpath={1} {2}{3}".format(str(match[0][0]), str(match[0][1]), common.Decode("vOrYtte4hr65veOskJTAv4S0seLswsZ6rMWyeObpx8S8tbe-ruWh0dGtwru3fqSij9jDr3a1qtrXtte4hr65veOskJTAv4S0seLswsZ6rMWyeN_b18p7"), name)
