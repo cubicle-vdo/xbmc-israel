@@ -3,7 +3,7 @@
 """
     Plugin for streaming video content from seretil.me
 """
-import urllib, urllib2, re, os, sys,htmlentitydefs
+import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver, repoCheck
 
@@ -167,42 +167,33 @@ def INDEXSratim(url):
 				if (i%Pages ==0):
 						stop=True
 						#print   "test"  + url2
-						addDir("תוצאות נוספות",url2,4,"")
+						addDir('[COLOR blue]'+'תוצאות נוספות'+'[/COLOR]',url2,4,"")
 
 
-def SpecialPage(url):
+                
+
+def SpecialPage(url,moviename):
+        
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        
-        match=re.compile('<p>(.*?)</p>',re.M+re.I+re.S).findall(link)
-        #print link 
-        for name in match:
-                name=unescape(name) 
-                if (name.find('<br />') ==-1) and (name.find('http') != -1 ):
-                        #print name
-                        match=re.compile('a href="(.*?)"').findall(name)
-                        
-                        if match:
-                                match=urlresolver.HostedMediaFile(match[0])
-                                new_url=match.get_url()
-                                name=re.compile('http://(.*?)\/').findall(new_url)
-                                if match :
-                                   addDir(name[0],new_url,212,'')
+        match=re.compile('<span id(.*?)<\/script>',re.M+re.I+re.S).findall(link)
+        match =match[0]
+        name=unescape(match) 
+        result=re.compile('a href="(.*?)"').findall(name)
+        if result:
+           addLink('[COLOR red]'+'  '+ moviename+'[/COLOR]','','')
+           addLink('[COLOR red]'+'   בחר מקור לניגון,אם לא עובד נסה אחר '+'[/COLOR]','','')
+           for item in result :
+             final=urlresolver.HostedMediaFile(item)
+             new_url=final.get_url()
+             source=re.compile('http://(.*?)\/').findall(new_url)
+             if final :
+                  addDir('[COLOR blue]'+str(source[0]) + '[/COLOR]' +  moviename +'----' ,new_url,212,'')
                                 
-                else :
-                        if name !='&nbsp;' and name.find('לצעירים') ==-1 and name.find('span')==-1:
-                           if (name.find('<br />') !=-1):
-                               name=name[-2:]
-                           try:
-                                        
-                                addLink('[COLOR red]'+'     '+ name+'[/COLOR]','','')
-                           except:pass
                 
-
-
 
 def ResolverLink(url):
         url=urllib.unquote_plus(url)
@@ -295,8 +286,8 @@ def INDEXchooseSeret(url):
             #print url2
             if (i%10 ==0):
                     stop=True
-                    #print   "test"  + url2
-                    addDir("תוצאות נוספות",url2,4,"")
+                    TEXT='תוצאות נוספות'
+                    addDir('[COLOR blue]'+'תוצאות נוספות'+'[/COLOR]',url2,4,"")
                         
                         
                         
@@ -310,21 +301,22 @@ def INDEXchooseSeret(url):
 def CATEGORIES():
     repoCheck.UpdateRepo()
     addDir(' [COLOR blue] חיפוש[/COLOR]','stam',18,'http://4.bp.blogspot.com/_ASd3nWdw8qI/TUkLNXmQwgI/AAAAAAAAAiE/XxYLicNBdqQ/s1600/Search_Feb_02_Main.png')
-    addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
-    addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
+    #addDir(' אוסף סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2013/08/Disney-Cartoon-wallpaper-classic-disney-14019958-1024-768-300x225.jpg')
+    #addDir('אוסף מספר 2 סרטים מדובבים' ,'http://seretil.me/%D7%90%D7%95%D7%A1%D7%A3-%D7%92%D7%93%D7%95%D7%9C-%D7%A9%D7%9C-%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%A6%D7%95%D7%99%D7%A8%D7%99%D7%9D%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/',211,'http://seretil.me/wp-content/uploads/2012/05/images.jpg')
     addDir('מדובבים ראשי' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/page1/',4,'http://www.in-hebrew.co.il/images/logo-s.jpg')
+    addDir('אנימציה -לא הכל מדובב', 'http://seretil.me/category/%D7%90%D7%A0%D7%99%D7%9E%D7%A6%D7%99%D7%94/page1/',4,'http://upload.wikimedia.org/wikipedia/en/thumb/c/c7/DreamWorks_Animation_SKG_logo.svg/1280px-DreamWorks_Animation_SKG_logo.svg.png')
     #INDEXSratim('http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%9E%D7%93%D7%95%D7%91%D7%91%D7%99%D7%9D/page1/')
     addDir('סרטי פעולה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%A4%D7%A2%D7%95%D7%9C%D7%94/page1/',4,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYK9pD6O3mwT5TqYXELuSzMHxVnMCRKjxWS-CMw85Ru3dSgafX1A')
     addDir('סרטי דרמה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%93%D7%A8%D7%9E%D7%94/page1/',4,'http://www.filmsite.org/images/drama-genre.jpg')
     addDir(' סרטי אימה' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%90%D7%99%D7%9E%D7%94/page1/',4,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRgtKPtptcB1sSLVy1KgnB9rXxnyAVFuhy2x7eqMBkXyfqIISIw2w')
     addDir(' סרטי מדע בדיוני' ,'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D/%D7%9E%D7%93%D7%A2-%D7%91%D7%93%D7%99%D7%95%D7%A0%D7%99/page1/',4,'http://i.telegraph.co.uk/multimedia/archive/01474/et_1474485b.jpg')
     addDir('נשיונל גאוגרפיק', 'http://seretil.me/category/%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C-%D7%92%D7%99%D7%90%D7%95%D7%92%D7%A8%D7%A4%D7%99%D7%A7/page1/',4,'http://images.nationalgeographic.com/wpf/sites/common/i/presentation/NGLogo560x430-cb1343821768.png')
-    addDir('2014', 'http://seretil.me/category/2014/page1/',4,'http://www.makingdifferent.com/wp-content/uploads/2013/12/2014-Numbers-Happy-2014-Wallpaper-New-Year-Image-1024x768.jpg')
+    addDir('2012', 'http://seretil.me/category/2012/page1/',4,'http://farm8.staticflickr.com/7171/6603724951_7b352bda71.jpg')
+    addDir('2013', 'http://seretil.me/category/2013/page1/',4,'http://investorplace.com/wp-content/uploads/2012/12/2013-year-630-300x227.jpg')
+    addDir('2014', 'http://seretil.me/category/2014/page1/',4,'http://mountainmessenger.com/wp-content/uploads/2014/12/sparkling_2014_lights-300x187.jpg')
+    addDir('2015', 'http://seretil.me/category/2015/page1/',4,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT61KOSCwfNWb4VXqsfQTCkd-eF0R_O16FF4d4fdiyqOXhJUswB')
     addDir('סרטים ישנים', 'http://seretil.me/category/%D7%A1%D7%A8%D7%98%D7%99%D7%9D-%D7%99%D7%A9%D7%A0%D7%99%D7%9D/page1/',4,'https://www.guthriegreen.com/sites/default/files/Back-to-the-Future.jpg')
-    addDir('אנימציה -לא הכל מדובב', 'http://seretil.me/category/%D7%90%D7%A0%D7%99%D7%9E%D7%A6%D7%99%D7%94/page1/',4,'http://upload.wikimedia.org/wikipedia/en/thumb/c/c7/DreamWorks_Animation_SKG_logo.svg/1280px-DreamWorks_Animation_SKG_logo.svg.png')
-    #addDir('[COLOR blue] סדרות [/COLOR]', 'http://seretil.me/category/112211/',4,'http://cdn3.tnwcdn.com/wp-content/blogs.dir/1/files/2011/12/itv-android-tablets.jpg')
-    #addDir('', '/page1/',4,'')
-    #addDir('', '/page1/',4,'')
+   
 
 
 
@@ -368,7 +360,7 @@ elif mode==8:
 elif mode==18:
         searchInSeretil()
 elif mode==211:
-         SpecialPage(url)
+         SpecialPage(url,name)
 elif mode==212:
         ResolverLink(url)
 

@@ -259,11 +259,11 @@ http://www.hometheater.co.il</description>
 
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="2.1.4" provider-name="hillel">
+<addon id="plugin.video.seretil" name="seretil" version="2.1.5" provider-name="YALLA BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver"/>
-		<import addon="script.module.t0mm0.common"/>
+        <import addon="script.module.t0mm0.common"/>
         <import addon="script.module.simplejson" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
