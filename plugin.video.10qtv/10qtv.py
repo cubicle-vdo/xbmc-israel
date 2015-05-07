@@ -4,7 +4,7 @@
     Plugin for streaming video content from 10q.tv
 """
 import urllib, urllib2, re, os, sys 
-import xbmcaddon, xbmc, xbmcplugin, xbmcgui
+import xbmcaddon, xbmc, xbmcplugin, xbmcgui,json
 import HTMLParser
 from xml.sax import saxutils as su
 ##General vars
@@ -20,7 +20,28 @@ def geturl(url):
     link=response.read()
     return link
 
-
+def unescape(text):
+	try:			
+		rep = {"&nbsp;": " ",
+			  "\n": "",
+			  "\t": "",
+			  "\r":"",
+			  "&#39;":"",
+			  "&quot;":"\"",
+			  "&#8211;":"-",
+			  "Permalink to":"",
+			  "#039;":"",
+			  "&":"'",
+			  "לצפייה ישירה":""
+			  }
+		for s, r in rep.items():
+			text = text.replace(s, r)
+			
+		# remove html comments
+		text = re.sub(r"<!--.+?-->", "", text)	
+			
+	except TypeError:
+		pass
 
 # Returns an array of possible video url's from the page_url
 def getURL( page_url , premium = False , user="" , password="", video_password="" ):
@@ -100,7 +121,17 @@ def getURL( page_url , premium = False , user="" , password="", video_password="
     result = video_urls[len(video_urls)-1]
     return result[1]
     
-
+#resolver for mailru based on lambada genesis.
+def resolveMailru(url):
+            url ='http://videoapi.my.mail.ru/videos/mail/10qtv1/_myvideo/'+url+'.json?ver=0.2.60'
+            import requests
+            result = requests.get(url).content
+            cookie = requests.get(url).headers['Set-Cookie']
+            u = json.loads(result)['videos'][-1]['url']
+            h = "|Cookie=%s" % urllib.quote(cookie)
+            url=u+h
+            return url
+       
 def get_mp4_video_link(match0,match1,match2,tipo):
     if match0.endswith("/"):
         videourl = "%su%s/videos/%s.%s" % (match0,match1,match2,tipo)
@@ -123,7 +154,11 @@ def addDir(name,url,mode,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+        isFolder=True
+        if mode==7:
+             isFolder=False
+             liz.setProperty("IsPlayable","true")
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
         return ok
     
 
@@ -144,8 +179,8 @@ def INDEXsdarot(url):
         #<img alt="" src="http://www.10q.tv/images/bg/90210small.jpg" height="317" width="214">  <br><b>90210</b>
         match=re.compile('top"><a href="(.*?)"> <div style.*?src="(.*?)" height=.*?<br><b>(.*?)<').findall(link)
         for url,thumb,name in match:
-                addDir(name,base_domain+url,2,thumb)
-                print (name,"url= "+ base_domain+url,"thumb= "+thumb)
+                addDir(name,url,2,thumb)
+                print (name,"url= " +url,"thumb= "+thumb)
 
 def INDEXseason(url):
         print(url)
@@ -183,8 +218,8 @@ def IndexSeret(url):
         response.close()
         match=re.compile('top"> <a href="(.*?)" class="sdarot">(.*?)</a>').findall(link)
         for url,name in match:
-                addDir(name,"http://"+base_domain+url,6,"")
-                print (name,"url= "+ base_domain+url)
+                addDir(name,url,6,"")
+                #print (name,"url= "+ base_domain+url)
 
 def ChooseSeret(url):
         print(url)
@@ -217,7 +252,6 @@ def ChooseSeret(url):
             for image,newurl,name in match:
             #    addDir(name,newurl,7,"http://www.10q.tv/_bd/"+image)
                 sorted_movies.append(( "http://www.10q.tv/_bd/"+image,newurl,name))
-                print (name,"url= "+ newurl)
         sorted_movies = sorted(sorted_movies,key=lambda sorted_movies: sorted_movies[2])
         for movie in sorted_movies:
             addDir(movie[2],movie[1],7,movie[0])
@@ -225,16 +259,30 @@ def ChooseSeret(url):
         
         
          
-def playMovie(url):
+def playMovie(url,name):
         req = urllib2.Request(url)
         req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()    
+        name=unescape(name)
         media=re.compile('<iframe src="(.*?)"').findall(link)
-        print ("the vk link is "+  str(media))
-        addFinalLink(media[0],str(name))
-
+        if media :
+              newurl=getURL(media[0])
+        else:
+             media=re.compile('<p><a href="(.*?)"').findall(link) 
+             if media :
+                   newurl=getURL(media[0])
+             else:
+                
+                 mailru=re.compile('<iframe src=\'http://videoapi.my.mail.ru.*?/(.*?).html').findall(link)
+                 newurl= str(mailru[0]).split('/')[-1]
+                 newurl=resolveMailru(newurl)
+        listItem = xbmcgui.ListItem(name, '', '', path=newurl)
+        listItem.setInfo(type='Video', infoLabels={ "Title": name})
+        listItem.setProperty('IsPlayable', 'true')
+        xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+   
 def get_params():
         param=[]
         paramstring=sys.argv[2]
@@ -282,15 +330,13 @@ if mode==None or url==None or len(url)<1:
 elif mode==1:
      print ""+url
      INDEXsdarot(url)
+     
 
 elif mode==2:
-     print ""+url
-     INDEXseason("http://"+url)       
+     INDEXseason(url)       
 elif mode==3:
-     print ""+url
      INDEXepisode(url)
 elif mode==4:
-    print ""+url
     req = urllib2.Request(url)
     req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
     response = urllib2.urlopen(req)
@@ -298,10 +344,16 @@ elif mode==4:
     response.close()
    #<BR><a href="http://vk.com/video_ext.php?oid=181414759&id=164711282&hash=6d92e5c01d83b3b3&sd&quot      
     media=re.compile('a href="(.*?)&quot').findall(link)
-    print ("the vk link is "+  str(media))
-    addFinalLink(media[0],str(name))
+    if not media:
+        mailru=re.compile('<iframe src=\'http://videoapi.my.mail.ru.*?/(.*?).html').findall(link)
+        url= str(mailru[0]).split('/')[-1]
+        addLink(name,resolveMailru(url),'')
+    
+    else:
+         addFinalLink(media[0],str(name))
+
 elif mode==7:
-    playMovie(url)
+    playMovie(url,name)
     
 elif mode==5:
     IndexSeret(url)

@@ -5,6 +5,7 @@ def ExtractAll(_in, _out):
 	try:
 		zin = zipfile.ZipFile(_in, 'r')
 		zin.extractall(_out)
+		zin.close()
 	except Exception, e:
 		print str(e)
 		return False
