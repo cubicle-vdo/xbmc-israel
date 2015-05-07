@@ -14,7 +14,7 @@ def CATEGORIES():
 	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'repository.xbmc-israel')):
 		commonkids.downloader_israel("https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip", "", showProgress=False)
 	if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
-		downloader_is('https://github.com/spoyser/spoyser-repo/raw/master/zips/repository.spoyser/repository.spoyser-1.0.5.zip','supercartoons repository')
+		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/repository.spoyser/repository.spoyser-1.0.6.zip?raw=true','supercartoons repository')
 		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.4.zip?raw=true','supercartoons  addon')
 		dlg = xbmcgui . Dialog ( )
 		dlg.ok( "KIDSIL" , "צא מהתוסף וחזור כדי לראות את התוסף החדש")
@@ -22,8 +22,6 @@ def CATEGORIES():
 		addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
 
 	addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d%20%d7%a8%d7%90%d7%a9%d7%99&url=http%3a%2f%2fseretil.me%2fcategory%2f%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2fpage1%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
-	addDir('seretil מדובבים','plugin://plugin.video.seretil/?mode=211&name=%20%d7%90%d7%95%d7%a1%d7%a3%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
-	addDir('seretil 2 מדובבים','plugin://plugin.video.seretil/?mode=211&name=%d7%90%d7%95%d7%a1%d7%a3%20%d7%9e%d7%a1%d7%a4%d7%a8%202%20%d7%a1%d7%a8%d7%98%d7%99%d7%9d%20%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d&url=http%3a%2f%2fseretil.me%2f%25D7%2590%25D7%2595%25D7%25A1%25D7%25A3-%25D7%2592%25D7%2593%25D7%2595%25D7%259C-%25D7%25A9%25D7%259C-%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%25A6%25D7%2595%25D7%2599%25D7%25A8%25D7%2599%25D7%259D%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
 	addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')
 	addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')
@@ -39,9 +37,9 @@ def CATEGORIES():
 	addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=wallavod&name=י%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=englishName%3dkids',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
 	addDir('HOT VOD YOUNG','plugin://plugin.video.hotVOD.video/?mode=5&name=%20HOT%20VOD%20YOUNG&url=http%3a%2f%2fhot.ynet.co.il%2fhome%2f0%2c7340%2cL-7449%2c00.html',8,'http://i28.tinypic.com/20o8lt.jpg','')	
 	addDir('מצויירים קלאסיים','https://dl.dropboxusercontent.com/s/cwcptnocx310g00/Merry_Melodies.plx',7,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzwydiY6V_l5sE_ed7Rf66G6B8Ug2p7ajn4uPAhH2NYpDVMNBUQ','')
-	addDir('Baby Einstein','TerrapinStation5',9,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
 	addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
 	addDir('YES שירי','PLF11AD94724D37E02',13,'http://static.wixstatic.com/media/96e157_2b95d7111507dcbbf4d07a346b1a08bf.jpg_srz_261_263_85_22_0.50_1.20_0.00_jpg_srz','1')
+	addDir('Baby Einstein','PLlBpB13l5PDCndYQPS4PHw5ElfKZMhgCE',13,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
 	addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
 	
 	YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
@@ -125,7 +123,8 @@ def YOUsubs(user):
 		image=str(feed[i]['media$thumbnail']['url'])
 		name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
 		url=feed[i]['yt$channelId']['$t'].encode('utf-8')
-		addDir(name,url,9,image,'1')
+		addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,'')
+		#addDir(name,url,9,image,'1')
 	setView('tvshows', 'default')
 	
 #list the links from  usernames based on mash23 + improvment
@@ -137,7 +136,7 @@ def YOUList(name,url,description):
 		for playlistid,title,thumb in playlists :
 			addDir('[COLOR yellow]Playlist:[/COLOR]                  ' + title,playlistid,12,thumb,'')
 #						print playlistid
-	
+	addDir('לרשימת וידאו בודדים שהועלו','plugin://plugin.video.youtube/channel/'+url+'/',8,'','')
 	murl='http://gdata.youtube.com/feeds/api/users/'+url+'/uploads?&max-results=50&start-index='+description
 	link=OPEN_URL(murl)
 	addDir('[COLOR red]נגן כל התוצאות בעמוד זה [/COLOR]',murl,11,'',description)
@@ -426,7 +425,8 @@ elif mode==8:
 elif mode==7:
 	ListLive(url)
 elif mode==9:
-	YOUList(name,url,description)
+	#YOUList(name,url,description)
+	addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,'','')
 elif mode==10:
 	YOUsubs(url)
 elif mode==11:

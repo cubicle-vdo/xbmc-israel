@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.4" provider-name="GO BEITAR NORDIA">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.5" provider-name="GO BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
