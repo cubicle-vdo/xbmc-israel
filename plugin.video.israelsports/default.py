@@ -39,7 +39,7 @@ def CATEGORIES():
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5403&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
 	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
 	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
-	
+	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
 	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5459&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
 	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5452&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
 	addDir('חמישיות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5463&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTSYYoacn3zS6w4JwqPORpGCDBqytoJOko8bc6usF3kQ_yoJgwS','1')
@@ -50,7 +50,6 @@ def CATEGORIES():
 	addDir('בובה של לילה 1','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3185&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
 	addDir('One-  ליגת העל','stam',9,'http://www.isramedia.net/images/tvshowpic/Ligat_winner.png','1')
-	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
 
 	setView('movies', 'default')
 
@@ -134,15 +133,16 @@ def play_video(url,name,iconimage):
 	link=OPEN_URL(url)
 	clipid=re.compile('clipid=(.*?)&Width',re.M+re.I+re.S).findall(link)
 	secondurl = "http://sport5-metadata-rr-d.nsacdn.com/vod/vod/" + str(clipid[0]) +"/HLS/metadata.xml?smil_profile=default"
-
-	link=OPEN_URL(secondurl)
-
-	highres=re.compile('http://s5-s.nsacdn.com/sport5_vod/(.*?)</FileURL>',re.M+re.I+re.S).findall(link)
-	ip=re.compile('<Server priority=.*?>(.*?)<',re.M+re.I+re.S).findall(link)
-	print ip, len(ip)-1
-	random.seed()
-	ip=ip[random.randint(0, len(ip)-1)]
-	direct=  "http://"+ip+"/sport5_vod/" + str (highres[-1])
+	
+	if  not ('delivery' in clipid[0]) :
+		link=OPEN_URL(secondurl)
+		highres=re.compile('http://s5-s.nsacdn.com/sport5_vod/(.*?)</FileURL>',re.M+re.I+re.S).findall(link)
+		ip=re.compile('<Server priority=.*?>(.*?)<',re.M+re.I+re.S).findall(link)
+		random.seed()
+		ip=ip[random.randint(0, len(ip)-1)]
+		direct=  "http://"+ip+"/sport5_vod/" + str (highres[-1])
+	else:
+		direct='http://sport5-vh.akamaihd.net/i/video/'+clipid[0]+'.csmil/master.m3u8'
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -240,6 +240,7 @@ def play_one(name,url,iconimage,description):
 				addLink(name,"http://playlist"+str(item[0]),iconimage,'')
 
 def OPEN_URL(url,host=None):
+	print url
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
 	if host:
@@ -376,6 +377,6 @@ elif mode==9:
 elif mode==13:
 	ListPlaylist(url)
 elif mode==14:
-	ListPlaylist('PLu1PmlSxBSr8VA0UyE4mr6V9ZojwjwVl9')
+	ListPlaylist('PLPBpwEvX7h5JVVEo-arnqkV8hh05xfpO8')
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

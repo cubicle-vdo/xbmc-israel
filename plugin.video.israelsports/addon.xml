@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelsports" name="israelsports" version="2.1.5" provider-name="ISRALIVE Team">
+<addon id="plugin.video.israelsports" name="Israel Sports" version="2.1.6" provider-name="ISRALIVE Team">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -11,6 +11,7 @@
     <description lang="en">This addon parse sport5 site and one.co.il  you should check sport5 TOS before you using. It's as is</description>
 	 <description lang="he">יש לבדוק תנאי השימוש באתר- התוסף נבנה לצרכי לימוד פייטון</description>
 	<disclaimer>This addon parse sport5 site, you should check sport5 TOS before you using. It's as is</disclaimer>
+	<disclaimer>"יאללה בית"ר ,נורדיה"</disclaimer>
     <platform>all</platform>
   </extension>
 </addon>
