@@ -129,14 +129,14 @@ def addDir(name,url,mode,iconimage,description):
                 liz.addContextMenuItems(items=menu, replaceItems=True)
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
                 return ok
-        if mode==9:
-                menu.append(('[COLOR blue]       TV MODE [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=115&name=''&url=%s)"% (url)))
+        if mode==8 and description:
+                menu.append(('[COLOR blue]       TV MODE [/COLOR]', "XBMC.RunPlugin(plugin://plugin.video.KIDSIL/?description&iconimage=''&mode=115&name=''&url=%s)"% (description)))
                 liz.addContextMenuItems(items=menu, replaceItems=True)
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-                return ok
-        elif  mode==8 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
                 return ok
+        elif mode==8 and not description:
+               ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+               return ok
         elif mode==11 or mode==15 or mode==115 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
                 return ok
