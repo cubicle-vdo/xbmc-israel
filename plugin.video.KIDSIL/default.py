@@ -123,7 +123,7 @@ def YOUsubs(user):
 		image=str(feed[i]['media$thumbnail']['url'])
 		name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
 		url=feed[i]['yt$channelId']['$t'].encode('utf-8')
-		addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,'')
+		addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,url)
 		#addDir(name,url,9,image,'1')
 	setView('tvshows', 'default')
 	
@@ -286,6 +286,7 @@ def YOULinkAll(url):
 		xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(pl)
 
 def RanFromPlayList(playlistid):
+	random.seed()
 	url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
@@ -426,7 +427,7 @@ elif mode==7:
 	ListLive(url)
 elif mode==9:
 	#YOUList(name,url,description)
-	addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,'','')
+	addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,'',url)
 elif mode==10:
 	YOUsubs(url)
 elif mode==11:
