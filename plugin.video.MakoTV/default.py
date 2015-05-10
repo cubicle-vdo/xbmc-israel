@@ -1,5 +1,5 @@
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import os, sys, io, re, random
+import os, sys, io, re, random, uuid, base64
 import urllib, urllib2, json
 import repoCheck
 
@@ -8,39 +8,14 @@ isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
 
 AddonID = 'plugin.video.MakoTV'
 Addon = xbmcaddon.Addon(AddonID)
+AddonName = "MakoTV"
+
 userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if isXbmc and not os.path.exists(userDir):
 	os.makedirs(userDir)
-libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
-sys.path.insert(0, libDir)
-from crypto.cipher.aes import AES
+
 UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 PLAYLIST_KEY = 'LTf7r/zM2VndHwP+4So6bw=='
-
-
-def GetMakoTicket(vodItemId, vodItemURL):
-	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&dv={0}&rv=akamai&lp={1}'.format(vodItemId, urllib.unquote_plus(vodItemURL))).read()
-	result = json.loads(makoTicket)
-	if not result.has_key("tickets"):
-		result = GetMakoTicketPlanB()
-		if not result.has_key("tickets"):
-			return ""
-	ticket = result['tickets'][0]['ticket']
-	return ticket
-
-def GetMakoTicketPlanB():
-	dvs = urllib.urlopen('http://www.mako.co.il/AjaxPage?jspName=FlashVODOnAir.jsp').read()
-	result = json.loads(dvs)
-	random.seed()
-	dv = result[random.randint(0, len(result)-1)]["id"]
-	makoTicket = urllib.urlopen('http://mass.mako.co.il/ClicksStatistics/entitlementsServices.jsp?et=gt&rv=akamai&dv={0}&lp='.format(dv)).read()
-	result = json.loads(makoTicket)
-	return result
-		
-def decrypt(encrypted, key):
-	pes = AES(key.decode('base64'))
-	decrypted = pes.decrypt(encrypted.decode('base64'))
-	return decrypted
 
 def GetSeriesList():
 	repoCheck.UpdateRepo()
@@ -113,13 +88,23 @@ def Play(url, name, iconimage):
 	if isXbmc:
 		urls = ReadList(os.path.join(userDir, 'urls.txt'))
 		url = urls[int(url)]
-	link = OpenURL(url)
-	p = urllib.unquote_plus(decrypt(link, PLAYLIST_KEY))
-	match = re.compile('<param name="Provider" value=".*?"/><Ref href="(.*?)" provider="AKAMAI_(.*?)"/>').findall(p)
-	base = match[0][0]
-	if match[0][1] == "HDS":
-		base = base.replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8')
-	final = "{0}?{1}".format(base, urllib.unquote_plus(GetMakoTicket(url[url.find('vcmid=')+6: url.find('&videoChannelId=')], base[base.find('/i/'):])))
+	
+	guid = url[url.find('vcmid=')+6: url.find('&videoChannelId=')]
+	link = Decode('tdXf346FfNji5oLDrszanbfFe8rXnpXArtm70Lu7jMve36K3usao38C3xs3U4siEt9Tblcq5usrPrM-Gyofh2Li7vKTT0MLEss2005HRft6R0sPEwNbY1MaTxMbNlbnEsNPk38i_vM-o3cM=')
+	text = OpenURL(link.format(guid, url[url.find('&videoChannelId=')+16:]))
+	result = json.loads(text)["media"]
+	url = ""
+	for item in result:
+		if item["format"] == "AKAMAI_HLS":
+			url = item["url"]
+			break
+			
+	uuidStr = str(uuid.uuid1()).upper()
+	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
+	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
+	text = OpenURL(link.format(du, guid, url[url.find("/i/"):]))
+	result = json.loads(text)["tickets"][0]["ticket"]
+	final = "{0}?{1}".format(url, result)
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	
@@ -194,6 +179,16 @@ def addDir(name, url, mode, iconimage, infos={}, totalItems=None):
 		ok =xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder,totalItems=totalItems)
 	
 	return ok
+	
+def Decode(string):
+	decoded_chars = []
+	string = base64.urlsafe_b64decode(string.encode("utf-8"))
+	for i in xrange(len(string)):
+		key_c = AddonName[i % len(AddonName)]
+		decoded_c = chr(abs(ord(string[i]) - ord(key_c) % 256))
+		decoded_chars.append(decoded_c)
+	decoded_string = "".join(decoded_chars)
+	return decoded_string
 	
 def get_params():
 	param = []

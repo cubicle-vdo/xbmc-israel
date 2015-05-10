@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib2, re
+import urllib2, re, uuid
 import jsunpack, common, json
 
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
@@ -97,3 +97,26 @@ def GetOhozaa(name):
 	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroU='), name))
 	match = re.compile("streamer':'(.*?)'.*?file'.*?'(.*?)'",re.I+re.M+re.U+re.S).findall(p)
 	return "{0} playpath={1} {2}{3}".format(str(match[0][0]), str(match[0][1]), common.Decode("vOrYtte4hr65veOskJTAv4S0seLswsZ6rMWyeObpx8S8tbe-ruWh0dGtwru3fqSij9jDr3a1qtrXtte4hr65veOskJTAv4S0seLswsZ6rMWyeN_b18p7"), name)
+	
+def GetBBLink():
+	text = getUrl(common.Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdoupfNWlwsqxrLirr9amkpV8f4StveCx1d68rpO4ruXoysix'))
+	result = json.loads(text)["root"]["video"]
+	guid = result["guid"]
+	chId = result["chId"]
+	galleryChId = result["galleryChId"]
+	link = common.Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=')
+	text = getUrl(link.format(guid, chId, galleryChId))
+	result = json.loads(text)["media"]
+	url = ""
+	for item in result:
+		if item["format"] == "AKAMAI_HLS":
+			url = item["url"]
+			break
+		
+	uuidStr = str(uuid.uuid1()).upper()
+	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
+	link = common.Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==')
+	text = getUrl(link.format(du, guid, url[url.find("/i/"):]))
+	result = json.loads(text)["tickets"][0]["ticket"]
+	return "{0}?{1}".format(url, result)
+	

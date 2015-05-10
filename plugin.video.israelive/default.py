@@ -138,6 +138,8 @@ def PlayChannel(url, name, iconimage, categoryName):
 		
 	if url.find('www.youtube.com') > 0:
 		url = myResolver.GetYoutubeFullLink(url)
+	if url == "BB":
+		url = myResolver.GetBBLink()
 	elif url.find('?mode=2') > 0:
 		url = myResolver.GetGLArabFullLink(url[:url.find('?mode')])
 	elif url.find('?mode=3') > 0 and useIPTV:
