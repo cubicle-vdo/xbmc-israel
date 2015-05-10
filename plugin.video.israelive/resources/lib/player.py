@@ -76,6 +76,8 @@ def GetStreamUrl(url):
 		if streamUrl.find('keshet') > 0:
 			streamUrl = GetMakoUrl(streamUrl)
 		streamUrl = "hds://{0}".format(streamUrl)
+	elif streamUrl == "BB":
+		streamUrl = "hlsvariant://{0}".format(myResolver.GetBBLink())
 	else:
 		streamUrl = url[5:]
 
