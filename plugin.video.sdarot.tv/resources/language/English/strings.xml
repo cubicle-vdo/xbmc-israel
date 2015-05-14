@@ -6,6 +6,9 @@
     <string id="20002">Username</string>
     <string id="20003">Password</string>
     <string id="20004">Site address</string>
+	<string id="20015">In case of a failure, retry</string>
+	<string id="20016">Number of retries</string>
+	<string id="20017">Interval between retries (in seconds)</string>
     <string id="30001">More...</string>
     <string id="30002">Season</string>
     <string id="30003">Missing Chapter Title</string>

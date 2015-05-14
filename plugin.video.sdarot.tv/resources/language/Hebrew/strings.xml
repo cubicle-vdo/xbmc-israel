@@ -6,6 +6,9 @@
     <string id="20002">משתמש</string>
     <string id="20003">סיסמה</string>
 	<string id="20004">כתובת האתר</string>
+	<string id="20015">במקרה של כשלון, נסה שוב</string>
+	<string id="20016">מספר הפעמים לנסיון</string>
+	<string id="20017">משך הזמן בין נסיון לנסיון (בשניות)</string>
     <string id="30001">עוד פרקים</string>
     <string id="30002">עונה</string>
     <string id="30003">חסרה כותרת הפרק</string>
