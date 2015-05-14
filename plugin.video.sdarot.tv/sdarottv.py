@@ -52,17 +52,17 @@ urllib2.install_opener(opener)
 
 
 def MAIN_MENU():
-    CHECK_LOGIN()
-    addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
-    addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
-    addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
-    page = getData(DOMAIN+'/series',referer="")
-    matches = re.compile('<li><a href="/series/genre/(.*?)">').findall(page)
-    for match in matches:
-         a=str(match)
-         sp=a.split('-',1)
-         #print sp , a
-         addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
+	CHECK_LOGIN()
+	addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
+	addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
+	addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
+	page = getData(DOMAIN+'/series',referer="")
+	matches = re.compile('<li><a href="/series/genre/(.*?)">').findall(page)
+	for match in matches:
+		 a=str(match)
+		 sp=a.split('-',1)
+		 #print sp , a
+		 addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
 	
 def SearchSdarot(url,search_entered):
 	if 'חפש' in  search_entered :
@@ -108,7 +108,7 @@ def INDEX_AZ(url,page):
     for key in sr_sorted:
       series_link=DOMAIN+"/watch/"+str(key[0])+"/"+key[1]
       image_link=DOMAIN+"/media/series/"+str(key[0])+".jpg"      
-      addDir(key[2],series_link,"3&image="+urllib.quote(image_link)+"&series_id="+str(key[0])+"&series_name="+urllib.quote(key[1]),image_link)
+      addDir(key[2],series_link,"3&image="+urllib.quote(image_link)+"&series_id="+str(key[0])+"&series_name="+urllib.quote(key[2].encode("utf-8")),image_link)
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
       
 def sdarot_series(url):
@@ -140,7 +140,7 @@ def sdarot_series(url):
         if downloadEnabled:
             downloadUrl = "XBMC.RunPlugin(plugin://plugin.video.sdarot.tv/?mode=7&url=" + url + "&season_id="+str(season)+"&series_id="+str(series_id) + ")"
             downloadMenu.append(('הורד עונה', downloadUrl,))
-        addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link,contextMenu=downloadMenu)
+        addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link,contextMenu=downloadMenu)
     xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
       
 def sdarot_season(url):
@@ -159,7 +159,7 @@ def sdarot_season(url):
     #print episodes
     for i in range (0, len(episodes)) :
         epis= str(episodes[i]['episode'])
-        addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_id),image_link, '')         
+        addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link, '')         
     xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 def download_season(url):
@@ -210,13 +210,13 @@ def sdarot_movie(url):
     season_id=urllib.unquote_plus(params["season_id"])
     image_link=urllib.unquote_plus(params["image"])
     episode_id=urllib.unquote_plus(params["episode_id"])
-    title = series_name + "עונה " + season_id + " פרק" + episode_id
+    title = series_name + ", עונה " + season_id + ", פרק " + episode_id
    
     finalUrl,VID = getFinalVideoUrl(series_id,season_id,episode_id)
     #print "finalUrl" + finalUrl
         
     player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
-    liz = xbmcgui.ListItem(title, path=finalUrl, iconImage=params["image"], thumbnailImage=params["image"])
+    liz = xbmcgui.ListItem(path=finalUrl)
     liz.setInfo(type="Video", infoLabels={ "Title": title })    
     liz.setProperty('IsPlayable', 'true')
     #print finalUrl

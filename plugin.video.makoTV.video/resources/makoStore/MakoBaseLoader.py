@@ -45,6 +45,7 @@ class MakoBaseLoader(object):
                 req = urllib2.Request(self.queryUrl, postData)
             else:
                 req = urllib2.Request(self.queryUrl)
+	    req.add_header('User-Agent', "android")
             response = urllib2.urlopen(req)
             jsonData = response.read()
             response.close()

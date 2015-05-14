@@ -69,7 +69,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.IBA" name="IBA VOD" version="1.0.2" provider-name="NOYMAN .D">
+<addon id="plugin.video.IBA" name="IBA VOD" version="1.0.3" provider-name="NOYMAN .D">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -177,7 +177,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.32" provider-name="sbentin \V Master">
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.34" provider-name="sbentin \V Master">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
@@ -239,7 +239,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.1" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.2" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>

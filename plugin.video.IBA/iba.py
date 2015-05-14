@@ -16,9 +16,9 @@ def INDEXsdarot(url):
 	xbmcplugin.addSortMethod(int(sys.argv[1]), 1)
 
 def INDEXepisode(url,name):  
-	match=re.compile('title="(.*?)">.*?"schedule_code" style="display:none">(.*?)<',re.I+re.M+re.U+re.S).findall(url)
+	match=re.compile('title="(.*?)">.*?"url" style="display:none">(.*?)<',re.I+re.M+re.U+re.S).findall(url)
 	for  name2,num in match:
-		link = 'http://switch31-01.castup.net/cunet/gm.asp?ai=31&ar='+num+'&ak=null'
+		link = 'http://82.80.192.28/iba_vod/_definst_/smil:'+num+'.smil/master.m3u8'
 		addLink(name2.decode('windows-1255').encode("utf-8"), link, '', '')
 
 def addLink(name,url,iconimage,description):
