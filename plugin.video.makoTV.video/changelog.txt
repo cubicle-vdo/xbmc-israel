@@ -1,3 +1,6 @@
+[B]Version 1.34[/B]
+- fix version number and more.
+
 [B]Version 1.32[/B]
 - fix version number
 

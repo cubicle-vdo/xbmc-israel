@@ -63,6 +63,9 @@ def LOGIN():
 def CHECK_LOGIN():
 	# check's if login  is required.
 	#print "check if logged in already"
+	if __settings__.getSetting('username').strip() == '' or __settings__.getSetting('user_password') == '':
+		return
+		
 	page = getData(DOMAIN+'/series',referer="")
 	match = re.compile('<span class="button blue" id="logout"><a href=".*?/log(.*?)">').findall(page)
 	#print match
@@ -229,56 +232,71 @@ def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFER
 
 def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
     CHECK_LOGIN()
-    page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
-   
-    token = None
-    
-    #print "Sdarot processing JSON:" + str(page)
-    #print cookiejar
-    try:
-       
-        #try to see if 
-        prms=json.loads(page)
-        #print str(prms)
-        if prms.has_key("error"):
-            
-            #encoding needed for hebrew to appear right
-            error = str(prms["error"].encode("utf-8"))
-        
-            if len(error) > 0 :
-                print "error:" + error +"\n"
-                if not silent:
-                    xbmcgui.Dialog().ok('Error occurred',error)
-                return None,None
-        
-        vid_url = str(prms["url"])
-        #vid_name = str(prms["name"])
-        #print "vid_name: "+vid_name+"\n"
-        
-        hd=False
-        #if str(prms["hd"])=='0':
-        if (not prms.has_key("hd")) or prms["hd"] == False or str(prms["hd"])=='0':
-            token = prms["watch"]["sd"]
-        else:
-            token = prms["watch"]["hd"]
-            hd=True
-        #print "Token: "+token +"\n"   
+	
+    for i in range(5):
+		error = ''
+		page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
+	   
+		token = None
 		
-        #print "vid_url: "+vid_url+"\n"
-        VID = str(prms["VID"])
-        #print "VID: "+VID+"\n"
-        
-        
-        vid_time = str(prms["time"])
-        #print "Time: "+ vid_time +"\n"
-    
-    except Exception as e:
-        print e
+		#print "Sdarot processing JSON:" + str(page)
+		#print cookiejar
+		try:
+		   
+			#try to see if 
+			prms=json.loads(page)
+			#print str(prms)
+			if prms.has_key("error"):
+				
+				#encoding needed for hebrew to appear right
+				error = str(prms["error"].encode("utf-8"))
+			
+				if len(error) > 0 :
+					#print "error:" + error +"\n"
+					#if not silent:
+					#	xbmcgui.Dialog().ok('Error occurred',error)
+					#return None,None
+					time.sleep(5)
+					continue
+			
+			vid_url = str(prms["url"])
+			#vid_name = str(prms["name"])
+			#print "vid_name: "+vid_name+"\n"
+			
+			hd=False
+			#if str(prms["hd"])=='0':
+			if (not prms.has_key("hd")) or prms["hd"] == False or str(prms["hd"])=='0':
+				token = prms["watch"]["sd"]
+			else:
+				token = prms["watch"]["hd"]
+				hd=True
+			#print "Token: "+token +"\n"   
+			
+			#print "vid_url: "+vid_url+"\n"
+			VID = str(prms["VID"])
+			#print "VID: "+VID+"\n"
+			
+			
+			vid_time = str(prms["time"])
+			#print "Time: "+ vid_time +"\n"
+			break
+		
+		except Exception as e:
+			#print e
+			error = e
+			time.sleep(5)
 
+    if error <> '':
+		print "error:" + error +"\n"
+		if not silent:
+			xbmcgui.Dialog().ok('Error occurred',error)
+		return None,None
+		
     if not token:
         if not silent:
             xbmcgui.Dialog().ok('Error occurred',"התוסף לא הצליח לקבל אישור לצפייה, אנא נסה מאוחר יותר")
         return None,None
+
     if hd:
           finalUrl = "http://" + vid_url + "/watch/hd/"+VID+'.mp4?token='+token+'&time='+vid_time
     else:

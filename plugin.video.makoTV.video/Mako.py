@@ -35,11 +35,11 @@ import MakoTicketLoader
 import repoCheck
 
 # define properties dictionary to be delivered down the hierarchy
-__properties = { 'consumer':'android4', 'appId':'0c4f6ec6-9194-450e-a963-e524bb6404g2', 'appVer':'3.0.3' }
+__properties = { 'consumer':'android4', 'appId':'0c4f6ec6-9194-450e-a963-e524bb6404g2', 'appVer':'3.3' }
 
 def getProgramsIndex():
     # obtain VOD index
-    repoCheck.UpdateRepo()
+    #repoCheck.UpdateRepo()
     indexLoader = MakoVodIndexLoader.MakoVodIndexLoader(__properties)
     jsonProgramsIndex = indexLoader.loadURL()
     if None == jsonProgramsIndex:
@@ -149,6 +149,12 @@ def playItem(vodItemURL, vodItemId):
     if urlEncodedTicket == '':
         xbmc.log('***** Mako: unable to find ticket for vod item %s' % vodItemURL, xbmc.LOGERROR)
     else:
+        # unquote the payload
+	#urlTicket = urlEncodedTicket
+	#tpos = urlEncodedTicket.find('=')
+	#if tpos > -1:
+	#    urlTicket = urlEncodedTicket[:tpos] + urllib.unquote_plus(urlEncodedTicket[tpos:])
+
         # create final URL
 	_url = vodItemURL
 	if _url.find('?') == -1:
