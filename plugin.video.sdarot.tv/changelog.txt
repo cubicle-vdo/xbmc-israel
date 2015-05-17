@@ -1,6 +1,8 @@
+[B]Version 2.2.3[/B]
+- 10 tries (instead of 5) to play an item (5 seconds between each try).
 [B]Version 2.2.2[/B]
 - you can watch now without login.
-- if server is busy, there will be 5 trys to play an item (5 seconds between eatch try).
+- if server is busy, there will be 5 tries to play an item (5 seconds between each try).
 [B]Version 2.2.1[/B]
 -verify login before playing video (support playing video from outside the addon)
 [B]Version 2.2.0[/B]
