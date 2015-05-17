@@ -124,10 +124,14 @@ def getURL( page_url , premium = False , user="" , password="", video_password="
 #resolver for mailru based on lambada genesis.
 def resolveMailru(url):
             url ='http://videoapi.my.mail.ru/videos/mail/10qtv1/_myvideo/'+url+'.json?ver=0.2.60'
-            import requests
-            result = requests.get(url).content
-            cookie = requests.get(url).headers['Set-Cookie']
-            u = json.loads(result)['videos'][-1]['url']
+            #import requests
+            req = urllib2.Request(url)
+            req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+            response = urllib2.urlopen(req)
+            link=response.read() 
+            handler = urllib2.urlopen(req)
+            cookie = handler.headers.getheader('Set-Cookie')
+            u = json.loads(link)['videos'][-1]['url']
             h = "|Cookie=%s" % urllib.quote(cookie)
             url=u+h
             return url

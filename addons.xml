@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.6" provider-name="GO BEITAR NORDIA">
+<addon id="plugin.video.10qtv" name="10qtv" version="1.0.7" provider-name="GO BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.requests" version="1.0.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="10qtv.py">
         <provides>video</provides>
@@ -239,7 +238,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.2" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.3" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>

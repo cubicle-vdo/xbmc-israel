@@ -1,3 +1,5 @@
+[B]Version 1.0.7[/B]
+-Fix for an internal site change
 [B]Version 1.0.4[/B]
 -Fix for an internal site change
 [B]Version 1.0.3[/B]
