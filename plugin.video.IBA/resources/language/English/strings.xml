@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Category strings -->
+    <string id="20000">Device Id</string>
+    <string id="20001">Turn on Debug Mode</string>
+	<string id="20002">UUID</string>
+	<string id="20003">Device Auth Token</string>
+</strings>
