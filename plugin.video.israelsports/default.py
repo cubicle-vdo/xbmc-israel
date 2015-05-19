@@ -188,38 +188,10 @@ def one_videopage(url,description):
 	addDir("[COLOR blue]חזרה לראשי [/COLOR]",'',None,'','')
 
 	setView('movies', 'default')
-def YOUsubs(user):
-	murl='http://gdata.youtube.com/feeds/api/users/'+user+'/subscriptions?alt=json&start-index=1&max-results=50'
-	resultJSON = json.loads(OPEN_URL(murl))
-	feed=resultJSON['feed']['entry']
-	for i in range (0, len(feed)) :
-		image=str(feed[i]['media$thumbnail']['url'])
-		name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
-		url=feed[i]['yt$channelId']['$t'].encode('utf-8')
-		addDir(name,url,9,image,'1')
-	setView('tvshows', 'default')
-def YOULink(mname,url,thumb):
-	ok=True
-	url = "plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+url
-	liz=xbmcgui.ListItem(mname, iconImage="DefaultVideo.png", thumbnailImage=thumb)
-	liz.setInfo( type="Video", infoLabels={ "Title": mname, "Plot": description } )
-	liz.setProperty("IsPlayable","true")
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
-	return ok
 
-
-#list the links from  usernames based on mash23 + improvment
-def YOUList(name,url,description):
-
-	murl='http://gdata.youtube.com/feeds/api/users/'+url+'/uploads?&orderby=published&max-results=50&start-index='+description+'&v=2'
-	link=OPEN_URL(murl)
-	match=re.compile("http\://www.youtube.com/watch\?v\=([^\&]+)\&.+?<media\:descriptio[^>]+>([^<]+)</media\:description>.+?<media\:thumbnail url='([^']+)'.+?<media:title type='plain'>(.+?)/media:title>").findall(link)
-	for nurl,desc,thumb,rname in match:
-		rname=rname.replace('<','')
-		YOULink(rname,nurl,thumb)
-	description=int(description)+50
-	addDir('[COLOR blue]            עוד תוצאות [/COLOR]',url,9,'',str(description))
-	setView('tvshows', 'default')
+def YoutubeUser(username):
+	xbmc.executebuiltin('XBMC.Container.Update(plugin://plugin.video.youtube/user/{0}/)'.format(username))
+	
 def play_one(name,url,iconimage,description):
 	url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
 	link = OPEN_URL(url1)
@@ -295,7 +267,7 @@ def addDir(name,url,mode,iconimage,description):
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	if mode==1:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-	elif mode==3 or mode==5:
+	elif mode==3 or mode==5 or mode==9:
 		liz.setProperty("IsPlayable","true")
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	else:
@@ -373,7 +345,7 @@ elif mode==6:
 elif mode==8:
 	LIVE()
 elif mode==9:
-	YOUList('One','one',description)
+	YoutubeUser('one')
 elif mode==13:
 	ListPlaylist(url)
 elif mode==14:
