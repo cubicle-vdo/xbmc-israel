@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,os
+import urllib,urllib2,sys,re,os,random
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
+import repoCheck
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.movixws')
 Domain = __settings__.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 print baseUrl
+autoPlay = __settings__.getSetting("autoPlay") == "true"
 
 def searchWs():
 			search_entered =''
@@ -20,18 +22,15 @@ def searchWs():
 			else:
 				return
 
-				
 def IndexPage(url):
 	if  'search_movies' in url:
 		result=OPEN_URL(url)
 		matches=re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
 		for match in matches:
 			addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, match[0], True, match[3])
-	
-	
 	else:
 		if not 'page' in url:
-				url=url+'/page/0'
+			url=url+'/page/0'
 		current_page=int(url.split('/')[-1])
 		result=OPEN_URL(url)
 		block=re.compile('pnation(.*?)<\/div>',re.I+re.M+re.U+re.S).findall(result)[0]
@@ -40,7 +39,6 @@ def IndexPage(url):
 		i=current_page
 		j=1
 		while i<=last_page and not stop:
-			
 			result=OPEN_URL(url)
 			matches=re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
 			for match in matches:
@@ -54,7 +52,6 @@ def IndexPage(url):
 				addDir('[COLOR blue]'+'תוצאות נוספות'+'[/COLOR]',url,2,'',True,'')
 
 def OPEN_URL(url,referer=None,Host=None):
-    print url
     req = urllib2.Request(url)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
     if referer:
@@ -67,26 +64,25 @@ def OPEN_URL(url,referer=None,Host=None):
     return link
 
 def addDir(name,url,mode,iconimage,isFolder=True,description=''):
-        
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
-        if  not isFolder:
-               liz.setProperty("IsPlayable","true")
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
-        return ok
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+	ok=True
+	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
+	if mode == 4 and autoPlay:
+		isFolder = False
+	if not isFolder:
+		liz.setProperty("IsPlayable","true")
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
+	return ok
 
 def GetSeasons(series_num):
 	result=OPEN_URL('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
-	#onclick="get_episodes('16LXldeg15QgMw==');">עונה 3</a>
 	matches=re.compile('onclick=\"get_episodes\(\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	for season in matches:
 		addDir('{0}  {1}'.format(name, season[1]), '{0}/watchmovies/get_episodes/{1}?seasonid={2}'.format(baseUrl, series_num, season[0]), 3, '', True)
 
 def GetEpisodes(url):
 	result=OPEN_URL(url)
-	#onclick="get_episode('16LXldeg15QgMQ=','16TXqNenIDI=');">פרק 2</a>
 	matches=re.compile('onclick=\"get_episode\(\'(.*?)\',\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	url=url.replace('get_episodes','get_episode')
 	for episode in matches:
@@ -95,20 +91,28 @@ def GetEpisodes(url):
 def LinksPage(url):
 	result=OPEN_URL(url)
 	if  not 'get_seasons' in result:
-		addDir('[COLOR red]'+'   בחר מקור לניגון, אם לא עובד נסה אחר '+'[/COLOR]','99',99,'',False)
-		#<div id="wrapserv"><a href="{0}/watchmovies/go/58255".format(baseUrl) target=""><img src="/img/servers/vidspot.png
 		matches=re.compile('id="wrapserv"><a href="(.*?)" target=.*?src="\/img\/servers\/(.*?).png',re.I+re.M+re.U+re.S).findall(result)
-		for source in matches:
-			addDir(name +'  '+source[1],source[0],5,'',False)
+		if autoPlay:
+			playingUrlsList = []
+			for match in matches:
+				playingUrlsList.append(match[0])
+			random.seed()
+			random.shuffle(playingUrlsList)
+			for playingUrl in playingUrlsList:
+				if PlayWs(playingUrl):
+					return
+			dialog = xbmcgui.Dialog()
+			ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
+		else:
+			addDir('[COLOR red]'+'   בחר מקור לניגון, אם לא עובד נסה אחר '+'[/COLOR]','99',99,'',False)
+			for match in matches:
+				addDir(name +'  '+match[1],match[0],5,'',False)
 	else:
 		series_num=url.split('-')[-1]
 		GetSeasons(series_num)
 		
-
 def PlayWs(url):
 	result=OPEN_URL(url)
-	#<IFRAME SRC="http://vidspot.net/embed-b2khpmzwk52u.html" FRAMEBORDER
-	#print result
 	matches=re.compile('<IFRAME SRC="http:(.*?)" FRAMEBORDER',re.I+re.M+re.U+re.S).findall(result)
 	item=urlresolver.HostedMediaFile('http:'+matches[0])
 	new_url = urlresolver.resolve(item.get_url())
@@ -116,11 +120,13 @@ def PlayWs(url):
 		listitem = xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
 		listitem.setPath(new_url)
 		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+		return True
 	else:
-		dialog = xbmcgui.Dialog()
-		ok = dialog.ok('OOOPS', 'Try  a differnt Source')	
-
-
+		if not autoPlay:
+			dialog = xbmcgui.Dialog()
+			ok = dialog.ok('OOOPS', 'Try  a differnt Source')	
+		return False
+		
 def Categories():
 	addDir("Search - חפש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
 	addDir("kids   ילדים","{0}/genres/Kids".format(baseUrl),2,'http://www.in-hebrew.co.il/images/logo-s.jpg')
@@ -135,12 +141,11 @@ def Categories():
 	addDir("אימה","{0}/genres/Horror".format(baseUrl),2,'https://cdn4.iconfinder.com/data/icons/desktop-halloween/256/Mask.png')
 	addDir("מלחמה","{0}/genres/War".format(baseUrl),2,'http://cdn2.pitchfork.com/news/53502/0ff1bba7.jpg')
 	addDir("דוקומנטרי","{0}/genres/Documentary".format(baseUrl),2,'http://icons.iconarchive.com/icons/aaron-sinuhe/tv-movie-folder/512/Documentaries-National-Geographic-icon.png')
-	
 	addDir("ישראלי","{0}/genres/israeli".format(baseUrl),2,'http://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/250px-Flag_of_Israel.svg.png')
+	addDir("פעולה","{0}/genres/Action".format(baseUrl),2,'http://pmtips.net/wp-content/uploads/2012/02/action.jpg')
+	addDir("מ.בדיוני","{0}/genres/Sci-Fi".format(baseUrl),2,'http://images.clipartpanda.com/sci-fi-clipart-peacealienbw.png')
 	
 	xbmc.executebuiltin('Container.SetViewMode(500)')
-
-	
 	
 def get_params():
         param=[]
@@ -184,6 +189,7 @@ print "URL: "+str(url)
 print "Name: "+str(name)
 
 if mode==None or url==None or len(url)<1:
+	repoCheck.UpdateRepo()
 	Categories()
 elif mode==2:
 	IndexPage(url)
@@ -195,6 +201,7 @@ elif mode==5:
 	PlayWs(url)
 elif mode==6:
 	searchWs()
+	
 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 if mode==None or url==None or len(url)<1:
 	xbmc.executebuiltin("Container.SetViewMode(500)")

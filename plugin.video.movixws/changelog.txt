@@ -1,2 +1,5 @@
+[B]v1.0.1[/B]
+- Added missing categories.
+- Auto play mode by default (can change at addon settings).
 [B]v1.0.0[/B]
 - Initial release
