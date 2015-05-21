@@ -1,3 +1,5 @@
+[B]v1.0.2[/B]
+- Fix for watching series at auto play mode.
 [B]v1.0.1[/B]
 - Added missing categories.
 - Auto play mode by default (can change at addon settings).

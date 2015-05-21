@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,os,random
+import urllib,urllib2,sys,re,os,random,json
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import urlresolver
 import repoCheck
@@ -68,8 +68,6 @@ def addDir(name,url,mode,iconimage,isFolder=True,description=''):
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
-	if mode == 4 and autoPlay:
-		isFolder = False
 	if not isFolder:
 		liz.setProperty("IsPlayable","true")
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
@@ -96,13 +94,7 @@ def LinksPage(url):
 			playingUrlsList = []
 			for match in matches:
 				playingUrlsList.append(match[0])
-			random.seed()
-			random.shuffle(playingUrlsList)
-			for playingUrl in playingUrlsList:
-				if PlayWs(playingUrl):
-					return
-			dialog = xbmcgui.Dialog()
-			ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
+			addDir('צפיה ב'+name,json.dumps(playingUrlsList),7,'',False)
 		else:
 			addDir('[COLOR red]'+'   בחר מקור לניגון, אם לא עובד נסה אחר '+'[/COLOR]','99',99,'',False)
 			for match in matches:
@@ -127,6 +119,16 @@ def PlayWs(url):
 			ok = dialog.ok('OOOPS', 'Try  a differnt Source')	
 		return False
 		
+def AutoPlayUrl(urls):
+	playingUrlsList = json.loads(urls)
+	random.seed()
+	random.shuffle(playingUrlsList)
+	for playingUrl in playingUrlsList:
+		if PlayWs(playingUrl):
+			return
+	dialog = xbmcgui.Dialog()
+	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
+			
 def Categories():
 	addDir("Search - חפש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
 	addDir("kids   ילדים","{0}/genres/Kids".format(baseUrl),2,'http://www.in-hebrew.co.il/images/logo-s.jpg')
@@ -144,7 +146,6 @@ def Categories():
 	addDir("ישראלי","{0}/genres/israeli".format(baseUrl),2,'http://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/250px-Flag_of_Israel.svg.png')
 	addDir("פעולה","{0}/genres/Action".format(baseUrl),2,'http://pmtips.net/wp-content/uploads/2012/02/action.jpg')
 	addDir("מ.בדיוני","{0}/genres/Sci-Fi".format(baseUrl),2,'http://images.clipartpanda.com/sci-fi-clipart-peacealienbw.png')
-	
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 	
 def get_params():
@@ -201,6 +202,8 @@ elif mode==5:
 	PlayWs(url)
 elif mode==6:
 	searchWs()
+elif mode==7:
+	AutoPlayUrl(url)
 	
 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 if mode==None or url==None or len(url)<1:
