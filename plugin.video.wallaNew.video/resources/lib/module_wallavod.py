@@ -24,7 +24,6 @@ class manager_wallavod:
         self.MODES = common.enum(PLAY_MODE=10,GET_GENRE=1, GET_GENRE_ITEMS=2, GET_SEASONS_LIST=5,GET_EPISODES_LIST=3, GET_MOVIE_LIST=4)
         
     def work(self, mode, url='', name='', page=''):
-
         if (mode==self.MODES.GET_GENRE):
             self.getGenere(url)
         elif (mode==self.MODES.GET_GENRE_ITEMS):
@@ -92,7 +91,8 @@ class manager_wallavod:
         
         for item in genreItems:
             itemName = item["title"]
-            media=item["media"]
+            if item.has_key("media"):
+                 media=item["media"]
             itemId = str(item["id"])
             typeName = item["typeName"]
             about = item["about"]
@@ -194,8 +194,8 @@ class manager_wallavod:
         params = common.getParams(url)
         itemId =  str(params["item_id"])
         print itemId
-        
-        contentType, page = common.getData("http://ws.vod.walla.co.il/ws/mobile/android/flvpl/?item_id=" + itemId +"&type=json")
+        #http://ws.walla.co.il/flvpl/?id=2810721&type=json&device=android
+        contentType, page = common.getData("http://ws.walla.co.il/flvpl/?id=" + itemId +"&type=json&device=android")
         if  common.__DEBUG__ == True:
             print "WALLA players API "
             print page

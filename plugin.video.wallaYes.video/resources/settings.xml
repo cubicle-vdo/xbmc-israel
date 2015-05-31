@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting label="20000" type="labelenum" values="0|3|9|12|24" id="cache" default="24"/>
-    <setting label="20001" type="bool" id="DEBUG" default="false"/>
-</settings>

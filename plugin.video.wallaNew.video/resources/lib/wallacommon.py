@@ -90,6 +90,7 @@ def addVideoLink(contentType, name, url, mode, iconimage='DefaultFolder.png', el
         return ok
     
 def getData(url, period=__cachePeriod__):
+        #print url
         if __DEBUG__:
             print 'url --> ' + url
        
@@ -112,26 +113,17 @@ def getData(url, period=__cachePeriod__):
             return 'UTF-8', 'unavailable'
         return contentType, data
 
-def getImageNick(series, siteName,url):
-        print url 
-        imageName = str(series)
-        print imageName
-        cacheDir = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', siteName))
-        cachePath = xbmc.translatePath(os.path.join(cacheDir, imageName))
-        if not os.path.exists(cachePath):
-            # # fetch the image and store it in the cache path
-            if not os.path.exists(cacheDir):
-                os.makedirs(cacheDir)
+def getImageNick(url):
+            print url 
             contentType,page = getData(url)
-            xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, "First time loading images please wait...", 5000, __icon__))
             titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
             if len(titleMatches) == 0:
                 # try a different possibility
                 titleMatches = re.compile('class="stripe_title w7b white">.*?>(.*?)<.*?src="(.*?)"').findall(page)
             if titleMatches:
-                    urllib.urlretrieve(titleMatches[0][1], cachePath)
-            
-        return cachePath
+                    #urllib.urlretrieve(titleMatches[0][1], cachePath)
+                   return titleMatches[0][1]
+            return ''
 
         
 def getImage(imageURL, siteName):
@@ -213,8 +205,8 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
                     time = int(timeInSeconds[0]) / 60
                 else:
                     time = '00:00'
-                #url = 'rtmp://waflaWNE.walla.co.il/ app=vod/ swfvfy=true swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/walla_vod_player_adt.swf?95 tcurl=rtmp://waflaWNE.walla.co.il/vod/ pageurl=http://walla.co.il/ playpath=' + re.compile('<src>(.*?)</src>').findall(page)[0]
-                url='rtmp://waflaWNE.walla.co.il:1935/vod playpath='+ re.compile('<src>(.*?)</src>').findall(page)[0]+' swfUrl=http://i.walla.co.il/w9/swf/video_swf/vod/WallaMediaPlayerAvod.swf?testMode=1&v=436 pageurl='+inUrl
+
+                url='http://82.80.192.11/walla_vod/_definst_/'+ re.compile('<src>(.*?)</src>').findall(page)[0]+'.mp4/master.m3u8'
                 epi1 = Episode(content=contentType, title=title, url=url, iconImage=iconImage, time=str(time), epiDetails=epiDetails)
                 episodes.append(epi1)
                 addLink(contentType, title, url, iconImage, str(time), epiDetails)
@@ -260,3 +252,5 @@ def clean(contentType, name):
 #         cleanName = name.replace("&quot;", "\"").replace("&#39;", "'").replace("&nbsp;", " ")
 #         return  cleanName
     return name 
+
+

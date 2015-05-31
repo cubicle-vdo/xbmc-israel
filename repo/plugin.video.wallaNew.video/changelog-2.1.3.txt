@@ -1,2 +1,0 @@
-[B]Version 2.1.3[/B]
-- Added the ability to delete the cache for all walla modules.
