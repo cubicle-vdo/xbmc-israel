@@ -151,7 +151,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.3.1"
+       version="1.3.2"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -308,7 +308,7 @@ http://www.hometheater.co.il</description>
     </extension>
  </addon>
 
-<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.8" provider-name="sbentin shlomico">
+<addon id="plugin.video.wallaNew.video" name="וואלה" version="2.1.9" provider-name="sbentin shlomico">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.common.plugin.cache" version="0.9.1"/>
@@ -324,29 +324,6 @@ http://www.hometheater.co.il</description>
         <description lang="en">Watch Walla contents (inculde Yes, Nickoldeon and Viva).</description>
         <description lang="he">צפה במגוון הסרטים ערוצים וסדרות הניתנים לצפיה דרך אתר video.walla.co.il</description>
         <disclaimer>This addon parse Walla site, you should check Walla's TOS before you using. It's as is</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-          <content>episodes</content>
-          <content>movies</content>
-        </supportedcontent>
-    </extension>
-</addon>
-
-<addon id="plugin.video.wallaYes.video" name="וואלה Yes" version="1.0.4" provider-name="sbentin">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="yes.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31635</minversion>
-        <summary lang="en">Watch Yes video contents from walla video.</summary>
-        <summary lang="he">צפה במידע VOD מאתר yes ב walla</summary>
-        <description lang="en">Watch Yes contents.</description>
-        <description lang="he">צפה במגוון הסרטים ערוצים וסדרות הניתנים לצפיה דרך אתר yes.walla.co.il</description>
-        <disclaimer>This addon parse Yes site, you should check Yes's TOS before you using. It's as is</disclaimer>
         <supportedcontent>
           <content>tvshows</content>
           <content>episodes</content>

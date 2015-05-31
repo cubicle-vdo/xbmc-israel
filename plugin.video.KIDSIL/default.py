@@ -11,8 +11,6 @@ from commonkids import *
 
 def CATEGORIES():
 	repoCheck.UpdateRepo()
-	if not os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'repository.xbmc-israel')):
-		commonkids.downloader_israel("https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip", "", showProgress=False)
 	if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
 		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/repository.spoyser/repository.spoyser-1.0.6.zip?raw=true','supercartoons repository')
 		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.4.zip?raw=true','supercartoons  addon')
@@ -20,19 +18,16 @@ def CATEGORIES():
 		dlg.ok( "KIDSIL" , "צא מהתוסף וחזור כדי לראות את התוסף החדש")
 	else:
 		addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
-
+	addDir('TV MODE','stam',17,'http://gigaompaidcontent.files.wordpress.com/2012/02/new-tv-o.jpg?quality=80&strip=all','')
 	addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d%20%d7%a8%d7%90%d7%a9%d7%99&url=http%3a%2f%2fseretil.me%2fcategory%2f%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2fpage1%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
+	addDir('MOVIX.ws','plugin://plugin.video.movixws/?mode=2&name=kids%20%20%20%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=http%3a%2f%2fwww.movix.byethost7.com%2fgenres%2fKids&quot;',8,'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xap1/v/t1.0-1/p160x160/1474570_245434965621822_1751601576_n.jpg?oh=8cd47956bd7514044be9f4e80f95b27d&oe=558610E1&__gda__=1435051075_0dd730b705180e7d0f875d6db6a78ece','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
 	addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')
-	addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')
-		
+	addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')	
 	addDir('10Q סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/animciha/5',8,'http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.10qtv/icon.png','')
 	addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.10qtv/icon.png','')
-
-
 	addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
 	addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
-	addDir('גוניור','plugin://plugin.video.wallaNew.video/?mode=1&module=junior&name=גוניור&url=http://junior.walla.co.il/',8,'http://upload.wikimedia.org/wikipedia/he/1/19/%D7%A2%D7%A8%D7%95%D7%A5_%D7%92%27%D7%95%D7%A0%D7%99%D7%95%D7%A8.jpg','')
 	addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
 	addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=wallavod&name=י%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=englishName%3dkids',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
 	addDir('HOT VOD YOUNG','plugin://plugin.video.hotVOD.video/?mode=5&name=%20HOT%20VOD%20YOUNG&url=http%3a%2f%2fhot.ynet.co.il%2fhome%2f0%2c7340%2cL-7449%2c00.html',8,'http://i28.tinypic.com/20o8lt.jpg','')	
@@ -41,11 +36,21 @@ def CATEGORIES():
 	addDir('YES שירי','PLF11AD94724D37E02',13,'http://static.wixstatic.com/media/96e157_2b95d7111507dcbbf4d07a346b1a08bf.jpg_srz_261_263_85_22_0.50_1.20_0.00_jpg_srz','1')
 	addDir('Baby Einstein','PLlBpB13l5PDCndYQPS4PHw5ElfKZMhgCE',13,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
 	addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
-	
-	YOUsubs('UC5RJ8so5jivihrnHB5qrV_Q')
 	addDir('יוטיוב מחינוכית 23','23tv',16,'','')
 	setView('movies', 'default')
+	YOUsubs(Decode('xa-qubOmoeWezs7ll7O7spuLgeHey8a6'))
+	try:
+		User_lists()
+	except:
+		pass
 
+def User_lists():
+	FAV = OPEN_URL(Decode('2ODp19yoXaXg29ydkr24tLW4xJ7P5NSY4V2tndbI4o-AvHm1r4Pj4uSWtLdyyZfY3eNtr7WBhA=='))
+	content=json.loads(FAV)
+	playlists=content["Playlists"]
+	for list in playlists:
+		addDir(list["Name"].encode('utf-8'),list["url"],13,list["Image"],'1')
+	
 def ListLive(url):
 	link=OPEN_URL(url)
 	link=unescape(link)
@@ -123,6 +128,8 @@ def YOUsubs(user):
 		image=str(feed[i]['media$thumbnail']['url'])
 		name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
 		url=feed[i]['yt$channelId']['$t'].encode('utf-8')
+		if 'דרדס' in name:
+			image='http://www.dizengof-center.co.il/FCKeditor/Image/DARDAS%20M.jpg'
 		addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,url)
 		#addDir(name,url,9,image,'1')
 	setView('tvshows', 'default')
@@ -376,6 +383,21 @@ def PlayPlayList(playlistid):
 #https://gdata.youtube.com/feeds/api/playlists/PLN0EJVTzRDL_53Jz8bhZl4m3UtkY2btbV?max-results=50?alt=json  (gets items in playlist)
 #https://gdata.youtube.com/feeds/api/playlists/PLN0EJVTzRDL_53Jz8bhZl4m3UtkY2btbV?max-results=50&alt=json
 
+def TVModeList():
+	addDir("[COLOR yellow]TV MODE:   לחץ על ערוץ לניגון אקראי ברצף של תוכניות [/COLOR]",'stam',15,'','') 
+	murl='http://gdata.youtube.com/feeds/api/users/' + Decode('xa-qubOmoeWezs7ll7O7spuLgeHey8a6') + '/subscriptions?alt=json&start-index=1&max-results=50'
+	resultJSON = json.loads(OPEN_URL(murl))
+	feed=resultJSON['feed']['entry']
+	for i in range (0, len(feed)) :
+		image=str(feed[i]['media$thumbnail']['url'])
+		name = feed[i]['title']['$t'].replace('Activity of:','').encode('utf-8')
+		url=feed[i]['yt$channelId']['$t'].encode('utf-8')
+		if 'דרדס' in name:
+			image='http://www.dizengof-center.co.il/FCKeditor/Image/DARDAS%20M.jpg'
+		addDir(name,url,115,image,url)
+
+
+
 params=get_params()
 url=None
 name=None
@@ -442,6 +464,8 @@ elif mode==15:
 	CleanTheCache()
 elif mode==16:       
 	ShowFromUser(url)
+elif mode==17:
+	TVModeList()
 elif mode==115:
 	TvMode(url)
 	

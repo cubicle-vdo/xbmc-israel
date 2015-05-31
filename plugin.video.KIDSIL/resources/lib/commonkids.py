@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
 
@@ -214,3 +214,13 @@ def mes():
 		dp.ok("UPDATES", match[0])
 	except:
 		pass
+
+def Decode(string):
+	decoded_chars = []
+	string = base64.urlsafe_b64decode(string.encode("utf-8"))
+	for i in xrange(len(string)):
+		key_c = AddonID[i % len(AddonID)]
+		decoded_c = chr(abs(ord(string[i]) - ord(key_c) % 256))
+		decoded_chars.append(decoded_c)
+	decoded_string = "".join(decoded_chars)
+	return decoded_string
