@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<setting label="בדוק במחשב או בדפדפן באיזו כתובת ניתן להגיע לאתר והקלד את הכתובת כאן" type="lsep"/>
-	<setting label="                MOVIX.WS  ניתן לבדוק גם בעמוד הפייסבוק של " type="lsep"/>
-	<setting id="domain" type="text" label="DOAMIN" default="http://www.movix.byethost7.com/" />
+	<setting label="                MOVIX.ME  ניתן לבדוק גם בעמוד הפייסבוק של " type="lsep"/>
+	<setting id="domain" type="text" label="DOAMIN" default="http://www.movix.me" />
 	<setting id="autoPlay" type="bool" label="ניגון אוטמטי" default="true" />
 </settings>
