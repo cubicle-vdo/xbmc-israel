@@ -1,3 +1,8 @@
+[B]v1.0.3[/B]
+- Default domain change to http://www.movix.me
+- You can choose filter search to "All", "Movies" or "Series". 
+- Added "Movies" and "Series" categories.
+- Fix for "moovreel" and "filehoot" links
 [B]v1.0.2[/B]
 - Fix for watching series at auto play mode.
 [B]v1.0.1[/B]
