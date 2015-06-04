@@ -1,3 +1,5 @@
+[B]v1.0.4[/B]
+- All playing options in one list. (autoPlay option removed from addon settings.)
 [B]v1.0.3[/B]
 - Default domain change to http://www.movix.me
 - You can choose filter search to "All", "Movies" or "Series". 
