@@ -134,7 +134,7 @@ def addDir(name,url,mode,iconimage,description):
         #        liz.addContextMenuItems(items=menu, replaceItems=True)
         #        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         #        return ok
-        elif mode==8 and not description:
+        elif mode==8 :
                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
                return ok
         elif mode==11 or mode==15 or mode==115 :
