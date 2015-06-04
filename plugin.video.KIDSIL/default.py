@@ -33,10 +33,10 @@ def CATEGORIES():
 	addDir('HOT VOD YOUNG','plugin://plugin.video.hotVOD.video/?mode=5&name=%20HOT%20VOD%20YOUNG&url=http%3a%2f%2fhot.ynet.co.il%2fhome%2f0%2c7340%2cL-7449%2c00.html',8,'http://i28.tinypic.com/20o8lt.jpg','')	
 	addDir('מצויירים קלאסיים','https://dl.dropboxusercontent.com/s/cwcptnocx310g00/Merry_Melodies.plx',7,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzwydiY6V_l5sE_ed7Rf66G6B8Ug2p7ajn4uPAhH2NYpDVMNBUQ','')
 	addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
-	addDir('YES שירי','PLF11AD94724D37E02',13,'http://static.wixstatic.com/media/96e157_2b95d7111507dcbbf4d07a346b1a08bf.jpg_srz_261_263_85_22_0.50_1.20_0.00_jpg_srz','1')
-	addDir('Baby Einstein','PLlBpB13l5PDCndYQPS4PHw5ElfKZMhgCE',13,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
-	addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
-	addDir('יוטיוב מחינוכית 23','23tv',16,'','')
+	addDir('YES שירי','plugin://plugin.video.youtube/playlist/PLF11AD94724D37E02/',8,'http://static.wixstatic.com/media/96e157_2b95d7111507dcbbf4d07a346b1a08bf.jpg_srz_261_263_85_22_0.50_1.20_0.00_jpg_srz','1')
+	addDir('Baby Einstein','plugin://plugin.video.youtube/playlist/PLlBpB13l5PDCndYQPS4PHw5ElfKZMhgCE/',8,'http://d202m5krfqbpi5.cloudfront.net/books/1170326163l/46377.jpg','1')
+	addDir('בייבי אוריינטל','plugin://plugin.video.youtube/playlist/PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4/',8,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
+	#addDir('יוטיוב מחינוכית 23','23tv',16,'','')
 	setView('movies', 'default')
 	#YOUsubs(Decode('xa-qubOmoeWezs7ll7O7spuLgeHey8a6'))
 	try:
@@ -49,10 +49,10 @@ def User_lists():
 	content=json.loads(FAV)
 	playlists=content["Playlists"]
 	for list in playlists:
-		addDir(list["Name"].encode('utf-8'),list["url"],13,list["Image"],'1')
+		addDir(list["Name"].encode('utf-8'),'plugin://plugin.video.youtube/playlist/'+list["url"]+'/',8,list["Image"],'1')
 	channels=content["Channels"]
 	for ch in channels:
-			addDir(ch["Name"].encode('utf-8'),'plugin://plugin.video.youtube/channel/'+ch["url"]+'/',8,ch["Image"],'1')
+			addDir(ch["Name"].encode('utf-8'),'plugin://plugin.video.youtube/channel/'+ch["url"]+'/',8,ch["Image"],'')
 			#addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,url)
 def ListLive(url):
 	link=OPEN_URL(url)
