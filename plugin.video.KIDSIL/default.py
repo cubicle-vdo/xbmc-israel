@@ -18,7 +18,7 @@ def CATEGORIES():
 		dlg.ok( "KIDSIL" , "צא מהתוסף וחזור כדי לראות את התוסף החדש")
 	else:
 		addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
-	addDir('TV MODE','stam',17,'http://gigaompaidcontent.files.wordpress.com/2012/02/new-tv-o.jpg?quality=80&strip=all','')
+	#addDir('TV MODE','stam',17,'http://gigaompaidcontent.files.wordpress.com/2012/02/new-tv-o.jpg?quality=80&strip=all','')
 	addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d%20%d7%a8%d7%90%d7%a9%d7%99&url=http%3a%2f%2fseretil.me%2fcategory%2f%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2fpage1%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
 	addDir('MOVIX.ws','plugin://plugin.video.movixws/?mode=2&name=kids%20%20%20%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=http%3a%2f%2fwww.movix.byethost7.com%2fgenres%2fKids&quot;',8,'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xap1/v/t1.0-1/p160x160/1474570_245434965621822_1751601576_n.jpg?oh=8cd47956bd7514044be9f4e80f95b27d&oe=558610E1&__gda__=1435051075_0dd730b705180e7d0f875d6db6a78ece','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
@@ -38,7 +38,7 @@ def CATEGORIES():
 	addDir('בייבי אוריינטל','PL4RuBaWCIgHrFNTIP37qBS254y7-2r9e4',13,'http://f0.bcbits.com/img/a2562115784_10.jpg','1')
 	addDir('יוטיוב מחינוכית 23','23tv',16,'','')
 	setView('movies', 'default')
-	YOUsubs(Decode('xa-qubOmoeWezs7ll7O7spuLgeHey8a6'))
+	#YOUsubs(Decode('xa-qubOmoeWezs7ll7O7spuLgeHey8a6'))
 	try:
 		User_lists()
 	except:
@@ -50,7 +50,10 @@ def User_lists():
 	playlists=content["Playlists"]
 	for list in playlists:
 		addDir(list["Name"].encode('utf-8'),list["url"],13,list["Image"],'1')
-	
+	channels=content["Channels"]
+	for ch in channels:
+			addDir(ch["Name"].encode('utf-8'),'plugin://plugin.video.youtube/channel/'+ch["url"]+'/',8,ch["Image"],'1')
+			#addDir(name,'plugin://plugin.video.youtube/channel/'+url+'/',8,image,url)
 def ListLive(url):
 	link=OPEN_URL(url)
 	link=unescape(link)
@@ -378,10 +381,6 @@ def PlayPlayList(playlistid):
 
 	if not xbmc.Player().isPlayingVideo():
 		xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(playlist)
-
-#https://gdata.youtube.com/feeds/api/users/polosoft/playlists (gets playlist fro, user) https://gdata.youtube.com/feeds/api/users/polosoft/playlists?alt=json
-#https://gdata.youtube.com/feeds/api/playlists/PLN0EJVTzRDL_53Jz8bhZl4m3UtkY2btbV?max-results=50?alt=json  (gets items in playlist)
-#https://gdata.youtube.com/feeds/api/playlists/PLN0EJVTzRDL_53Jz8bhZl4m3UtkY2btbV?max-results=50&alt=json
 
 def TVModeList():
 	addDir("[COLOR yellow]TV MODE:   לחץ על ערוץ לניגון אקראי ברצף של תוכניות [/COLOR]",'stam',15,'','') 
