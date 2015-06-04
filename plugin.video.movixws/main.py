@@ -7,8 +7,7 @@ import repoCheck
 __settings__ = xbmcaddon.Addon(id='plugin.video.movixws')
 Domain = __settings__.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
-print baseUrl
-autoPlay = __settings__.getSetting("autoPlay") == "true"
+#print baseUrl
 
 def searchWs():
 	dialog = xbmcgui.Dialog()
@@ -81,47 +80,48 @@ def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
 
 def ResolveUrl(url, type):
 	link = None
-	if type == "filehoot":
-		url = url.replace("/embed-","/")
-		url = "{0}.html".format(url[:url.rfind('-')])
-		html = OPEN_URL(url)
-		id = re.compile("http://filehoot.com/(.*?).html", re.I+re.M+re.U+re.S).findall(url)
-		user_data = {'op':'download1','usr_login':'','id':id[0],'fname':'','referer':'','method_free':'Continue+to+watch+your+Video'}
-		html = OPEN_URL(url, user_data=user_data)
-		matches = re.compile("{file:'(.*?)'", re.I+re.M+re.U+re.S).findall(html)
-		if len(matches) > 0:
-			link = matches[0]
-	elif type == "goodvideohost":
-		url = url.replace("/embed-","/")
-		html = OPEN_URL(url)
+	try:
+		if type == "filehoot":
+			url = url.replace("/embed-","/")
+			url = "{0}.html".format(url[:url.rfind('-')])
+			html = OPEN_URL(url)
+			id = re.compile("http://filehoot.com/(.*?).html", re.I+re.M+re.U+re.S).findall(url)
+			user_data = {'op':'download1','usr_login':'','id':id[0],'fname':'','referer':'','method_free':'Continue+to+watch+your+Video'}
+			html = OPEN_URL(url, user_data=user_data)
+			matches = re.compile("{file:'(.*?)'", re.I+re.M+re.U+re.S).findall(html)
+			if len(matches) > 0:
+				link = matches[0]
+		elif type == "goodvideohost":
+			url = url.replace("/embed-","/")
+			html = OPEN_URL(url)
 
-		url = re.compile('method="POST" action=\'(.*?)\'', re.I+re.M+re.U+re.S).findall(html)[0]
-		op =  re.compile('name="op" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		usr_login =  re.compile('name="usr_login" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		id = re.compile('name="id" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		fname =  re.compile('name="fname" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		referer =  re.compile('name="referer" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		hash = re.compile('name="hash" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		imhuman =  re.compile('name="imhuman" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
-		
-		#user_data = {'op':'download1','usr_login':'','id':id[0],'fname':'','referer':'','hash':hash[0],'imhuman':'Proceed+to+video'}
-		user_data = {'op':urllib.quote_plus(op),'usr_login':urllib.quote_plus(usr_login),'id':urllib.quote_plus(id),'fname':urllib.quote_plus(fname),'referer':urllib.quote_plus(referer),'hash':urllib.quote_plus(hash),'imhuman':urllib.quote_plus(imhuman)}
-		html = OPEN_URL(url, user_data=user_data)
+			url = re.compile('method="POST" action=\'(.*?)\'', re.I+re.M+re.U+re.S).findall(html)[0]
+			op =  re.compile('name="op" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			usr_login =  re.compile('name="usr_login" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			id = re.compile('name="id" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			fname =  re.compile('name="fname" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			referer =  re.compile('name="referer" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			hash = re.compile('name="hash" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			imhuman =  re.compile('name="imhuman" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)[0]
+			
+			#user_data = {'op':'download1','usr_login':'','id':id[0],'fname':'','referer':'','hash':hash[0],'imhuman':'Proceed+to+video'}
+			user_data = {'op':urllib.quote_plus(op),'usr_login':urllib.quote_plus(usr_login),'id':urllib.quote_plus(id),'fname':urllib.quote_plus(fname),'referer':urllib.quote_plus(referer),'hash':urllib.quote_plus(hash),'imhuman':urllib.quote_plus(imhuman)}
+			html = OPEN_URL(url, user_data=user_data)
 
-		matches = re.compile('{file:"(.*?)"', re.I+re.M+re.U+re.S).findall(html)
-		if len(matches) > 0:
-			link = matches[0]
+			matches = re.compile('{file:"(.*?)"', re.I+re.M+re.U+re.S).findall(html)
+			if len(matches) > 0:
+				link = matches[0]
+	except:
+		pass
 	return link
 
 def addDir(name,url,mode,iconimage,isFolder=True,description=''):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
-	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
 	if not isFolder:
 		liz.setProperty("IsPlayable","true")
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
-	return ok
+	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num):
 	result=OPEN_URL('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
@@ -138,22 +138,25 @@ def GetEpisodes(url):
 
 def LinksPage(url, iconimage):
 	result=OPEN_URL(url)
-	if  not 'get_seasons' in result:
+	if not 'get_seasons' in result:
 		matches=re.compile('id="wrapserv"><a href="(.*?)" target=.*?src="\/img\/servers\/(.*?).png',re.I+re.M+re.U+re.S).findall(result)
-		if autoPlay:
-			playingUrlsList = []
-			for match in matches:
-				playingUrlsList.append(match[0])
-			addDir('צפיה ב-"{0}"'.format(name), json.dumps(playingUrlsList), 7, iconimage, False)
-		else:
-			addDir('[COLOR red]'+'   בחר מקור לניגון, אם לא עובד נסה אחר '+'[/COLOR]','99',99,'',False)
-			for match in matches:
-				addDir(name +'  '+match[1],match[0],5,iconimage,False)
+
+		playingUrlsList = []
+		for match in matches:
+			playingUrlsList.append(match[0])
+		addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False)
+		addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False)
+
+		addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False)
+		for match in matches:
+			if "goodvideohost" in match[1]:
+				continue
+			addDir(name +'  '+match[1],match[0],5,iconimage,False)
 	else:
 		series_num=url.split('-')[-1]
 		GetSeasons(series_num)
 
-def PlayWs(url):
+def PlayWs(url, autoPlay=False):
 	result=OPEN_URL(url)
 	matches=re.compile('<IFRAME SRC="http:(.*?)" FRAMEBORDER',re.I+re.M+re.U+re.S).findall(result)
 	url = 'http:{0}'.format(matches[0])
@@ -182,7 +185,7 @@ def AutoPlayUrl(urls):
 	random.seed()
 	random.shuffle(playingUrlsList)
 	for playingUrl in playingUrlsList:
-		if PlayWs(playingUrl):
+		if PlayWs(playingUrl, autoPlay=True):
 			return
 	dialog = xbmcgui.Dialog()
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')

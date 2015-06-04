@@ -3,5 +3,4 @@
 	<setting label="בדוק במחשב או בדפדפן באיזו כתובת ניתן להגיע לאתר והקלד את הכתובת כאן" type="lsep"/>
 	<setting label="                MOVIX.ME  ניתן לבדוק גם בעמוד הפייסבוק של " type="lsep"/>
 	<setting id="domain" type="text" label="DOAMIN" default="http://www.movix.me" />
-	<setting id="autoPlay" type="bool" label="ניגון אוטמטי" default="true" />
 </settings>
