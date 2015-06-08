@@ -1,3 +1,6 @@
+[B]v1.0.5[/B]
+- Added quality label to item's name.
+- Added support for "yify" links.
 [B]v1.0.4[/B]
 - All playing options in one list. (autoPlay option removed from addon settings.)
 [B]v1.0.3[/B]
