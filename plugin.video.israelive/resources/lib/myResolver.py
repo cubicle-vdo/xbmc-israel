@@ -64,7 +64,11 @@ def GetGinkoFullLink(id):
 		return "down"
 
 	p = getUrl('{0}watch.php?id={1}'.format(common.Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkA=='), parts[0]))
-	url = re.compile('file: "(.*?)"',re.I+re.M+re.U+re.S).findall(p)
+	#print p
+	url = re.compile('video id=.*?src="(.*?)"',re.I+re.M+re.U+re.S).findall(p)
+	if not url:
+		url=re.compile('file: "(.*?)"',re.I+re.M+re.U+re.S).findall(p)
+	#print url
 	finalUrl = url[0]
 	if len(parts) > 1:
 		finalUrl = "{0}{1}/{1}.stream/playlist.m3u8{2}".format(common.Decode('sefm0Z97eMSutt_b18p9d72ut9zd0JOvuMN0'), parts[1], url[0][url[0].find('?'):])

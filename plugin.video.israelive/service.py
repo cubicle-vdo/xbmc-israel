@@ -36,8 +36,6 @@ if not os.path.exists(user_dataDir):
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 plxFile = os.path.join(user_dataDir, "israelive.plx")
-globalGuideFile = os.path.join(user_dataDir, "guide.txt")
-filmonGuideFile = os.path.join(user_dataDir, 'filmonGuide.txt')
 fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
 iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
@@ -72,15 +70,9 @@ def CheckUpdates():
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
 
 	if Addon.getSetting("useEPG") == "true":
-		refresh = common.GetSubKeyValue(remoteSettings, "globalGuide", "refresh")
-		if not refresh is None:
-			common.isFileOld(globalGuideFile, refresh * 3600) and common.UpdateZipedFile(globalGuideFile, "globalGuide", remoteSettings)
-		
-		refresh = common.GetSubKeyValue(remoteSettings, "filmonGuide", "refresh")
-		if not refresh is None:
-			common.isFileOld(filmonGuideFile, refresh * 3600) and common.UpdateZipedFile(filmonGuideFile, "filmonGuide", remoteSettings)
-
-		common.MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile)
+		refresh = common.GetSubKeyValue(remoteSettings, "fullGuide", "refresh")
+		if not refresh is None and common.isFileOld(fullGuideFile, refresh * 3600) and common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings):
+			common.MakeCatGuides(fullGuideFile, os.path.join(user_dataDir, "lists", "categories.list"))
 		
 		if Addon.getSetting("useIPTV") == "true":
 			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)

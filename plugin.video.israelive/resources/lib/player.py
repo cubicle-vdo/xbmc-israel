@@ -32,8 +32,8 @@ def GetMakoUrl(url):
 	#url =  "{0}?{1}&hdcore=3.0.3".format(url, ticket)
 	return url
 	
-def GetFilmonUrl(channelNum):
-	url, chName, iconimage, programmes = myFilmon.GetUrlStream(channelNum, filmonOldStrerams=True, useRtmp=False)
+def GetFilmonUrl(url):
+	url = myFilmon.GetUrlStream(url)
 	url = "hlsvariant://{0}".format(url)
 	return url
 	

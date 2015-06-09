@@ -27,8 +27,7 @@
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">Use TV-Guide?</string>
-	<string id="30107">Download TV-Guide now - from server</string>
-	<string id="30108">Create TV-Guide now (local scan)</string>
+	<string id="30107">Download TV-Guide</string>
 	<string id="30111">Update Channels Lists now</string>
 	<string id="30112">Force remote-settings default URL</string>
 	
@@ -52,6 +51,10 @@
 	<string id="30217">The new list contains {0} channels.</string>
 	<string id="30218">Replace favourites?</string>
 	<string id="30219">Select import/export folder</string>
+	<string id="30220">Are you sure?</string>
+	<string id="30221">Are yoe sure you want to add all channels in group:</string>
+	<string id="30222">{0} ({1} channels)</string>
+	<string id="30223">to IsraeLIVE favourites?</string>
 	
 	<string id="30300">Live TV</string>
 	<string id="30301">Enable Live TV</string>

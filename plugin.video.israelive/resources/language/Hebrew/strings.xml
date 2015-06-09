@@ -27,8 +27,7 @@
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">שימוש במדריך שידורים?</string>
-	<string id="30107">הורדת מדריך שידורים (מהשרת)</string>
-	<string id="30108">יצירת מדריך שידורים (סריקה מקומית)</string>
+	<string id="30107">הורדת מדריך שידורים</string>
 	<string id="30111">עדכון רשימות ערוצים</string>
 	<string id="30112">שימוש בברירת מחדל עבור מיקום קובץ הגדרות מרוחק</string>
 	
@@ -52,6 +51,10 @@
 	<string id="30217">ברשימה החדשה {0} ערוצים.</string>
 	<string id="30218">להחליף את רשימת המועדפים?</string>
 	<string id="30219">בחירת תיקיה ליבוא/יצוא</string>
+	<string id="30220">האם את/ה בטוח/ה?</string>
+	<string id="30221">האם את/ה בטוח/ה שאת/ה רוצה להוסיף את כל הערוצים בקבוצה:</string>
+	<string id="30222">{0} ({1} ערוצים)</string>
+	<string id="30223">למועדפי IsraeLIVE?</string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>

@@ -117,10 +117,13 @@ def ReadList(fileName):
 
 	return content
 
-def WriteList(filename, list):
+def WriteList(filename, list, indent=True):
 	try:
 		with io.open(filename, 'w', encoding='utf-8') as handle:
-			handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
+			if indent:
+				handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
+			else:
+				handle.write(unicode(json.dumps(list, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
 		print ex
@@ -201,6 +204,11 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 def OKmsg(title, line1, line2="", line3=""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
+	
+def YesNoDialog(title, line1, line2="", line3="", nolabel="No", yeslabel="Yes"):
+	dialog = xbmcgui.Dialog()
+	ok = dialog.yesno(title, line1=line1, line2=line2, line3=line3, nolabel=nolabel, yeslabel=yeslabel)
+	return ok
 	
 def GetMenuSelected(title, list, autoclose=0):
 	dialog = xbmcgui.Dialog()
@@ -314,13 +322,7 @@ def GetListFromPlx(filterCat="9999", includeChannels=True, includeCatNames=True,
 def GetChannels(categoryID):
 	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))
 	return ReadList(fileName)
-	
-def MergeGuides(globalGuideFile, filmonGuideFile, fullGuideFile):
-	guideList = ReadList(globalGuideFile)
-	filmonGuideList = ReadList(filmonGuideFile)
-	WriteList(fullGuideFile, guideList + filmonGuideList)
-	MakeCatGuides(fullGuideFile, os.path.join(listsDir, "categories.list"))
-	
+
 def MakeCatGuides(fullGuideFile, categoriesFile):
 	if not os.path.exists(listsDir):
 		os.makedirs(listsDir)
@@ -349,7 +351,7 @@ def MakeCatGuide(fullGuideFile, categoryID, epg=None):
 					categoryEpg.append(ch[0])
 			except Exception, e:
 				pass
-	WriteList(filename, categoryEpg)
+	WriteList(filename, categoryEpg, indent=False)
 		
 def GetGuide(categoryID):
 	fileName = os.path.join(listsDir, "{0}.guide".format(categoryID))
