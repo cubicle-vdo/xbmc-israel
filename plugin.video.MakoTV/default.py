@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 import os, sys, io, re, random, uuid, base64
 import urllib, urllib2, json
@@ -9,6 +10,7 @@ isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
 AddonID = 'plugin.video.MakoTV'
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = "MakoTV"
+icon = Addon.getAddonInfo('icon')
 
 userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if isXbmc and not os.path.exists(userDir):
@@ -17,29 +19,84 @@ if isXbmc and not os.path.exists(userDir):
 UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 PLAYLIST_KEY = 'LTf7r/zM2VndHwP+4So6bw=='
 
-def GetSeriesList():
+def GetCategoriesList():
 	repoCheck.UpdateRepo()
-	prms = GetJson("http://www.mako.co.il/mako-vod-index?type=service")
-	if prms is None or not prms.has_key("allPrograms"):
-		print "Cannot get Series list"
+	name = "תכניות MakoTV"
+	addDir(name, "http://www.mako.co.il/mako-vod-index", 0, "http://img.mako.co.il/2010/08/11/mako%20vod%20c.jpg", {"Title": name, "Plot": "צפיה בתכני MakoTV"})
+	name = "תכניות ילדים"
+	addDir(name, "http://www.mako.co.il/mako-vod-kids", 0, "http://now.tufts.edu/sites/default/files/111116_kids_TV_illo_L.JPG", {"Title": name, "Plot": "צפיה בתכניות ילדים"})
+	name = "קלטות ילדים"
+	addDir(name, "http://www.mako.co.il/mako-vod-kids", 0, "http://img.agora.co.il/deals_images/2013-08/936426.jpg", {"Title": name, "Plot": "צפיה בקלטות ילדים"})
+	name = "לייף סטייל"
+	addDir(name, "http://www.mako.co.il/mako-vod-more/lifestyle", 0, "http://cdn-media-2.lifehack.org/wp-content/files/2012/12/healthy-lifestyle.jpg", {"Title": name, "Plot": "צפיה בתכניות לייף סטייל"})
+	name = "דוקו"
+	addDir(name, "http://www.mako.co.il/mako-vod-more/docu_tv", 0, "http://opendoclab.mit.edu/wp/wp-content/uploads/2011/09/camera.jpg", {"Title": name, "Plot": "צפיה בתכנים דוקומנטריים"})
+	name = "הופעות"
+	addDir(name, "http://www.mako.co.il/mako-vod-more/concerts", 0, "http://www.scenewave.com/wp-content/uploads/An-argument-for-live-music1.jpg", {"Title": name, "Plot": "צפיה בהופעות חיות"})
+	name = "הרצאות"
+	addDir(name, "http://www.mako.co.il/mako-vod-more/lectures", 0, "http://static1.squarespace.com/static/545c3cefe4b0263200cf8bb7/t/5474d191e4b0dda9e3ce84e7/1416941970318/lecture.jpg?format=1500w", {"Title": name, "Plot": "צפיה בהרצאות"})
+	
+def GetSeriesList(catName, url, iconimage=None):
+	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
+	prms1 = GetJson(url)
+	if prms1 is None:
+		"Cannot get {0} list".format(catName)
 		return
-	seriesCount = len(prms["allPrograms"])
-	for prm in prms["allPrograms"]:
+		
+	key2 = None
+	mode = 1
+	picKey = "picUrl_F"
+	
+	if catName == "תכניות MakoTV":
+		key1 = "allPrograms"
+	elif catName == "תכניות ילדים":
+		key1 = "kidsPrograms"
+	elif catName == "קלטות ילדים":
+		key1 = "kidsCassettes"
+		mode = 4
+	elif catName == "הופעות" or catName == "הרצאות":
+		key1 = "moreVOD"
+		key2 = "items"
+		picKey = "picB"
+		mode = 4
+	else:
+		key1 = "moreVOD"
+		key2 = "programItems"
+
+	if key2 is None:
+		if not prms1.has_key(key1):
+			"Cannot get {0} list".format(catName)
+			return
+		prms = prms1[key1]
+	else:
+		if not prms1.has_key(key1) or not prms1[key1].has_key(key2):
+			"Cannot get {0} list".format(catName)
+			return
+		prms = prms1[key1][key2]
+		
+	seriesCount = len(prms)
+	for prm in prms:
 		try:
-			name = prm["title"]
-			#name = "{0} - {1}".format(prm["title"].encode("utf-8"), prm["subtitle"].encode("utf-8")).decode("utf-8")
+			name = prm["title"].encode("utf-8")
+			if mode == 4 and prm.has_key("subtitle") and len(prm["subtitle"]) > 0:
+				name = "{0} - {1}".format(name, prm["subtitle"].encode("utf-8"))
 			url = "http://www.mako.co.il{0}".format(prm["url"])
-			iconimage =  prm["pic"]
-			description = prm["brief"]
+			iconimage = prm[picKey] if prm.has_key(picKey) else None
+			if iconimage is None:
+				iconimage = prm["pic"] if prm.has_key("pic") else None
+			if iconimage is None:
+				iconimage = prm["picUrl"] if prm.has_key("picUrl") else None
+			description = prm["brief"].encode("utf-8") if prm.has_key("brief") else ""
 			if prm.has_key("plot"):
-				description = "{0} - {1}".format(description, prm["plot"])
+				description = "{0} - {1}".format(description, prm["plot"].encode("utf-8"))
 			infos = {"Title": name, "Plot": description}
-			addDir(name, url, 1, iconimage, infos, totalItems=seriesCount)
+			addDir(name, url, mode, iconimage, infos, totalItems=seriesCount)
 		except Exception as ex:
 			print ex
 	  			
 def GetSeasonsList(url, iconimage):
-	prms = GetJson("{0}?type=service".format(url))
+	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
+	prms = GetJson(url)
 	if prms is None or not prms.has_key("programData") or not prms["programData"].has_key("seasons"):
 		print "Cannot get Seasons list"
 		return
@@ -47,16 +104,18 @@ def GetSeasonsList(url, iconimage):
 		try:
 			if not prm.has_key("vods"):
 				continue
-			name = prm["name"]
+			name = prm["name"].encode("utf-8")
 			url = "http://www.mako.co.il{0}".format(prm["url"])
-			description = prm["brief"]
+			description = prm["brief"].encode("utf-8")
 			infos = {"Title": name, "Plot": description}
 			addDir(name, url, 2, iconimage, infos)
 		except Exception as ex:
 			print ex
 	
 def GetEpisodesList(url):
-	prms = GetJson("{0}?type=service".format(url))
+	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
+	prms = GetJson(url)
+
 	if prms is None or not prms.has_key("channelId") or not prms.has_key("programData") or not prms["programData"].has_key("seasons"):
 		print "Cannot get Seasons list"
 		return
@@ -69,10 +128,10 @@ def GetEpisodesList(url):
 		for episode in prm["vods"]:
 			try:
 				vcmid = episode["guid"]
-				name = "{0} - {1}".format(episode["title"].encode("utf-8"), episode["shortSubtitle"].encode("utf-8")).decode("utf-8")
+				name = "{0} - {1}".format(episode["title"].encode("utf-8"), episode["shortSubtitle"].encode("utf-8"))
 				url = "http://www.mako.co.il/VodPlaylist?vcmid={0}&videoChannelId={1}".format(vcmid,videoChannelId)
 				iconimage =  episode["picUrl"]
-				description = episode["subtitle"]
+				description = episode["subtitle"].encode("utf-8")
 				if isXbmc:
 					urls.append(url)
 					url = str(len(urls)-1)
@@ -83,8 +142,21 @@ def GetEpisodesList(url):
 			
 	if isXbmc:
 		WriteList(os.path.join(userDir, 'urls.txt'), urls)
-				
-def Play(url, name, iconimage):
+		
+def PlayItem(url):
+	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
+	prms = GetJson(url)
+	
+	if prms is None or not prms.has_key("video"):
+		print "Cannot get item"
+		return
+
+	videoChannelId=prms["channelId"]
+	vcmid = prms["video"]["guid"]
+	url = "http://www.mako.co.il/VodPlaylist?vcmid={0}&videoChannelId={1}".format(vcmid,videoChannelId)
+	Play(url)
+		
+def Play(url):
 	if isXbmc:
 		urls = ReadList(os.path.join(userDir, 'urls.txt'))
 		url = urls[int(url)]
@@ -97,14 +169,19 @@ def Play(url, name, iconimage):
 	for item in result:
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
-			break
-			
+			break	
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
 	text = OpenURL(link.format(du, guid, url[url.find("/i/"):]))
-	result = json.loads(text)["tickets"][0]["ticket"]
-	final = "{0}?{1}".format(url, result)
+	result = json.loads(text)
+	if result["caseId"] == "4":
+		xbmc.executebuiltin("XBMC.Notification({0}, You need to pay if you want to watch this video., {1}, {2})".format(AddonName, 5000 ,icon))
+		return
+	elif result["caseId"] != "1":
+		xbmc.executebuiltin("XBMC.Notification({0}, Cannot get access for this video., {1}, {2})".format(AddonName, 5000 ,icon))
+		return
+	final = "{0}?{1}".format(url, result["tickets"][0]["ticket"])
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	
@@ -162,15 +239,15 @@ def GetJson(url):
 	return resultJSON["root"]
 	
 def addDir(name, url, mode, iconimage, infos={}, totalItems=None):
-	u = "{0}?url={1}&mode={2}&iconimage={3}".format(sys.argv[0], urllib.quote_plus(url), str(mode), iconimage)
+	u = "{0}?url={1}&mode={2}&name={3}&iconimage={4}".format(sys.argv[0], urllib.quote_plus(url), str(mode), urllib.quote_plus(name), iconimage)
 
 	if (iconimage == None):
 		iconimage = "DefaultFolder.png"
 		
-	liz = xbmcgui.ListItem(name.encode("utf-8"), iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo(type="Video", infoLabels=infos)
 	isFolder=True
-	if mode==3 :
+	if mode==3 or  mode==4:
 		isFolder=False
 		liz.setProperty("IsPlayable","true")
 	if totalItems == None:
@@ -210,9 +287,8 @@ def get_params():
 params=get_params()
 url = None
 mode = None
-ChName = None
+name = None
 iconimage = None
-background = None
 
 try:
 	url = urllib.unquote_plus(params["url"])
@@ -223,21 +299,21 @@ try:
 except:
 	pass
 try:      
-	ChName = urllib.unquote_plus(params["chname"])
+	name = urllib.unquote_plus(params["name"])
 except:
 	pass
 try:        
 	iconimage = urllib.unquote_plus(params["iconimage"])
 except:
 	pass
-try:        
-	background = urllib.unquote_plus(params["background"])
-except:
-	pass
+	
 
 if mode == None or url == None or len(url) < 1:
+	#print "------------- Categories: -----------------"
+	GetCategoriesList()
+elif mode == 0:
 	#print "------------- Series: -----------------"
-	GetSeriesList()
+	GetSeriesList(name, url, iconimage)
 elif mode == 1:
 	#print "------------- Seasons: -----------------"
 	GetSeasonsList(url, iconimage)
@@ -245,8 +321,12 @@ elif mode == 2:
 	#print "------------- Episodes: -----------------"
 	GetEpisodesList(url)
 elif mode == 3:
-	#print "-------------playing episide  -----------------"
-	Play(url,ChName,iconimage)
+	#print "------------- Playing episode  -----------------"
+	Play(url)
+elif mode == 4:
+	#print "------------- Playing item: -----------------"
+	PlayItem(url)
+	
 
 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 xbmc.executebuiltin("Container.SetViewMode(504)")

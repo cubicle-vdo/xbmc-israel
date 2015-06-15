@@ -1,3 +1,5 @@
+[B]1.0.8[/B]
+- Added more categories.
 [B]1.0.7[/B]
 - Adjust to APIs' changes (again..).
 [B]1.0.6[/B]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.MakoTV"
        name="MakoTV ver.2"
-       version="1.0.7"
+       version="1.0.8"
        provider-name="xbmc-israel team (xbmc-israel repo)">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
