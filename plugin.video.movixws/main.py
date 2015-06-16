@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib,re,random,json
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
-import urlresolver, resolver
+import resolver
 import repoCheck
 import common
 
@@ -9,6 +9,7 @@ __settings__ = xbmcaddon.Addon(id='plugin.video.movixws')
 Domain = __settings__.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 #print baseUrl
+handle = int(sys.argv[1])
 
 def searchWs():
 	dialog = xbmcgui.Dialog()
@@ -63,7 +64,7 @@ def addDir(name,url,mode,iconimage,isFolder=True,description=''):
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
 	if not isFolder:
 		liz.setProperty("IsPlayable","true")
-	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
+	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num):
 	result=common.OPEN_URL('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
@@ -78,10 +79,20 @@ def GetEpisodes(url):
 	for episode in matches:
 		addDir(name +'  '+episode[2], url+'&episodeid='+episode[1], 4, url, True)
 
+def SortByQuality(links):
+	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "TS", "CAM"]
+	sortedLinks = []
+	random.seed()
+	random.shuffle(links)
+	for quality in qualitiesList:
+		qualityLinks = [link for link in links if link[2] == quality]
+		for qualityLink in qualityLinks:
+			sortedLinks.append(qualityLink)
+	return sortedLinks
+
 def LinksPage(url, iconimage):
 	result=common.OPEN_URL(url)
 	if not 'get_seasons' in result:
-		#matches=re.compile('id="wrapserv"><a href="(.*?)" target=.*?src="\/img\/servers\/(.*?).png',re.I+re.M+re.U+re.S).findall(result)
 		matches=re.compile('<li .+?id="wrapserv"><a href="(.+?)" target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?<\/li>',re.I+re.M+re.U+re.S).findall(result)
 		links = []
 		for match in matches:
@@ -94,12 +105,17 @@ def LinksPage(url, iconimage):
 				continue
 			links.append(match)
 
-		playingUrlsList = []
-		for link in links:
-			playingUrlsList.append(link[0])
-		addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False)
-		addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False)
-		addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False)
+		if len(links) < 1:
+			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False)
+			return
+		if len(links) > 1:
+			links = SortByQuality(links)
+			playingUrlsList = []
+			for link in links:
+				playingUrlsList.append(link[0])
+			addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False)
+			addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False)
+			addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False)
 		for link in links:
 			addDir("{0} - {1} - איכות {2}".format(name, link[1], link[2]),link[0],5,iconimage,False)
 	else:
@@ -107,22 +123,11 @@ def LinksPage(url, iconimage):
 		GetSeasons(series_num)
 
 def PlayWs(url, autoPlay=False):
-	if "yify" in name:
-		new_url = url
-	else:
-		result=common.OPEN_URL(url)
-		matches=re.compile('<div id="embed_code".+?<iframe.+?src=["|\'](.*?)["|\'].+?<\/iframe><\/div>',re.I+re.M+re.U+re.S).findall(result)
-		url = matches[0]
-		if "filehoot" in url:
-			new_url = resolver.ResolveUrl(url)
-		else:
-			if "movreel" in url:
-				url = url.replace("/embed-","/")
-			item=urlresolver.HostedMediaFile(url)
-			new_url = urlresolver.resolve(item.get_url())
-	if new_url:
-		listitem = xbmcgui.ListItem(path=new_url)
-		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+	if baseUrl in url:
+		url = resolver.ResolveUrl(url)
+	if url:
+		listitem = xbmcgui.ListItem(path=url)
+		xbmcplugin.setResolvedUrl(handle, True, listitem)
 		return True
 	else:
 		if not autoPlay:
@@ -132,8 +137,6 @@ def PlayWs(url, autoPlay=False):
 
 def AutoPlayUrl(urls):
 	playingUrlsList = json.loads(urls)
-	random.seed()
-	random.shuffle(playingUrlsList)
 	for playingUrl in playingUrlsList:
 		if PlayWs(playingUrl, autoPlay=True):
 			return
@@ -220,9 +223,9 @@ elif mode==6:
 elif mode==7:
 	AutoPlayUrl(url)
 	
-xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+xbmcplugin.setContent(handle, 'episodes')
 if mode==None or url==None or len(url)<1:
 	xbmc.executebuiltin("Container.SetViewMode(500)")
 else:
 	xbmc.executebuiltin('Container.SetViewMode(504)')
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+xbmcplugin.endOfDirectory(handle)

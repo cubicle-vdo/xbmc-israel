@@ -1,3 +1,8 @@
+[B]v1.0.6[/B]
+- Added support for "allmyvideos" links.
+- Sort list of sources by video quality.
+- Auto play will try to play the best avaliable quality of videos.
+- Fix auto-play bug when there is "yify" in sources list.
 [B]v1.0.5[/B]
 - Added quality label to item's name.
 - Added support for "yify" links.
