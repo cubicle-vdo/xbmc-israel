@@ -21,13 +21,13 @@
 	<string id="30025">בחר קובץ</string>
 	<string id="30025">שם קובץ לשמירה</string>
 	
-	<string id="30100">הגדרות IsraeLIVE</string>
+	<string id="30100">הגדרות הרחבה</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
 	<string id="30110">פרוטוקול ניגון ערוצי פילמון</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">שימוש במדריך שידורים?</string>
-	<string id="30107">הורדת מדריך שידורים</string>
+	<string id="30107">עדכון מדריך שידורים</string>
 	<string id="30111">עדכון רשימות ערוצים</string>
 	<string id="30112">שימוש בברירת מחדל עבור מיקום קובץ הגדרות מרוחק</string>
 	
@@ -55,6 +55,17 @@
 	<string id="30221">האם את/ה בטוח/ה שאת/ה רוצה להוסיף את כל הערוצים בקבוצה:</string>
 	<string id="30222">{0} ({1} ערוצים)</string>
 	<string id="30223">למועדפי IsraeLIVE?</string>
+	<string id="30224">הוספת ערוץ אישי למועדפי IsraeLIVE</string>
+	<string id="30225">שם הערוץ</string>
+	<string id="30226">כתובת הערוץ</string>
+	<string id="30227">שיוך הערוץ לקטגוריה</string>
+	<string id="30228">סמל הערוץ</string>
+	<string id="30229">סמל מכתובת</string>
+	<string id="30230">סמל מקובץ</string>
+	<string id="30231">ללא סמל</string>
+	<string id="30232">סוג הערוץ</string>
+	<string id="30233">טלויזיה</string>
+	<string id="30234">רדיו</string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>
@@ -65,16 +76,20 @@
 	<string id="30306">עדכון אוטומטי עבור IPTVSimple?</string>
 	<string id="30307">ניקוי תיקיית סמלי ערוצים</string>
 	<string id="30308">רענון כל המשאבים הנדרשים עבור טלויזיה חיה</string>
+	<string id="30309">עדכון אוטומטי של טלויזיה חיה?</string>
+	<string id="30310">עצירת טלויזיה חיה בזמן העדכון?</string>
 	
 	<string id="30400">מראה</string>
 	
-	<string id="30500">קבוצות</string>
-	<string id="30501">סינון קבוצות</string>
-	<string id="30502">הוספת קבוצות</string>
-	<string id="30503">בחירת קבוצות (רשימה נגללת)</string>
-	<string id="30504">בחירת קבוצות להצגה בטלויזיה חיה</string>
+	<string id="30500">סינון ערוצים</string>
+	<string id="30501">הצגת "קטגוריות נבחרות" בהרחבה</string>
+	<string id="30502">הוספת קטגוריות ל-"קטגוריות נבחרות"</string>
+	<string id="30503">בחירת קטגוריות (רשימה נגללת)</string>
+	<string id="30504">בחירת קטגוריות להצגה בטלויזיה חיה</string>
 	<string id="30505">מועדפים</string>
 	<string id="30506">הכל</string>
-	<string id="30507">קבוצות נבחרות</string>
-	<string id="30508">הסרת קבוצות</string>
+	<string id="30507">קטגוריות נבחרות</string>
+	<string id="30508">הסרת קטגוריות</string>
+	<string id="30509">סינון ערוצים (בהרחבה ובטלויזיה חיה)</string>
+	<string id="30510">יבוא / יצוא של מועדפי IsraeLIVE</string>
 </strings>

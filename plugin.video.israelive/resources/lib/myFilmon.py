@@ -15,7 +15,7 @@ def GetChannelStream(chNum, referrerCh=None, filmonOldStrerams=True, useRtmp=Fal
 		
 	if prms == None:
 		print '--------- Playing Error: there is no channel with id="{0}" ---------'.format(chNum)
-		return None,None,None,None
+		return None
 		
 	selectedStream = None
 	for stream in prms['streams']:
@@ -44,12 +44,12 @@ def GetUrlGuide(url, days):
 def MakeChannelGuide(chNum, days):
 	now = int(time.time())
 	days = now + 86400*days
-	html = OpenURL("http://tvguide-api.filmon.com/tvguide/channels/?starttime={0}&duration={1}&channels_id={2}".format(now, days, chNum))
+	html = OpenURL("http://www.filmon.com/api-v2/tvguide/{0}".format(chNum))
 	if html is None:
 		return []
 		
-	prms = json.loads(html)
-	programmes = prms[str(chNum)]
+	prms = json.loads(html.decode("utf-8"))
+	programmes = prms["data"]
 	
 	programmename = ""
 	description = ""
@@ -62,6 +62,8 @@ def MakeChannelGuide(chNum, days):
 		enddatetime = int(programme["enddatetime"])
 		if now > enddatetime:
 			continue
+		if startdatetime > days:
+			break
 		description = programme["programme_description"]
 		programmename = programme["programme_name"]
 		image = None if not programme.has_key("images") or programme["images"] is None or len(programme["images"]) == 0 else programme["images"][0]["url"]
@@ -116,7 +118,7 @@ def GetChannelJson(chNum, filmonOldStrerams=True):
 		
 	if html is None:
 		if filmonOldStrerams:
-			print "---------------------------- tring filmonNewStrerams method for chNum {0} ----------".format(chNum)
+			print "---------------------------- Trying filmonNewStrerams method for chNum {0} ----------".format(chNum)
 		cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
 		if cookie is not None:
 			headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}

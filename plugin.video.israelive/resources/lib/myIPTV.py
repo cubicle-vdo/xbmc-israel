@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, re, os, time, datetime, hashlib
+import urllib, re, os, time, datetime, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
 import common, myResolver
@@ -11,45 +11,44 @@ localizedString = Addon.getLocalizedString
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
-def makeIPTVlist(iptvFile, portNum):
+def makeIPTVlist(iptvFile):
 	#satElitKey = None
 	iptvList = '#EXTM3U\n'
 	
 	channelsList = GetIptvChannels()
+	portNum = common.GetLivestreamerPort()
+		
 	for item in channelsList:
 		try:
 			url = item['url']
 			tvg_id = item['name']
 			view_name = item['name']
-			
-			if url.find('plugin.video.israelive') > 0:
-				urlParams = url[url.find('?'):]
-				url = "http://localhost:{0}/{1}".format(portNum, urlParams)
-			elif url.find('plugin.video.f4mTester') > 0:
+			if url.find('plugin.video.f4mTester') > 0:
 				url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
-			elif url.find('www.youtube.com') > 0:
+			elif url.find('www.youtube.com') > 0 or url == "BB":
 				url = "http://localhost:{0}/?url={1}".format(portNum, url)
-			elif url == "BB":
-				url = "http://localhost:{0}/?url={1}".format(portNum, url)
-			elif url.find('?mode=2') > 0 or url.find('?mode=5') > 0 or url.find('?mode=6') > 0 or url.find('?mode=8') > 0:
-				url = "http://localhost:{0}/?url={1}".format(portNum, url.replace('?', '&'))
-			elif url.find('?mode=3') > 0:
-				url = "http://localhost:{0}/?url={1}".format(portNum, url[:url.find('?mode')])
-			elif url.find('?mode=4') > 0:
-				url = myResolver.GetLivestreamTvFullLink(url[:url.find('?mode')])
-				if url == "down":
-					view_name += " (down)"
-			#elif url.find('?mode=5') > 0:
-			#	if satElitKey is None:
-			#		satElitKey = myResolver.GetSatElitKeyOnly()
-			#	url = myResolver.GetSatElitFullLink(url[:url.find('?mode')], satElitKey)
-			elif url.find('?mode=7') > 0:
-				url = myResolver.GetAatwFullLink(url[:url.find('?mode')])
-			elif url.find('?mode=9') > 0 or url.find('?mode=10') > 0:
-				continue
-				
+			else:
+				matches = re.compile('^(.+?)[\?|&]mode=([0-9]+?)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
+				if len(matches) > 0:
+					url = matches[0][0]
+					mode = matches[0][1]
+					if len(matches[0]) > 2:
+						url += matches[0][2]
+					if mode == '1':
+						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
+					elif mode == '3':
+						url = "http://localhost:{0}/?url={1}".format(portNum, url)
+					elif mode == '4' or mode == '7':
+						url = myResolver.Resolve(url, mode)
+						if url == "down":
+							continue
+					elif mode == '9' or mode == '10':
+						continue
+					else:
+						url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, url.replace('?', '&'), mode)
+
 			tvg_name = item['name'].replace(' ','_')
-			tvg_logo = GetLogoFileName(item)
+			tvg_logo = common.GetLogoFileName(item)
 			radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 			group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
 			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
@@ -60,21 +59,6 @@ def makeIPTVlist(iptvFile, portNum):
 	f.write(iptvList)
 	f.close()
 	
-def GetLogoFileName(item):
-	if item.has_key('image') and item['image'] is not None and item['image'] != "":
-		ext = item['image'][item['image'].rfind('.')+1:]
-		i = ext.rfind('?')
-		if i > 0: 
-			ext = ext[:ext.rfind('?')]
-		if len(ext) > 4:
-			ext = "png"
-		tvg_logo = hashlib.md5(item['image'].strip()).hexdigest()
-		logoFile = "{0}.{1}".format(tvg_logo, ext)
-	else:
-		logoFile = ""
-		
-	return logoFile
-
 def EscapeXML(str):
 	return str.replace("<", "&lt;").replace(">", "&gt;")
 	
@@ -121,13 +105,16 @@ def SaveChannelsLogos(logosDir):
 	
 	for channel in channelsList:
 		try:
-			logoFile = GetLogoFileName(channel)
+			logoFile = common.GetLogoFileName(channel)
 			if logoFile != "":
 				newFilesList.append(logoFile)
 				logoFile = os.path.join(logosDir, logoFile)
 				if not os.path.isfile(logoFile):
-					#print "---------\n{0}\n{1}".format(channel['name'], channel['image'])
-					urllib.urlretrieve(channel['image'], logoFile)
+					logo = channel['image']
+					if logo.startswith('http'):
+						urllib.urlretrieve(logo, logoFile)
+					else:
+						shutil.copyfile(logo, logoFile)
 		except Exception as e:
 			print e
 	
@@ -236,7 +223,8 @@ def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
 	
 	if autoIPTV == 0 or autoIPTV == 2:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
-		xbmc.executebuiltin('StartPVRManager')
+		if Addon.getSetting("autoPVR") == "true":
+			xbmc.executebuiltin('StartPVRManager')
 		
 def GetCategories():
 	iptvList = int(Addon.getSetting("iptvList"))
