@@ -1,3 +1,5 @@
+[B]v4.4.0[/B]
+- Bugfixes.
 [B]v4.3.9[/B]
 - Added support of adding personal channels into fauvorites list.
 - LiveTV will update faster in case of select to use "Favourites" or "Selected categories" on LiveTV (from addon settings -> filter channels)

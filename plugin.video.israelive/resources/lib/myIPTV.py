@@ -28,7 +28,7 @@ def makeIPTVlist(iptvFile):
 			elif url.find('www.youtube.com') > 0 or url == "BB":
 				url = "http://localhost:{0}/?url={1}".format(portNum, url)
 			else:
-				matches = re.compile('^(.+?)[\?|&]mode=([0-9]+?)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
+				matches = re.compile('^(.*?)[\?|&]mode=([0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
 				if len(matches) > 0:
 					url = matches[0][0]
 					mode = matches[0][1]
