@@ -1,13 +1,11 @@
 import os
-import xbmcgui
-import xbmcaddon
+import xbmcgui, xbmcaddon
 import pyxbmct.addonwindow as pyxbmct
 
 AddonID = "plugin.video.israelive"
 _addon = xbmcaddon.Addon(AddonID)
 _path = _addon.getAddonInfo("path")
-_check_icon = os.path.join(_path, "check.png") # Don't decode _path to utf-8!!!
-
+_check_icon = os.path.join(_path, 'resources', 'art', "check.png") # Don't decode _path to utf-8!!!
 
 class MultiChoiceDialog(pyxbmct.AddonDialogWindow):
 	def __init__(self, title="", items=[]):

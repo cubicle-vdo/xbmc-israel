@@ -21,13 +21,13 @@
 	<string id="30025">Select a file</string>
 	<string id="30026">Enter file name</string>
 	
-	<string id="30100">IsraeLIVE Settings</string>
+	<string id="30100">Addon Settings</string>
 	<string id="30101">Remote Settings URL</string>
 	<string id="30110">Filmon's stream protocol</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
 	<string id="30106">Use TV-Guide?</string>
-	<string id="30107">Download TV-Guide</string>
+	<string id="30107">Update TV-Guide now</string>
 	<string id="30111">Update Channels Lists now</string>
 	<string id="30112">Force remote-settings default URL</string>
 	
@@ -55,8 +55,19 @@
 	<string id="30221">Are yoe sure you want to add all channels in group:</string>
 	<string id="30222">{0} ({1} channels)</string>
 	<string id="30223">to IsraeLIVE favourites?</string>
+	<string id="30224">Add a personal channel to IsraeLIVE favourites</string>
+	<string id="30225">Channel's name</string>
+	<string id="30226">Channel's URL</string>
+	<string id="30227">Channel's category</string>
+	<string id="30228">Channel's logo</string>
+	<string id="30229">Logo from URL</string>
+	<string id="30230">Logo from file</string>
+	<string id="30231">Without logo</string>
+	<string id="30232">Channel's type</string>
+	<string id="30233">TV</string>
+	<string id="30234">Radio</string>
 	
-	<string id="30300">Live TV</string>
+	<string id="30300">LiveTV Settings</string>
 	<string id="30301">Enable Live TV</string>
 	<string id="30302">Make IPTV channels list and TV-Guide</string>
 	<string id="30303">Download channels logos</string>
@@ -65,16 +76,20 @@
 	<string id="30306">Auto-update IPTVSimple?</string>
 	<string id="30307">Empty channels logos folder</string>
 	<string id="30308">Refresh ALL Live TV required resources</string>
+	<string id="30309">Auto-update PVR?</string>
+	<string id="30310">Stop PVR while updating?</string>
 	
 	<string id="30400">Appearance</string>
 	
-	<string id="30500">Groups</string>
-	<string id="30501">Filter groups</string>
-	<string id="30502">Add groups</string>
-	<string id="30503">Select groups (scrolling list)</string>
-	<string id="30504">Choose groups for LiveTV</string>
+	<string id="30500">Filter Channels</string>
+	<string id="30501">Show "Selected catregories" in Addon</string>
+	<string id="30502">Add catregories to "Selected catregories"</string>
+	<string id="30503">Select catregories (scrolling list)</string>
+	<string id="30504">Choose channels to show on LiveTV</string>
 	<string id="30505">Favourites</string>
 	<string id="30506">All</string>
-	<string id="30507">Selected</string>
-	<string id="30508">Remove groups</string>
+	<string id="30507">Selected catregories</string>
+	<string id="30508">Remove catregories from "Selected catregories"</string>
+	<string id="30509">Filter Channels (Addon and LiveTV)</string>
+	<string id="30510">Import / Export IsraeLIVE favourites</string>
 </strings>

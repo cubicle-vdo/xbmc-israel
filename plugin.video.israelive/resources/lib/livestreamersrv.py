@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 #from SocketServer import ThreadingMixIn
@@ -117,3 +118,5 @@ def stop(portNum):
 	except Exception as ex:
 		print ex
 		#pass
+
+start(int(sys.argv[1]))

@@ -1,94 +1,21 @@
-import xbmc, xbmcaddon, xbmcgui, os, sys, platform
-import repoCheck
-
-repoCheck.UpdateRepo()
+import xbmc, xbmcaddon, os
 
 Addon = xbmcaddon.Addon()
-AddonName = Addon.getAddonInfo("name")
-icon = Addon.getAddonInfo('icon')
-libDir = os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'lib')
+libDir = os.path.join(xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8"), 'resources', 'lib')
 sys.path.insert(0, libDir)
 import common
+xbmc.executebuiltin("XBMC.RunScript({0})".format(os.path.join(libDir, "repoCheck.py")), True)
 
-portNum = 65007
-try:
-	portNum = int(Addon.getSetting("LiveStreamerPort"))
-except:
-	pass
-	
-pvrStoped = False
-useIPTV = False
 if Addon.getSetting("useIPTV") == "true":
-	import livestreamersrv, myIPTV
+	autoIPTV = int(Addon.getSetting("autoIPTV"))
+	autoPVR = Addon.getSetting("autoPVR") == "true"
+	autoStopPVR = Addon.getSetting("autoStopPVR") == "true"
+	if (autoIPTV == 0 or autoIPTV == 2) and autoPVR and autoStopPVR:
+		xbmc.executebuiltin('StopPVRManager')
+	portNum = common.GetLivestreamerPort()
 	try:
-		livestreamersrv.start(portNum)
-		useIPTV = True
-		autoIPTV = int(Addon.getSetting("autoIPTV"))
-		if autoIPTV == 0 or autoIPTV == 2:
-			xbmc.executebuiltin('StopPVRManager')
-			pvrStoped = True
+		xbmc.executebuiltin("XBMC.RunScript({0},{1})".format(os.path.join(libDir, "livestreamersrv.py"), portNum), True)
 	except Exception as ex:
 		print ex
 
-user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-if not os.path.exists(user_dataDir):
-	os.makedirs(user_dataDir)
-
-remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-plxFile = os.path.join(user_dataDir, "israelive.plx")
-fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
-iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
-iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
-iptvLogosDir = os.path.join(user_dataDir, "logos")
-remoteSettings = common.GetRemoteSettings(updateDefault=True)
-
-checkInterval = 12
-	
-def sleepFor(timeS):
-    while((not xbmc.abortRequested) and (timeS > 0)):
-        xbmc.sleep(1000)
-        timeS -= 1
-		
-def CheckUpdates():
-	common.CheckNewVersion()
-	global remoteSettings
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
-	if remoteSettings == []:
-		global pvrStoped
-		if pvrStoped:
-			xbmc.executebuiltin('StartPVRManager')
-		return
-		
-	global checkInterval
-	try:
-		checkInterval = remoteSettings["remoteSettings"]["refresh"] * 3600 # in hours
-	except:
-		pass
-	
-	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
-	if not refresh is None:
-		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
-
-	if Addon.getSetting("useEPG") == "true":
-		refresh = common.GetSubKeyValue(remoteSettings, "fullGuide", "refresh")
-		if not refresh is None and common.isFileOld(fullGuideFile, refresh * 3600) and common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings):
-			common.MakeCatGuides(fullGuideFile, os.path.join(user_dataDir, "lists", "categories.list"))
-		
-		if Addon.getSetting("useIPTV") == "true":
-			myIPTV.makeIPTVlist(iptvChannelsFile, portNum)
-			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
-			myIPTV.SaveChannelsLogos(iptvLogosDir)
-		
-CheckUpdates()
-
-while (not xbmc.abortRequested):
-	sleepFor(checkInterval)
-	if (not xbmc.abortRequested):
-		CheckUpdates()
-	
-if useIPTV:
-	try:
-		livestreamersrv.stop(portNum)
-	except Exception as ex:
-		print ex
+xbmc.executebuiltin("XBMC.RunScript({0})".format(os.path.join(libDir, "checkUpdates.py")))

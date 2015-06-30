@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, os, io, re, time, base64, random
+import sys, os, io, re, time, base64, random, hashlib
 import urllib, urllib2, json
 import xbmc, xbmcgui, xbmcaddon
 import multiChoiceDialog
@@ -11,32 +11,10 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = "IsraeLIVE"
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-listsDir = os.path.join(user_dataDir, 'lists')
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-
-def downloader_is(url, name, showProgress=True):
-	import downloader, extract
-
-	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
-	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
-
-	if showProgress:
-		dp = xbmcgui.DialogProgress()
-		dp.create(AddonName, "Downloading", name, "Please Wait")
-		downloader.download(url, packageFile, dp)
-		dp.update(0, "", "Extracting Zip Please Wait")
-		extract.all(packageFile, addonsDir, dp)
-	else:
-		urllib.urlretrieve(url, packageFile)
-		extract.all(packageFile, addonsDir)
-		
-	try:
-		os.remove(packageFile)
-	except:
-		pass
-			
-	xbmc.executebuiltin("UpdateLocalAddons")
-	xbmc.executebuiltin("UpdateAddonRepos")
+listsDir = os.path.join(user_dataDir, 'lists')
+if not os.path.exists(listsDir):
+	os.makedirs(listsDir)
 
 def isFileOld(file, deltaInSec):
 	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
@@ -131,15 +109,21 @@ def WriteList(filename, list, indent=True):
 		
 	return success
 	
+def GetUnSelectedList(fullList, selectedList):
+	unSelectedList = []
+	for index, item in enumerate(fullList):
+		if not any(selectedItem["id"] == item.get("id", "") for selectedItem in selectedList):
+			unSelectedList.append(item)
+	return unSelectedList
+	
 def GetUpdatedList(file, key, remoteSettings=None, forceUpdate=False):
 	UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
 	return ReadList(file)
 	
 def UpdateZipedFile(file, key, remoteSettings=None, forceUpdate=False):
-	import extract
 	zipFile = "{0}.zip".format(file[:file.rfind('.')])
 	if UpdateFile(zipFile, key, remoteSettings=remoteSettings, zip=True, forceUpdate=forceUpdate):
-		extract.all(zipFile, user_dataDir)
+		xbmc.executebuiltin("XBMC.Extract({0}, {1})".format(zipFile, user_dataDir), True)
 		try:
 			os.remove(zipFile)
 		except:
@@ -160,10 +144,6 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 	if isFileOld(file, refreshInterval):
 		isListUpdated = UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
 
-	if not os.path.exists(listsDir):
-		os.makedirs(listsDir)
-		isListUpdated = True
-			
 	if isListUpdated:
 		fullList = GetListFromPlx(fullScan=True)
 		fullList.sort(key=operator.itemgetter('group'))
@@ -205,6 +185,12 @@ def OKmsg(title, line1, line2="", line3=""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
 	
+def GetKeyboardText(title = "", defaultText = ""):
+	keyboard = xbmc.Keyboard(defaultText, title)
+	keyboard.doModal()
+	text = "" if not keyboard.isConfirmed() else keyboard.getText()
+	return text
+	
 def YesNoDialog(title, line1, line2="", line3="", nolabel="No", yeslabel="Yes"):
 	dialog = xbmcgui.Dialog()
 	ok = dialog.yesno(title, line1=line1, line2=line2, line3=line3, nolabel=nolabel, yeslabel=yeslabel)
@@ -221,6 +207,21 @@ def GetMultiChoiceSelected(title, list):
 	selected = dialog.selected[:]
 	del dialog #You need to delete your instance when it is no longer needed because underlying xbmcgui classes are not grabage-collected. 
 	return selected
+	
+def GetLogoFileName(item):
+	if item.has_key('image') and item['image'] is not None and item['image'] != "":
+		ext = item['image'][item['image'].rfind('.')+1:]
+		i = ext.rfind('?')
+		if i > 0: 
+			ext = ext[:ext.rfind('?')]
+		if len(ext) > 4:
+			ext = "png"
+		tvg_logo = hashlib.md5(item['image'].strip()).hexdigest()
+		logoFile = "{0}.{1}".format(tvg_logo, ext)
+	else:
+		logoFile = ""
+		
+	return logoFile
 	
 def Encode(string, key=None):
 	if key is None:
@@ -260,11 +261,11 @@ def GetAddonDefaultRemoteSettingsUrl():
 		print ex
 	return remoteSettingsUrl
 	
-def GetRemoteSettings(updateDefault=False):
+def GetRemoteSettings():
 	remoteSettingsUrl = Addon.getSetting("remoteSettingsUrl")
 	if Addon.getSetting("forceRemoteDefaults") == "true":
 		defaultRemoteSettingsUrl = GetAddonDefaultRemoteSettingsUrl()
-		if defaultRemoteSettingsUrl != remoteSettingsUrl:
+		if (defaultRemoteSettingsUrl != "") and (defaultRemoteSettingsUrl != remoteSettingsUrl):
 			remoteSettingsUrl = defaultRemoteSettingsUrl
 			Addon.setSetting("remoteSettingsUrl", remoteSettingsUrl)
 			
@@ -320,27 +321,16 @@ def GetListFromPlx(filterCat="9999", includeChannels=True, includeCatNames=True,
 	return list
 	
 def GetChannels(categoryID):
-	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))
+	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))if categoryID != "Favourites" else os.path.join(user_dataDir, 'favorites.txt')
 	return ReadList(fileName)
 
-def MakeCatGuides(fullGuideFile, categoriesFile):
-	if not os.path.exists(listsDir):
-		os.makedirs(listsDir)
-		
-	epg = ReadList(fullGuideFile)
-	
-	categories = ReadList(categoriesFile)
-	categories.append({"id": "Favourites"})
-
+def MakeCatGuides(categories, epg):
 	for category in categories:
-		MakeCatGuide(fullGuideFile, category["id"], epg)
+		MakeCatGuide(category["id"], epg)
 	
-def MakeCatGuide(fullGuideFile, categoryID, epg=None):
-	if epg is None:
-		epg = ReadList(fullGuideFile)
-		
+def MakeCatGuide(categoryID, epg):
 	filename = os.path.join(listsDir, "{0}.guide".format(categoryID))
-	channels = GetChannels(categoryID) if categoryID != "Favourites" else ReadList(os.path.join(user_dataDir, 'favorites.txt'))
+	channels = GetChannels(categoryID)
 	categoryEpg = []
 	for channel in channels:
 		if channel["type"] == 'video' or channel["type"] == 'audio':
@@ -352,7 +342,12 @@ def MakeCatGuide(fullGuideFile, categoryID, epg=None):
 			except Exception, e:
 				pass
 	WriteList(filename, categoryEpg, indent=False)
-		
+	
+def MakeFavouritesGuide(fullGuideFile, epg=None):
+	if epg is None:
+		epg = ReadList(fullGuideFile)
+	MakeCatGuide("Favourites", epg)
+			
 def GetGuide(categoryID):
 	fileName = os.path.join(listsDir, "{0}.guide".format(categoryID))
 	return ReadList(fileName)
@@ -373,3 +368,11 @@ def CheckNewVersion():
 		f = open(versionFile, 'w')
 		f.write(newVersion)
 		f.close()
+
+def GetLivestreamerPort():
+	portNum = 65007
+	try:
+		portNum = int(Addon.getSetting("LiveStreamerPort"))
+	except:
+		pass
+	return portNum

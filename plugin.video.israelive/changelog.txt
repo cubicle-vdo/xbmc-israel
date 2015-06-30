@@ -1,3 +1,10 @@
+[B]v4.3.9[/B]
+- Added support of adding personal channels into fauvorites list.
+- LiveTV will update faster in case of select to use "Favourites" or "Selected categories" on LiveTV (from addon settings -> filter channels)
+- Added option to enable/disable reset PVR (LiveTV) automatically when lists updates.
+- Added option to enable/disable stop PVR (LiveTV) while Kodi is loading until lists updates.
+- Rearange addon settings and change the name of "group" tab to "filter channels".
+- Maintenance and adjustments due to changes in some sites.
 [B]v4.3.8[/B]
 - Maintenance.
 [B]v4.3.7[/B]

@@ -20,15 +20,19 @@
 		<setting id="action" type="action" label="30303" action="RunScript($CWD/default.py,,?mode=31&url=settings)" option="close" visible="eq(-2,true) + eq(-5,true)"/>
 		<setting id="action" type="action" label="30304" action="RunScript($CWD/default.py,,?mode=32&url=settings)" option="close" visible="eq(-3,true) + eq(-6,true)"/>
 		<setting id="autoIPTV" type="enum" label="30306" lvalues="30001|30002|30003|30004" default="2" visible="eq(-4,true) + eq(-7,true)"/>
-		<setting id="action" type="action" label="30307" action="RunScript($CWD/default.py,,?mode=33&url=settings)" option="close" visible="eq(-5,true) + eq(-8,true)"/>
-		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-6,true) + eq(-9,true)"/>
+		<setting id="autoPVR" type="bool" label="30309" default="true" visible="eq(-5,true) + eq(-8,true)"/>
+		<setting id="autoStopPVR" type="bool" label="30310" default="false" visible="eq(-6,true) + eq(-9,true) + eq(-1,true)"/>
+		<setting id="action" type="action" label="30307" action="RunScript($CWD/default.py,,?mode=33&url=settings)" option="close" visible="eq(-7,true) + eq(-10,true)"/>
+		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-8,true) + eq(-11,true)"/>
 	</category>
 	
 	<category label="30500">
+		<setting label="30509" type="lsep"/>
+		<setting id="action" type="action" label="30502" action="RunScript($CWD/default.py,,?mode=35&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30508" action="RunScript($CWD/default.py,,?mode=36&url=settings)" option="close"/>
 		<setting id="useCategories" type="bool" label="30501" default="false" />
-		<setting id="action" type="action" label="30502" action="RunScript($CWD/default.py,,?mode=35&url=settings)" option="close" visible="eq(-1,true)"/>
-		<setting id="action" type="action" label="30508" action="RunScript($CWD/default.py,,?mode=36&url=settings)" option="close" visible="eq(-2,true)"/>
 		<setting id="iptvList" type="enum" label="30504" lvalues="30505|30506|30507" default="1"/>
+		<setting label="30510" type="lsep"/>
 		<setting label="30219" type="folder" id="imExFolder" source="auto" option="writeable"/>
 		<setting id="action" type="action" label="30214" action="RunScript($CWD/default.py,,?mode=43&url=settings)" option="close"/>
 		<setting id="action" type="action" label="30215" action="RunScript($CWD/default.py,,?mode=44&url=settings)" option="close"/>
