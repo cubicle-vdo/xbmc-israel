@@ -523,7 +523,7 @@ def AddUserChannelToFavorites():
 		if len(logoFile) < 1:
 			return
 	elif logoInd == 1:
-		logoFile = xbmcgui.Dialog().browse(int(1), localizedString(30230).encode('utf-8'), 'myprograms').decode("utf-8")
+		logoFile = xbmcgui.Dialog().browse(int(1), localizedString(30230).encode('utf-8'), 'myprograms')
 		if logoFile is None or len(logoFile) < 1:
 			return
 	elif logoInd == 2:
@@ -534,14 +534,14 @@ def AddUserChannelToFavorites():
 	favsList = common.ReadList(FAV)
 	for channel in favsList:
 		if channel["url"].lower() == chUrl.lower():
-			xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  Already in favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), chName.encode("utf-8"), 5000, __icon2__))
+			xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  Already in favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), chName, 5000, __icon2__))
 			return
 		
-	data = {"url": chUrl, "group": group, "image": logoFile, "type": chType, "name": chName}
+	data = {"url": chUrl.decode("utf-8"), "group": group, "image": logoFile.decode("utf-8"), "type": chType, "name": chName.decode("utf-8")}
 	
 	favsList.append(data)
 	if common.WriteList(FAV, favsList):
-		xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  added to favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), chName.encode("utf-8"), 5000, __icon__))
+		xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  added to favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), chName, 5000, __icon__))
 
 def RemoveSelectedFavorties():
 	allCategories = common.ReadList(categoriesFile)
