@@ -80,14 +80,17 @@ def GetEpisodes(url):
 		addDir(name +'  '+episode[2], url+'&episodeid='+episode[1], 4, url, True)
 
 def SortByQuality(links):
-	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "TS", "CAM"]
+	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "HDTS", "TS", "CAM"]
 	sortedLinks = []
 	random.seed()
 	random.shuffle(links)
 	for quality in qualitiesList:
-		qualityLinks = [link for link in links if link[2] == quality]
+		qualityLinks = [link for link in links if link[2].lower() == quality.lower()]
 		for qualityLink in qualityLinks:
 			sortedLinks.append(qualityLink)
+	for link in links:
+		if link[2] not in qualitiesList:
+			sortedLinks.append(link)
 	return sortedLinks
 
 def LinksPage(url, iconimage):

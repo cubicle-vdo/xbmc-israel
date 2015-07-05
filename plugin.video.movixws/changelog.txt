@@ -1,3 +1,5 @@
+[B]v1.0.7[/B]
+- Added missing video-quallities to playing list.
 [B]v1.0.6[/B]
 - Added support for "allmyvideos" links.
 - Sort list of sources by video quality.
