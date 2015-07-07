@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import os, sys, io, re, random, uuid, base64
+import os, sys, io, uuid, base64
 import urllib, urllib2, json
 import repoCheck
 
@@ -11,13 +11,13 @@ AddonID = 'plugin.video.MakoTV'
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = "MakoTV"
 icon = Addon.getAddonInfo('icon')
+localizedString = Addon.getLocalizedString
+sortBy = int(Addon.getSetting("sortBy"))
+handle = int(sys.argv[1])
 
 userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if isXbmc and not os.path.exists(userDir):
 	os.makedirs(userDir)
-
-UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
-PLAYLIST_KEY = 'LTf7r/zM2VndHwP+4So6bw=='
 
 def GetCategoriesList():
 	repoCheck.UpdateRepo()
@@ -35,8 +35,13 @@ def GetCategoriesList():
 	addDir(name, "http://www.mako.co.il/mako-vod-more/concerts", 0, "http://www.scenewave.com/wp-content/uploads/An-argument-for-live-music1.jpg", {"Title": name, "Plot": "צפיה בהופעות חיות"})
 	name = "הרצאות"
 	addDir(name, "http://www.mako.co.il/mako-vod-more/lectures", 0, "http://static1.squarespace.com/static/545c3cefe4b0263200cf8bb7/t/5474d191e4b0dda9e3ce84e7/1416941970318/lecture.jpg?format=1500w", {"Title": name, "Plot": "צפיה בהרצאות"})
+	sortString = localizedString(30001).encode('utf-8') if sortBy == 0 else localizedString(30002).encode('utf-8')
+	name = "{0}: {1}".format(localizedString(30000).encode('utf-8'), sortString)
+	addDir(name, "toggleSortingMethod", 6, "", {"Title": name, "Plot": "{0}[CR]לחץ לשינוי השיטה:[CR]{1} / {2}".format(name, localizedString(30001).encode('utf-8'), localizedString(30002).encode('utf-8'))}, isFolder=False)
+	name = "חיפוש"
+	addDir(name, "http://www.mako.co.il/autocomplete/vodAutocompletion.ashx?query={0}&max=60&id=query",5 ,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp', {"Title": name, "Plot": "חיפוש"})
 	
-def GetSeriesList(catName, url, iconimage=None):
+def GetSeriesList(catName, url, iconimage):
 	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
 	prms1 = GetJson(url)
 	if prms1 is None:
@@ -44,7 +49,6 @@ def GetSeriesList(catName, url, iconimage=None):
 		return
 		
 	key2 = None
-	mode = 1
 	picKey = "picUrl_F"
 	
 	if catName == "תכניות MakoTV":
@@ -53,12 +57,10 @@ def GetSeriesList(catName, url, iconimage=None):
 		key1 = "kidsPrograms"
 	elif catName == "קלטות ילדים":
 		key1 = "kidsCassettes"
-		mode = 4
 	elif catName == "הופעות" or catName == "הרצאות":
 		key1 = "moreVOD"
 		key2 = "items"
 		picKey = "picB"
-		mode = 4
 	else:
 		key1 = "moreVOD"
 		key2 = "programItems"
@@ -78,6 +80,7 @@ def GetSeriesList(catName, url, iconimage=None):
 	for prm in prms:
 		try:
 			name = prm["title"].encode("utf-8")
+			mode = 4 if "VOD-" in prm["url"] else 1
 			if mode == 4 and prm.has_key("subtitle") and len(prm["subtitle"]) > 0:
 				name = "{0} - {1}".format(name, prm["subtitle"].encode("utf-8"))
 			url = "http://www.mako.co.il{0}".format(prm["url"])
@@ -169,7 +172,8 @@ def Play(url):
 	for item in result:
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
-			break	
+			break
+
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
@@ -183,7 +187,7 @@ def Play(url):
 		return
 	final = "{0}?{1}".format(url, result["tickets"][0]["ticket"])
 	listItem = xbmcgui.ListItem(path=final)
-	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
 	
 def ReadList(fileName):
 	try:
@@ -213,6 +217,7 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 	else:
 		req = urllib2.Request(url)
 	
+	UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 	req.add_header('User-Agent', UA)
 	for k, v in headers.items():
 		req.add_header(k, v)
@@ -234,11 +239,43 @@ def GetJson(url):
 	if html is None:
 		return None
 	resultJSON = json.loads(html)
-	if resultJSON is None or len(resultJSON) < 1 or not resultJSON.has_key("root"):
+	if resultJSON is None or len(resultJSON) < 1:
 		return None
-	return resultJSON["root"]
+	if resultJSON.has_key("root"):
+		return resultJSON["root"]
+	else:
+		return resultJSON
+
+def Search(url):
+	search_entered =''
+	keyboard = xbmc.Keyboard(search_entered, 'מילים לחיפוש')
+	keyboard.doModal()
+	if keyboard.isConfirmed():
+		search_entered = keyboard.getText()
+
+	if search_entered !='':
+		url = url.format(search_entered)
+		params = GetJson(url)
+		suggestions = params["suggestions"]
+		data = params["data"]
+		for i in range(len(suggestions)):
+			if "mako-vod-channel2-news" in data[i]:
+				continue
+			name = suggestions[i].encode("utf-8")
+			mode = 4 if "VOD-" in data[i] else 1
+			url = "http://www.mako.co.il{0}".format(data[i])
+			addDir(name, url, mode, "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp", {"Title": name, "Plot": name})
+	else:
+		return
+		
+def ToggleSortMethod():
+	if sortBy == 0:
+		Addon.setSetting("sortBy", "1")
+	else:
+		Addon.setSetting("sortBy", "0")
+	xbmc.executebuiltin("XBMC.Container.Refresh()")
 	
-def addDir(name, url, mode, iconimage, infos={}, totalItems=None):
+def addDir(name, url, mode, iconimage, infos={}, totalItems=None, isFolder=True):
 	u = "{0}?url={1}&mode={2}&name={3}&iconimage={4}".format(sys.argv[0], urllib.quote_plus(url), str(mode), urllib.quote_plus(name), iconimage)
 
 	if (iconimage == None):
@@ -246,14 +283,13 @@ def addDir(name, url, mode, iconimage, infos={}, totalItems=None):
 		
 	liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo(type="Video", infoLabels=infos)
-	isFolder=True
 	if mode==3 or  mode==4:
 		isFolder=False
 		liz.setProperty("IsPlayable","true")
 	if totalItems == None:
-		ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
+		ok = xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 	else:
-		ok =xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder,totalItems=totalItems)
+		ok =xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder,totalItems=totalItems)
 	
 	return ok
 	
@@ -326,8 +362,16 @@ elif mode == 3:
 elif mode == 4:
 	#print "------------- Playing item: -----------------"
 	PlayItem(url)
+elif mode == 5:
+	#print "------------- Search items: -----------------"
+	Search(url)
+elif mode == 6:
+	#print "------------- Toggle Lists' sorting method: -----------------"
+	ToggleSortMethod()
 	
 
-xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+xbmcplugin.setContent(handle, 'episodes')
 xbmc.executebuiltin("Container.SetViewMode(504)")
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+if sortBy == 1 and mode is not None and mode != 5:
+	xbmcplugin.addSortMethod(handle, 1)
+xbmcplugin.endOfDirectory(handle)

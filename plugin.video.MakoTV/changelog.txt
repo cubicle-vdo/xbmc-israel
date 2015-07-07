@@ -1,3 +1,7 @@
+[B]1.0.9[/B]
+- Added search option.
+- Added sorting method option. (website-order / alphabetic-order)
+- Addon name changed.
 [B]1.0.8[/B]
 - Added more categories.
 [B]1.0.7[/B]
