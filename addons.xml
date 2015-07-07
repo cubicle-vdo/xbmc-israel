@@ -169,9 +169,9 @@
 </addon>
 
 <addon id="plugin.video.MakoTV"
-       name="MakoTV ver.2"
-       version="1.0.8"
-       provider-name="xbmc-israel team (xbmc-israel repo)">
+       name="MakoTV (web)"
+       version="1.0.9"
+       provider-name="xbmc-israel team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
 	</requires>
@@ -179,8 +179,10 @@
 		<provides>video</provides>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en">MakoTV VOD</summary>
-		<description lang="en">MakoTV VOD</description>
+		<summary lang="en">Watch MakoTV Videos</summary>
+		<description lang="en">Watch Mako Video content from MakoTV website.</description>
+		<summary lang="he">צפיה בתכנים מאתר MakoTV</summary>
+		<description lang="he">צפיה בתכנים מאתר MakoTV.</description>
 		<platform>all</platform>
 	</extension>
 </addon>
