@@ -1,3 +1,5 @@
+[B]v4.4.2[/B]
+- Maintenance and bug fixes.
 [B]v4.4.1[/B]
 - Fix for adding personal channels into fauvorites list.
 [B]v4.4.0[/B]
