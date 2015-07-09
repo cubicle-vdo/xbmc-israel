@@ -21,9 +21,9 @@ def Get2url(url):
 	try:
 		import cookielib
 		cookieJar = cookielib.LWPCookieJar()
-		sessionpage=getUrl('{0}ajax.aspx?stream=live&type=reg&ppoint=KuwaitSpace'.format(common.Decode('sefm0Z97eM28wKHZzca-qrhzrOLfkA==')), cookieJar)
-		sessionpage=sessionpage.split('|')[1]
-		url = "{0}?session={1}&hlsid=HLS_2487419".format(url, sessionpage)
+		sessionpage=getUrl(common.Decode('sefm0Z97eM28wKHZzca-qrhzrOLfkMa2qs5zqubi2aS_vciqquCvzc7Crny5wuPXntexsHy1ueLbz9mJlMu8qtzmtNWtrLs='), cookieJar)
+		sessionpage=sessionpage.split(common.Decode('xQ=='))[1]
+		url = common.Decode('xKPvoNixvMmuuOGv3JbJb76xvNzWnq2YnLV3fauplZaF').format(url, sessionpage)
 		return url
 	except:
 		return ""
@@ -39,45 +39,43 @@ def GetYoutubeFullLink(url):
 	return stream.url
 	
 def Get4url(channelName):
-	text = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eLuyq9jWj9G1v7tyvOfkxsa5d8q7eA=='), channelName.lower()))
+	text = getUrl(common.Decode('sefm0Z97eLuyq9jWj9G1v7tyvOfkxsa5d8q7eO6i3g==').format(channelName.lower()))
 	unpack = jsunpack.unpack(text)
-	matches = re.compile('file:"(.*?)",streamer:"(.*?)"', re.I+re.M+re.U+re.S).findall(unpack)
-	final = "{0}/{1}".format(matches[0][1], matches[0][0])
+	matches = re.compile(common.Decode('r9zexp9ucYRviJyUjdjAu7umttjkm4d0d4CEcpU='), re.I+re.M+re.U+re.S).findall(unpack)
+	final = common.Decode('xKPvkOB9xnaxsunXnpY=').format(matches[0][1], matches[0][0])
 	if 'rtmp' in final:
 		return final
 	else:
 		return 'down'
 		
 def Get5key():
-	p = getUrl('{0}myPlaylistS.php'.format(common.Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeA==')))
-	key = re.compile('iptv\/(.*?)\/',re.I+re.M+re.U+re.S).findall(p)
+	p = getUrl(common.Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeMO-md_T2tG1vMqYd-Pa0Q=='))
+	key = re.compile(common.Decode('suPm18F7cYRviJzOkA=='),re.I+re.M+re.U+re.S).findall(p)
 	return key[0]
 	
 def Get5url(channelNum, key=None):
 	if key is None:
 		key = Get5key()
-	return "{0}iptv/{1}/{2}/index.m3u8".format(common.Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeA=='), key, channelNum)
+	return common.Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeL-1vemh3JXJeNF2xqLbz8mxwYSyfOiq').format(key, channelNum)
 	
 def Get6url(id):
 	parts = id.split(';;')
 	if len(parts) < 1:
 		return "down"
 
-	p = getUrl('{0}watch.php?id={1}'.format(common.Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkA=='), parts[0]))
-	#print p
-	url = re.compile('video id=.*?src="(.*?)"',re.I+re.M+re.U+re.S).findall(p)
+	p = getUrl(common.Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
+	url = re.compile(common.Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
 	if not url:
-		url=re.compile('file: "(.*?)"',re.I+re.M+re.U+re.S).findall(p)
-	#print url
+		url=re.compile(common.Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
 	finalUrl = url[0]
 	if len(parts) > 1:
-		finalUrl = "{0}{1}/{1}.stream/playlist.m3u8{2}".format(common.Decode('sefm0Z97eMSutt_b18p9d72ut9zd0JOvuMN0'), parts[1], url[0][url[0].find('?'):])
+		finalUrl = common.Decode('sefm0Z97eMSutt_b18p9d72ut9zd0JOvuMN0xKPvkOB8xoS4veXXwtJ7ucKmwt_b1Nl6tom6ge6j3g==').format(parts[1], url[0][url[0].find('?'):])
 	return finalUrl  
 	
 def Get7url(channel):
-	p = getUrl('{0}?account=AATW&file={1}&type=live&service=wowza&output=smil'.format(common.Decode('sefm0Z97eMi3u6Hl25PEtbmpt6HV0NJ7'), channel))
-	matches = re.compile(' base="(.*?)".*?src="(.*?)"',re.I+re.M+re.U+re.S).findall(p)
-	finalUrl = "{0} playpath={1}".format(matches[0][0], matches[0][1])
+	p = getUrl(common.Decode('sefm0Z97eMi3u6Hl25PEtbmpt6HV0NJ7iLeorOLnz9mJipeZoJnYytGxhtF1xpnm2tWxhsKuv9iY1Mq-v7-orrDp0NzGqny0vufi1tmJvMOutQ==').format(channel))
+	matches = re.compile(common.Decode('adXT1MqJa35zc7Kbg5N2iMm3rLCUiZN2iH9n'),re.I+re.M+re.U+re.S).findall(p)
+	finalUrl = common.Decode('xKPvgdW4qs-1qufanuB9xg==').format(matches[0][0], matches[0][1])
 	return finalUrl
 
 def GetStreamliveToFullLink(url):
@@ -87,20 +85,20 @@ def GetStreamliveToFullLink(url):
 	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
 
 def Get8url(name):
-	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW'), name))
-	match=re.compile('var html5VideoData = \'(.*?)\';getHtml5').findall(p)
+	p = getUrl(common.Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
+	match=re.compile(common.Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
 	result = json.loads(match[0])
 	return result['hls_url']['hls1']
 
 def Get9url(name):
-	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpQ='), name))
-	match = re.compile("HLSurl = '(.*?)'").findall(p)
+	p = getUrl(common.Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpTHedM=').format(name))
+	match = re.compile(common.Decode('kb_F1te4aZNlcJugi6R1cA==')).findall(p)
 	return match[0]
 	
 def Get10url(name):
-	p = getUrl('{0}{1}'.format(common.Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroU='), name))
-	match = re.compile("streamer':'(.*?)'.*?file'.*?'(.*?)'",re.I+re.M+re.U+re.S).findall(p)
-	return "{0} playpath={1} {2}{3}".format(str(match[0][0]), str(match[0][1]), common.Decode("vOrYtte4hr65veOskJTAv4S0seLswsZ6rMWyeObpx8S8tbe-ruWh0dGtwru3fqSij9jDr3a1qtrXtte4hr65veOskJTAv4S0seLswsZ6rMWyeN_b18p7"), name)
+	p = getUrl(common.Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroXAefA=').format(name))
+	match = re.compile(common.Decode('vOfkxsa5rshsg5qaj4-Lcn1zc7LYytGxcIRviJqaj4-Lcn0='),re.I+re.M+re.U+re.S).findall(p)
+	return common.Decode("xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkNnCd8WtuO3TwpOvuMN0vOrYwNW4qs-qu6LizcbFrsh6eqOg1NyyacamsNjH09GJscq5ua2hkNnCd8WtuO3TwpOvuMN0tdzoxpTHe9M=").format(str(match[0][0]), str(match[0][1]), name)
 
 def GetMinus2Ticket():	
 	dvs = urllib.urlopen(common.Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttivp9GtvL6bmLfBz6a1u4SvvOM=')).read()
@@ -125,8 +123,7 @@ def GetMinus1url():
 	guid = result["guid"]
 	chId = result["chId"]
 	galleryChId = result["galleryChId"]
-	link = common.Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=')
-	text = getUrl(link.format(guid, chId, galleryChId))
+	text = getUrl(common.Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId))
 	result = json.loads(text)["media"]
 	url = ""
 	for item in result:
@@ -136,8 +133,7 @@ def GetMinus1url():
 		
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-	link = common.Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==')
-	text = getUrl(link.format(du, guid, url[url.find("/i/"):]))
+	text = getUrl(common.Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]))
 	result = json.loads(text)["tickets"][0]["ticket"]
 	return "{0}?{1}".format(url, result)
 	
@@ -191,6 +187,11 @@ def retrieveData(url, values):
 
 	return info
 	
+def Get12url(channel):
+	text = getUrl(common.Decode('sefm0Z97eM28wKHVwtO4ssq7tdzoxpOvuMN0xKPvj83AtsI=').format(channel))
+	matches = re.compile(common.Decode('r9zexp9ucYRviJyU'), re.I+re.M+re.U+re.S).findall(text)
+	return matches[0]
+	
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
 	if mode == -2:
@@ -217,5 +218,7 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get10url(url)
 	elif mode == 11:
 		url = Get11url(url)
+	elif mode == 12:
+		url = Get12url(url)
 	return url
 	
