@@ -1,3 +1,7 @@
+[B]v1.0.8[/B]
+- Added option to filter search by Year.
+- Fixed problem with duplicates in "Movies" and "Series" categories.
+- Fixed problem that showing only first page in search result.
 [B]v1.0.7[/B]
 - Added missing video-quallities to playing list.
 [B]v1.0.6[/B]

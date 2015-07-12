@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import urllib,re,random,json
+import urllib,re,random,json,datetime
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
-import resolver
-import repoCheck
-import common
+import resolver, repoCheck, common
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.movixws')
 Domain = __settings__.getSetting("domain")
@@ -12,53 +10,72 @@ baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 handle = int(sys.argv[1])
 
 def searchWs():
-	dialog = xbmcgui.Dialog()
-	filter = dialog.select("בחר סוג חיפוש", ["הכל", "סרטים", "סדרות"])
-	search_entered =''
+	search_entered = ''
+	isText = False
 	keyboard = xbmc.Keyboard(search_entered, 'הכנס מילות חיפוש כאן')
 	keyboard.doModal()
 	if keyboard.isConfirmed():
 		search_entered = keyboard.getText()
-
-	if search_entered !='':
-		if filter == 1:
-			search_entered += "&sortby=movie"
-		elif filter == 2:
-			search_entered += "&sortby=tv-show"
-		IndexPage('{0}/search_movies?q={1}'.format(baseUrl, search_entered))
+	isText = False if search_entered.strip() == '' else True
+	dialog = xbmcgui.Dialog()
+	filter = dialog.select("בחר סוג חיפוש", ["הכל", "סרטים", "סדרות"])
+	if filter == 1:
+		search_entered += "&sortby=movie"
+	elif filter == 2:
+		search_entered += "&sortby=tv-show"
+	isYear = False
+	yearsRange = list((range(datetime.datetime.now().year, 1933, -1)))
+	years = [str(year) for year in yearsRange]
+	years.insert(0, "הכל")
+	year = dialog.select("הצג תוצאות לפי שנה", years)
+	if year != 0:
+		search_entered += "&year={0}".format(years[year])
+		isYear = True
+	if isText or isYear:
+		return IndexPage('{0}/search_movies?q={1}'.format(baseUrl, search_entered))
 	else:
-		return
+		return False
 
 def IndexPage(url):
-	if  'search_movies' in url:
-		result=common.OPEN_URL(url)
-		matches=re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
-		for match in matches:
-			addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, match[0], True, match[3])
-	else:
-		if not 'page' in url:
-			url=url+'/page/0'
-		current_page=int(url.split('/')[-1])
-		result=common.OPEN_URL(url)
-		block=re.compile('pnation(.*?)<\/div>',re.I+re.M+re.U+re.S).findall(result)[0]
-		last_page=int(re.compile('a href=".*?\/page\/(.*?)"',re.I+re.M+re.U+re.S).findall(block)[-1])
-		stop=False
-		i=current_page
-		j=1
-		while i<=last_page and not stop:
-			result=common.OPEN_URL(url)
-			matches=re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
+	if not 'page' in url:
+		if 'search_movies' in url:
+			url = url + '&page=/0'
+		else:
+			url = url + '/page/0'
+	current_page = int(url.split('/')[-1])
+	result = common.OPEN_URL(url)
+	block = re.compile('pnation.*?</strong>(.*?)<\/div>',re.I+re.M+re.U+re.S).findall(result)
+	pages = "" if len(block) == 0 else re.compile('<a href=".*?[\/&]page[=]?\/(.*?)">(.*?)</a>',re.I+re.M+re.U+re.S).findall(block[0])
+
+	nextPagesCount = len(pages)
+	step = 10000 if nextPagesCount == 0 else int(pages[0][0]) - current_page
+	last_page = current_page if nextPagesCount == 0 else int(pages[-1][0])
+	for i in range(nextPagesCount-1, -1, -1):
+		if pages[i][1] == '':
+			continue
+		if int(pages[i][0]) > last_page:
+			last_page = int(pages[i][0])
+		break
+
+	for pageIndex in range(10):
+		try:
+			result = common.OPEN_URL(url)
+			matches = re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
 			for match in matches:
 				addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, match[0], True, match[3])
-			i+=15
-			j+=1
-			url=url[:url.rfind('/')+1]
-			url+=str(i)
-			if (j%10 ==0):
-				stop=True
-				addDir('[COLOR blue]'+'תוצאות נוספות'+'[/COLOR]',url,2,'',True,'')
+		except Exception as ex:
+			print ex 
+		if current_page >= last_page:
+			return True
+		current_page += step
+		url = url[:url.rfind('/')+1]
+		url += str(current_page)
+	
+	if current_page <= last_page:
+		addDir('[COLOR blue]תוצאות נוספות[/COLOR]', url, 2, '')
+	return True
 
-def addDir(name,url,mode,iconimage,isFolder=True,description=''):
+def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
@@ -210,6 +227,8 @@ print "checkMode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 
+updateView = True
+
 if mode==None or url==None or len(url)<1:
 	repoCheck.UpdateRepo()
 	Categories()
@@ -222,13 +241,14 @@ elif mode==4:
 elif mode==5:
 	PlayWs(url)
 elif mode==6:
-	searchWs()
+	updateView = searchWs()
 elif mode==7:
 	AutoPlayUrl(url)
 	
-xbmcplugin.setContent(handle, 'episodes')
-if mode==None or url==None or len(url)<1:
-	xbmc.executebuiltin("Container.SetViewMode(500)")
-else:
-	xbmc.executebuiltin('Container.SetViewMode(504)')
-xbmcplugin.endOfDirectory(handle)
+if updateView:
+	xbmcplugin.setContent(handle, 'episodes')
+	if mode==None or url==None or len(url)<1:
+		xbmc.executebuiltin("Container.SetViewMode(500)")
+	else:
+		xbmc.executebuiltin('Container.SetViewMode(504)')
+	xbmcplugin.endOfDirectory(handle)
