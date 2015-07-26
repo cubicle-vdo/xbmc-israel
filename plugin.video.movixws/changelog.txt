@@ -1,3 +1,5 @@
+[B]v1.0.9[/B]
+- Added support of playing trialers.
 [B]v1.0.8[/B]
 - Added option to filter search by Year.
 - Fixed problem with duplicates in "Movies" and "Series" categories.

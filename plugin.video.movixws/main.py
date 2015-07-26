@@ -76,7 +76,7 @@ def IndexPage(url):
 	return True
 
 def addDir(name, url, mode, iconimage, isFolder=True, description=''):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description"+urllib.quote_plus(description)
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
 	if not isFolder:
@@ -110,9 +110,15 @@ def SortByQuality(links):
 			sortedLinks.append(link)
 	return sortedLinks
 
-def LinksPage(url, iconimage):
+def LinksPage(url, iconimage, description):
 	result=common.OPEN_URL(url)
 	if not 'get_seasons' in result:
+		matches=re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
+		if len(matches) == 1:
+			description = matches[0]
+		matches=re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
+		if len(matches) == 1:
+			addDir('{0} - טריילר'.format(name), matches[0], 8, iconimage, False, description)
 		matches=re.compile('<li .+?id="wrapserv"><a href="(.+?)" target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?<\/li>',re.I+re.M+re.U+re.S).findall(result)
 		links = []
 		for match in matches:
@@ -126,18 +132,18 @@ def LinksPage(url, iconimage):
 			links.append(match)
 
 		if len(links) < 1:
-			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False)
+			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False, description)
 			return
 		if len(links) > 1:
 			links = SortByQuality(links)
 			playingUrlsList = []
 			for link in links:
 				playingUrlsList.append(link[0])
-			addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False)
-			addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False)
-			addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False)
+			addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False, description)
+			addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False, description)
+			addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False, description)
 		for link in links:
-			addDir("{0} - {1} - איכות {2}".format(name, link[1], link[2]),link[0],5,iconimage,False)
+			addDir("{0} - {1} - איכות {2}".format(name, link[1], link[2]),link[0],5,iconimage,False, description)
 	else:
 		series_num=url.split('-')[-1]
 		GetSeasons(series_num)
@@ -162,6 +168,13 @@ def AutoPlayUrl(urls):
 			return
 	dialog = xbmcgui.Dialog()
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
+
+def PlayTrialer(url):
+	result = common.OPEN_URL(url)
+	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
+	if len(matches) == 1:
+		url = matches[0]
+		PlayWs(url)
 
 def Categories():
 	addDir("Search - חפש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
@@ -221,6 +234,10 @@ try:
 	iconimage=urllib.unquote_plus(params["iconimage"])
 except:
 	iconimage=""
+try:
+	description=urllib.unquote_plus(params["description"])
+except:
+	description=""
 	
 
 print "checkMode: "+str(mode)
@@ -237,13 +254,15 @@ elif mode==2:
 elif mode==3:
 	GetEpisodes(url)
 elif mode==4:
-	LinksPage(url, iconimage)
+	LinksPage(url, iconimage, description)
 elif mode==5:
 	PlayWs(url)
 elif mode==6:
 	updateView = searchWs()
 elif mode==7:
 	AutoPlayUrl(url)
+elif mode==8:
+	PlayTrialer(url)
 	
 if updateView:
 	xbmcplugin.setContent(handle, 'episodes')
