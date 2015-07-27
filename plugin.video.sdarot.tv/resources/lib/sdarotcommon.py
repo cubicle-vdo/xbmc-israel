@@ -105,7 +105,7 @@ def getParams(arg):
 		return param
 	
 def addDir(name, url, mode, iconimage='DefaultFolder.png', elementId=None, summary='', fanart='',contextMenu=None):
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name+ "&summary=" + summary
 		if not elementId == None and not elementId == '':
 			u += "&module=" + urllib.quote_plus(elementId)
 		liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)

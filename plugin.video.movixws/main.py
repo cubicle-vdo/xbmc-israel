@@ -76,25 +76,25 @@ def IndexPage(url):
 	return True
 
 def addDir(name, url, mode, iconimage, isFolder=True, description=''):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description"+urllib.quote_plus(description)
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name , "Plot": str(description)} )
 	if not isFolder:
 		liz.setProperty("IsPlayable","true")
 	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
-def GetSeasons(series_num):
+def GetSeasons(series_num, iconimage, description):
 	result=common.OPEN_URL('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
 	matches=re.compile('onclick=\"get_episodes\(\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	for season in matches:
-		addDir('{0}  {1}'.format(name, season[1]), '{0}/watchmovies/get_episodes/{1}?seasonid={2}'.format(baseUrl, series_num, season[0]), 3, '', True)
+		addDir('{0}  {1}'.format(name, season[1]), '{0}/watchmovies/get_episodes/{1}?seasonid={2}'.format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
 
-def GetEpisodes(url):
+def GetEpisodes(url, iconimage, description):
 	result=common.OPEN_URL(url)
 	matches=re.compile('onclick=\"get_episode\(\'(.*?)\',\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	url=url.replace('get_episodes','get_episode')
 	for episode in matches:
-		addDir(name +'  '+episode[2], url+'&episodeid='+episode[1], 4, url, True)
+		addDir(name +'  '+episode[2], url+'&episodeid='+episode[1], 4, iconimage, True, description)
 
 def SortByQuality(links):
 	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "HDTS", "TS", "CAM"]
@@ -112,13 +112,13 @@ def SortByQuality(links):
 
 def LinksPage(url, iconimage, description):
 	result=common.OPEN_URL(url)
+	matches=re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
+	if len(matches) == 1:
+		description = matches[0]
+	matches=re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
+	if len(matches) == 1:
+		addDir('[COLOR green]{0} - טריילר[/COLOR]'.format(name), matches[0], 8, iconimage, False, description)
 	if not 'get_seasons' in result:
-		matches=re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
-		if len(matches) == 1:
-			description = matches[0]
-		matches=re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
-		if len(matches) == 1:
-			addDir('{0} - טריילר'.format(name), matches[0], 8, iconimage, False, description)
 		matches=re.compile('<li .+?id="wrapserv"><a href="(.+?)" target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?<\/li>',re.I+re.M+re.U+re.S).findall(result)
 		links = []
 		for match in matches:
@@ -146,7 +146,7 @@ def LinksPage(url, iconimage, description):
 			addDir("{0} - {1} - איכות {2}".format(name, link[1], link[2]),link[0],5,iconimage,False, description)
 	else:
 		series_num=url.split('-')[-1]
-		GetSeasons(series_num)
+		GetSeasons(series_num, iconimage, description)
 
 def PlayWs(url, autoPlay=False):
 	if baseUrl in url:
@@ -169,10 +169,10 @@ def AutoPlayUrl(urls):
 	dialog = xbmcgui.Dialog()
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
 
-def PlayTrialer(url):
+def PlayTrailer(url):
 	result = common.OPEN_URL(url)
 	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
-	if len(matches) == 1:
+	if len(matches) > 0:
 		url = matches[0]
 		PlayWs(url)
 
@@ -252,7 +252,7 @@ if mode==None or url==None or len(url)<1:
 elif mode==2:
 	IndexPage(url)
 elif mode==3:
-	GetEpisodes(url)
+	GetEpisodes(url, iconimage, description)
 elif mode==4:
 	LinksPage(url, iconimage, description)
 elif mode==5:
@@ -262,7 +262,7 @@ elif mode==6:
 elif mode==7:
 	AutoPlayUrl(url)
 elif mode==8:
-	PlayTrialer(url)
+	PlayTrailer(url)
 	
 if updateView:
 	xbmcplugin.setContent(handle, 'episodes')
