@@ -1,3 +1,5 @@
+[B]Version 2.2.4[/B]
+- Added program description.
 [B]Version 2.2.3[/B]
 - 10 tries (instead of 5) to play an item (5 seconds between each try).
 [B]Version 2.2.2[/B]

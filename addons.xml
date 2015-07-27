@@ -131,7 +131,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="Israel Sports" version="2.1.7" provider-name="ISRAELIVE Team">
+<addon id="plugin.video.israelsports" name="Israel Sports" version="2.1.8" provider-name="ISRAELIVE Team">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="plugin.video.youtube" version="5.1.3"/>
@@ -151,7 +151,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
-       version="1.3.5"
+       version="1.3.6"
        provider-name="o2ri">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -210,7 +210,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.movixws" name="Movix.me" version="1.0.9" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
+<addon id="plugin.video.movixws" name="Movix.me" version="1.1.0" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver"/>
@@ -265,7 +265,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.3" provider-name="cubicle">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.2.4" provider-name="cubicle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>

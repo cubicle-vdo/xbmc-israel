@@ -55,7 +55,7 @@ def CATEGORIES():
 
 	
 def setupP2P():
-	all_modules = [ 'http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/arenavision.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballvideo.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballws.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/onetorrenttv.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/rojadirecta.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/sopcastucoz.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvruall.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvrusports.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/wiziwig.tar.gz']
+	all_modules = [ 'http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/arenavision.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballvideo.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballws.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/onetorrenttv.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/rojadirecta.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/sopcastucoz.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvruall.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvrusports.tar.gz']
 
 	for parser in all_modules:
 		xbmc.executebuiltin('XBMC.RunPlugin("plugin://plugin.video.p2p-streams/?mode=405&name=p2p&url=' + urllib.quote(parser) + '")')
@@ -63,47 +63,6 @@ def setupP2P():
 		
 
 	
-def ListPlaylist(playlistid): 
-	url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50'
-	
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	prms=json.loads(link)
-
-	pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-	pl.clear()
-	playlist = []
-	numOfItems=int(prms['feed'][u'openSearch$totalResults'][u'$t']) #if bigger than 50 needs  to add more result
-	#print numOfItems
-	
-	j=1
-	h=1
-	pages = (numOfItems //50)+1
-	#print pages
-	while  j<= pages:
-		link=OPEN_URL(url)
-		prms=json.loads(link)
-		i=0
-		while i< 50  and  h<=numOfItems :
-			#print "i===" +str(i) +"numOfItems="+ str(numOfItems)
-			try:
-				urlPlaylist= str(prms['feed'][u'entry'][i][ u'media$group'][u'media$player'][0][u'url'])
-				match=re.compile('www.youtube.com/watch\?v\=(.*?)\&f').findall(urlPlaylist)
-				finalurl="plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid="+match[0]+"&hd=1"
-				title= str(prms['feed'][u'entry'][i][ u'media$group'][u'media$title'][u'$t'].encode('utf-8')).decode('utf-8')
-				thumb =str(prms['feed'][u'entry'][i][ u'media$group'][u'media$thumbnail'][2][u'url'])
-				addLink(title,finalurl,thumb,'')
-			except:
-				pass
-			i=i+1
-			h=h+1
-
-		j=j+1
-		url='https://gdata.youtube.com/feeds/api/playlists/'+playlistid+'?alt=json&max-results=50&start-index='+str (j*50-49)
-	  
 def list_videos(url,page):
 	url1=url+"1"
 	url=url+str(page)
@@ -267,7 +226,7 @@ def addDir(name,url,mode,iconimage,description):
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	if mode==1:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-	elif mode==3 or mode==5 or mode==9:
+	elif mode==3 or mode==5 or mode==9 or mode==14:
 		liz.setProperty("IsPlayable","true")
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	else:
@@ -346,9 +305,7 @@ elif mode==8:
 	LIVE()
 elif mode==9:
 	YoutubeUser('one')
-elif mode==13:
-	ListPlaylist(url)
 elif mode==14:
-	ListPlaylist('PLPBpwEvX7h5JVVEo-arnqkV8hh05xfpO8')
+	xbmc.executebuiltin('PlayMedia(plugin://plugin.video.youtube/?action=play_video&videoid=L2928xxYc7c)')
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

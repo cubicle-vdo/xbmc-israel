@@ -9,7 +9,7 @@ import HTMLParser
 import json
 import cookielib
 import unicodedata
-
+import repoCheck
 
 ##General vars		
 __plugin__ = "Sdarot.TV Video"
@@ -130,6 +130,9 @@ def sdarot_series(url):
 	#print "Page Follows:\n"
 	#print page
 				 #<ul id="season">
+	matches = re.compile('<div id="details">.+?<p>(.+?)</p>',re.I+re.M+re.U+re.S).findall(page)
+	if len(matches) == 1:
+		summary = matches[0]
 	block_regexp='id="season">(.*?)</ul>'
 	seasons_list = re.compile(block_regexp,re.I+re.M+re.U+re.S).findall(page)[0]
 	regexp='>(\d+)</a'
@@ -140,10 +143,12 @@ def sdarot_series(url):
 		if downloadEnabled:
 			downloadUrl = "XBMC.RunPlugin(plugin://plugin.video.sdarot.tv/?mode=7&url=" + url + "&season_id="+str(season)+"&series_id="+str(series_id) + ")"
 			downloadMenu.append(('הורד עונה', downloadUrl,))
-		addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link,contextMenu=downloadMenu)
-	xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+		addDir("עונה "+ str(season),url,"5&image="+urllib.quote(image_link)+"&season_id="+str(season)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link,summary=summary,contextMenu=downloadMenu)
+	#xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+	xbmc.executebuiltin('Container.SetViewMode(504)')
 	  
-def sdarot_season(url):
+def sdarot_season(url, summary):
 	series_id=urllib.unquote_plus(params["series_id"])
 	series_name=urllib.unquote_plus(params["series_name"])
 	season_id=urllib.unquote_plus(params["season_id"])
@@ -159,8 +164,9 @@ def sdarot_season(url):
 	#print episodes
 	for i in range (0, len(episodes)) :
 		epis= str(episodes[i]['episode'])
-		addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link, '')		 
+		addVideoLink("פרק "+epis, url, "4&episode_id="+epis+"&image="+urllib.quote(image_link)+"&season_id="+str(season_id)+"&series_id="+str(series_id)+"&series_name="+urllib.quote(series_name),image_link, summary)		 
 	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+	xbmc.executebuiltin('Container.SetViewMode(504)')
 
 def download_season(url):
 	import SimpleDownloader as downloader
@@ -231,6 +237,7 @@ name=None
 mode=None
 module=None
 page=None
+summary=None
 
 try:
 		url=urllib.unquote_plus(params["url"])
@@ -253,8 +260,13 @@ try:
 		page=urllib.unquote_plus(params["page"])
 except:
 		pass
-	
+try:
+		summary=params["summary"]
+except:
+		pass
+
 if mode==None or url==None or len(url)<1:
+	repoCheck.UpdateRepo()
 	MAIN_MENU()
 
 elif mode==2:
@@ -267,7 +279,7 @@ elif mode==4:
 	sdarot_movie(url)
 
 elif mode==5:
-	sdarot_season(url)
+	sdarot_season(url, summary)
 elif mode==6:
 	SearchSdarot(url,name)
 elif mode==7:
