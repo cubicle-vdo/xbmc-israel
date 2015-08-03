@@ -24,7 +24,7 @@ def GetFullLink(url, mode):
 		
 	if mode == -2 or mode == -3:
 		url = "hds://{0}".format(url)
-	elif mode == 5 or mode == 12:
+	elif mode == 5 or mode == 12 or mode==15:
 		url = "hls://{0}".format(url)
 	elif mode != 0:
 		url = "hlsvariant://{0}".format(url)
@@ -51,7 +51,6 @@ def GetStreamUrl(url):
 	except:
 		mode = 0
 		streamUrl = url[5:]
-	
 	
 	if streamUrl == "BB":
 		mode = -1

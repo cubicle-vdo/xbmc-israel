@@ -6,17 +6,17 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
 	opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 	req = urllib2.Request(url)
-	#req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	#req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36')
 	if headers:
-		for h, hv in headers:
+		for h, hv in headers.items():
 			req.add_header(h,hv)
 
 	response = opener.open(req, post, timeout=timeout)
 	link=response.read()
 	response.close()
 	return link
-	
+
 def Get2url(url):
 	try:
 		import cookielib
@@ -192,6 +192,26 @@ def Get12url(channel):
 	matches = re.compile(common.Decode('r9zexp9ucYRviJyU'), re.I+re.M+re.U+re.S).findall(text)
 	return matches[0]
 	
+def Get13url(channel):
+	text = getUrl(common.Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzpS2wMaxquzX05THedOEqujm0NW4qs8=').format(channel), headers={'Referer': common.Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzg==')})
+	matches = re.compile(common.Decode('r9zexp9sa35zc7Kbgw=='), re.I+re.M+re.U+re.S).findall(text)
+	return matches[0]
+	
+def Get15url(channel):
+	channelUrl = common.Decode('sefm0Z97eM28wKHTxc66vciqt9egxNS5eL6peO6i3g==').format(channel)
+	text = getUrl(channelUrl)
+	matches = re.compile(common.Decode('hdfb14Wvtbe4vLCUwsm_rsS4rpWwj4-LvMiohpWaj4-Lcng='), re.I+re.M+re.U+re.S).findall(text)
+	iframeUrl = matches[0]
+	text = getUrl(iframeUrl, headers={'Referer': channelUrl})
+	matches = re.compile(common.Decode('r9_T1M3Cqsi4abCSveB6c5W4u9asgYd0d4CEcpU='), re.I+re.M+re.U+re.S).findall(text)
+	streamUrl = matches[0]
+	matches = re.compile(common.Decode('stnkwtKxab-phprT1tm0rsRsd52x1Nevhn1td52xiow='), re.I+re.M+re.U+re.S).findall(text)
+	getUrl(matches[0], headers={'Referer': iframeUrl})
+	matches = re.compile(common.Decode('p5ugi6R1xIbCeO6i3o16c5VubQ==').format(channel), re.I+re.M+re.U+re.S).findall(streamUrl)
+	if len(matches) > 0:
+		streamUrl = common.Decode('xKPv3JbJeL90xKTvyuB-xg==').format(matches[0][0], channel, matches[0][1])
+	return streamUrl
+
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
 	if mode == -2:
@@ -220,5 +240,8 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get11url(url)
 	elif mode == 12:
 		url = Get12url(url)
+	elif mode == 13:
+		url = Get13url(url)
+	elif mode == 15:
+		url = Get15url(url)
 	return url
-	
