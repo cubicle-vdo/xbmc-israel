@@ -1,3 +1,5 @@
+[B]v4.4.3[/B]
+- Fix for favoutites guide not updated on manually update.
 [B]v4.4.2[/B]
 - Maintenance and bug fixes.
 [B]v4.4.1[/B]

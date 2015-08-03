@@ -116,7 +116,7 @@ def ListLive(categoryID, iconimage=None):
 
 	SetViewMode()
 
-def PlayChannel(url, name, iconimage, categoryName):
+def PlayChannel(url, name, iconimage, description, categoryName):
 	try:
 		if url.find('www.youtube.com') > 0:
 			url = myResolver.GetYoutubeFullLink(url)
@@ -154,9 +154,10 @@ def PlayChannel(url, name, iconimage, categoryName):
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	
 	listItem = xbmcgui.ListItem(path=url)
-	listItem.setInfo(type="Video", infoLabels={"Title": programmeName})
+	listItem.setInfo(type="Video", infoLabels={"title": programmeName})
 	#listItem.setInfo(type="Video", infoLabels={ "studio": channelName})
 	listItem.setInfo(type="Video", infoLabels={"tvshowtitle": channelName, "episode": "0", "season": "0"})
+	listItem.setInfo(type="Video", infoLabels={"plot": description})
 	if iconimage is not None:
 		listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
@@ -336,6 +337,7 @@ def SaveGuide():
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 			epg = common.ReadList(fullGuideFile)
 			fullCategoriesList =  common.ReadList(os.path.join(user_dataDir, "lists", "categories.list"))
+			fullCategoriesList.append({"id": "Favourites"})
 			common.MakeCatGuides(fullCategoriesList, epg)
 		else:			
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide is up to date., {1}, {2})".format(AddonName, 5000 ,icon))
@@ -716,7 +718,7 @@ elif mode == 2:
 elif mode == 5:
 	ChannelGuide(name, iconimage, categoryID)
 elif mode == 10 or mode == 11:
-	updateList = PlayChannel(url, displayname, iconimage, categoryID)
+	updateList = PlayChannel(url, displayname, iconimage, description, categoryID)
 elif mode == 16:
 	listFavorites()
 elif mode == 17: 
