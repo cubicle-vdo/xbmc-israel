@@ -11,6 +11,7 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = "IsraeLIVE"
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+favoritesFile = os.path.join(user_dataDir, 'favorites.txt')
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 listsDir = os.path.join(user_dataDir, 'lists')
 if not os.path.exists(listsDir):
@@ -139,10 +140,35 @@ def GetEncodeString(str):
 		pass
 	return str
 
+def UpdateFavouritesFromRemote():
+	remoteFavouritesType = Addon.getSetting("remoteFavouritesType")
+	if remoteFavouritesType == "1" or remoteFavouritesType == "2":
+		if remoteFavouritesType == "1":
+			try:
+				req = urllib2.Request(Addon.getSetting("remoteFavouritesUrl"))
+				req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
+				responseData = urllib2.urlopen(req).read().replace('\r','')
+				remoteFavouritesList = json.loads(responseData)
+			except Exception as ex:
+				print ex
+				remoteFavouritesList = []
+		elif remoteFavouritesType == "2":
+			remoteFavouritesList = ReadList(Addon.getSetting("remoteFavouritesFile"))
+			
+		favoritesList = ReadList(favoritesFile)
+		if remoteFavouritesList != [] and cmp(favoritesList, remoteFavouritesList) != 0:
+			WriteList(favoritesFile, remoteFavouritesList)
+			return True
+	return False
+		
 def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=False):
 	isListUpdated = False
-	if isFileOld(file, refreshInterval):
-		isListUpdated = UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
+	
+	if UpdateFavouritesFromRemote():
+		isListUpdated = True
+		
+	if isFileOld(file, refreshInterval) and	UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate):
+		isListUpdated = True
 
 	if isListUpdated:
 		fullList = GetListFromPlx(fullScan=True)
@@ -169,7 +195,7 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 				selectedCatList[index]["type"] = "ignore"
 		WriteList(os.path.join(listsDir, "selectedCategories.list"), selectedCatList)
 		
-		favsList = ReadList(os.path.join(user_dataDir, 'favorites.txt'))
+		favsList = ReadList(favoritesFile)
 		for index, favourite in enumerate(favsList):
 			if any(f["id"] == favourite.get("id", "") for f in fullList):
 				channel = [f for f in fullList if f["id"] == favourite.get("id", "")]
@@ -177,7 +203,7 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 			else:
 				if favsList[index].has_key("id"):
 					favsList[index]["type"] = "ignore"
-		WriteList(os.path.join(user_dataDir, 'favorites.txt'), favsList)
+		WriteList(favoritesFile, favsList)
 		
 	return isListUpdated
 		
@@ -222,18 +248,7 @@ def GetLogoFileName(item):
 		logoFile = ""
 		
 	return logoFile
-	
-def Encode(string, key=None):
-	if key is None:
-		key = GetKey()
-	encoded_chars = []
-	for i in xrange(len(string)):
-		key_c = key[i % len(key)]
-		encoded_c = chr(ord(string[i]) + ord(key_c) % 256)
-		encoded_chars.append(encoded_c)
-	encoded_string = "".join(encoded_chars)
-	return base64.urlsafe_b64encode(encoded_string)
- 
+
 def Decode(string, key=None):
 	if key is None:
 		key = GetKey()
@@ -321,7 +336,7 @@ def GetListFromPlx(filterCat="9999", includeChannels=True, includeCatNames=True,
 	return list
 	
 def GetChannels(categoryID):
-	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))if categoryID != "Favourites" else os.path.join(user_dataDir, 'favorites.txt')
+	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))if categoryID != "Favourites" else favoritesFile
 	return ReadList(fileName)
 
 def MakeCatGuides(categories, epg):
