@@ -36,6 +36,9 @@
 		<setting label="30219" type="folder" id="imExFolder" source="auto" option="writeable"/>
 		<setting id="action" type="action" label="30214" action="RunScript($CWD/default.py,,?mode=43&url=settings)" option="close"/>
 		<setting id="action" type="action" label="30215" action="RunScript($CWD/default.py,,?mode=44&url=settings)" option="close"/>
+		<setting id="remoteFavouritesType" type="enum" label="30511" lvalues="30512|30513|30514" default="0"/>
+		<setting id="remoteFavouritesUrl" type="text" label="30515" default="" visible="eq(-1,1)"/>
+		<setting id="remoteFavouritesFile" type="file" label="30515" mask="*.txt" visible="eq(-2,2)"/>
 	</category>
 	
 	<category label="30400">

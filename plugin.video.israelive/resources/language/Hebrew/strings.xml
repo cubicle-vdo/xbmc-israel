@@ -82,7 +82,7 @@
 	<string id="30400">מראה</string>
 	
 	<string id="30500">סינון ערוצים</string>
-	<string id="30501">הצגת "קטגוריות נבחרות" בהרחבה</string>
+	<string id="30501">הצגת "קטגוריות נבחרות" בלבד בהרחבה</string>
 	<string id="30502">הוספת קטגוריות ל-"קטגוריות נבחרות"</string>
 	<string id="30503">בחירת קטגוריות (רשימה נגללת)</string>
 	<string id="30504">בחירת קטגוריות להצגה בטלויזיה חיה</string>
@@ -92,4 +92,9 @@
 	<string id="30508">הסרת קטגוריות</string>
 	<string id="30509">סינון ערוצים (בהרחבה ובטלויזיה חיה)</string>
 	<string id="30510">יבוא / יצוא של מועדפי IsraeLIVE</string>
+	<string id="30511">רשימת מועדפים מרוחקת</string>
+	<string id="30512">ללא</string>
+	<string id="30513">מכתובת</string>
+	<string id="30514">מקובץ</string>
+	<string id="30515">מיקום רשימת מועדפים מרוחקת</string>
 </strings>

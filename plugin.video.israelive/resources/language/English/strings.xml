@@ -82,7 +82,7 @@
 	<string id="30400">Appearance</string>
 	
 	<string id="30500">Filter Channels</string>
-	<string id="30501">Show "Selected catregories" in Addon</string>
+	<string id="30501">Show only "Selected catregories" in Addon</string>
 	<string id="30502">Add catregories to "Selected catregories"</string>
 	<string id="30503">Select catregories (scrolling list)</string>
 	<string id="30504">Choose channels to show on LiveTV</string>
@@ -92,4 +92,9 @@
 	<string id="30508">Remove catregories from "Selected catregories"</string>
 	<string id="30509">Filter Channels (Addon and LiveTV)</string>
 	<string id="30510">Import / Export IsraeLIVE favourites</string>
+	<string id="30511">Remote favourites list</string>
+	<string id="30512">No</string>
+	<string id="30513">From URL</string>
+	<string id="30514">From file</string>
+	<string id="30515">Remote favourites list location</string>
 </strings>
