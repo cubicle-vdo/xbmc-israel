@@ -30,12 +30,10 @@ def GetChannelStream(chNum, referrerCh=None, filmonOldStrerams=True, useRtmp=Fal
 
 	if "rtmp" in url and not useRtmp:
 		html = GetChannelNewStreamHtml(channelNum)
-		if html is None:
-			return None
-		hlsUrl = GetSelectedStreamUrl(html, useRtmp)
-		if hlsUrl is None:
-			return None
-		url = hlsUrl
+		if html is not None:
+			newStreamUrl = GetSelectedStreamUrl(html, useRtmp)
+			if newStreamUrl is not None:
+				url = newStreamUrl
 		
 	url = url.replace('low','high')
 		
