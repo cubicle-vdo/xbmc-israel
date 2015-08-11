@@ -1,3 +1,5 @@
+[B]v4.4.5[/B]
+- Fix for playing problems with some filmons' channels on LiveTV.
 [B]v4.4.4[/B]
 - Add an option to updae favourites from remote list.
 [B]v4.4.3[/B]

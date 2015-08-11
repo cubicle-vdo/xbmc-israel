@@ -197,6 +197,15 @@ def Get13url(channel):
 	matches = re.compile(common.Decode('r9zexp9sa35zc7Kbgw=='), re.I+re.M+re.U+re.S).findall(text)
 	return matches[0]
 	
+def Get14url(channel):
+	text = getUrl(common.Decode('sefm0Z97eM28wKHm19e8tcu4d-XhkOB8xg==').format(channel))
+	matches = re.compile(common.Decode('r9zexp9sa35zc7Kbgw=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) > 1:
+		return matches[-1]
+	elif len(matches) == 1:
+		return matches[0]
+	return None
+	
 def Get15url(channel):
 	channelUrl = common.Decode('sefm0Z97eM28wKHTxc66vciqt9egxNS5eL6peO6i3g==').format(channel)
 	text = getUrl(channelUrl)
@@ -242,6 +251,8 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get12url(url)
 	elif mode == 13:
 		url = Get13url(url)
+	elif mode == 14:
+		url = Get14url(url)
 	elif mode == 15:
 		url = Get15url(url)
 	return url
