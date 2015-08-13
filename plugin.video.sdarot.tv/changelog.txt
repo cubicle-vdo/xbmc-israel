@@ -1,3 +1,5 @@
+[B]Version 2.2.5[/B]
+- Changes inside addon to fit site changes.
 [B]Version 2.2.4[/B]
 - Added program description.
 [B]Version 2.2.3[/B]

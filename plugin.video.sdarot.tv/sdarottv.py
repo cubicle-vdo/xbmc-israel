@@ -7,7 +7,7 @@ import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import HTMLParser
 import json
-import cookielib
+#import cookielib
 import unicodedata
 import repoCheck
 
@@ -33,21 +33,21 @@ DOMAIN = __settings__.getSetting("domain")
 from sdarotcommon import *
 
 path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
-cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
+#cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
 #print("Loading cookies from :" + repr(cookie_path))
-cookiejar = cookielib.LWPCookieJar(cookie_path)
+#cookiejar = cookielib.LWPCookieJar(cookie_path)
 
-if os.path.exists(cookie_path):
-	try:
-		cookiejar.load()
-	except:
-		pass
-elif not os.path.exists(path):
-	os.makedirs(path) 
+#if os.path.exists(cookie_path):
+#	try:
+#		cookiejar.load()
+#	except:
+#		pass
+#elif not os.path.exists(path):
+#	os.makedirs(path) 
 	
-cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
-opener = urllib2.build_opener(cookie_handler)
-urllib2.install_opener(opener)
+#cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
+#opener = urllib2.build_opener(cookie_handler)
+#urllib2.install_opener(opener)
 #print "built opener:" + str(opener)
 
 
@@ -117,11 +117,12 @@ def sdarot_series(url):
 	image_link=urllib.unquote_plus(params["image"])
 	downloadEnabled = False
 	
-	opener.addheaders = [('Referer',url)]
-	opener.open(DOMAIN+'/landing/'+series_id).read()
+	#opener.addheaders = [('Referer',url)]
+	#opener.open(DOMAIN+'/landing/'+series_id).read()
   #  print "sdarot_series: Fetching URL:"+url  
 	try:
-		page = opener.open(url).read()
+		page = getData(url,referer='http://www.sdarot.pm/series')
+		#page = opener.open(url).read()
 		#print cookiejar
 	except urllib2.URLError, e:
 		print 'sdarot_season: got http error ' +str(e.code) + ' fetching ' + url + "\n"
@@ -210,7 +211,7 @@ def download_season(url):
 				print str(e)
 				pass
 		
-def sdarot_movie(url):
+def sdarot_movie(url, summary):
 	series_id=urllib.unquote_plus(params["series_id"])
 	series_name=urllib.unquote_plus(params["series_name"])
 	season_id=urllib.unquote_plus(params["season_id"])
@@ -223,7 +224,7 @@ def sdarot_movie(url):
 		
 	player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
 	liz = xbmcgui.ListItem(path=finalUrl)
-	liz.setInfo(type="Video", infoLabels={ "Title": title })	
+	liz.setInfo(type="Video", infoLabels={ "Title": title, "Plot": urllib.unquote(summary) })	
 	liz.setProperty('IsPlayable', 'true')
 	#print finalUrl
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=liz)
@@ -276,7 +277,7 @@ elif mode==3:
 	sdarot_series(url)
 
 elif mode==4:
-	sdarot_movie(url)
+	sdarot_movie(url, summary)
 
 elif mode==5:
 	sdarot_season(url, summary)
