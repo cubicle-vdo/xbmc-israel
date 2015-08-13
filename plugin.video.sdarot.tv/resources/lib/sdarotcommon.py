@@ -123,7 +123,7 @@ def addDir(name, url, mode, iconimage='DefaultFolder.png', elementId=None, summa
 		return ok
 
 def addVideoLink(name, url, mode, iconimage='DefaultFolder.png', summary = ''):
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + name
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + "&summary=" + summary
 		liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 		liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(name), "Plot": urllib.unquote(summary)})	
 		liz.setProperty('IsPlayable', 'true')
