@@ -1,3 +1,6 @@
+[B]Version 2.2.6[/B]
+- Quick Fix - Changes inside addon to fit site changes.
+- Login to site is disabled for now (No fix for HD).
 [B]Version 2.2.5[/B]
 - Changes inside addon to fit site changes.
 [B]Version 2.2.4[/B]

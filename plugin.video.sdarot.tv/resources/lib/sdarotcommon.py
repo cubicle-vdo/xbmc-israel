@@ -58,23 +58,25 @@ def LOGIN():
 		return
 	
 	print "Trying to login to sdarot tv site username:" + username
-	page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN+"/login");
+	page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN);
    
 def CHECK_LOGIN():
+	return
 	# check's if login  is required.
 	#print "check if logged in already"
 	if __settings__.getSetting('username').strip() == '' or __settings__.getSetting('user_password') == '':
 		return
 		
-	page = getData(DOMAIN+'/series',referer="")
+	page = getData(DOMAIN+'/series',referer=DOMAIN)
+	#print page
 	match = re.compile('<span class="button blue" id="logout"><a href=".*?/log(.*?)">').findall(page)
 	#print match
 	if match:
 		if str(match[0])!='out':
-			print "login required"
+		#	print "login required"
 			LOGIN()
 		#else:
-			#print "already logged in."
+		#	print "already logged in."
 	else:
 		LOGIN()
  
@@ -230,12 +232,12 @@ def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFER
 			if (i == 3):
 			  raise e
 
-def getFinalVideoUrl(series_id,season_id,episode_id,silent=False):
+def getFinalVideoUrl(series_id,season_id,episode_id,url,silent=False):
 	CHECK_LOGIN()
 	
 	for i in range(10):
 		error = ''
-		page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=DOMAIN+"/watch")
+		page = getData(url=DOMAIN+"/ajax/watch",timeout=1,postData="watch=true&serie="+series_id+"&season="+season_id+"&episode="+episode_id,referer=url)
 	   
 		token = None
 		
