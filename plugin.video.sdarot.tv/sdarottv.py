@@ -7,7 +7,7 @@ import urllib, urllib2, re, os, sys
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import HTMLParser
 import json
-#import cookielib
+import cookielib
 import unicodedata
 import repoCheck
 
@@ -33,21 +33,21 @@ DOMAIN = __settings__.getSetting("domain")
 from sdarotcommon import *
 
 path = xbmc.translatePath(__settings__.getAddonInfo("profile"))
-#cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
+cookie_path = os.path.join(path, 'sdarot-cookiejar.txt')
 #print("Loading cookies from :" + repr(cookie_path))
-#cookiejar = cookielib.LWPCookieJar(cookie_path)
+cookiejar = cookielib.LWPCookieJar(cookie_path)
 
-#if os.path.exists(cookie_path):
-#	try:
-#		cookiejar.load()
-#	except:
-#		pass
-#elif not os.path.exists(path):
-#	os.makedirs(path) 
+if os.path.exists(cookie_path):
+	try:
+		cookiejar.load()
+	except:
+		pass
+elif not os.path.exists(path):
+	os.makedirs(path) 
 	
-#cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
-#opener = urllib2.build_opener(cookie_handler)
-#urllib2.install_opener(opener)
+cookie_handler = urllib2.HTTPCookieProcessor(cookiejar)
+opener = urllib2.build_opener(cookie_handler)
+urllib2.install_opener(opener)
 #print "built opener:" + str(opener)
 
 
@@ -56,7 +56,7 @@ def MAIN_MENU():
 	addDir('[COLOR red] חפש  [/COLOR]',DOMAIN+"/search",6,'')
 	addDir("הכל א-ת","all-heb",2,'',DOMAIN+'/series');
 	addDir("הכל a-z","all-eng",2,'',DOMAIN+'/series');
-	page = getData(DOMAIN+'/series',referer="")
+	page = getData(DOMAIN+'/series',referer=DOMAIN)
 	matches = re.compile('<li><a href="/series/genre/(.*?)">').findall(page)
 	for match in matches:
 		 a=str(match)
@@ -121,7 +121,7 @@ def sdarot_series(url):
 	#opener.open(DOMAIN+'/landing/'+series_id).read()
   #  print "sdarot_series: Fetching URL:"+url  
 	try:
-		page = getData(url,referer='http://www.sdarot.pm/series')
+		page = getData(url,referer=DOMAIN+'/series')
 		#page = opener.open(url).read()
 		#print cookiejar
 	except urllib2.URLError, e:
@@ -154,7 +154,7 @@ def sdarot_season(url, summary):
 	series_name=urllib.unquote_plus(params["series_name"])
 	season_id=urllib.unquote_plus(params["season_id"])
 	image_link=urllib.unquote_plus(params["image"])
-	page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="episodeList=true&serie="+series_id+"&season="+season_id);
+	page = getData(url=DOMAIN+"/ajax/watch",timeout=0,postData="episodeList=true&serie="+series_id+"&season="+season_id,referer=url);
 	
 	episodes=json.loads(page)
 	
@@ -188,7 +188,7 @@ def download_season(url):
 	print "Download sdarot series=" + series_id + " season=" + season_id + " #episodes=" + str(len(episodes))
 	for i in range (0, len(episodes)) :
 		epis= str(episodes[i]['episode'])
-		finalVideoUrl,VID = getFinalVideoUrl(series_id,season_id,epis,silent=True)
+		finalVideoUrl,VID = getFinalVideoUrl(series_id,season_id,epis,url,silent=True)
 		if finalVideoUrl == None :
 			continue
 		
@@ -219,7 +219,7 @@ def sdarot_movie(url, summary):
 	episode_id=urllib.unquote_plus(params["episode_id"])
 	title = series_name + ", עונה " + season_id + ", פרק " + episode_id
    
-	finalUrl,VID = getFinalVideoUrl(series_id,season_id,episode_id)
+	finalUrl,VID = getFinalVideoUrl(series_id,season_id,episode_id,url)
 	#print "finalUrl" + finalUrl
 		
 	player_url=DOMAIN+'/templates/frontend/blue_html5/player/jwplayer.flash.swf'
