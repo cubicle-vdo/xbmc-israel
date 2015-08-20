@@ -38,9 +38,9 @@ def makeIPTVlist(iptvFile):
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '4' or mode == '7':
+					elif mode == '4' or mode == '7' or mode == '16':
 						url = myResolver.Resolve(url, mode)
-						if url == "down":
+						if url is None or url == "down":
 							continue
 					elif mode == '9' or mode == '10' or mode == '13':
 						continue
