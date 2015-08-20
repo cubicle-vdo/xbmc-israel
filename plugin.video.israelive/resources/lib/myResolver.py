@@ -220,6 +220,18 @@ def Get15url(channel):
 	if len(matches) > 0:
 		streamUrl = common.Decode('xKPv3JbJeL90xKTvyuB-xg==').format(matches[0][0], channel, matches[0][1])
 	return streamUrl
+	
+def Get16url(channel):
+	text = getUrl(common.Decode('sefm0Z97eL-1vemf0dGtt7u5d9bhzpTHedNzseffzQ==').format(channel))
+	matches = re.compile(common.Decode('hebV0868vYRviNnbzcqJcH5zc7KbiJN2iJJ0vNbkytXAhw=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) != 1:
+		return None
+	pageUrl = common.Decode('sefm0Z97eL-1vemf0dGtt7u5d9bhzpSxtriqraHiydWLsrqCxKPv').format(matches[0])
+	text = getUrl(pageUrl)
+	matches = re.compile(common.Decode('v9TkgdjAu7umttjknod0d4CEcpWtj4-LcLyutdiZj4-LcH5zc7KbiA=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) != 1:
+		return None
+	return common.Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkM68vcxyud_Tz8rAd7m0tqLl2Mu_eMaxquzX05O_wLxludTZxrq-tZPAe_A=').format(matches[0][0], matches[0][1], pageUrl)
 
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
@@ -255,4 +267,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get14url(url)
 	elif mode == 15:
 		url = Get15url(url)
+	elif mode == 16:
+		url = Get16url(url)
 	return url
