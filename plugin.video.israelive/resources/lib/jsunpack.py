@@ -87,7 +87,15 @@ class Unbaser(object):
     ALPHABET  = {
         35 : '0123456789abcdefghijklmnopqrstuvwxy',
         52 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP',
+        53 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ',
         54 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR',
+        55 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRS',
+        56 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST',
+        57 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU',
+        58 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV',
+        59 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW',
+        60 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX',
+        61 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY',
         62 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
         95 : (' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ'
               '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~')

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, uuid, json, random
+import urllib, urllib2, re, uuid, json, random, base64
 import jsunpack, common, myFilmon
 
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
@@ -91,9 +91,15 @@ def Get8url(name):
 	return result['hls_url']['hls1']
 
 def Get9url(name):
-	p = getUrl(common.Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpTHedM=').format(name))
-	match = re.compile(common.Decode('kb_F1te4aZNlcJugi6R1cA==')).findall(p)
-	return match[0]
+	page = getUrl(common.Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpTHedM=').format(name))
+	match = re.compile(common.Decode('qtXVvY2wrryhcdrXyZN2iLJta5ugi6R1a7Ju')).findall(page)
+	while match and len(match) == 1:
+		page = urllib.unquote_plus(base64.b64decode(match[0]))
+		match = re.compile(common.Decode('qtXVvY2wrryhcdrXyZN2iLJta5ugi6R1a7Ju')).findall(page)
+	page = jsunpack.unpack(page)
+	base = re.compile(common.Decode('sNjavY10d4CEcs-b')).findall(page)
+	base = re.compile(common.Decode('xO7tkeKJpbJscaGcoI6opX2A').format(base[0])).findall(page)
+	return urllib.unquote_plus(base64.b64decode(base[0]))
 	
 def Get10url(name):
 	p = getUrl(common.Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroXAefA=').format(name))
