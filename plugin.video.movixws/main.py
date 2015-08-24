@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-import urllib,re,random,json,datetime
+import os, urllib, re, random, json, datetime
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
+
+Addon = xbmcaddon.Addon(id='plugin.video.movixws')
+addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
+libDir = os.path.join(addonPath, 'resources', 'lib')
+sys.path.insert(0, libDir)
 import resolver, repoCheck, common
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.movixws')
-Domain = __settings__.getSetting("domain")
+Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 #print baseUrl
 handle = int(sys.argv[1])
@@ -149,7 +153,8 @@ def LinksPage(url, iconimage, description):
 		GetSeasons(series_num, iconimage, description)
 
 def PlayWs(url, autoPlay=False):
-	if baseUrl in url:
+	url = common.GetAdFlyLink(url)
+	if baseUrl.replace('www.', '') in url:
 		url = resolver.ResolveUrl(url)
 	if url:
 		listitem = xbmcgui.ListItem(path=url)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2
+import urllib, urllib2, re, base64
 
 def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
 	link = ""
@@ -22,3 +22,29 @@ def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
 	except:
 		return None
 	return link
+	
+def GetAdFlyLink(url):
+	retUrl = None
+	try:
+		html = OPEN_URL(url)
+		ysmm = re.findall(r"var ysmm =.*\;?", html)
+
+		if len(ysmm) > 0:
+			ysmm = re.sub(r'var ysmm \= \'|\'\;', '', ysmm[0])
+
+			left = ''
+			right = ''
+
+			for c in [ysmm[i:i+2] for i in range(0, len(ysmm), 2)]:
+				left += c[0]
+				right = c[1] + right
+
+			retUrl = base64.b64decode(left.encode() + right.encode())[2:].decode()
+
+			if re.search(r'go\.php\?u\=', retUrl):
+				retUrl = base64.b64decode(re.sub(r'(.*?)u=', '', retUrl)).decode()
+
+	except Exception as e:
+		print str(e)
+		
+	return retUrl

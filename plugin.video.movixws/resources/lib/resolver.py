@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,re,json
+import urllib, re, json
 import common, urlresolver
 
 def ResolveUrl(url):
