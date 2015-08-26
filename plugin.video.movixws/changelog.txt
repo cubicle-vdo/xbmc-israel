@@ -1,5 +1,8 @@
+[B]v1.1.2[/B]
+- Fix for search
+- Added "Live Shows" category.
 [B]v1.1.1[/B]
-- Fix accordind to site changes.
+- Fix according to site changes.
 [B]v1.1.0[/B]
 - Added support for playing trailers of series too.
 [B]v1.0.9[/B]

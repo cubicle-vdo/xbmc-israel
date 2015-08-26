@@ -19,7 +19,7 @@ def searchWs():
 	keyboard = xbmc.Keyboard(search_entered, 'הכנס מילות חיפוש כאן')
 	keyboard.doModal()
 	if keyboard.isConfirmed():
-		search_entered = keyboard.getText()
+		search_entered = urllib.quote_plus(keyboard.getText())
 	isText = False if search_entered.strip() == '' else True
 	dialog = xbmcgui.Dialog()
 	filter = dialog.select("בחר סוג חיפוש", ["הכל", "סרטים", "סדרות"])
@@ -182,7 +182,7 @@ def PlayTrailer(url):
 		PlayWs(url)
 
 def Categories():
-	addDir("Search - חפש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
+	addDir("Search - חיפוש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
 	addDir("Movies - סרטים","{0}/movies".format(baseUrl),2,'http://www.aldeahostelcostarica.com/wp-content/uploads/2015/03/aldea_movie_day-500x300.jpg')
 	addDir("Series - סדרות","{0}/series".format(baseUrl),2,'http://kibenterprise.com/media/catalog/category/TV_Series.png')
 	addDir("Kids - ילדים","{0}/genres/Kids".format(baseUrl),2,'http://www.in-hebrew.co.il/images/logo-s.jpg')
@@ -190,6 +190,7 @@ def Categories():
 	addDir("Fantasy - פנטזיה","{0}/genres/Fantasy".format(baseUrl),2,'http://blog.tapuz.co.il/girlkido/images/3472680_852.jpg')
 	addDir("Family - משפחה","{0}/genres/Family".format(baseUrl),2,'http://pschools.haifanet.org.il/dror/DocLib1/%D7%99%D7%95%D7%9D%20%D7%9E%D7%A9%D7%A4%D7%97%D7%94%20%D7%A9%D7%9E%D7%97.jpg')
 	addDir("Israeli - ישראלי","{0}/genres/israeli".format(baseUrl),2,'http://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/250px-Flag_of_Israel.svg.png')
+	addDir("Live Shows - הופעות חיות","{0}/genres/LiveShow".format(baseUrl),2,'http://www.netravelfly.co.il/resources/deals/images/Other/Music/Atmosphere/480X320/8.jpg')
 	addDir("Comedy - קומדיה","{0}/genres/Comedy".format(baseUrl),2,'http://www.filmsite.org/images/comedy-genre.jpg')
 	addDir("Drama - דרמה","{0}/genres/Drama".format(baseUrl),2,'http://comps.canstockphoto.com/can-stock-photo_csp11392197.jpg')
 	addDir("Documentary - דוקומנטרי","{0}/genres/Documentary".format(baseUrl),2,'http://icons.iconarchive.com/icons/aaron-sinuhe/tv-movie-folder/512/Documentaries-National-Geographic-icon.png')

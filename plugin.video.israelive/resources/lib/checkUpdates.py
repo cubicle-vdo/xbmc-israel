@@ -25,6 +25,7 @@ remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", rem
 if remoteSettings == []:
 	xbmc.executebuiltin('StartPVRManager')
 else:
+	xbmc.executebuiltin("XBMC.CancelAlarm({0},silent)".format(AddonName))
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
 	if not refresh is None:
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
@@ -52,7 +53,8 @@ else:
 		if Addon.getSetting("useIPTV") == "true":
 			import myIPTV
 			myIPTV.makeIPTVlist(iptvChannelsFile)
-			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
+			if isGuideUpdated:
+				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
 			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 			
 		if isGuideUpdated:
@@ -78,3 +80,4 @@ else:
 		pass
 	
 xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format(AddonName, os.path.join(libDir, "checkUpdates.py"), checkInterval))
+xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format(AddonName, os.path.join(libDir, "updateM3U.py"), 360))
