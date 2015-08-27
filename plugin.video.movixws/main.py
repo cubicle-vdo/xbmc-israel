@@ -154,7 +154,7 @@ def LinksPage(url, iconimage, description):
 
 def PlayWs(url, autoPlay=False):
 	url = common.GetAdFlyLink(url)
-	if baseUrl.replace('www.', '') in url:
+	if url and baseUrl.replace('www.', '') in url:
 		url = resolver.ResolveUrl(url)
 	if url:
 		listitem = xbmcgui.ListItem(path=url)
@@ -163,7 +163,7 @@ def PlayWs(url, autoPlay=False):
 	else:
 		if not autoPlay:
 			dialog = xbmcgui.Dialog()
-			ok = dialog.ok('OOOPS', 'Try a differnt Source')	
+			ok = dialog.ok('OOOPS', 'נסה לבחור מקור ניגון אחר.')	
 		return False
 
 def AutoPlayUrl(urls):
