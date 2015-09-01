@@ -18,4 +18,4 @@ if Addon.getSetting("useEPG") == "true" and Addon.getSetting("useIPTV") == "true
 	myIPTV.makeIPTVlist(iptvChannelsFile)
 	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 
-xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveM3U", os.path.join(libDir, "updateM3U.py"), 360))
+xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveM3U", os.path.join(libDir, "updateM3U.py"), 720))

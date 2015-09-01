@@ -19,3 +19,4 @@ if Addon.getSetting("useIPTV") == "true":
 		print ex
 
 xbmc.executebuiltin("XBMC.RunScript({0})".format(os.path.join(libDir, "checkUpdates.py")))
+xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveM3U", os.path.join(libDir, "updateM3U.py"), 360))

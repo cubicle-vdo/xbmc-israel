@@ -25,7 +25,6 @@ remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", rem
 if remoteSettings == []:
 	xbmc.executebuiltin('StartPVRManager')
 else:
-	xbmc.executebuiltin("XBMC.CancelAlarm({0},silent)".format("IsraeLiveM3U"))
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
 	if not refresh is None:
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
@@ -80,4 +79,3 @@ else:
 		pass
 	
 xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveUpdates", os.path.join(libDir, "checkUpdates.py"), checkInterval))
-xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveM3U", os.path.join(libDir, "updateM3U.py"), 360))
