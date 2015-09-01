@@ -239,6 +239,24 @@ def Get16url(channel):
 		return None
 	return common.Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkM68vcxyud_Tz8rAd7m0tqLl2Mu_eMaxquzX05O_wLxludTZxrq-tZPAe_A=').format(matches[0][0], matches[0][1], pageUrl)
 
+def Get17url(channel):
+	url = common.Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')
+	text = getUrl(url)
+	matches = re.compile(common.Decode('r9zexp9sa35zc7Kbg5F6c5WrtdTlydW4qs-qu62Sg416c5Vuaw=='), re.I+re.M+re.U+re.S).findall(text)
+	return common.Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(common.Decode('r9_omw=='), common.Decode('aePewt68qsqthg==')), matches[0][1], url)
+	
+def Get18url(channel):
+	text = getUrl(common.Decode('sefm0Z97eM28wKHYwti0ssWzvemgxNS5eNF1xg==').format(channel))
+	matches = re.compile(common.Decode('stevg9W4qs-qu9bhz9mtssSqu5Wwj4-LvMiohpWaj4-Lcng='), re.I+re.M+re.U+re.S).findall(text)
+	text = getUrl(common.Decode('sefm0Z_HedM=').format(matches[0]))
+	matches = re.compile(common.Decode('xJXm2tWxa5BnquPizc6vqsquuOGgi6R4a8u3tZWsg416c5Vua_A='), re.I+re.M+re.U+re.S).findall(text)
+	for retries in range(4):
+		for i in [1, 3]:
+			streamUrl = getUrl(common.Decode('xKPvh9exrb-3rtbmnpU=').format(matches[i].replace(common.Decode('pQ=='), '')))
+			if common.Decode('vOfkxsa5druo') in streamUrl:
+				return streamUrl
+	return None
+	
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
 	if mode == -2:
@@ -275,4 +293,8 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get15url(url)
 	elif mode == 16:
 		url = Get16url(url)
+	elif mode == 17:
+		url = Get17url(url)
+	elif mode == 18:
+		url = Get18url(url)
 	return url
