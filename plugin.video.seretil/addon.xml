@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.seretil" name="seretil" version="2.1.5" provider-name="YALLA BEITAR NORDIA">
+<addon id="plugin.video.seretil" name="seretil" version="2.1.6" provider-name="YALLA BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver"/>
-        <import addon="script.module.t0mm0.common"/>
-        <import addon="script.module.simplejson" />
+        <import addon="script.module.urlresolver" version="1.0.0"/>/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="seretil.py">
         <provides>video</provides>
