@@ -121,11 +121,6 @@ def addDir(name,url,mode,iconimage):
     
 def INDEXSratim(url):
 			url2=url
-			'''req = urllib2.Request(url)
-			req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-			response = urllib2.urlopen(req)
-			link=response.read()
-			response.close()'''
 			link=nURL(url).encode('utf-8')
 			match=re.compile('entry-thumbnails-link".*?href="(.*?)">.*?src="(.*?)".*?bookmark">(.*?)</a>').findall(link)
 			now=re.compile('class=\'current\'>(.*?)<').findall(link)
@@ -150,7 +145,6 @@ def INDEXSratim(url):
 			while i <= int(lastpage) and not stop  :
 				link=nURL(url2).encode('utf-8')
 				match=re.compile(regex,re.I+re.M+re.U+re.S).findall(link)
-				#print match
 				for url,image,name in match:
 					name=unescape(name)
 					image=unescape(image)
@@ -168,18 +162,12 @@ def INDEXSratim(url):
 					   url2= url2[:-2]
 					   
 				url2=url2+'page/'+str(i)+'/'
-				#print url2
 				if (i%Pages ==0):
 					stop=True
 					addDir('[COLOR blue]'+'תוצאות נוספות'+'[/COLOR]',url2,4,"")
 
 
 def SpecialPage(url,moviename):
-	'''req = urllib2.Request(url)
-	req.add_header('User-Agent', ' Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()'''
 	link=nURL(url).encode('utf-8')
 	match=re.compile('<span id(.*?)<\/script>',re.M+re.I+re.S).findall(link)
 	match =match[0]
@@ -195,7 +183,6 @@ def SpecialPage(url,moviename):
 			if final:
 				addDir('[COLOR blue]'+str(source[0]) + '[/COLOR]' +  moviename +'----' ,new_url,212,'')
                                 
-                
 
 def ResolverLink(url):
 	url=urllib.unquote_plus(url)
@@ -266,62 +253,50 @@ def nURL(url):
 	xTimes=0
 	while (AntiTag in html):
 		xTimes=xTimes+1
-		try: 
-			html=net2.http_GET(url).content
-		except urllib2.URLError,e: 
-			html=dhtml
-			try:
-				if str(e.code)=='503':
-					CFCookie=str(AntiDDOSProtectcion.decryptCFDDOSProtection(url,User_Agent,'',AddonID=__plugin__))
-					cf_cookie_file=os.path.join(user_dataDir,'temp.cache.txt')
-					if (str(CFCookie)=='None') or (len(str(CFCookie))==0): pass
+		html=dhtml
+		try:
+			CFCookie=str(AntiDDOSProtectcion.decryptCFDDOSProtection(url,User_Agent,'',AddonID=__plugin__))
+			cf_cookie_file=os.path.join(user_dataDir,'temp.cache.txt')
+			if (str(CFCookie)=='None') or (len(str(CFCookie))==0): pass
+			else:
+				try: 
+					my_cookies=_OpenFile(cf_cookie_file)
+					if len(my_cookies)==0: my_cookies='#LWP-Cookies-2.0'
 					else:
-						try: 
-							my_cookies=_OpenFile(cf_cookie_file)
-							if len(my_cookies)==0: my_cookies='#LWP-Cookies-2.0'
-							else:
-								s='\n*\r*\n*(Set-Cookie3: %s=.+? HttpOnly\s*\r*\n*\r*)'
-								try:		
-									cfOldA=re.compile(s%'__cfduid').findall(my_cookies)[0]
-								except: cfOldA=''
-								if len(cfOldA) > 0: my_cookies=my_cookies.replace(cfOldA,'')
-								try:		cfOldB=re.compile(s%'cf_clearance').findall(my_cookies)[0]
-								except: cfOldB=''
-								if len(cfOldB) > 0: my_cookies=my_cookies.replace(cfOldB,'')
-								
-								gg=['\r*\n(=None; version=0\r*\n)','\r*\n(=None; version=None\r*\n)']
-								for g in gg:
-									try:		cfOldC=re.compile(g).findall(my_cookies)[0]
-									except: cfOldC=''
-									if len(cfOldC) > 0: my_cookies=my_cookies.replace(cfOldC,'')
-								
-								my_cookies=my_cookies.replace('\r\r\n\r\r\n','\r\r\n').replace('\n\n\r\n\n\r','\n\n\r').replace('\r\n\r\n','\r\n').replace('\n\n','\n').replace('\r\r','\r').replace('\r\a\r\a','\r\a').replace('\n\n','\n').replace('\n\a\n\a','\n\a').replace('\a\a','\a')
-							_SaveFile(cf_cookie_file,my_cookies+''+str(CFCookie))
-
-							net2.set_cookies(cf_cookie_file)
-							net2.set_user_agent(User_Agent)
-							html=net2.http_GET(url).content
-
-							return html
-
-						except: pass
-				return dhtml
-			except Exception, e: 
-				print e
-				return dhtml
-				pass
+						s='\n*\r*\n*(Set-Cookie3: %s=.+? HttpOnly\s*\r*\n*\r*)'
+						try:		
+							cfOldA=re.compile(s%'__cfduid').findall(my_cookies)[0]
+						except: cfOldA=''
+						if len(cfOldA) > 0: my_cookies=my_cookies.replace(cfOldA,'')
+						try:		cfOldB=re.compile(s%'cf_clearance').findall(my_cookies)[0]
+						except: cfOldB=''
+						if len(cfOldB) > 0: my_cookies=my_cookies.replace(cfOldB,'')
+						
+						gg=['\r*\n(=None; version=0\r*\n)','\r*\n(=None; version=None\r*\n)']
+						for g in gg:
+							try:		cfOldC=re.compile(g).findall(my_cookies)[0]
+							except: cfOldC=''
+							if len(cfOldC) > 0: my_cookies=my_cookies.replace(cfOldC,'')
+						
+						my_cookies=my_cookies.replace('\r\r\n\r\r\n','\r\r\n').replace('\n\n\r\n\n\r','\n\n\r').replace('\r\n\r\n','\r\n').replace('\n\n','\n').replace('\r\r','\r').replace('\r\a\r\a','\r\a').replace('\n\n','\n').replace('\n\a\n\a','\n\a').replace('\a\a','\a')
+					_SaveFile(cf_cookie_file,my_cookies+''+str(CFCookie))
+					net2.set_cookies(cf_cookie_file)
+					net2.set_user_agent(User_Agent)
+					html=net2.http_GET(url).content
+					return html
+				except: pass
+			return dhtml
 		except Exception, e: 
-			html=dhtml
-		except: 
-			html=dhtml
+			print e
+			return dhtml
+
 		if xTimes > 5: 
 			html=html.replace(AntiTag,'')
 		elif AntiTag in html: 
-			xbmc.sleep(4000)
+			xbmc.sleep(5000)
 
 	return html
 		
-	
 print "checkMode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)

@@ -210,7 +210,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.movixws" name="Movix.me" version="1.1.3" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
+<addon id="plugin.video.movixws" name="Movix.me" version="1.1.4" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver"/>
@@ -287,7 +287,7 @@ http://www.hometheater.co.il</description>
 
 </addon>
 
-<addon id="plugin.video.seretil" name="seretil" version="2.1.6" provider-name="YALLA BEITAR NORDIA">
+<addon id="plugin.video.seretil" name="seretil" version="2.1.7" provider-name="YALLA BEITAR NORDIA">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.urlresolver" version="1.0.0"/>/>
