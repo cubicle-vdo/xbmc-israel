@@ -1,3 +1,5 @@
+[B]Version 2.1.7[/B]
+- bug fixes.
 [B]Version 2.1.6[/B]
 - Fix to site changes
 - Temporary removed images.

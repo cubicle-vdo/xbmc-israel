@@ -6,12 +6,15 @@ Addon = xbmcaddon.Addon(id='plugin.video.movixws')
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import resolver, repoCheck, common
+import resolver, repoCheck, common, urlresolver
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 #print baseUrl
 handle = int(sys.argv[1])
+
+ignoreServers = ["goodvideohost"]
+downloadsServers = ["vidlockers"]
 
 def searchWs():
 	search_entered = ''
@@ -41,6 +44,18 @@ def searchWs():
 		return False
 
 def IndexPage(url):
+	if baseUrl+'/movies' == url:
+		addDir('[COLOR green] הסרטים הנצפים ביותר [/COLOR]','MostViewedMovies',9,'')
+		addDir('[COLOR green] סרטים שנוספו לאחרונה [/COLOR]','id="recent-movies"|<!--recent movies tab-->',9,'')
+		addDir('[COLOR green] הסרטים המדורגים ביותר [/COLOR]','id="top-rated-movies"|<!--top tab-->',9,'')
+		addDir('[COLOR green] סרטים עם הכי הרבה תגובות [/COLOR]','id="most-links-movies"|<!--most linked tab-->',9,'')
+	
+	if baseUrl+'/series' == url:
+		addDir('[COLOR green] הסדרות הנצפות ביותר [/COLOR]','id="most-views-tv-shows"|<!--most commented tab-->',9,'')
+		addDir('[COLOR green] סדרות שנוספו לאחרונה [/COLOR]','id="recent-tv-shows"|<!--recent tv shows-->',9,'')
+		addDir('[COLOR green] הסדרות המדורגות ביותר [/COLOR]','id="top-rated-tv-shows"|<!--top tab-->',9,'')
+		addDir('[COLOR green] סדרות עם הכי הרבה תגובות [/COLOR]','id="most-links-tv-shows"|<!--most linked tab-->',9,'')
+		
 	if not 'page' in url:
 		if 'search_movies' in url:
 			url = url + '&page=/0'
@@ -123,12 +138,17 @@ def LinksPage(url, iconimage, description):
 	if len(matches) == 1:
 		addDir('[COLOR green]{0} - טריילר[/COLOR]'.format(name), matches[0], 8, iconimage, False, description)
 	if not 'get_seasons' in result:
-		matches=re.compile('<li .+?id="wrapserv"><a href="(.+?)" target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?<\/li>',re.I+re.M+re.U+re.S).findall(result)
+		tabIDs = re.compile('<a href="#(.*?)" data-toggle="tab">(.*?)</a>').findall(result)
+		linksBlock = re.compile('<div class="tab-pane.*?" id="(.*?)">(.*?)</li></ul>',re.I+re.M+re.U+re.S).findall(result)
+		watch=re.compile('<li .+?id="wrapserv"><a href=["\'](.+?)["\'] target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?[<\/li>|<\/div>]',re.I+re.M+re.U+re.S).findall(linksBlock[0][1])
+		if len(tabIDs) == 2:
+			download=re.compile('<li .+?id="wrapserv"><a href=["\'](.+?)["\'] target.*?src="\/img\/servers\/(.+?).png.+?<div class="span3".+?<b>איכות (.+?)<\/b>.+?[<\/li>|<\/div>]',re.I+re.M+re.U+re.S).findall(linksBlock[1][1])
+		else:
+			download = []
+		matches = [w for w in watch if w[1] not in ignoreServers] + [d for d in download if d[1] in downloadsServers]
 		links = []
 		for match in matches:
-			if "goodvideohost" in match[1]:
-				continue
-			elif "yify" in match[1]:
+			if "yify" in match[1]:
 				yifyLinks = resolver.GetYifyLinks(match[0])
 				for link in yifyLinks:
 					links.append((link["url"], match[1], link["quality"]))
@@ -153,9 +173,13 @@ def LinksPage(url, iconimage, description):
 		GetSeasons(series_num, iconimage, description)
 
 def PlayWs(url, autoPlay=False):
-	url = common.GetAdFlyLink(url)
+	url = resolver.GetAdFlyLink(url)
 	if url and baseUrl.replace('www.', '') in url:
 		url = resolver.ResolveUrl(url)
+	elif "vidlockers" in url:
+		print "Link URL: " + url
+		item = urlresolver.HostedMediaFile(url)
+		url = urlresolver.resolve(item.get_url())
 	if url:
 		listitem = xbmcgui.ListItem(path=url)
 		xbmcplugin.setResolvedUrl(handle, True, listitem)
@@ -203,6 +227,24 @@ def Categories():
 	addDir("Sci-Fi - מ.בדיוני","{0}/genres/Sci-Fi".format(baseUrl),2,'http://images.clipartpanda.com/sci-fi-clipart-peacealienbw.png')
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
+def MostInCategory(category):
+	html = common.OPEN_URL(baseUrl)
+	if category == 'MostViewedMovies':
+		startBlock = html.find('הסרטים הנצפים ביותר')
+		endBlock = html.find('עזרו לנו להמשיך להתקיים', startBlock)
+		rej = '<div style="float.*?src="(.*?)".*?<a href="(.*?)"><span.*?>(.*?)</span>'
+	else:
+		delim = category.split('|')
+		startBlock = html.find(delim[0])
+		endBlock = html.find(delim[1], startBlock)
+		rej = '<div class="small-item".*?src="(.*?)".*?<a href="(.*?)">(.*?)</a>'
+		
+	block = html[startBlock:endBlock]
+	matches = re.compile(rej, re.I+re.M+re.U+re.S).findall(block)
+	for match in matches:
+		image = match[0] if baseUrl in match[0] else "{0}{1}".format(baseUrl, match[0])
+		addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, image)
+			
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -269,6 +311,8 @@ elif mode==7:
 	AutoPlayUrl(url)
 elif mode==8:
 	PlayTrailer(url)
+elif mode==9:
+	MostInCategory(url)
 	
 if updateView:
 	xbmcplugin.setContent(handle, 'episodes')
