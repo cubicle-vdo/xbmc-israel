@@ -60,7 +60,7 @@ def makeIPTVlist(iptvFile):
 	f.close()
 	
 def EscapeXML(str):
-	return str.replace("<", "&lt;").replace(">", "&gt;")
+	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;")
 	
 def GetTZ():
 	ts = time.time()
