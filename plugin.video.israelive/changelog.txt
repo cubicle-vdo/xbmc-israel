@@ -1,3 +1,5 @@
+[B]v4.5.1[/B]
+- Bugfix for creating guide.xml.
 [B]v4.5.0[/B]
 - Remove notification of "Alarm Canceled".
 [B]v4.4.9[/B]
