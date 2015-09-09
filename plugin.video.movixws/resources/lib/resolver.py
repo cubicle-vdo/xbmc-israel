@@ -23,8 +23,8 @@ def ResolveUrl(url):
 		else:
 			if "movreel" in url:
 				url = url.replace("/embed-","/")
-			elif "openload" in url:
-				url = url.replace(".co",".io")
+			#elif "openload" in url:
+			#	url = url.replace(".co",".io")
 			item = urlresolver.HostedMediaFile(url)
 			link = urlresolver.resolve(item.get_url())
 	except Exception, e: 

@@ -1,3 +1,6 @@
+[B]v1.1.5[/B]
+- Fix script error when trying to play episodes from series.
+- Temp remove of "openload" sources (changes inside "openload" side).
 [B]v1.1.4[/B]
 - Added support playing from: openload, divxpress and vidlockers.
 - Added categories in Series and Movies: Most Viewed, Recent, Top Rated and Most Commented.
