@@ -2,12 +2,14 @@
 import urllib, urllib2, re, uuid, json, random, base64
 import jsunpack, common, myFilmon
 
+UA = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
 	opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 	req = urllib2.Request(url)
 	#req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36')
+	req.add_header('User-Agent', UA)
 	if headers:
 		for h, hv in headers.items():
 			req.add_header(h,hv)
@@ -251,11 +253,16 @@ def Get18url(channel):
 	text = getUrl(common.Decode('sefm0Z_HedM=').format(matches[0]))
 	matches = re.compile(common.Decode('xJXm2tWxa5BnquPizc6vqsquuOGgi6R4a8u3tZWsg416c5Vua_A='), re.I+re.M+re.U+re.S).findall(text)
 	for retries in range(4):
-		for i in [1, 3]:
-			streamUrl = getUrl(common.Decode('xKPvh9exrb-3rtbmnpU=').format(matches[i].replace(common.Decode('pQ=='), '')))
-			if common.Decode('vOfkxsa5druo') in streamUrl:
-				return streamUrl
+		streamUrl = getUrl(common.Decode('xKPvh9exrb-3rtbmnpU=').format(matches[3].replace(common.Decode('pQ=='), '')))
+		if common.Decode('vOfkxsa5druo') in streamUrl:
+			return streamUrl
 	return None
+	
+def Get19url(channel):
+	url = common.Decode('sefm0Z97eM28wKHl1dexqsOut9qfydqud7m0tqLtkeJ7').format(channel)
+	text = getUrl(url)
+	matches = re.compile(common.Decode('pObkxOG_uMu3rNjPm4VucYRviJyU'), re.I+re.M+re.U+re.S).findall(text)
+	return common.Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 	
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
@@ -297,4 +304,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get17url(url)
 	elif mode == 18:
 		url = Get18url(url)
+	elif mode == 19:
+		url = Get19url(url)
 	return url

@@ -149,7 +149,7 @@ def GetIptvAddon():
 	return iptvAddon
 	
 def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
-	iptvSettingsFile = os.path.join(xbmc.translatePath( "special://userdata/addon_data" ).decode("utf-8"), "pvr.iptvsimple", "settings.xml")
+	iptvSettingsFile = os.path.join(xbmc.translatePath("special://profile").decode("utf-8"), "addon_data", "pvr.iptvsimple", "settings.xml")
 	if not os.path.isfile(iptvSettingsFile):
 		iptvAddon = GetIptvAddon()
 		if iptvAddon is None:
@@ -158,6 +158,11 @@ def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 	
 	# get settings.xml into dictionary
 	dict = ReadSettings(iptvSettingsFile, fromFile=True)
+	if dict is None:
+		msg1 = "Oops."
+		msg2 = "Can't update IPTVSimple settings."
+		common.OKmsg(AddonName, msg1, msg2)
+		return False
 		
 	isSettingsChanged = False
 	# make changes
@@ -203,7 +208,8 @@ def ReadSettings(source, fromFile=False):
 		dict = {}
 		for elem in elements:
 			dict[elem.get('id')] = elem.get('value')
-	except:
+	except Exception as e:
+		print e
 		dict = None
 
 	return dict
