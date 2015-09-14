@@ -173,7 +173,7 @@ def LinksPage(url, iconimage, description):
 		GetSeasons(series_num, iconimage, description)
 
 def PlayWs(url, autoPlay=False):
-	url = resolver.GetAdFlyLink(url)
+	#url = resolver.GetAdFlyLink(url)
 	if url and baseUrl.replace('www.', '') in url:
 		url = resolver.ResolveUrl(url)
 	elif "vidlockers" in url:
