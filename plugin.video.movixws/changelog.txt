@@ -1,3 +1,5 @@
+[B]v1.1.7[/B]
+- bugfix for last version.
 [B]v1.1.6[/B]
 - Check if link is "adf.ly" before resolve.
 [B]v1.1.5[/B]
