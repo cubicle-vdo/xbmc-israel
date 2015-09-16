@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, gzip
+import urllib, urllib2, gzip, base64
 from StringIO import StringIO
 
+AddonName = "Movix.me"
 UA = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3"
 
 def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
@@ -31,6 +32,17 @@ def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
 	except:
 		return None
 	return link
+
+def Decode(string):
+	key = AddonName
+	decoded_chars = []
+	string = base64.urlsafe_b64decode(string.encode("utf-8"))
+	for i in xrange(len(string)):
+		key_c = key[i % len(key)]
+		decoded_c = chr(abs(ord(string[i]) - ord(key_c) % 256))
+		decoded_chars.append(decoded_c)
+	decoded_string = "".join(decoded_chars)
+	return decoded_string
 	
 def GetUA():
 	return UA
