@@ -13,9 +13,6 @@ baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 #print baseUrl
 handle = int(sys.argv[1])
 
-ignoreServers = ["goodvideohost", "openload"]
-downloadsServers = ["vidlockers"]
-
 def searchWs():
 	search_entered = ''
 	isText = False
@@ -121,40 +118,24 @@ def SortByQuality(links):
 	random.seed()
 	random.shuffle(links)
 	for quality in qualitiesList:
-		qualityLinks = [link for link in links if link[2].lower() == quality.lower()]
+		qualityLinks = [link for link in links if link[1].lower() == quality.lower()]
 		for qualityLink in qualityLinks:
 			sortedLinks.append(qualityLink)
 	for link in links:
-		if link[2] not in qualitiesList:
+		if link[1] not in qualitiesList:
 			sortedLinks.append(link)
 	return sortedLinks
 
 def LinksPage(url, iconimage, description):
-	result=common.OPEN_URL(url, referer=baseUrl)
-	matches=re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
+	result = common.OPEN_URL(url, referer=baseUrl)
+	matches = re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) == 1:
 		description = matches[0]
-	matches=re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
+	matches = re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) == 1:
 		addDir('[COLOR green]{0} - טריילר[/COLOR]'.format(name), matches[0], 8, iconimage, False, description)
 	if not 'get_seasons' in result:
-		linksBlock = re.compile('<ul class="movie_links"(.*?)</ul>\s*</div>',re.I+re.M+re.U+re.S).findall(result)
-		reg = '<li .*?id="wrapserv"><a href=["\'](.*?)["\'] target.*?src="\/img\/servers\/(.*?).png.*?<div class="span3".*?<b>איכות (.*?)<\/b>.*?[<\/li>|<\/div>]'
-		watch=re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[0])
-		if len(linksBlock) == 2:
-			download=re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[1])
-		else:
-			download = []
-		matches = [w for w in watch if w[1] not in ignoreServers] + [d for d in download if d[1] in downloadsServers]
-		links = []
-		for match in matches:
-			if "yify" in match[1]:
-				yifyLinks = resolver.GetYifyLinks(match[0])
-				for link in yifyLinks:
-					links.append((link["url"], match[1], link["quality"]))
-				continue
-			links.append(match)
-
+		links = resolver.GetLinks(result)
 		if len(links) < 1:
 			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False, description)
 			return
@@ -162,22 +143,22 @@ def LinksPage(url, iconimage, description):
 			links = SortByQuality(links)
 			playingUrlsList = []
 			for link in links:
-				playingUrlsList.append(link[0])
+				playingUrlsList.append(link[2])
 			addDir('[COLOR red] בחר בניגון אוטומטי [/COLOR]','99',99,'',False, description)
 			addDir('{0} - ניגון אוטומטי'.format(name), json.dumps(playingUrlsList), 7, iconimage, False, description)
 			addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False, description)
 		for link in links:
-			addDir("{0} - {1} - איכות {2}".format(name, link[1], link[2]),link[0],5,iconimage,False, description)
+			addDir("{0} - {1} - איכות {2}".format(name, link[0], link[1]),link[2],5,iconimage,False, description)
 	else:
 		series_num=url.split('-')[-1]
 		GetSeasons(series_num, iconimage, description)
 
 def PlayWs(url, autoPlay=False):
-	url = resolver.GetAdFlyLink(url)
+	url = resolver.CheckAdFlyLink(url)
 	if url and baseUrl.replace('www.', '') in url:
 		url = resolver.ResolveUrl(url)
 	elif "vidlockers" in url:
-		print "Link URL: " + url
+		#print "Link URL: " + url
 		item = urlresolver.HostedMediaFile(url)
 		url = urlresolver.resolve(item.get_url())
 	if url:
@@ -208,7 +189,7 @@ def PlayTrailer(url):
 def Categories():
 	addDir("Search - חיפוש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
 	addDir("Movies - סרטים","{0}/movies".format(baseUrl),2,'http://www.aldeahostelcostarica.com/wp-content/uploads/2015/03/aldea_movie_day-500x300.jpg')
-	addDir("Series - סדרות","{0}/series".format(baseUrl),2,'http://kibenterprise.com/media/catalog/category/TV_Series.png')
+	addDir("Series - סדרות","{0}/series".format(baseUrl),2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ8J4zMJ1vcu5vG5WYoVG2pZRzrCSbdghVXDPf0L08vS1mehbTzcg')
 	addDir("Kids - ילדים","{0}/genres/Kids".format(baseUrl),2,'http://www.in-hebrew.co.il/images/logo-s.jpg')
 	addDir("Animation - אנימציה","{0}/genres/Animation".format(baseUrl),2,'http://icons.iconarchive.com/icons/designbolts/free-movie-folder/256/Animated-icon.png')
 	addDir("Fantasy - פנטזיה","{0}/genres/Fantasy".format(baseUrl),2,'http://blog.tapuz.co.il/girlkido/images/3472680_852.jpg')
@@ -288,9 +269,9 @@ except:
 	description=""
 	
 
-print "checkMode: "+str(mode)
-print "URL: "+str(url)
-print "Name: "+str(name)
+#print "checkMode: "+str(mode)
+#print "Name: "+str(name)
+#print "URL: "+str(url)
 
 updateView = True
 
