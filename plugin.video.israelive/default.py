@@ -2,13 +2,14 @@
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import sys, os, time, datetime, re
 import urllib
+import myResolver
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common, myResolver, myIPTV
+import common, myIPTV
 localizedString = Addon.getLocalizedString
 AddonName = Addon.getAddonInfo("name")
 icon = Addon.getAddonInfo('icon')
