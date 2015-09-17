@@ -2,7 +2,8 @@
 import urllib, re, os, time, datetime, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
-import common, myResolver
+import common
+import myResolver
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)

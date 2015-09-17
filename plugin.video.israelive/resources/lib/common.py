@@ -375,14 +375,34 @@ def CheckNewVersion():
 		f = open(versionFile,'r')
 		version = f.read()
 		f.close()
-	
 	newVersion = Addon.getAddonInfo("version")
+	
+	resolverVerFile = os.path.join(user_dataDir, "resolverVersion.txt")
+	if not os.path.isfile(resolverVerFile):
+		resolverVersion = ""
+	else:
+		f = open(resolverVerFile,'r')
+		resolverVersion = f.read()
+		f.close()
+	resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
+	
+	isUpdated = False
+	if resolverNewVersion > resolverVersion:
+		isUpdated = True
+		title = "{0}{1}".format(localizedString(30235).encode('utf-8'), resolverNewVersion)
+		f = open(resolverVerFile, 'w')
+		f.write(resolverNewVersion)
+		f.close()
+	
 	if newVersion > version:
-		if Addon.getSetting("useIPTV") == "true":
-			OKmsg("{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion), localizedString(30201).encode('utf-8'))
+		isUpdated = True
+		title = "{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion)
 		f = open(versionFile, 'w')
 		f.write(newVersion)
 		f.close()
+	
+	if isUpdated and Addon.getSetting("useIPTV") == "true":
+		OKmsg(title, localizedString(30201).encode('utf-8'))
 
 def GetLivestreamerPort():
 	portNum = 65007
