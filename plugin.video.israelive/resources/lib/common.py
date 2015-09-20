@@ -35,13 +35,14 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 			
 	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
 	if (zip == False and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
-		fileContent = ""
+		fileContent = "0"
 	else:
 		f = open(lastModifiedFile,'r')
 		fileContent = f.read()
 		f.close()
 	last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
-	isNew = forceUpdate or last_modified is None or (fileContent != last_modified)
+	
+	isNew = forceUpdate or last_modified is None or (fileContent < last_modified)
 	if not isNew:
 		return False
 	
