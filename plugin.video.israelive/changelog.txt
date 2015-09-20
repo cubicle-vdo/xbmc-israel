@@ -1,3 +1,5 @@
+[B]v4.5.4[/B]
+- Maintenance.
 [B]v4.5.3[/B]
 - Seperate IsraeLIVE addon to: main-addon (IsraeLIVE) and helper-addon (IsraeLiveResolver).
 [B]v4.5.2[/B]
