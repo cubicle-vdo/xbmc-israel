@@ -1,5 +1,5 @@
 import xbmc, xbmcaddon, os, sys
-import common, UA
+import common#, UA
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -23,7 +23,7 @@ remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", rem
 if remoteSettings == []:
 	xbmc.executebuiltin('StartPVRManager')
 else:
-	UA.CheckUA()
+	#UA.CheckUA()
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
 	if not refresh is None:
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)

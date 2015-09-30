@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import urllib, re, os, time, datetime, shutil
+import urllib, re, os, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
+from datetime import datetime
+from dateutil import tz
 import common
 import myResolver
 
@@ -64,13 +66,12 @@ def EscapeXML(str):
 	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;")
 	
 def GetTZ():
-	ts = time.time()
-	delta = (datetime.datetime.fromtimestamp(ts) - datetime.datetime.utcfromtimestamp(ts))
-	if delta > datetime.timedelta(0):
-		return "+{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
-	else:
-		delta = -delta
-		return "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
+	from_zone = tz.tzutc()
+	to_zone = tz.tzlocal()
+	utc = datetime.utcnow()
+	utc = utc.replace(tzinfo=from_zone)
+	local_time = utc.astimezone(to_zone)
+	return local_time.strftime('%z')
 	
 def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	FullGuideList = GetIptvGuide()
@@ -78,6 +79,7 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 		return
 		
 	tz = GetTZ()
+	fmt = "%Y%m%d%H%M%S"
 	
 	channelsList = ""
 	programmeList = ""
@@ -86,11 +88,11 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
 
 		for programme in channel["tvGuide"]:
-			start = time.localtime(programme["start"])
-			end = time.localtime(programme["end"])
+			start = datetime.utcfromtimestamp(programme["start"])
+			end = datetime.utcfromtimestamp(programme["end"])
 			name = EscapeXML(programme["name"].encode("utf-8")) if programme["name"] != None else ""
 			description = EscapeXML(programme["description"].encode("utf-8")) if programme["description"] != None else ""
-			programmeList += "\t<programme start=\"{0} {5}\" stop=\"{1} {5}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(time.strftime("%Y%m%d%H%M%S", start), time.strftime("%Y%m%d%H%M%S", end), chName, name, description, tz)
+			programmeList += "\t<programme start=\"{0} {5}\" stop=\"{1} {5}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(start.strftime(fmt), end.strftime(fmt), chName, name, description, tz)
 
 	xmlList = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tv>\n{0}{1}</tv>".format(channelsList, programmeList)
 	f = open(iptvGuideFile, 'w')

@@ -1,3 +1,5 @@
+[B]v4.5.5[/B]
+- A better support for timezones in LiveTV guide.
 [B]v4.5.4[/B]
 - Maintenance.
 [B]v4.5.3[/B]

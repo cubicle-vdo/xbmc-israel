@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="30100">
-		<setting id="action" type="action" label="30111" action="RunScript($CWD/default.py,,?mode=22&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30111" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=22&url=settings)" option="close"/>
 		<setting id="useEPG" type="bool" label="30106" default="true"/>
-		<setting id="action" type="action" label="30107" action="RunScript($CWD/default.py,,?mode=20&url=settings)" option="close" visible="eq(-1,true)"/>
+		<setting id="action" type="action" label="30107" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=20&url=settings)" option="close" visible="eq(-1,true)"/>
 		<setting type="sep"/>
 		<setting id="israeliveAdvanced" type="bool" label="30020" default="false" />
 		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="0" visible="eq(-1,true)"/>
@@ -13,29 +13,29 @@
 	
 	<category label="30300">
 		<setting id="useIPTV" type="bool" label="30301" default="true" />
-		<setting id="action" type="action" label="30308" action="RunScript($CWD/default.py,,?mode=34&url=settings)" option="close" visible="eq(-1,true)"/>
+		<setting id="action" type="action" label="30308" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=34&url=settings)" option="close" visible="eq(-1,true)"/>
 		<setting type="sep"/>
 		<setting id="LiveTVadvanced" type="bool" label="30020" default="false" visible="eq(-3,true)"/>
-		<setting id="action" type="action" label="30302" action="RunScript($CWD/default.py,,?mode=30&url=settings)" option="close" visible="eq(-1,true) + eq(-4,true)"/>
-		<setting id="action" type="action" label="30303" action="RunScript($CWD/default.py,,?mode=31&url=settings)" option="close" visible="eq(-2,true) + eq(-5,true)"/>
-		<setting id="action" type="action" label="30304" action="RunScript($CWD/default.py,,?mode=32&url=settings)" option="close" visible="eq(-3,true) + eq(-6,true)"/>
+		<setting id="action" type="action" label="30302" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=30&url=settings)" option="close" visible="eq(-1,true) + eq(-4,true)"/>
+		<setting id="action" type="action" label="30303" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=31&url=settings)" option="close" visible="eq(-2,true) + eq(-5,true)"/>
+		<setting id="action" type="action" label="30304" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=32&url=settings)" option="close" visible="eq(-3,true) + eq(-6,true)"/>
 		<setting id="autoIPTV" type="enum" label="30306" lvalues="30001|30002|30003|30004" default="2" visible="eq(-4,true) + eq(-7,true)"/>
 		<setting id="autoPVR" type="bool" label="30309" default="true" visible="eq(-5,true) + eq(-8,true)"/>
 		<setting id="autoStopPVR" type="bool" label="30310" default="false" visible="eq(-6,true) + eq(-9,true) + eq(-1,true)"/>
-		<setting id="action" type="action" label="30307" action="RunScript($CWD/default.py,,?mode=33&url=settings)" option="close" visible="eq(-7,true) + eq(-10,true)"/>
+		<setting id="action" type="action" label="30307" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=33&url=settings)" option="close" visible="eq(-7,true) + eq(-10,true)"/>
 		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-8,true) + eq(-11,true)"/>
 	</category>
 	
 	<category label="30500">
 		<setting label="30509" type="lsep"/>
-		<setting id="action" type="action" label="30502" action="RunScript($CWD/default.py,,?mode=35&url=settings)" option="close"/>
-		<setting id="action" type="action" label="30508" action="RunScript($CWD/default.py,,?mode=36&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30502" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=35&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30508" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=36&url=settings)" option="close"/>
 		<setting id="useCategories" type="bool" label="30501" default="false" />
 		<setting id="iptvList" type="enum" label="30504" lvalues="30505|30506|30507" default="1"/>
 		<setting label="30510" type="lsep"/>
 		<setting label="30219" type="folder" id="imExFolder" source="auto" option="writeable"/>
-		<setting id="action" type="action" label="30214" action="RunScript($CWD/default.py,,?mode=43&url=settings)" option="close"/>
-		<setting id="action" type="action" label="30215" action="RunScript($CWD/default.py,,?mode=44&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30214" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=43&url=settings)" option="close"/>
+		<setting id="action" type="action" label="30215" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=44&url=settings)" option="close"/>
 		<setting id="remoteFavouritesType" type="enum" label="30511" lvalues="30512|30513|30514" default="0"/>
 		<setting id="remoteFavouritesUrl" type="text" label="30515" default="" visible="eq(-1,1)"/>
 		<setting id="remoteFavouritesFile" type="file" label="30515" mask="*.txt" visible="eq(-2,2)"/>
