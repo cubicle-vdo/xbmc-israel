@@ -61,7 +61,6 @@ def LOGIN():
 	page = getData(url=loginurl,timeout=0,postData="username=" + username + "&password=" + password +"&submit_login=התחבר",referer=DOMAIN);
    
 def CHECK_LOGIN():
-	return
 	# check's if login  is required.
 	#print "check if logged in already"
 	if __settings__.getSetting('username').strip() == '' or __settings__.getSetting('user_password') == '':
