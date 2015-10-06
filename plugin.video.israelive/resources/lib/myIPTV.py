@@ -63,37 +63,32 @@ def makeIPTVlist(iptvFile):
 	f.close()
 	
 def EscapeXML(str):
-	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;")
+	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;").replace("&quot;", "'")
 	
-def GetTZ():
+def GetTZtime(timestamp):
 	from_zone = tz.tzutc()
 	to_zone = tz.tzlocal()
-	utc = datetime.utcnow()
+	utc = datetime.utcfromtimestamp(timestamp)
 	utc = utc.replace(tzinfo=from_zone)
 	local_time = utc.astimezone(to_zone)
-	return local_time.strftime('%z')
+	return local_time.strftime('%Y%m%d%H%M%S %z')
 	
 def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	FullGuideList = GetIptvGuide()
 	if len(FullGuideList) == 0:
 		return
-		
-	tz = GetTZ()
-	fmt = "%Y%m%d%H%M%S"
-	
+
 	channelsList = ""
 	programmeList = ""
 	for channel in FullGuideList:
 		chName = channel["channel"].encode("utf-8")
 		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
-
 		for programme in channel["tvGuide"]:
-			start = datetime.utcfromtimestamp(programme["start"])
-			end = datetime.utcfromtimestamp(programme["end"])
+			start = GetTZtime(programme["start"])
+			end = GetTZtime(programme["end"])
 			name = EscapeXML(programme["name"].encode("utf-8")) if programme["name"] != None else ""
 			description = EscapeXML(programme["description"].encode("utf-8")) if programme["description"] != None else ""
-			programmeList += "\t<programme start=\"{0} {5}\" stop=\"{1} {5}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(start.strftime(fmt), end.strftime(fmt), chName, name, description, tz)
-
+			programmeList += "\t<programme start=\"{0}\" stop=\"{1}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(start, end, chName, name, description)
 	xmlList = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tv>\n{0}{1}</tv>".format(channelsList, programmeList)
 	f = open(iptvGuideFile, 'w')
 	f.write(xmlList)
