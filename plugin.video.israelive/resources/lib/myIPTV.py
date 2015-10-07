@@ -31,17 +31,18 @@ def makeIPTVlist(iptvFile):
 			elif url.find('www.youtube.com') > 0 or url == "BB":
 				url = "http://localhost:{0}/?url={1}".format(portNum, url)
 			else:
-				matches = re.compile('^(.*?)[\?|&]mode=([0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
+				matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
 				if len(matches) > 0:
 					url = matches[0][0]
 					mode = matches[0][1]
+					print mode
 					if len(matches[0]) > 2:
 						url += matches[0][2]
 					if mode == '1':
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '4' or mode == '7' or mode == '16':
+					elif mode == '-3' or mode == '0' or mode == '4' or mode == '7' or mode == '16':
 						url = myResolver.Resolve(url, mode)
 						if url is None or url == "down":
 							continue
@@ -63,7 +64,10 @@ def makeIPTVlist(iptvFile):
 	f.close()
 	
 def EscapeXML(str):
-	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;").replace("&quot;", "'")
+	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;").replace("'", "&quot;")
+	
+def UnEscapeXML(str):
+	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "'")
 	
 def GetTZtime(timestamp):
 	from_zone = tz.tzutc()
