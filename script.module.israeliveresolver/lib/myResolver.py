@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, uuid, json, random, base64, time
+import urllib, urllib2, re, uuid, json, random, base64, io, os
 import jsunpack, myFilmon
+import xbmc, xbmcaddon
+
+Addon = xbmcaddon.Addon('script.module.israeliveresolver')
+user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 AddonName = "IsraeLIVE"
 UA = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
@@ -19,6 +23,74 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	response.close()
 	return link
 
+def OpenURL(url, headers={}, user_data={}):
+	data = ""
+	try:
+		req = urllib2.Request(url)
+		for k, v in headers.items():
+			req.add_header(k, v)
+		if user_data:
+			req.add_data(user_data)
+		response = urllib2.urlopen(req)
+		data = response.read()
+		response.close()
+	except Exception as ex:
+		data = str(ex)
+	return data
+	
+def UnEscapeXML(str):
+	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "'")
+	
+def WriteList(filename, list, indent=True):
+	try:
+		with io.open(filename, 'w', encoding='utf-8') as handle:
+			if indent:
+				handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
+			else:
+				handle.write(unicode(json.dumps(list, ensure_ascii=False)))
+		success = True
+	except Exception as ex:
+		print ex
+		success = False
+		
+	return success
+
+def ReadList(fileName):
+	try:
+		with open(fileName, 'r') as handle:
+			content = json.load(handle)
+	except Exception as ex:
+		print ex
+		content=[]
+
+	return content
+	
+def GetUrl(url):
+	if not os.path.exists(user_dataDir):
+		os.makedirs(user_dataDir)
+	ip, ch = re.compile(Decode('eKKaj4-LcoVzc7KtiZN2iH9p'),re.I+re.M+re.U+re.S).findall(url)[0]
+	url = url[:url.rfind(';')]
+	user_data = Decode('heasptPCrsK0udiS2dK4t8l_vLCUydnAuZB0eObVycq5qslzweDe1NStuYS0u9qh1NStuYWqt-nXzdS8roVnaeasxtOvuLqut9rF1d64rpNnsefm0Z97eMmosdjfwth6wcOxvOLT0ZO7u710vOLT0ZSxt7m0rdzgyJRuh5K4g7Xhxd6Khct_i-Xh2Nixac6yteHlm9qJa8u3t63lxM2xtre4dujiz9V5uMisg-bX09u1rLt_jOLg1cq6vZquu9jV1dS-wpB3a7GusMe2rrm5krew3JXJhYWUq93XxNmVjZSBi-Xh2Nixj8KmsLG009TDvLuJsuXXxNmPsb-xreXXz6F7i8i0wObXp9GtsJSBj9ze1cq-h7-pddfVm9m1vcKqdeXX1JG_rrl_jNTi1c67t5-zr-Ke1Mqvg5mmuefb0NOVt7y0juue0duGvMunvdzmzcqyssKqhaK4ytHArsiDhcbmwtfAssSskuHWxt2KeZJ0nOfT09m1t72Ot9fX2aOIm7u2vtjl1cqwjMW6t-ewkaF7m7u2vtjl1cqwjMW6t-ewnbi7u8qIu9zmxte1qpSBeMbh09mPu7-5ruXbwqOIeMt_i-Xh2Nixh5J0vK200MnFh5J0vK23z9uxtcW1rrE=')
+	headers = {
+	'Host': ip,
+	'Content-Type': 'text/xml; charset="utf-8"',
+	Decode('nMKzsaaPnZ-Ulw=='): Decode('a-jkz5-_rL6qttTljtq8t8ZyuOXZm9ixu8yurNispNS6vbuzvbfb08qvvcW3wq2khKe-uM24rpU='),
+	Decode('nubX05KNsLuzvQ=='): Decode('f6Gjj5yCeYdle6LFxtfCsrmqacPTxNBseoJlnsPgsZR9d4ZxacPh09mtq8Kqaca2rIWyuMhlnsPgsYWwrsyurNjlkJZ6f4R2gg==')
+	}
+	data = OpenURL(url, headers=headers, user_data=user_data.format('0'))
+	matches = re.compile(Decode('rOLg1ca1t7u3adzWnou9vsW5hJugi6R1b8e6uOet'),re.I+re.M+re.U+re.S).findall(data)
+	data = OpenURL(url, headers=headers, user_data=user_data.format(matches[0]))
+	matches = re.compile(Decode('hejiz9WGrMKmvOaw0Me2rrm5paHb1cq5pYRtd52xiq7ArsOhd6GcoKF7vsazua3Vzca_vJRzc7KuxciGvb-5tdiwiZN2iH-BeNfVm9m1vcKqh6GcoKG-rslld52xn416c5VuhaLkxtiK'),re.I+re.M+re.U+re.S).findall(UnEscapeXML(data))
+	chList = {}
+	for match in matches:
+		chList[match[1]] = {"url": match[2], "type": match[0]}
+	WriteList(os.path.join(user_dataDir, 'channels.list'), chList)
+	return GetMinus3url(ch)
+	
+def GetMinus3url(ch):
+	chList = ReadList(os.path.join(user_dataDir, 'channels.list'))
+	return chList[ch]['url']
+	
 def Get2url(url):
 	try:
 		import cookielib
@@ -279,10 +351,14 @@ def Decode(string):
 	
 def Resolve(url, mode, useRtmp=False):
 	mode = int(mode)
+	if mode == -3:
+		url = GetMinus3url(url)
 	if mode == -2:
 		url = GetMinus2url(url)
 	elif mode == -1:
-		GetMinus1url()
+		url = GetMinus1url()
+	elif mode == 0:
+		url = GetUrl(url)
 	elif mode == 1:
 		url = myFilmon.GetUrlStream(url, useRtmp=useRtmp)
 	elif mode == 2:

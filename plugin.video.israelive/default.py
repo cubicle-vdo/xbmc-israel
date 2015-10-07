@@ -131,7 +131,7 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 			from F4mProxy import f4mProxyHelper
 			url = f4mProxyHelper().playF4mLink(urllib.unquote_plus(url))
 		elif "mode=" in url:
-			matches = re.compile('^(.*?)[\?|&]mode=([0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
+			matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
 			if len(matches) > 0:
 				url = matches[0][0]
 				mode = matches[0][1]
@@ -143,6 +143,9 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 					else:
 						return False
 				else:
+					if mode == '0':
+						mode = '-3'
+						url = url[url.rfind(';')+1:]
 					url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
 					if url is None or url == "down":
 						return False
