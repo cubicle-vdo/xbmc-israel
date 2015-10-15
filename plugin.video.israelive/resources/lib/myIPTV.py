@@ -15,7 +15,7 @@ localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def makeIPTVlist(iptvFile):
-	#satElitKey = None
+	first21 = True
 	iptvList = '#EXTM3U\n'
 	
 	channelsList = GetIptvChannels()
@@ -35,14 +35,18 @@ def makeIPTVlist(iptvFile):
 				if len(matches) > 0:
 					url = matches[0][0]
 					mode = matches[0][1]
-					print mode
 					if len(matches[0]) > 2:
 						url += matches[0][2]
 					if mode == '1':
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '-3' or mode == '0' or mode == '4' or mode == '7' or mode == '16':
+					elif mode == '-3' or mode == '0' or mode == '4' or mode == '7' or mode == '16' or mode == '20' or mode == '21':
+						if mode == '21':
+							if first21:
+								first21 = False
+							else:
+								url += ";s"
 						url = myResolver.Resolve(url, mode)
 						if url is None or url == "down":
 							continue
