@@ -24,13 +24,15 @@ if remoteSettings == []:
 	xbmc.executebuiltin('StartPVRManager')
 else:
 	#UA.CheckUA()
+	# Update channels-lists files
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
 	if not refresh is None:
 		common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
 
+	# Update EPG files for LiveTV selected channels first
+	isGuideUpdated = False
 	if Addon.getSetting("useEPG") == "true":
 		refresh = common.GetSubKeyValue(remoteSettings, "fullGuide", "refresh")
-		isGuideUpdated = False
 		if not refresh is None and common.isFileOld(fullGuideFile, refresh * 3600) and common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings):
 			isGuideUpdated = True
 			epg = common.ReadList(fullGuideFile)
@@ -48,28 +50,31 @@ else:
 			
 			common.MakeCatGuides(categoriesList, epg)
 			
-		if Addon.getSetting("useIPTV") == "true":
-			import myIPTV
-			myIPTV.makeIPTVlist(iptvChannelsFile)
-			if isGuideUpdated:
-				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
-			
+	# Update LiveTV channels and EPG
+	if Addon.getSetting("useIPTV") == "true":
+		import myIPTV
+		myIPTV.makeIPTVlist(iptvChannelsFile)
 		if isGuideUpdated:
-			if fullCategoriesList == []:
-				fullCategoriesList =  common.ReadList(os.path.join(user_dataDir, "lists", "categories.list"))
-			if iptvList == "0": # Favourites
-				categoriesList = fullCategoriesList
-			elif iptvList == "1": # No filter 
-				categoriesList = [{"id": "Favourites"}]
-			elif iptvList == "2": # Selected categories
-				categoriesList = common.GetUnSelectedList(fullCategoriesList, selectedCategoriesList)
-				categoriesList.append({"id": "Favourites"})
-				
-			common.MakeCatGuides(categoriesList, epg)
+			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
+		myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+	
+	# Update EPG files for LiveTV non-sSelected channels
+	if isGuideUpdated:
+		if fullCategoriesList == []:
+			fullCategoriesList =  common.ReadList(os.path.join(user_dataDir, "lists", "categories.list"))
+		if iptvList == "0": # Favourites
+			categoriesList = fullCategoriesList
+		elif iptvList == "1": # No filter 
+			categoriesList = [{"id": "Favourites"}]
+		elif iptvList == "2": # Selected categories
+			categoriesList = common.GetUnSelectedList(fullCategoriesList, selectedCategoriesList)
+			categoriesList.append({"id": "Favourites"})
 			
-		if Addon.getSetting("useIPTV") == "true":
-			myIPTV.SaveChannelsLogos(iptvLogosDir)
+		common.MakeCatGuides(categoriesList, epg)
+		
+	# Update channels-logos files
+	if Addon.getSetting("useIPTV") == "true":
+		myIPTV.SaveChannelsLogos(iptvLogosDir)
 
 	checkInterval = 720 # 12 hours = 720 minutes
 	try:

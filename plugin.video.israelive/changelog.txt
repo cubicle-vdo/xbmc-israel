@@ -1,3 +1,5 @@
+[B]v4.5.8[/B]
+- Use Kodi internal library add-ons.
 [B]v4.5.7[/B]
 - Another fix for timezones in LiveTV guide (fix for last update).
 [B]v4.5.6[/B]

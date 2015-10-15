@@ -14,7 +14,7 @@ iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
 iptvLogosDir = os.path.join(user_dataDir, "logos")
 
-if Addon.getSetting("useEPG") == "true" and Addon.getSetting("useIPTV") == "true":
+if Addon.getSetting("useIPTV") == "true":
 	myIPTV.makeIPTVlist(iptvChannelsFile)
 	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 
