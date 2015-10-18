@@ -206,7 +206,7 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
                 else:
                     time = '00:00'
 
-                url='http://82.80.192.11/walla_vod/_definst_/'+ re.compile('<src>(.*?)</src>').findall(page)[0]+'.mp4/master.m3u8'
+                url='http://62.90.90.56/walla_vod/_definst_/'+ re.compile('<src>(.*?)</src>').findall(page)[0]+'.mp4/master.m3u8'
                 epi1 = Episode(content=contentType, title=title, url=url, iconImage=iconImage, time=str(time), epiDetails=epiDetails)
                 episodes.append(epi1)
                 addLink(contentType, title, url, iconImage, str(time), epiDetails)
