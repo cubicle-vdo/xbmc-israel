@@ -2,6 +2,7 @@
 import urllib, re, os, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
+import time
 from datetime import datetime
 isDateutil = False
 try:
@@ -10,12 +11,7 @@ try:
 except:
 	pass
 import common
-isIsraeLiveResolver = False
-try:
-	import myResolver
-	isIsraeLiveResolver = True
-except:
-	pass
+import myResolver
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -57,7 +53,7 @@ def makeIPTVlist(iptvFile):
 								first21 = False
 							else:
 								url += ";s"
-						url = myResolver.Resolve(url, mode) if isIsraeLiveResolver else None
+						url = myResolver.Resolve(url, mode)
 						if url is None or url == "down":
 							continue
 					elif mode == '10' or mode == '13':
@@ -93,7 +89,6 @@ def GetTZtime(timestamp):
 		local_time = utc.astimezone(to_zone)
 		timeStr = local_time.strftime('%Y%m%d%H%M%S %z')
 	else:
-		import time
 		ts = time.time()
 		delta = (datetime.fromtimestamp(ts) - datetime.utcfromtimestamp(ts))
 		hrs = "+0000"

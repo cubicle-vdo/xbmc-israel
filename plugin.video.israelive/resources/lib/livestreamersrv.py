@@ -6,16 +6,10 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import socket
 #import thread
 import threading
-from urllib import unquote
 
-isLivestreamer = False
-try:
-	from livestreamer import Livestreamer
-	#import livestreamer
-	isLivestreamer = True
-except Exception as e:
-	pass
-	
+from livestreamer import Livestreamer
+#import livestreamer
+from urllib import unquote
 import player
 
 LIVESTREAMER = None
@@ -125,7 +119,4 @@ def stop(portNum):
 		print ex
 		#pass
 
-if isLivestreamer:
-	start(int(sys.argv[1]))
-else:
-	print "---- Livestreamer didn't installed. -----"
+start(int(sys.argv[1]))
