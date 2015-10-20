@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
-import myResolver
+
+isIsraeLiveResolver = False
+try:
+	import myResolver
+	isIsraeLiveResolver = True
+except Exception as e:
+	pass
 
 def get_params(url):
 	param=[]
@@ -20,7 +26,7 @@ def get_params(url):
 		
 def GetFullLink(url, mode):
 	if mode != 0 and mode != -3:
-		url = myResolver.Resolve(url, mode)
+		url = myResolver.Resolve(url, mode) if isIsraeLiveResolver else ""
 		
 	if mode == -2 or mode == -3:
 		url = "hds://{0}".format(url)

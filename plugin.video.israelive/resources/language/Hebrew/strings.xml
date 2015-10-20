@@ -67,6 +67,9 @@
 	<string id="30233">טלויזיה</string>
 	<string id="30234">רדיו</string>
 	<string id="30235">IsraeLiveResolver עודכן לגירסה </string>
+	<string id="30236">IsraeLiveResolver הותקן ע"י IsraeLIVE </string>
+	<string id="30237">IsraeLiveResolver לא מותקן במערכת </string>
+	<string id="30238">נא להתקין את IsraeLIVE מחדש </string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>

@@ -67,6 +67,9 @@
 	<string id="30233">TV</string>
 	<string id="30234">Radio</string>
 	<string id="30235">IsraeLiveResolver updated to </string>
+	<string id="30236">IsraeLiveResolver installed by IsraeLIVE</string>
+	<string id="30237">IsraeLiveResolver didn't installed </string>
+	<string id="30238">Please re-install IsraeLIVE </string>
 	
 	<string id="30300">LiveTV Settings</string>
 	<string id="30301">Enable Live TV</string>

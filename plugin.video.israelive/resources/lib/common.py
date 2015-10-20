@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, os, io, re, time, base64, random, hashlib
+import sys, os, io, re, time, base64, random, hashlib, zipfile
 import urllib, urllib2, json
 import xbmc, xbmcgui, xbmcaddon
 import multiChoiceDialog
@@ -7,7 +7,6 @@ import itertools, operator
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
-#AddonName = Addon.getAddonInfo("name")
 AddonName = "IsraeLIVE"
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
@@ -134,11 +133,14 @@ def UpdateZipedFile(file, key, remoteSettings=None, forceUpdate=False):
 	return False
 	
 def GetEncodeString(str):
-	import chardet
 	try:
+		import chardet
 		str = str.decode(chardet.detect(str)["encoding"]).encode("utf-8")
 	except:
-		pass
+		try:
+			str = str.encode("utf-8")
+		except:
+			pass
 	return str
 
 def UpdateFavouritesFromRemote():
@@ -291,7 +293,7 @@ def GetRemoteSettings():
 
 	urls = GetSubKeyValue(remoteSettings, "remoteSettings", "urls")
 	if urls is None or len(urls) == 0:
-		remoteSettings = {"remoteSettings": {"urls": [remoteSettingsUrl], "lastModified": "0", "refresh": 12}}
+		remoteSettings = {"remoteSettings": {"urls": remoteSettingsUrl.split(","), "lastModified": "0", "refresh": 12}}
 	
 	return remoteSettings
 
@@ -368,6 +370,47 @@ def GetGuide(categoryID):
 	fileName = os.path.join(listsDir, "{0}.guide".format(categoryID))
 	return ReadList(fileName)
 	
+def ExtractAll(_in, _out):
+	try:
+		zin = zipfile.ZipFile(_in, 'r')
+		zin.extractall(_out)
+		zin.close()
+	except Exception, e:
+		print str(e)
+		return False
+	return True
+	
+def InstallAddon(addonID):
+	try:
+		req = urllib2.Request('https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml')
+		response = urllib2.urlopen(req)
+		data = response.read()
+		response.close()
+		data = re.compile('<addon id="(.+?)".+?version="(.+?)"', re.I+re.M+re.U+re.S).findall(data)
+		for i in range(len(data)):
+			if data[i][0] == addonID:
+				addonVer = data[i][1]
+				break
+		addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+		url = 'https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/{0}/{0}-{1}.zip'.format(addonID, addonVer)
+		packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
+		urllib.urlretrieve(url, packageFile)
+		if ExtractAll(packageFile, addonsDir):
+			try:
+				os.remove(packageFile)
+			except:
+				pass
+		else:
+			raise Exception("--- Can't extract package. ")
+				
+		xbmc.executebuiltin("UpdateLocalAddons")
+		xbmc.executebuiltin("UpdateAddonRepos")
+	except Exception as ex:
+		print ex
+		return False
+	
+	return True
+	
 def CheckNewVersion():
 	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
 	if not os.path.isfile(versionFile):
@@ -385,7 +428,19 @@ def CheckNewVersion():
 		f = open(resolverVerFile,'r')
 		resolverVersion = f.read()
 		f.close()
-	resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
+		
+	try:
+		resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
+	except:
+		if InstallAddon('script.module.israeliveresolver'):
+			try:
+				resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
+			except:
+				pass
+			#OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
+		else:
+			OKmsg(localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
+			return
 	
 	isUpdated = False
 	if resolverNewVersion > resolverVersion:

@@ -3,6 +3,13 @@ import urllib, urllib2, re, uuid, json, random, base64, io, os
 import jsunpack, myFilmon
 import xbmc, xbmcaddon
 
+isLivestreamer = False
+try:
+	import livestreamer
+	isLivestreamer = True
+except Exception as e:
+	pass
+
 Addon = xbmcaddon.Addon('script.module.israeliveresolver')
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
@@ -194,11 +201,8 @@ def Get2url(url):
 		return ""
 		
 def GetYoutubeFullLink(url):
-	#from livestreamer import Livestreamer
-	#livestr = Livestreamer()
-	#channel = livestr.resolve_url(url)
-	#streams = channel.get_streams()
-	import livestreamer
+	if not isLivestreamer:
+		return None
 	streams = livestreamer.streams(url)
 	stream = streams["best"]
 	return stream.url
@@ -244,7 +248,8 @@ def Get7url(channel):
 	return finalUrl
 
 def GetStreamliveToFullLink(url):
-	import livestreamer
+	if not isLivestreamer:
+		return None
 	streams = livestreamer.streams(url)
 	stream = streams["best"]
 	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
@@ -457,6 +462,40 @@ def Get21url(channel):
 		chList = ReadList(os.path.join(user_dataDir, '21.list'))
 	return chList[parts[0]]['url']
 	
+def Get22url(channel):
+	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=').format(channel)
+	text = getUrl(url)
+	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
+	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
+	
+def Get23url(channel):	
+	url = Decode('sefm0Z97eMq7d93TztW7d8q7eOPewt57rL6mt-HXzZTHedN0').format(channel)
+	text = getUrl(url)
+	matches = re.compile(Decode('r9zexp9ubH5zdLKbgw=='), re.I+re.M+re.U+re.S).findall(text)
+	s = matches[0]
+	quoted = ''
+	for i in range(0, len(s), 3):
+		quoted += '%u0' + s[i:i+3]
+	s = re.sub(r'%u([a-fA-F0-9]{4}|[a-fA-F0-9]{2})', lambda m: unichr(int(m.group(1), 16)), quoted)
+	return s
+	
+def Get24url(channel):
+	url = Decode('sefm0Z97eM28wKHeytuxvcxzqu2h3JXJ').format(channel)
+	text = getUrl(url)
+	matches = re.compile(Decode('vOXVm4VucYRwiJyU'), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) < 1:
+		return None
+	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
+	
+def Get25url(channel):
+	url = Decode('sefm0Z97eM28wKHf0Ni3v7e5v6Hgxtl7ubesrqLtkeJ6ub61').format(channel)
+	text = getUrl(url)
+	matches = re.compile(Decode('s-rizcbFrsihcZrf2pLCsrqquJrOipO_rsq6uc-a3MG_r7-xrq2SiI16dJVucA=='), re.I+re.M+re.U+re.S).findall(text)
+	print matches
+	if len(matches) < 1:
+		return None
+	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
+
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -518,4 +557,12 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get20url(url)
 	elif mode == 21:
 		url = Get21url(url)
+	elif mode == 22:
+		url = Get22url(url)
+	elif mode == 23:
+		url = Get23url(url)
+	elif mode == 24:
+		url = Get24url(url)
+	elif mode == 25:
+		url = Get25url(url)
 	return url
