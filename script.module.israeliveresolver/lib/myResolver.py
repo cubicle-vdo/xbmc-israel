@@ -2,13 +2,7 @@
 import urllib, urllib2, re, uuid, json, random, base64, io, os
 import jsunpack, myFilmon
 import xbmc, xbmcaddon
-
-isLivestreamer = False
-try:
-	import livestreamer
-	isLivestreamer = True
-except Exception as e:
-	pass
+import livestreamer
 
 Addon = xbmcaddon.Addon('script.module.israeliveresolver')
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
@@ -201,8 +195,6 @@ def Get2url(url):
 		return ""
 		
 def GetYoutubeFullLink(url):
-	if not isLivestreamer:
-		return None
 	streams = livestreamer.streams(url)
 	stream = streams["best"]
 	return stream.url
@@ -248,8 +240,6 @@ def Get7url(channel):
 	return finalUrl
 
 def GetStreamliveToFullLink(url):
-	if not isLivestreamer:
-		return None
 	streams = livestreamer.streams(url)
 	stream = streams["best"]
 	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
