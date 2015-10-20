@@ -3,9 +3,19 @@ import urllib, re, os, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from dateutil import tz
+isDateutil = False
+try:
+	from dateutil import tz
+	isDateutil = True
+except:
+	pass
 import common
-import myResolver
+isIsraeLiveResolver = False
+try:
+	import myResolver
+	isIsraeLiveResolver = True
+except:
+	pass
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -41,13 +51,13 @@ def makeIPTVlist(iptvFile):
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '-3' or mode == '0' or mode == '4' or mode == '7' or mode == '16' or mode == '20' or mode == '21':
+					elif mode == '-3' or mode == '0' or mode == '4' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25':
 						if mode == '21':
 							if first21:
 								first21 = False
 							else:
 								url += ";s"
-						url = myResolver.Resolve(url, mode)
+						url = myResolver.Resolve(url, mode) if isIsraeLiveResolver else None
 						if url is None or url == "down":
 							continue
 					elif mode == '10' or mode == '13':
@@ -74,12 +84,27 @@ def UnEscapeXML(str):
 	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "'")
 	
 def GetTZtime(timestamp):
-	from_zone = tz.tzutc()
-	to_zone = tz.tzlocal()
-	utc = datetime.utcfromtimestamp(timestamp)
-	utc = utc.replace(tzinfo=from_zone)
-	local_time = utc.astimezone(to_zone)
-	return local_time.strftime('%Y%m%d%H%M%S %z')
+	timeStr = ""
+	if isDateutil:
+		from_zone = tz.tzutc()
+		to_zone = tz.tzlocal()
+		utc = datetime.utcfromtimestamp(timestamp)
+		utc = utc.replace(tzinfo=from_zone)
+		local_time = utc.astimezone(to_zone)
+		timeStr = local_time.strftime('%Y%m%d%H%M%S %z')
+	else:
+		import time
+		ts = time.time()
+		delta = (datetime.fromtimestamp(ts) - datetime.utcfromtimestamp(ts))
+		hrs = "+0000"
+		if delta > timedelta(0):
+			hrs = "+{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
+		else:
+			delta = -delta
+			hrs = "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
+		local_time = time.localtime(timestamp)
+		timeStr = "{0} {1}".format(local_time.strftime('%Y%m%d%H%M%S'), hrs)
+	return timeStr
 	
 def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	FullGuideList = GetIptvGuide()

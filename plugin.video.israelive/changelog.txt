@@ -1,3 +1,5 @@
+[B]v4.6.0[/B]
+- Maintenance.
 [B]v4.5.9[/B]
 - Maintenance.
 [B]v4.5.8[/B]

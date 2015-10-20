@@ -6,8 +6,6 @@ Addon = xbmcaddon.Addon(AddonID)
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 
-common.CheckNewVersion()
-
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
@@ -23,6 +21,7 @@ remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", rem
 if remoteSettings == []:
 	xbmc.executebuiltin('StartPVRManager')
 else:
+	common.CheckNewVersion()
 	#UA.CheckUA()
 	# Update channels-lists files
 	refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")

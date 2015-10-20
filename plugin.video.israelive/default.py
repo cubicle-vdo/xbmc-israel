@@ -2,7 +2,13 @@
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import sys, os, time, datetime, re
 import urllib
-import myResolver
+
+isIsraeLiveResolver = False
+try:
+	import myResolver
+	isIsraeLiveResolver = True
+except:
+	pass
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -120,14 +126,14 @@ def ListLive(categoryID, iconimage=None):
 def PlayChannel(url, name, iconimage, description, categoryName):
 	try:
 		if url.find('www.youtube.com') > 0:
-			url = myResolver.GetYoutubeFullLink(url)
+			url = myResolver.GetYoutubeFullLink(url) if isIsraeLiveResolver else None
 		elif url == "BB":
-			url = myResolver.Resolve(url, -1)
+			url = myResolver.Resolve(url, -1) if isIsraeLiveResolver else None
 		elif '.f4m' in url:
 			url = url[url.find('http://'):]
 			if 'keshet' in url:
-				ticket = myResolver.GetMinus2Ticket()
-				url = "{0}?{1}&hdcore=3.0.3".format(url, ticket)
+				ticket = myResolver.GetMinus2Ticket() if isIsraeLiveResolver else None
+				url = "{0}?{1}&hdcore=3.0.3".format(url, ticket) if isIsraeLiveResolver else None
 			from F4mProxy import f4mProxyHelper
 			url = f4mProxyHelper().playF4mLink(urllib.unquote_plus(url))
 		elif "mode=" in url:
@@ -146,9 +152,10 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 					if mode == '0':
 						mode = '-3'
 						url = url[url.rfind(';')+1:]
-					url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
-					if url is None or url == "down":
-						return False
+					url = myResolver.Resolve(url, mode, useRtmp=useRtmp) if isIsraeLiveResolver else None
+					
+		if url is None or url == "down":
+			return False
 	except Exception as ex:
 		print ex
 		print "Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name))
