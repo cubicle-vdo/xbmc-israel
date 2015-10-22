@@ -5,7 +5,7 @@ from StringIO import StringIO
 import urllib, urllib2
 import repoCheck
 
-AddonID = 'plugin.video.IL20'
+AddonID = 'plugin.video.iltwenty'
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = "Channel20"
 icon = Addon.getAddonInfo('icon')
