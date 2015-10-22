@@ -91,25 +91,6 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.IL20"
-       name="ערוץ 20"
-       version="1.0.0"
-       provider-name="xbmc-israel team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0"/>
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="default.py">
-		<provides>video</provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary lang="en">Watch Channel 20 Videos</summary>
-		<description lang="en">Watch Channel 20 Video content from Channel 20 website.</description>
-		<summary lang="he">צפיה בתכנים מאתר ערוץ 20</summary>
-		<description lang="he">צפיה בתכנים מאתר ערוץ 20.</description>
-		<platform>all</platform>
-	</extension>
-</addon>
-
 <addon id="plugin.video.ilten" name="ערוץ 10" version="1.3.0" provider-name="vmaster">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -131,6 +112,25 @@
           <content>movies</content>
         </supportedcontent>
     </extension>
+</addon>
+
+<addon id="plugin.video.iltwenty"
+       name="ערוץ 20"
+       version="1.0.0"
+       provider-name="xbmc-israel team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Watch Channel 20 Videos</summary>
+		<description lang="en">Watch Channel 20 Video content from Channel 20 website.</description>
+		<summary lang="he">צפיה בתכנים מאתר ערוץ 20</summary>
+		<description lang="he">צפיה בתכנים מאתר ערוץ 20.</description>
+		<platform>all</platform>
+	</extension>
 </addon>
 
 <addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.6.1" provider-name="Benny123, Avigdor (xbmc-israel repo)">
