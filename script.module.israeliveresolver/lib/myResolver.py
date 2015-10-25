@@ -453,7 +453,7 @@ def Get21url(channel):
 	return chList[parts[0]]['url']
 	
 def Get22url(channel):
-	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=').format(channel)
+	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=').format(channel)
 	text = getUrl(url)
 	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
