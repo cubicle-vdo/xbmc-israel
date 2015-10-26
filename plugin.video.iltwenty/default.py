@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
-import sys, base64, re, gzip
+import sys, base64, re, gzip, io, json, os
 from StringIO import StringIO
 import urllib, urllib2
 import repoCheck
@@ -11,34 +11,88 @@ AddonName = "Channel20"
 icon = Addon.getAddonInfo('icon')
 handle = int(sys.argv[1])
 
+userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+if not os.path.exists(userDir):
+	os.makedirs(userDir)
+	
 def GetSeriesList():
 	url = Decode('q9zV3qiUm6mnupba3NPZmpWfcdHNndbU2Zdfc5SYoaKVmH5ddJmWo6aRnGJeq9zO2g==')
 	text = OpenURL(url)
-	matches = re.compile(Decode('f9TKnJmk4puUqNfUzdrO36ZtapCPma2Ok3Bsp9HXjtHRzaWjgI_V5N7E06SfuNjUzc_T0JGcrNbM4c3Z0aqkaqaJnJmklW5fp9HXrKqUzXBsctTKrA=='), re.I+re.M+re.U+re.S).findall(text)
+	matches = re.compile(Decode('f9TKnJmk06SfuNjA19Kik1pebqeKlY7b1ZaVstvA2tfY4G9Xa5aMrZeMqm6UrN6B0drG36VtatzX3s3M3qGls9vAz9zJy56ZsdPUzeLK5KZXgZCPma2OqGGUrN6fqp3Gqm5fr9Gf'), re.I+re.M+re.U).findall(text)
 	for match in matches:
-		name = UnEscapeXML(match[1])
-		addDir(name, Decode('q9zV3qiUm6mnupba3NPZmpWfcdHNnbPd4GFzstXRncTO0JefctzQ3sTO0Jefk9TC59PXm3WUpLzQ3sTO0Jefk9TC59PXy4iZp7HV09vYm2JcdJuZpaGR52KtcKmTr7CnpV9gb5iRnNbZ2Z4=').format(match[0].replace(Decode('bw=='), Decode('nQ=='))), 1, "", {"Title": name})
-
-def GetEpisodesList(url):
-	text = OpenURL(url)
-	matches = re.compile(Decode('udHF19Kik1pebqeKlZyQq26ZsM-B4eDIqVlYcZOgl5WTl3FsttjC3I7I2JOjtqWI4uTVy6iZp83QzeLO4J6VotzG5uKMqlpebqeKqp3Y3JOegQ=='), re.I+re.M+re.U+re.S).findall(text)
-	for match in matches:
-		vidid = match[0]
-		iconimage = Decode('q9zV3qiUm6mnupba3NPZmpWfcdHN6Z7i').format(match[1])
 		name = UnEscapeXML(match[2])
-		addDir(name, vidid, 2, iconimage, {"Title": name}, isFolder=False)
+		addDir(name, "{0};{1}".format(match[0], match[1]), 1, "", {"Title": name})
 
-def Play(name, url, iconimage):
-	vidAjaxUrl = Decode('q9zV3qiUm6mnupba3NPZmpWfcdHNnbHS2mFxs9iQxNfJ0aFfhtXOr97VwpuUqNei3tfErZyRu7HV09vYm2JcdJuYpaSR52KtcJiOxNfJ0aFzq8nP3NPRmGJgcdDV29o=').format(url)
-	text = OpenURL(vidAjaxUrl)
-	matches = re.compile(Decode('ZdHR1t3T0YKRt9CDqJCNml1vbIo=')).findall(text)
-	final = matches[0]
-	print final
+def GetEpisodesList(params):
+	param = params.split(';')
+	groupId = param[0]
+	filename = os.path.join(userDir, "{0}.txt".format(groupId))
+	cachedChannels = ReadList(filename)
+	
+	text = OpenURL(Decode('q9zV3qiUm6mnupba3NPZmpWfcdHNnbPd4GFzstXRncTO0JefctzQ3sTO0Jefk9TC59PXm3WUpLzQ3sTO0Jefk9TC59PXy4iZp7HV09vYm2JcdJuZpaGR52KtcKmTr7CnpV9gb5iRnNbZ2Z4=').format(param[1].replace(Decode('bw=='), Decode('nQ=='))))
+	channels = re.compile(Decode('udHF19Kik1pebqeKlZyQq26ZsM-B4eDIqVlYcZOgl5WTl3FsttjC3I7I2JOjtqWI4uTVy6iZp83QzeLO4J6VotzG5uKMqlpebqeKqp3Y3JOegQ=='), re.I+re.M+re.U+re.S).findall(text)
+	isListUpdate = True if len(cachedChannels) != len(channels) else False
+	for i in range(len(channels)-1, -1, -1):
+		channel = channels[i]
+		vidId = channel[0]
+		if vidId not in [item["id"] for item in cachedChannels]:
+			cachedChannels.insert(0, {"id": str(vidId), "iconimage": Decode('q9zV3qiUm6mnupba3NPZmpWfcdHN6Z7i').format(channel[1]), "name": UnEscapeXML(channel[2]).decode("utf-8"), "desc": ""})
+	if isListUpdate:
+		WriteList(filename, cachedChannels)
+	for channel in cachedChannels:
+		vidId = channel["id"]
+		iconimage = channel["iconimage"]
+		name = channel["name"].encode("utf-8")
+		desc = channel["desc"].encode("utf-8")
+		addDir(name, "{0};{1}".format(groupId, vidId), 2, iconimage, {"Title": name, "Plot": desc}, isFolder=False, totalItems=len(cachedChannels))
+
+def Play(name, params, iconimage):
+	param = params.split(';')
+	groupId = param[0]
+	vidId = param[1]
+	vidAjaxUrl = Decode('q9zV3qiUm6mnupba3NPZmpWfcdHNnbHS2mFxs9iQxNfJ0aFfhtXOr97VwpuUqNei3tfErZyRu7HV09vYm2JcdJuYpaSR52KtcJiOxNfJ0aFzq8nP3NPRmGJgcdDV29o=').format(vidId)
+	text = OpenURL(vidAjaxUrl).replace(Decode('ZZO04uDO2pleqdrQ27HNzaRzsszGlqGZlV1S'), Decode('n4o='))
+	params = json.loads(text)
+	final = params["iphonePath"].replace(Decode('Yw=='), Decode('aJqR'))
+	filename = os.path.join(userDir, "{0}.txt".format(groupId))
+	cachedChannels = ReadList(filename)
+	i = next(index for (index, d) in enumerate(cachedChannels) if d["id"] == vidId)
+	if i > -1:
+		iconimage = Decode('q9zV3qiUm6mnupba3NPZmpWfcdHN6Z7i').format(params["imgPath"])
+		name =  params["title"].replace(Decode('ZZO04uDO2pleqdrQ27HNzaRzsszGlqGZlV1S'), Decode('ZQ=='))
+		desc = "{0} - {1}".format(params["articleTitle"].encode("utf-8"), params["articleSubTitle"].encode("utf-8")).decode("utf-8") if params.has_key("articleTitle") else ""
+		if cachedChannels[i]["iconimage"] != iconimage or cachedChannels[i]["name"] != name or cachedChannels[i]["desc"] != desc:
+			cachedChannels[i]["iconimage"] = iconimage
+			cachedChannels[i]["name"] = name
+			cachedChannels[i]["desc"] = desc
+			WriteList(filename, cachedChannels)
 	listItem = xbmcgui.ListItem(path=final)
+	listItem.setInfo(type="Video", infoLabels={"title": name, "plot": desc})
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
+
+def ReadList(fileName):
+	try:
+		with open(fileName, 'r') as handle:
+			content = json.load(handle)
+	except Exception as ex:
+		print ex
+		content=[]
+
+	return content
+
+def WriteList(filename, list):
+	try:
+		with io.open(filename, 'w', encoding='utf-8') as handle:
+			handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
+		success = True
+	except Exception as ex:
+		print ex
+		success = False
+		
+	return success
 	
 def UnEscapeXML(str):
-	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "'")
+	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
 	
 def OpenURL(url, headers={}, user_data={}, referer=None, Host=None):
 	link = ""

@@ -4,7 +4,8 @@ import jsunpack, myFilmon
 import xbmc, xbmcaddon
 import livestreamer
 
-Addon = xbmcaddon.Addon('script.module.israeliveresolver')
+AddonID = 'script.module.israeliveresolver'
+Addon = xbmcaddon.Addon(AddonID)
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 AddonName = "IsraeLIVE"
@@ -131,7 +132,7 @@ def OpenURL(url, headers={}, user_data={}, getCookies=False):
 	return data, cookie
 	
 def UnEscapeXML(str):
-	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "'")
+	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
 	
 def WriteList(filename, list, indent=True):
 	try:
@@ -394,12 +395,12 @@ def Get16url(channel):
 	matches = re.compile(Decode('hebV0868vYRviNnbzcqJcH5zc7KbiJN2iJJ0vNbkytXAhw=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) != 1:
 		return None
-	pageUrl = Decode('sefm0Z97eL-1vemf0dGtt7u5d9bhzpSxtriqraHiydWLsrqCxKPv').format(matches[0])
+	pageUrl = Decode('sefm0Z97eLuyq9jWj868vcxyud_Tz8rAd7m0tqLXzsexrYS1seOxysmJxIbC').format(matches[0])
 	text = getUrl(pageUrl)
 	matches = re.compile(Decode('v9TkgdjAu7umttjknod0d4CEcpWtj4-LcLyutdiZj4-LcH5zc7KbiA=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) != 1:
 		return None
-	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkM68vcxyud_Tz8rAd7m0tqLl2Mu_eMaxquzX05O_wLxludTZxrq-tZPAe_A=').format(matches[0][0], matches[0][1], pageUrl)
+	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkMq5q7upd9zi1dt5ucKmt9jmj8i7toW4wNnlkNW4qs-qu6Hl2MtsubesrsjkzaLHe9M=').format(matches[0][0], matches[0][1], pageUrl)
 
 def Get17url(channel):
 	url = Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')
@@ -453,7 +454,7 @@ def Get21url(channel):
 	return chList[parts[0]]['url']
 	
 def Get22url(channel):
-	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=').format(channel)
+	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=').format(channel)
 	text = getUrl(url)
 	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
