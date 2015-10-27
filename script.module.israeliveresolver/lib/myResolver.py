@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import urllib, urllib2, re, uuid, json, random, base64, io, os
-import jsunpack, myFilmon
+import jsunpack, myFilmon, cloudflare
 import xbmc, xbmcaddon
 import livestreamer
 
@@ -455,8 +455,15 @@ def Get21url(channel):
 	
 def Get22url(channel):
 	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=').format(channel)
-	text = getUrl(url)
+	text = cloudflare.source(url)
+	if text is None or text == '': 
+		url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=').format(channel)
+		text = cloudflare.source(url)
+		if text is None or text == '': 
+			return None
 	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) < 1:
+		return None
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], random.choice(UAs), url)
 	
 def Get23url(channel):	
