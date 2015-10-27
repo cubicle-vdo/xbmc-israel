@@ -21,10 +21,11 @@
 
 import os,xbmc,xbmcaddon,xbmcplugin,xbmcgui,xbmcvfs
 
+AddonID = 'script.module.israeliveresolver'
 
-lang = xbmcaddon.Addon().getLocalizedString
+lang = xbmcaddon.Addon(AddonID).getLocalizedString
 
-setting = xbmcaddon.Addon().getSetting
+setting = xbmcaddon.Addon(AddonID).getSetting
 
 addon = xbmcaddon.Addon
 
@@ -38,7 +39,7 @@ content = xbmcplugin.setContent
 
 property = xbmcplugin.setProperty
 
-addonInfo = xbmcaddon.Addon().getAddonInfo
+addonInfo = xbmcaddon.Addon(AddonID).getAddonInfo
 
 infoLabel = xbmc.getInfoLabel
 
