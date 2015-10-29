@@ -6,7 +6,7 @@ Addon = xbmcaddon.Addon(id='plugin.video.movixws')
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import resolver, repoCheck, common, urlresolver
+import resolver, repoCheck, common, urlresolver, cloudflare
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
@@ -59,7 +59,7 @@ def IndexPage(url):
 		else:
 			url = url + '/page/0'
 	current_page = int(url.split('/')[-1])
-	result = common.OPEN_URL(url, referer=baseUrl)
+	result =cloudflare.source(url)
 	block = re.compile('pnation.*?</strong>(.*?)<\/div>',re.I+re.M+re.U+re.S).findall(result)
 	pages = "" if len(block) == 0 else re.compile('<a href=".*?[\/&]page[=]?\/(.*?)">(.*?)</a>',re.I+re.M+re.U+re.S).findall(block[0])
 
@@ -75,7 +75,7 @@ def IndexPage(url):
 
 	for pageIndex in range(10):
 		try:
-			result = common.OPEN_URL(url, referer=baseUrl)
+			result=cloudflare.source(url)
 			matches = re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
 			for match in matches:
 				addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, match[0], True, match[3])
@@ -100,13 +100,13 @@ def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num, iconimage, description):
-	result=common.OPEN_URL('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num), referer=baseUrl)
+	result=cloudflare.source('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
 	matches=re.compile('onclick=\"get_episodes\(\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	for season in matches:
 		addDir('{0}  {1}'.format(name, season[1]), '{0}/watchmovies/get_episodes/{1}?seasonid={2}'.format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
 
 def GetEpisodes(url, iconimage, description):
-	result=common.OPEN_URL(url, referer=baseUrl)
+	result=cloudflare.source(url)
 	matches=re.compile('onclick=\"get_episode\(\'(.*?)\',\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
 	url=url.replace('get_episodes','get_episode')
 	for episode in matches:
@@ -127,7 +127,7 @@ def SortByQuality(links):
 	return sortedLinks
 
 def LinksPage(url, iconimage, description):
-	result = common.OPEN_URL(url, referer=baseUrl)
+	result =cloudflare.source(url)
 	matches = re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) == 1:
 		description = matches[0]
@@ -180,7 +180,7 @@ def AutoPlayUrl(urls):
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
 
 def PlayTrailer(url):
-	result = common.OPEN_URL(url, referer=baseUrl)
+	result=cloudflare.source(url)
 	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) > 0:
 		url = matches[0]
@@ -209,7 +209,7 @@ def Categories():
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def MostInCategory(category):
-	html = common.OPEN_URL(baseUrl, referer=baseUrl)
+	html =cloudflare.source(url)
 	if category == 'MostViewedMovies':
 		startBlock = html.find('הסרטים הנצפים ביותר')
 		endBlock = html.find('עזרו לנו להמשיך להתקיים', startBlock)

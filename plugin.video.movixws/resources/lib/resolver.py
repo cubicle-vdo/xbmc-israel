@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import re, json
-import common, urlresolver, jsunpack, base64
+import common, urlresolver, jsunpack, base64,cloudflare
 
 def ResolveUrl(url):
 	link = False
 	try:
-		result=common.OPEN_URL(url)
+		result=cloudflare.source(url)
 		matches=re.compile('<div id="embed_code".+?<iframe.+?src=["|\'](.*?)["|\'].+?<\/iframe><\/div>',re.I+re.M+re.U+re.S).findall(result)
 		url = matches[0]
 		#print "Link URL: " + url 
@@ -95,7 +95,7 @@ def CheckAdFlyLink(url):
 		return url
 	retUrl = None
 	try:
-		html = common.OPEN_URL(url)
+		html = clouddlare(url)
 		ysmm = re.findall(r"var ysmm =.*\;?", html)
 		if len(ysmm) > 0:
 			ysmm = re.sub(r'var ysmm \= \'|\'\;', '', ysmm[0])

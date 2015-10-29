@@ -1,3 +1,5 @@
+[B]v4.6.2[/B]
+- Maintenance.
 [B]v4.6.1[/B]
 - Stop Using Kodi internal library add-ons. (too many problems)
 [B]v4.6.0[/B]
