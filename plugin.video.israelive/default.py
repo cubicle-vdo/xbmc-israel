@@ -152,7 +152,7 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 	except Exception as ex:
 		print ex
 		print "Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name))
-		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name).encode("utf-8"), 5000, __icon2__))
+		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name), 5000, __icon2__))
 		return False
 	
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
