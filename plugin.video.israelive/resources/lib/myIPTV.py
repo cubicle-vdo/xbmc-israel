@@ -11,13 +11,22 @@ try:
 except:
 	pass
 import common
-import myResolver
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 
+try:
+	import myResolver
+except:
+	import sys
+	if common.InstallAddon('script.module.israeliveresolver'):
+		common.OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
+	else:
+		common.OKmsg(localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
+	sys.exit()
+		
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def makeIPTVlist(iptvFile):
@@ -47,7 +56,7 @@ def makeIPTVlist(iptvFile):
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25':
+					elif mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24':
 						if mode == '21':
 							if first21:
 								first21 = False

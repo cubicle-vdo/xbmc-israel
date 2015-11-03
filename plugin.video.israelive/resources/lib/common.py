@@ -408,7 +408,7 @@ def InstallAddon(addonID):
 	except Exception as ex:
 		print ex
 		return False
-	
+
 	return True
 	
 def CheckNewVersion():
@@ -429,6 +429,7 @@ def CheckNewVersion():
 		resolverVersion = f.read()
 		f.close()
 		
+	resolverNewVersion = ""
 	try:
 		resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
 	except:

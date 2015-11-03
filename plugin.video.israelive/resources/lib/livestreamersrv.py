@@ -7,8 +7,18 @@ import socket
 #import thread
 import threading
 
-from livestreamer import Livestreamer
-#import livestreamer
+try:
+	from livestreamer import Livestreamer
+	#import livestreamer
+except:
+	import common, xbmcaddon, sys
+	localizedString = xbmcaddon.Addon("plugin.video.israelive").getLocalizedString
+	if common.InstallAddon('script.module.israeliveresolver'):
+		common.OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
+	else:
+		common.OKmsg(localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
+	sys.exit()
+
 from urllib import unquote
 import player
 
