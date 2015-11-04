@@ -20,14 +20,14 @@
 
 
 import re,urllib,urlparse,time
-import cache, client
+import cache, client, common
 
 
-def request(url, post=None, headers=None, mobile=False, safe=False, timeout='30'):
+def request(url, post=None, headers=None, mobile=False, safe=False, timeout='60'):
     try:
+        headers={common.Decode('ouLb26Vv1Mq74w=='): common.Decode('uN7a0qWb3Nu25w==')}
         u = '%s://%s' % (urlparse.urlparse(url).scheme, urlparse.urlparse(url).netloc)
         cookie = cache.get(cloudflare, 168, u, post, headers, mobile, safe, timeout)
-
         result = client.request(url, cookie=cookie, post=post, headers=headers, mobile=mobile, safe=safe, timeout=timeout, output='response', error=True)
 
         if 'HTTP Error 503' in result[0]:
@@ -41,7 +41,7 @@ def request(url, post=None, headers=None, mobile=False, safe=False, timeout='30'
         return
 
 
-def source(url, post=None, headers=None, mobile=False, safe=False, timeout='30'):
+def source(url, post=None, headers=None, mobile=False, safe=False, timeout='60'):
     return request(url, post, headers, mobile, safe, timeout)
 
 
