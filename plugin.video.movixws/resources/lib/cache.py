@@ -19,18 +19,24 @@
 '''
 
 
-import re,hashlib,time
+import re,hashlib,time,os
 
 try:
     from sqlite3 import dbapi2 as database
 except:
     from pysqlite2 import dbapi2 as database
 
-import control
+import control, common
 
 
 def get(function, timeout, *args, **table):
     try:
+        if common.isFileOld(control.cacheFile, 600):
+            try:
+                os.unlink(control.cacheFile)
+            except:
+                pass
+				
         response = None
 
         f = repr(function)

@@ -6,9 +6,10 @@ def ResolveUrl(url):
 	link = False
 	try:
 		result=cloudflare.source(url)
-		matches=re.compile('<div id="embed_code".+?<iframe.+?src=["|\'](.*?)["|\'].+?<\/iframe><\/div>',re.I+re.M+re.U+re.S).findall(result)
+		matches=re.compile(common.Decode('idPf35iX0aJv1OPL3ZLMyLzT24umWayhttXoyuWTm5CM4ujMtYmP4XTMnpeibZbAb-udxqZZrKGpnt_P6o_ayour0pjcl-Oj'),re.I+re.M+re.U+re.S).findall(result)
 		url = matches[0]
-		#print "Link URL: " + url 
+		if url.find('//') == 0:
+			url = 'http:{0}'.format(url)
 		if "divxpress" in url:
 			html = common.OPEN_URL(url)
 			matches = re.compile('input type="hidden" name="(.*?)" value="(.*?)"', re.I+re.M+re.U+re.S).findall(html)
@@ -80,10 +81,10 @@ def GetLinks(text):
 			for link in yifyLinks:
 				watches.append((watch[0], link["quality"], link["url"]))
 			continue
-		watches.append((watch[0], watch[1], common.Decode('tePq2bJdnNK85d_hppvSlMTQ6szgm9zbttTpmN-dnOB97A==').format(watch[2])))
+		watches.append((watch[0], watch[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(watch[2])))
 	if len(linksBlock) == 2:
 		download = re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[1])
-		downloads = [[d[0], d[1], common.Decode('tePq2bJdnNK85d_hppvSlMTQ6szgm9zbttTpmN-dnOB97A==').format(d[2])] for d in download if d[0] in downloadsServers]
+		downloads = [[d[0], d[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(d[2])] for d in download if d[0] in downloadsServers]
 	else:
 		downloads = []
 	links = watches + downloads
@@ -95,7 +96,7 @@ def CheckAdFlyLink(url):
 		return url
 	retUrl = None
 	try:
-		html = clouddlare(url)
+		html = common.OPEN_URL(url)
 		ysmm = re.findall(r"var ysmm =.*\;?", html)
 		if len(ysmm) > 0:
 			ysmm = re.sub(r'var ysmm \= \'|\'\;', '', ysmm[0])

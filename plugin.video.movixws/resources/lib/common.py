@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, gzip, base64
+import urllib, urllib2, gzip, base64, os, time
 from StringIO import StringIO
 
 AddonName = "Movix.me"
@@ -46,3 +46,9 @@ def Decode(string):
 	
 def GetUA():
 	return UA
+
+def isFileOld(file, deltaInSec):
+	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
+	now = int(time.time())
+	isOld = True if (now - lastUpdate) > deltaInSec else False 
+	return isOld

@@ -6,7 +6,7 @@ Addon = xbmcaddon.Addon(id='plugin.video.movixws')
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import resolver, repoCheck, common, urlresolver, cloudflare
+import resolver, repoCheck, common, urlresolver,cloudflare
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
@@ -59,9 +59,9 @@ def IndexPage(url):
 		else:
 			url = url + '/page/0'
 	current_page = int(url.split('/')[-1])
-	result =cloudflare.source(url)
-	block = re.compile('pnation.*?</strong>(.*?)<\/div>',re.I+re.M+re.U+re.S).findall(result)
-	pages = "" if len(block) == 0 else re.compile('<a href=".*?[\/&]page[=]?\/(.*?)">(.*?)</a>',re.I+re.M+re.U+re.S).findall(block[0])
+	result = cloudflare.source(url)
+	block = re.compile(common.Decode('vd3X3eGd25N3rrKY66Lf1LvWtJGmWKyOiculzeGkqw=='),re.I+re.M+re.U+re.S).findall(result)
+	pages = "" if len(block) == 0 else re.compile(common.Decode('idCW0eqT06JvnaCo04qci6rf19DdiarCjMulkaZYrI5vrZ6Xom2WoXzQtA=='),re.I+re.M+re.U+re.S).findall(block[0])
 
 	nextPagesCount = len(pages)
 	step = 10000 if nextPagesCount == 0 else int(pages[0][0]) - current_page
@@ -76,9 +76,10 @@ def IndexPage(url):
 	for pageIndex in range(10):
 		try:
 			result=cloudflare.source(url)
-			matches = re.compile('<div class=\"mov\".*? <img src="(.*?)".*?<h3><a href="(.*?)">(.*?)<.*?<p class=\"ic_text\">(.*?)<\/p>',re.I+re.M+re.U+re.S).findall(result)
-			for match in matches:
-				addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, match[0], True, match[3])
+			matches = re.compile(common.Decode('idPf35iR2cbA4rOL5Z3jh3uZtYm0l9rMbeLozLVQlZN3rp-LplisobWitKXZTtXXstWzi6Bcl6R2kbSRplisjomdoKi0no3IudDp3LVQ1sis49vh7FCrjXuZtZK0ipzViw=='),re.I+re.M+re.U+re.S).findall(result)
+			for iconimage, link, name, description in matches:
+				#addDir(name,'{0}{1}'.format(baseUrl, link), 4, iconimage, True, description)
+				addDir(name,'{0}{1}'.format(baseUrl, link), 4, '', True, description)
 		except Exception as ex:
 			print ex 
 		if current_page >= last_page:
@@ -100,17 +101,17 @@ def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num, iconimage, description):
-	result=cloudflare.source('{0}/watchmovies/get_seasons/{1}'.format(baseUrl, series_num))
-	matches=re.compile('onclick=\"get_episodes\(\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
+	result=cloudflare.source(common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjrk87YvN3pmPNf6g==').format(baseUrl, series_num))
+	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7ripWMdZ2gqKFVyY6IkbSRplisjok='),re.I+re.M+re.U+re.S).findall(result)
 	for season in matches:
-		addDir('{0}  {1}'.format(name, season[1]), '{0}/watchmovies/get_episodes/{1}?seasonid={2}'.format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
+		addDir('{0}  {1}'.format(name, season[1]), common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjdntbYvNPb3KepnuKM4tvK653bzrGs8Zv1').format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
 
 def GetEpisodes(url, iconimage, description):
 	result=cloudflare.source(url)
-	matches=re.compile('onclick=\"get_episode\(\'(.*?)\',\'(.*?)\'\);\">(.*?)<',re.I+re.M+re.U+re.S).findall(result)
-	url=url.replace('get_episodes','get_episode')
+	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7UVpSNe5m1kp9alI17mbWSn4qWoG-tnpeibZah'),re.I+re.M+re.U+re.S).findall(result)
+	url=url.replace(common.Decode('tNTqyN2e1ti809vc'), common.Decode('tNTqyN2e1ti809s='))
 	for episode in matches:
-		addDir(name +'  '+episode[2], url+'&episodeid='+episode[1], 4, iconimage, True, description)
+		addDir("{0}  {1}".format(name, episode[2]), "{0}{1}{2}".format(url, common.Decode('c9Tm0uud0cq207M='), episode[1]), 4, iconimage, True, description)
 
 def SortByQuality(links):
 	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "HDTS", "TS", "CAM"]
@@ -127,11 +128,14 @@ def SortByQuality(links):
 	return sortedLinks
 
 def LinksPage(url, iconimage, description):
-	result =cloudflare.source(url)
-	matches = re.compile('<div style="width:540px;padding-top:5px;">(.+?)</div>',re.I+re.M+re.U+re.S).findall(result)
+	result = cloudflare.source(url)
+	if result is None:
+		print "Connot load Links Page."
+		return
+	matches = re.compile(common.Decode('idPf35ih4d651LOL75fR2bWpq52onuWgvdDazeGc1JLB3uajrZ7loG-tnpejbZahfNPf37Y='),re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) == 1:
 		description = matches[0]
-	matches = re.compile('<div class="alert submit-link-div".+?<iframe src="(.+?)".+?</iframe>',re.I+re.M+re.U+re.S).findall(result)
+	matches = re.compile(common.Decode('idPf35iR2cbA4rOL2ZrS18GP6d7am9bZetvf1-Nb0c7DkaSUt2rWy7_Q486Yod_IipGel6Ntlod7mrWlp5fT167c26c='),re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) == 1:
 		addDir('[COLOR green]{0} - טריילר[/COLOR]'.format(name), matches[0], 8, iconimage, False, description)
 	if not 'get_seasons' in result:
@@ -155,7 +159,7 @@ def LinksPage(url, iconimage, description):
 
 def PlayWs(url, autoPlay=False):
 	url = resolver.CheckAdFlyLink(url)
-	if url and baseUrl.replace('www.', '') in url:
+	if url and baseUrl in url:
 		url = resolver.ResolveUrl(url)
 	elif "vidlockers" in url:
 		#print "Link URL: " + url
@@ -209,22 +213,23 @@ def Categories():
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def MostInCategory(category):
-	html =cloudflare.source(url)
+	html = cloudflare.source(baseUrl)
 	if category == 'MostViewedMovies':
 		startBlock = html.find('הסרטים הנצפים ביותר')
 		endBlock = html.find('עזרו לנו להמשיך להתקיים', startBlock)
-		rej = '<div style="float.*?src="(.*?)".*?<a href="(.*?)"><span.*?>(.*?)</span>'
+		rej = common.Decode('idPf35ih4d651LOL3prcxsGdoKjroNCib5ekk7dXj5N3rrLKmJbfyrOsmJGmWKyOb62y3OiP25N3rrSRplisjome6dnZnKs=')
 	else:
 		delim = category.split('|')
 		startBlock = html.find(delim[0])
 		endBlock = html.find(delim[1], startBlock)
-		rej = '<div class="small-item".*?src="(.*?)".*?<a href="(.*?)">(.*?)</a>'
+		rej = common.Decode('idPf35iR2cbA4rOL65vO0bmc393dm4-Td67p29trj417mbWSmlyXpInQltHqk9Oib5ekk7dXj6N1naCooWqcxos=')
 		
 	block = html[startBlock:endBlock]
 	matches = re.compile(rej, re.I+re.M+re.U+re.S).findall(block)
 	for match in matches:
 		image = match[0] if baseUrl in match[0] else "{0}{1}".format(baseUrl, match[0])
-		addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, image)
+		#addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, image)
+		addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, '')
 			
 def get_params():
 	param=[]
