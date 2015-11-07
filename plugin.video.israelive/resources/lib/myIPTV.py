@@ -56,7 +56,7 @@ def makeIPTVlist(iptvFile):
 						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
 					elif mode == '3':
 						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24':
+					elif mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25':
 						if mode == '21':
 							if first21:
 								first21 = False
