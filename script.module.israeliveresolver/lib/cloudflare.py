@@ -20,28 +20,27 @@
 
 
 import re,urllib,urlparse,time
-import client
+import cache, client
 
 
-def request(url, post=None, headers=None, mobile=False, safe=False, timeout='30'):
+def request(url, post=None, headers=None, mobile=False, safe=False, timeout='60'):
     try:
         u = '%s://%s' % (urlparse.urlparse(url).scheme, urlparse.urlparse(url).netloc)
-        cookie = cloudflare(u, post, headers, mobile, safe, timeout)
+        cookie = cache.get(cloudflare, 3, u, post, headers, mobile, safe, timeout)
         result = client.request(url, cookie=cookie, post=post, headers=headers, mobile=mobile, safe=safe, timeout=timeout, output='response', error=True)
 
         if 'HTTP Error 503' in result[0]:
-            cookie = cloudflare(u, post, headers, mobile, safe, timeout)
+            cookie = cache.get(cloudflare, 0, u, post, headers, mobile, safe, timeout)
             result = client.request(url, cookie=cookie, post=post, headers=headers, mobile=mobile, safe=safe, timeout=timeout)
         else:
             result= result[1]
 
         return result
-    except Exception as ex:
-        print ex
-        return None
+    except:
+        return
 
 
-def source(url, post=None, headers=None, mobile=False, safe=False, timeout='30'):
+def source(url, post=None, headers=None, mobile=False, safe=False, timeout='60'):
     return request(url, post, headers, mobile, safe, timeout)
 
 

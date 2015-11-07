@@ -133,7 +133,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.6.3" provider-name="Benny123, Avigdor (xbmc-israel repo)">
+<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.6.4" provider-name="Benny123, Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="script.module.israeliveresolver" />
@@ -388,7 +388,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.1.2" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.1.3" provider-name="Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
   </requires>

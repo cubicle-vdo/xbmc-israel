@@ -24,7 +24,7 @@ def GetFullLink(url, mode):
 		
 	if mode == -2 or mode == -3:
 		url = "hds://{0}".format(url)
-	elif mode == 4 or mode == 5 or mode == 12 or mode == 15 or mode == 25:
+	elif mode == 4 or mode == 5 or mode == 12 or mode == 15:
 		url = "hls://{0}".format(url)
 	elif mode != 0:
 		url = "hlsvariant://{0}".format(url)
