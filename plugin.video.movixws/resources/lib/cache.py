@@ -26,17 +26,11 @@ try:
 except:
     from pysqlite2 import dbapi2 as database
 
-import control, common
+import control
 
 
 def get(function, timeout, *args, **table):
-    try:
-        if common.isFileOld(control.cacheFile, 600):
-            try:
-                os.unlink(control.cacheFile)
-            except:
-                pass
-				
+    try:		
         response = None
 
         f = repr(function)

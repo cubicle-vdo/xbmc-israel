@@ -27,6 +27,10 @@ def ResolveUrl(url):
 			unpack = jsunpack.unpack(matches[0])
 			matches = re.compile('file\s*:\s*"([^"]+)', re.I+re.M+re.U+re.S).findall(unpack)
 			link = "{0}|Referer=http://vidzi.tv/nplayer/jwplayer.flash.swf".format(matches[0])
+		elif "uptostream" in url:
+			html = common.OPEN_URL(url)
+			matches = re.compile("source src='(.+?)'").findall(html)
+			link = "{0}".format(matches[-1])
 		else:
 			if "movreel" in url:
 				url = url.replace("/embed-","/")
@@ -90,7 +94,6 @@ def GetLinks(text):
 	links = watches + downloads
 	return links
 		
-
 def CheckAdFlyLink(url):
 	if "adf.ly" not in url:
 		return url
