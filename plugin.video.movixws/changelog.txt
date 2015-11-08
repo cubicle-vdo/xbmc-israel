@@ -1,3 +1,5 @@
+[B]v1.2.1[/B]
+- Added support playing from uptobox.
 [B]v1.2.0[/B]
 - Fix according to site changes.
 [B]v1.1.9[/B]
