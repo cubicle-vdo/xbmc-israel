@@ -31,6 +31,9 @@ def ResolveUrl(url):
 			html = common.OPEN_URL(url)
 			matches = re.compile("source src='(.+?)'").findall(html)
 			link = "{0}".format(matches[-1])
+			matches = re.compile("subtitles' src='(.+?)'").findall(html)
+			subtitles = matches[0] if len(matches) > 0 else ''
+			link = "{0};;{1}".format(link, subtitles)
 		else:
 			if "movreel" in url:
 				url = url.replace("/embed-","/")
