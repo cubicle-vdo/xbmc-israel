@@ -6,7 +6,7 @@ Addon = xbmcaddon.Addon(id='plugin.video.movixws')
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import resolver, repoCheck, common, urlresolver,cloudflare
+import resolver, repoCheck, common, urlresolver, cloudflare, cache
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
@@ -59,7 +59,7 @@ def IndexPage(url):
 		else:
 			url = url + '/page/0'
 	current_page = int(url.split('/')[-1])
-	result = cloudflare.source(url)
+	result = cache.get(cloudflare.source, 24, url, table='pages')
 	block = re.compile(common.Decode('vd3X3eGd25N3rrKY66Lf1LvWtJGmWKyOiculzeGkqw=='),re.I+re.M+re.U+re.S).findall(result)
 	pages = "" if len(block) == 0 else re.compile(common.Decode('idCW0eqT06JvnaCo04qci6rf19DdiarCjMulkaZYrI5vrZ6Xom2WoXzQtA=='),re.I+re.M+re.U+re.S).findall(block[0])
 
@@ -75,7 +75,7 @@ def IndexPage(url):
 
 	for pageIndex in range(10):
 		try:
-			result=cloudflare.source(url)
+			result = cache.get(cloudflare.source, 24, url, table='pages')
 			matches = re.compile(common.Decode('idPf35iR2cbA4rOL5Z3jh3uZtYm0l9rMbeLozLVQlZN3rp-LplisobWitKXZTtXXstWzi6Bcl6R2kbSRplisjomdoKi0no3IudDp3LVQ1sis49vh7FCrjXuZtZK0ipzViw=='),re.I+re.M+re.U+re.S).findall(result)
 			for iconimage, link, name, description in matches:
 				#addDir(name,'{0}{1}'.format(baseUrl, link), 4, iconimage, True, description)
@@ -101,13 +101,13 @@ def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num, iconimage, description):
-	result=cloudflare.source(common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjrk87YvN3pmPNf6g==').format(baseUrl, series_num))
+	result = cache.get(cloudflare.source, 24, common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjrk87YvN3pmPNf6g==').format(baseUrl, series_num), table="pages")
 	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7ripWMdZ2gqKFVyY6IkbSRplisjok='),re.I+re.M+re.U+re.S).findall(result)
 	for season in matches:
 		addDir('{0}  {1}'.format(name, season[1]), common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjdntbYvNPb3KepnuKM4tvK653bzrGs8Zv1').format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
 
 def GetEpisodes(url, iconimage, description):
-	result=cloudflare.source(url)
+	result = cache.get(cloudflare.source, 24, url, table="pages")
 	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7UVpSNe5m1kp9alI17mbWSn4qWoG-tnpeibZah'),re.I+re.M+re.U+re.S).findall(result)
 	url=url.replace(common.Decode('tNTqyN2e1ti809vc'), common.Decode('tNTqyN2e1ti809s='))
 	for episode in matches:
@@ -128,7 +128,7 @@ def SortByQuality(links):
 	return sortedLinks
 
 def LinksPage(url, iconimage, description):
-	result = cloudflare.source(url)
+	result = cache.get(cloudflare.source, 24, url, table="pages")
 	if result is None:
 		print "Connot load Links Page."
 		return
@@ -166,8 +166,13 @@ def PlayWs(url, autoPlay=False):
 		item = urlresolver.HostedMediaFile(url)
 		url = urlresolver.resolve(item.get_url())
 	if url:
-		listitem = xbmcgui.ListItem(path=url)
+		link = url.split(';;')
+		listitem = xbmcgui.ListItem(path=link[0])
 		xbmcplugin.setResolvedUrl(handle, True, listitem)
+		if len(link) > 1:
+			while not xbmc.Player().isPlaying():
+				xbmc.sleep(10) #wait until video is being played
+			xbmc.Player().setSubtitles(link[1]);
 		return True
 	else:
 		if not autoPlay:
@@ -184,7 +189,7 @@ def AutoPlayUrl(urls):
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
 
 def PlayTrailer(url):
-	result=cloudflare.source(url)
+	result = cache.get(cloudflare.source, 24, url, table="pages")
 	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
 	if len(matches) > 0:
 		url = matches[0]
@@ -213,7 +218,7 @@ def Categories():
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def MostInCategory(category):
-	html = cloudflare.source(baseUrl)
+	html = cloudflare.source(baseUrl) if 'recent' in category else cache.get(cloudflare.source, 24, baseUrl, table='pages')
 	if category == 'MostViewedMovies':
 		startBlock = html.find('הסרטים הנצפים ביותר')
 		endBlock = html.find('עזרו לנו להמשיך להתקיים', startBlock)
@@ -230,6 +235,10 @@ def MostInCategory(category):
 		image = match[0] if baseUrl in match[0] else "{0}{1}".format(baseUrl, match[0])
 		#addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, image)
 		addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, '')
+			
+def ClearCache():
+	cache.clear(['cookies', 'pages'])
+			
 			
 def get_params():
 	param=[]
@@ -299,6 +308,9 @@ elif mode==8:
 	PlayTrailer(url)
 elif mode==9:
 	MostInCategory(url)
+elif mode==20:
+	ClearCache()
+	updateView = False
 	
 if updateView:
 	xbmcplugin.setContent(handle, 'episodes')

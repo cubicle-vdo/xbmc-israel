@@ -27,11 +27,11 @@ def request(url, post=None, headers=None, mobile=False, safe=False, timeout='60'
     try:
         headers={common.Decode('ouLb26Vv1Mq74w=='): common.Decode('uN7a0qWb3Nu25w==')}
         u = '%s://%s' % (urlparse.urlparse(url).scheme, urlparse.urlparse(url).netloc)
-        cookie = cache.get(cloudflare, 3, u, post, headers, mobile, safe, timeout)
+        cookie = cache.get(cloudflare, 3, u, post, headers, mobile, safe, timeout, table='cookies')
         result = client.request(url, cookie=cookie, post=post, headers=headers, mobile=mobile, safe=safe, timeout=timeout, output='response', error=True)
 
         if 'HTTP Error 503' in result[0]:
-            cookie = cache.get(cloudflare, 0, u, post, headers, mobile, safe, timeout)
+            cookie = cache.get(cloudflare, 0, u, post, headers, mobile, safe, timeout, table='cookies')
             result = client.request(url, cookie=cookie, post=post, headers=headers, mobile=mobile, safe=safe, timeout=timeout)
         else:
             result= result[1]

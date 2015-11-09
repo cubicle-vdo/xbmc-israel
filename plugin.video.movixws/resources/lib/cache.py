@@ -29,7 +29,7 @@ except:
 import control
 
 
-def get(function, timeout, *args, **table):
+def get(function, timeout, *args, **table):	
     try:		
         response = None
 
@@ -93,11 +93,8 @@ def clear(table=None):
     try:
         control.idle()
 
-        if table == None: table = ['rel_list', 'rel_lib']
+        if table == None: table = ['rel_list']
         elif not type(table) == list: table = [table]
-
-        yes = control.yesnoDialog(control.lang(30401).encode('utf-8'), '', '')
-        if not yes: return
 
         dbcon = database.connect(control.cacheFile)
         dbcur = dbcon.cursor()
@@ -109,8 +106,6 @@ def clear(table=None):
                 dbcon.commit()
             except:
                 pass
-
-        control.infoDialog(control.lang(30402).encode('utf-8'))
     except:
         pass
 
