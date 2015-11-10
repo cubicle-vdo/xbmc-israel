@@ -1,3 +1,5 @@
+[B]v1.2.3[/B]
+- Fix for caching.
 [B]v1.2.2[/B]
 - Added support Playing video with subtitles from uptobox.
 - Cache pages.

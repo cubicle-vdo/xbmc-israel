@@ -30,7 +30,7 @@ import control
 
 
 def get(function, timeout, *args, **table):	
-    try:		
+    try:
         response = None
 
         f = repr(function)
