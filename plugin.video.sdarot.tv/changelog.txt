@@ -1,3 +1,5 @@
+[B]Version 2.2.8[/B]
+- Compatibility with Kodi 15 (off by default).
 [B]Version 2.2.7[/B]
 - Login to site is back.
 [B]Version 2.2.6[/B]

@@ -474,9 +474,9 @@ def Get21url(channel):
 	return chList[parts[0]]['url']
 	
 def Get22url(channel):
-	UA = 'Mozilla/5.0 (iPad; CPU OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53'
+	UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
 	headers = {'User-Agent': UA}
-	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=').format(channel)
+	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv').format(channel)
 	text = cloudflare.source(url, headers=headers)
 	if text is None or text == '': 
 		return None

@@ -11,11 +11,19 @@ from commonkids import *
 
 def CATEGORIES():
 	repoCheck.UpdateRepo()
-	if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
-		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/repository.spoyser/repository.spoyser-1.0.6.zip?raw=true','supercartoons repository')
-		downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.8.zip?raw=true','supercartoons  addon')
-	else:
-		addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
+	try:
+		if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
+			downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/repository.spoyser/repository.spoyser-1.0.6.zip?raw=true','supercartoons repository')
+			downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.8.zip?raw=true','supercartoons  addon')
+		else:
+			addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
+		if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.kidstv'):
+			ZipIntsall('https://github.com/dvddd/donatellorepo/blob/master/repository.donatelloandhybrid/repository.donatelloandhybrid.zip?raw=true','repository.donatelloandhybrid',False)
+			ZipIntsall('https://github.com/dvddd/donatellorepo/blob/master/plugin.video.kidstv/plugin.video.kidstv-1.0.0.zip?raw=true','plugin.video.kidstv')
+		else:
+			addDir(' VOD  ערוץ הילדים ','plugin://plugin.video.kidstv',8,'https://github.com/dvddd/donatellorepo/blob/master/plugin.video.kidstv/icon.png?raw=true','')
+	except:
+		pass
 	addDir('סרטים לילדים','bj',18,'http://cartooncollectors.com/wp-content/uploads/2014/07/cartoon-movies-list-alltop-disney-movies-list-new-latest-kids-films-2014-best-movies-ever-gldf9j91.jpg','')
 	#addDir('TV MODE','stam',17,'http://gigaompaidcontent.files.wordpress.com/2012/02/new-tv-o.jpg?quality=80&strip=all','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
@@ -24,8 +32,6 @@ def CATEGORIES():
 	addDir('ניק גוניור ','plugin://plugin.video.wallaNew.video/?mode=1&module=nickjr&name=ניקלאודיון גוניור&url=http://nickjr.walla.co.il/',8,'http://www.imanoga.co.il/wp-content/uploads/2012/06/646457567.jpg','')
 	addDir('וואלה ילדים','plugin://plugin.video.wallaNew.video/?mode=1&module=wallavod&name=י%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=englishName%3dkids',8,'https://lh6.ggpht.com/V8v_FzkTMqeLRg_oY7G00zf0bcxubsm659cLrbf9nEKMLHQG-5LSZdbbJGQgkV6j1PQ=w300','')
 	addDir('HOT VOD YOUNG','plugin://plugin.video.hotVOD.video/?mode=5&name=%20HOT%20VOD%20YOUNG&url=http%3a%2f%2fhot.ynet.co.il%2fhome%2f0%2c7340%2cL-7449%2c00.html',8,'http://i28.tinypic.com/20o8lt.jpg','')	
-	addDir('מצויירים קלאסיים','https://dl.dropboxusercontent.com/s/cwcptnocx310g00/Merry_Melodies.plx',7,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzwydiY6V_l5sE_ed7Rf66G6B8Ug2p7ajn4uPAhH2NYpDVMNBUQ','')
-	addDir(' וידאו לילדים','UCnToIWbMbc9VehbtjTBBnRw',9,'http://www.iandroidil.net/icone/5718-icon.png','1')
 	try:
 		User_lists()
 	except:
@@ -385,7 +391,7 @@ def TVModeList():
 def MoviesAddons():
 	addDir('מדובבים seretil','plugin://plugin.video.seretil/?mode=4&name=%d7%9e%d7%93%d7%95%d7%91%d7%91%d7%99%d7%9d%20%d7%a8%d7%90%d7%a9%d7%99&url=http%3a%2f%2fseretil.me%2fcategory%2f%25D7%25A1%25D7%25A8%25D7%2598%25D7%2599%25D7%259D-%25D7%259E%25D7%2593%25D7%2595%25D7%2591%25D7%2591%25D7%2599%25D7%259D%2fpage1%2f',8,'http://blog.tapuz.co.il/seretilNET/images/3745375_1.jpg','')
 	
-	addDir('MOVIX','plugin://plugin.video.movixws/?mode=2&name=kids%20%20%20%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=http%3a%2f%2fwww.movix.me%2fgenres%2fKids&quot;',8,'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xap1/v/t1.0-1/p160x160/1474570_245434965621822_1751601576_n.jpg?oh=8cd47956bd7514044be9f4e80f95b27d&oe=558610E1&__gda__=1435051075_0dd730b705180e7d0f875d6db6a78ece','')
+	addDir('MOVIX','plugin://plugin.video.movixws/?mode=2&name=kids%20%20%20%d7%99%d7%9c%d7%93%d7%99%d7%9d&url=http%3a%2f%2fwww.movix.me%2fgenres%2fKids&quot;',8,'https://superrepo.org/static/images/icons/original/xplugin.video.movixws.png.pagespeed.ic.u-yzMjyGV-.jpg','')
 	addDir('אנימציה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%2590%25D7%25A0%25D7%2599%25D7%259E%25D7%25A6%25D7%2599%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')
 	addDir('משפחה גוזלן','plugin://plugin.video.gozlan.me/?mode=1&name=%d7%a1%d7%a8%d7%98%d7%99%20%d7%9e%d7%a9%d7%a4%d7%97%d7%94&url=http%3a%2f%2fanonymouse.org%2fcgi-bin%2fanon-www.cgi%2fhttp%3a%2f%2fgozlan.co%2f%2fsearch.html%3fg%3d%25D7%259E%25D7%25A9%25D7%25A4%25D7%2597%25D7%2594',8,'http://ftp.acc.umu.se/mirror/addons.superrepo.org/v5/addons/plugin.video.gozlan.me/icon.png','')	
 	addDir('10Q סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/animciha/5',8,'http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.10qtv/icon.png','')

@@ -14,14 +14,17 @@ import StringIO
 import gzip
 import json
 from operator import itemgetter, attrgetter
+from proxy import PROXY_PORT
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
-__DEBUG__ = __settings__.getSetting("DEBUG") == "true"
+__DEBUG__ = False
+
 
 DOMAIN = __settings__.getSetting("domain")
 HOST = DOMAIN[7:]
+#PROXY_PORT = 9899
 
 #print "common domain=" +  DOMAIN
 #print "common domain="+ HOST
@@ -303,7 +306,11 @@ def getFinalVideoUrl(series_id,season_id,episode_id,url,silent=False):
 	else:
 		  finalUrl = "http://" + vid_url + "/watch/sd/"+VID+'.mp4?token='+token+'&time='+vid_time
 	
-	return finalUrl,VID
+	link = finalUrl
+	if __settings__.getSetting("use_proxy") == "true":
+		link = "http://127.0.0.1:{0}/?url={1}".format(PROXY_PORT, urllib.quote(link))
+
+	return link,VID
 
 def getImage(imageURL, siteName):
 		imageName = getImageName(imageURL)
