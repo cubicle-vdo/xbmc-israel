@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,base64,zipfile
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
 
@@ -215,6 +215,67 @@ def mes():
 	except:
 		pass
 
+		
+		
+def ExtractAll(_in, _out):
+	try:
+		zin = zipfile.ZipFile(_in, 'r')
+		zin.extractall(_out)
+		zin.close()
+	except Exception, e:
+		print str(e)
+		return False
+
+		
+		
+		
+		
+def ZipIntsall(url,path,addon=True):
+	go_on=True
+	if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), path)) and addon:
+		dialog = xbmcgui.Dialog()
+		go_on=dialog.yesno('XBMC ISRAEL',' ? התוסף כבר מותקן ,האם להתקין מחדש')
+	if 'icechannel' in path:
+					import istream
+					istream.InstallWithout('Istream','url','')
+					go_on=False
+	if  go_on :
+			addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+			packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
+			
+			urllib.urlretrieve(url, packageFile)
+			ExtractAll(packageFile, addonsDir)
+				
+			try:
+				os.remove(packageFile)
+			except:
+				pass
+			if addon:
+				try:
+						
+							depends=xbmc.translatePath(os.path.join('special://home','addons',path,'addon.xml'))
+							print depends
+							source=open(depends,mode='r'); link=source.read(); source.close(); 
+							dmatch=re.compile('import addon="(.+?)"').findall(link)
+							for requires in dmatch:
+								if not 'xbmc.python' in requires:
+									print 'Requires --- '+requires
+									dependspath=xbmc.translatePath(os.path.join('special://home/addons',requires));
+									if not os.path.exists(dependspath):
+										url='http://tribeca.tvaddons.ag/tools/maintenance/modules/'+requires+'.zip'
+										print url
+										ZipIntsall(url,requires,False)
+				except:
+					pass
+				if 'p2p' in path:
+					setupP2P()
+
+	xbmc.executebuiltin("UpdateLocalAddons")
+	xbmc.executebuiltin("UpdateAddonRepos")
+
+
+		
+		
 def Decode(string):
 	decoded_chars = []
 	string = base64.urlsafe_b64decode(string.encode("utf-8"))
