@@ -476,14 +476,16 @@ def Get21url(channel):
 def Get22url(channel):
 	UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
 	headers = {'User-Agent': UA}
-	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv').format(channel)
-	text = cloudflare.source(url, headers=headers)
-	if text is None or text == '': 
+	ds = ['sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpPEwtB0xKPv', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv']
+	for d in ds:
+		url = Decode(d).format(channel)
+		text = cloudflare.source(url, headers=headers)
+		if text is None or text == '': 
+			continue
+		matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
+		if len(matches) > 0:
+			return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 		return None
-	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
-	if len(matches) < 1:
-		return None
-	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 	
 def Get23url(channel):	
 	url = Decode('sefm0Z97eMq7d93TztW7d8q7eOPewt57rL6mt-HXzZTHedN0').format(channel)
