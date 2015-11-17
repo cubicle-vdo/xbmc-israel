@@ -42,7 +42,7 @@ def searchWs():
 
 def IndexPage(url):
 	if baseUrl+'/movies' == url:
-		addDir('[COLOR green] הסרטים הנצפים ביותר [/COLOR]','MostViewedMovies',9,'')
+		addDir('[COLOR green] הסרטים הנצפים ביותר [/COLOR]','הסרטים הנצפים ביותר|עזרו לנו להמשיך להתקיים',9,'')
 		addDir('[COLOR green] סרטים שנוספו לאחרונה [/COLOR]','id="recent-movies"|<!--recent movies tab-->',9,'')
 		addDir('[COLOR green] הסרטים המדורגים ביותר [/COLOR]','id="top-rated-movies"|<!--top tab-->',9,'')
 		addDir('[COLOR green] סרטים עם הכי הרבה תגובות [/COLOR]','id="most-links-movies"|<!--most linked tab-->',9,'')
@@ -58,28 +58,14 @@ def IndexPage(url):
 			url = url + '&page=/0'
 		else:
 			url = url + '/page/0'
+	
 	current_page = int(url.split('/')[-1])
-	result = cache.get(cloudflare.source, 24, url, table='pages')
-	block = re.compile(common.Decode('vd3X3eGd25N3rrKY66Lf1LvWtJGmWKyOiculzeGkqw=='),re.I+re.M+re.U+re.S).findall(result)
-	pages = "" if len(block) == 0 else re.compile(common.Decode('idCW0eqT06JvnaCo04qci6rf19DdiarCjMulkaZYrI5vrZ6Xom2WoXzQtA=='),re.I+re.M+re.U+re.S).findall(block[0])
-
-	nextPagesCount = len(pages)
-	step = 10000 if nextPagesCount == 0 else int(pages[0][0]) - current_page
-	last_page = current_page if nextPagesCount == 0 else int(pages[-1][0])
-	for i in range(nextPagesCount-1, -1, -1):
-		if pages[i][1] == '':
-			continue
-		if int(pages[i][0]) > last_page:
-			last_page = int(pages[i][0])
-		break
 
 	for pageIndex in range(10):
 		try:
-			result = cache.get(cloudflare.source, 24, url, table='pages')
-			matches = re.compile(common.Decode('idPf35iR2cbA4rOL5Z3jh3uZtYm0l9rMbeLozLVQlZN3rp-LplisobWitKXZTtXXstWzi6Bcl6R2kbSRplisjomdoKi0no3IudDp3LVQ1sis49vh7FCrjXuZtZK0ipzViw=='),re.I+re.M+re.U+re.S).findall(result)
-			for iconimage, link, name, description in matches:
-				#addDir(name,'{0}{1}'.format(baseUrl, link), 4, iconimage, True, description)
-				addDir(name,'{0}{1}'.format(baseUrl, link), 4, '', True, description)
+			matches, last_page, step = cache.get(IndexPage_regex, 72, url, table='pages')
+			for item in matches:
+				addDir(item[2],'{0}{1}'.format(baseUrl, item[1]), 4, item[4], True, item[3])
 		except Exception as ex:
 			print ex 
 		if current_page >= last_page:
@@ -92,6 +78,43 @@ def IndexPage(url):
 		addDir('[COLOR blue]תוצאות נוספות[/COLOR]', url, 2, '')
 	return True
 
+def IndexPage_regex(url): 
+	result = cloudflare.source(url)
+	last_page, step = GetPagegSteps(result, int(url.split('/')[-1]))
+	matches = re.compile(common.Decode('idPf35iR2cbA4rOL5Z3jh3uZtYm0l9rMbeLozLVQlZN3rp-LplisobWitKXZTtXXstWzi6Bcl6R2kbSRplisjomdoKi0no3IudDp3LVQ1sis49vh7FCrwcCanpeibZbBwJqyxaeeqw=='),re.I+re.M+re.U+re.S).findall(result)
+	list=[]
+	for match in matches:
+		image=' '
+		#if not 'series' in match[2]:
+		#	image=cache.get(getImageLink,8760,match[1].replace('/title/', '').rsplit('-', 1)[0],table='images')
+		list.append(match + (image,))
+	return list, last_page, step
+
+def GetPagegSteps(result, current_page):
+	block = re.compile(common.Decode('vd3X3eGd25N3rrKY66Lf1LvWtJGmWKyOiculzeGkqw=='),re.I+re.M+re.U+re.S).findall(result)
+	pages = "" if len(block) == 0 else re.compile(common.Decode('idCW0eqT06JvnaCo04qci6rf19DdiarCjMulkaZYrI5vrZ6Xom2WoXzQtA=='),re.I+re.M+re.U+re.S).findall(block[0])
+
+	nextPagesCount = len(pages)
+	step = 10000 if nextPagesCount == 0 else int(pages[0][0]) - current_page
+	last_page = current_page if nextPagesCount == 0 else int(pages[-1][0])
+	for i in range(nextPagesCount-1, -1, -1):
+		if pages[i][1] == '':
+			continue
+		if int(pages[i][0]) > last_page:
+			last_page = int(pages[i][0])
+		break
+	return last_page, step
+
+def getImageLink(name) :
+	#needs to add an year to api call
+	url='http://www.omdbapi.com/?t={0}&y=&r=json'.format(name)
+	try:
+		js=json.loads(common.OPEN_URL(url))
+		return js["Poster"]
+	except:
+		pass
+	return ''
+
 def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
@@ -101,18 +124,26 @@ def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 
 def GetSeasons(series_num, iconimage, description):
-	result = cache.get(cloudflare.source, 24, common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjrk87YvN3pmPNf6g==').format(baseUrl, series_num), table="pages")
-	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7ripWMdZ2gqKFVyY6IkbSRplisjok='),re.I+re.M+re.U+re.S).findall(result)
-	for season in matches:
+	seasons = cache.get(GetSeasons_regex, 168, series_num, table="pages")
+	for season in seasons:
 		addDir('{0}  {1}'.format(name, season[1]), common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjdntbYvNPb3KepnuKM4tvK653bzrGs8Zv1').format(baseUrl, series_num, season[0]), 3, iconimage, True, description)
 
-def GetEpisodes(url, iconimage, description):
-	result = cache.get(cloudflare.source, 24, url, table="pages")
-	matches=re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7UVpSNe5m1kp9alI17mbWSn4qWoG-tnpeibZah'),re.I+re.M+re.U+re.S).findall(result)
-	url=url.replace(common.Decode('tNTqyN2e1ti809vc'), common.Decode('tNTqyN2e1ti809s='))
-	for episode in matches:
+def GetSeasons_regex(series_num):
+	result = cloudflare.source(common.Decode('yJ_zmO-P4ci13OXf4ZPglLTU6sjrk87YvN3pmPNf6g==').format(baseUrl, series_num))
+	matches = re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7ripWMdZ2gqKFVyY6IkbSRplisjok='),re.I+re.M+re.U+re.S).findall(result)
+	return matches
+
+def GetEpisodes(season_num, iconimage, description):
+	episodes = cache.get(GetEpisodes_regex, 24, season_num, table="pages")
+	url = season_num.replace(common.Decode('tNTqyN2e1ti809vc'), common.Decode('tNTqyN2e1ti809s='))
+	for episode in episodes:
 		addDir("{0}  {1}".format(name, episode[2]), "{0}{1}{2}".format(url, common.Decode('c9Tm0uud0cq207M='), episode[1]), 4, iconimage, True, description)
 
+def GetEpisodes_regex(season_num):
+	result = cloudflare.source(season_num)
+	matches = re.compile(common.Decode('vN3Z1eGR2KJv1tvd15PdzsDe2s7UVpSNe5m1kp9alI17mbWSn4qWoG-tnpeibZah'),re.I+re.M+re.U+re.S).findall(result)
+	return matches
+	
 def SortByQuality(links):
 	qualitiesList = ["1080p", "720p", "BDRip", "BRRip", "DVDRip", "HDTV", "HDRip", "R5", "DVDSCR", "WEBRip", "PDTV", "TVRip", "TC", "HDTS", "TS", "CAM"]
 	sortedLinks = []
@@ -128,18 +159,14 @@ def SortByQuality(links):
 	return sortedLinks
 
 def LinksPage(url, iconimage, description):
-	result = cache.get(cloudflare.source, 24, url, table="pages")
-	if result is None:
-		print "Connot load Links Page."
-		return
-	matches = re.compile(common.Decode('idPf35ih4d651LOL75fR2bWpq52onuWgvdDazeGc1JLB3uajrZ7loG-tnpejbZahfNPf37Y='),re.I+re.M+re.U+re.S).findall(result)
-	if len(matches) == 1:
-		description = matches[0]
-	matches = re.compile(common.Decode('idPf35iR2cbA4rOL2ZrS18GP6d7am9bZetvf1-Nb0c7DkaSUt2rWy7_Q486Yod_IipGel6Ntlod7mrWlp5fT167c26c='),re.I+re.M+re.U+re.S).findall(result)
-	if len(matches) == 1:
-		addDir('[COLOR green]{0} - טריילר[/COLOR]'.format(name), matches[0], 8, iconimage, False, description)
-	if not 'get_seasons' in result:
-		links = resolver.GetLinks(result)
+	descriptions, links, seasons = cache.get(Links_regex, 72, url, table="pages")
+	if len(descriptions) == 1:
+		description = descriptions[0]
+	
+	if seasons:
+		series_num = url.split('-')[-1]
+		GetSeasons(series_num, iconimage, description)
+	else:
 		if len(links) < 1:
 			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False, description)
 			return
@@ -153,9 +180,20 @@ def LinksPage(url, iconimage, description):
 			addDir('[COLOR red]  או בחר מקור לניגון, אם לא עובד נסה אחר [/COLOR]','99',99,'',False, description)
 		for link in links:
 			addDir("{0} - {1} - איכות {2}".format(name, link[0], link[1]),link[2],5,iconimage,False, description)
+
+def Links_regex(url):
+	result=cloudflare.source(url)
+	if result is None:
+		print "can not load Links Page."
+		return None
+	matches = re.compile(common.Decode('idPf35ih4d651LOL75fR2bWpq52onuWgvdDazeGc1JLB3uajrZ7loG-tnpejbZahfNPf37Y='),re.I+re.M+re.U+re.S).findall(result)
+	links=None
+	if  'get_seasons' in result:
+		seasons=True
 	else:
-		series_num=url.split('-')[-1]
-		GetSeasons(series_num, iconimage, description)
+		links = resolver.GetLinks(result)
+		seasons =False
+	return [matches,links,seasons]
 
 def PlayWs(url, autoPlay=False):
 	url = resolver.CheckAdFlyLink(url)
@@ -189,11 +227,15 @@ def AutoPlayUrl(urls):
 	ok = dialog.ok('OOOPS', 'לא נמצאו מקורות זמינים לניגון')
 
 def PlayTrailer(url):
-	result = cache.get(cloudflare.source, 24, url, table="pages")
-	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
+	matches = cache.get(Trailer_regex, 24, url, table="pages")
 	if len(matches) > 0:
 		url = matches[0]
 		PlayWs(url)
+
+def Trailer_regex(url):
+	result = cloudflare.source(url)
+	matches = re.compile('"videoUrl":"(.+?)"',re.I+re.M+re.U+re.S).findall(result)
+	return matches
 
 def Categories():
 	addDir("Search - חיפוש"," ",6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQlAUVuxDFwhHYzmwfhcUEBgQXkkWi5XnM4ZyKxGecol952w-Rp')
@@ -218,28 +260,42 @@ def Categories():
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def MostInCategory(category):
-	html = cloudflare.source(baseUrl) if 'recent' in category else cache.get(cloudflare.source, 24, baseUrl, table='pages')
-	if category == 'MostViewedMovies':
-		startBlock = html.find('הסרטים הנצפים ביותר')
-		endBlock = html.find('עזרו לנו להמשיך להתקיים', startBlock)
-		rej = common.Decode('idPf35ih4d651LOL3prcxsGdoKjroNCib5ekk7dXj5N3rrLKmJbfyrOsmJGmWKyOb62y3OiP25N3rrSRplisjome6dnZnKs=')
-	else:
+	matches = cache.get(MostInCategory_regex, 0, baseUrl, table="pages") if 'recent' in category else cache.get(MostInCategory_regex, 24, baseUrl, table="pages")
+	for match in matches[category]:
+		addDir(match["name"], match["url"], 4, '')
+
+def MostInCategory_regex(url):
+	html = cloudflare.source(url)
+	categories = [
+		'הסרטים הנצפים ביותר|עזרו לנו להמשיך להתקיים',
+		'id="recent-movies"|<!--recent movies tab-->',
+		'id="top-rated-movies"|<!--top tab-->',
+		'id="most-links-movies"|<!--most linked tab-->',
+		'id="most-views-tv-shows"|<!--most commented tab-->',
+		'id="recent-tv-shows"|<!--recent tv shows-->',
+		'id="top-rated-tv-shows"|<!--top tab-->',
+		'id="most-links-tv-shows"|<!--most linked tab-->'
+	]
+	list={}
+	for category in categories:
 		delim = category.split('|')
 		startBlock = html.find(delim[0])
 		endBlock = html.find(delim[1], startBlock)
-		rej = common.Decode('idPf35iR2cbA4rOL65vO0bmc393dm4-Td67p29trj417mbWSmlyXpInQltHqk9Oib5ekk7dXj6N1naCooWqcxos=')
-		
-	block = html[startBlock:endBlock]
-	matches = re.compile(rej, re.I+re.M+re.U+re.S).findall(block)
-	for match in matches:
-		image = match[0] if baseUrl in match[0] else "{0}{1}".format(baseUrl, match[0])
-		#addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, image)
-		addDir(match[2],'{0}{1}'.format(baseUrl, match[1]), 4, '')
-			
+		if delim[0] == 'הסרטים הנצפים ביותר':
+			rej = common.Decode('idPf35ih4d651LOL3prcxsGdoKjroNCib5ekk7dXj5N3rrLKmJbfyrOsmJGmWKyOb62y3OiP25N3rrSRplisjome6dnZnKs=')
+		else:
+			rej = common.Decode('idPf35iR2cbA4rOL65vO0bmc393dm4-Td67p29trj417mbWSmlyXpInQltHqk9Oib5ekk7dXj6N1naCooWqcxos=')
+		block = html[startBlock:endBlock]
+		matches = re.compile(rej, re.I+re.M+re.U+re.S).findall(block)
+		items = []
+		for match in matches:
+			items.append({"image": match[0] if baseUrl in match[0] else "{0}{1}".format(baseUrl, match[0]), "url": '{0}{1}'.format(baseUrl, match[1]), "name": match[2]})
+		list[category] = items
+	return list
+
 def ClearCache():
 	cache.clear(['cookies', 'pages'])
-			
-			
+
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -317,5 +373,5 @@ if updateView:
 	if mode==None or url==None or len(url)<1:
 		xbmc.executebuiltin("Container.SetViewMode(500)")
 	else:
-		xbmc.executebuiltin('Container.SetViewMode(504)')
+		xbmc.executebuiltin('Container.SetViewMode(515)')
 	xbmcplugin.endOfDirectory(handle)
