@@ -1,3 +1,6 @@
+[B]v1.2.4[/B]
+- Better cache.
+- new fanart.
 [B]v1.2.3[/B]
 - Fix for caching.
 [B]v1.2.2[/B]
