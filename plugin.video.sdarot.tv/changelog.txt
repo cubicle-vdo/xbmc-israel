@@ -1,3 +1,5 @@
+[B]Version 2.2.9[/B]
+- Improvements to Kodi 15 compatibility (fixed buffering issue).
 [B]Version 2.2.8[/B]
 - Compatibility with Kodi 15 (off by default).
 [B]Version 2.2.7[/B]

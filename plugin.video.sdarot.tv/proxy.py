@@ -27,12 +27,13 @@ import logging
 import socket
 import select
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
+#logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-PROXY_PORT = 9899
+PROXY_PORT = 53734
+READ_KBYTES = 8
 
-hack = 0
 # True if we are running on Python 3.
 PY3 = sys.version_info[0] == 3
 
@@ -186,10 +187,10 @@ class HttpParser(object):
         if self.type == HTTP_REQUEST_PARSER:
             self.method = line[0].upper()
             self.url = urlparse.urlsplit(line[1])
-            logger.debug('original url is %s' % str(self.url))
+            #logger.debug('original url is %s' % str(self.url))
             url = urlparse.parse_qs(self.url.query)['url'][0]
             self.url = urlparse.urlsplit(url)
-            logger.debug('url is %s' % str(self.url))
+            #logger.debug('url is %s' % str(self.url))
             self.version = line[2]
         else:
             self.version = line[0]
@@ -265,13 +266,13 @@ class Connection(object):
     def send(self, data):
         return self.conn.send(data)
     
-    def recv(self, bytes=8192):
+    def recv(self, bytes=1024*READ_KBYTES):
         try:
             data = self.conn.recv(bytes)
             if len(data) == 0:
-                logger.debug('recvd 0 bytes from %s' % self.what)
+            #    logger.debug('recvd 0 bytes from %s' % self.what)
                 return None
-            logger.debug('rcvd %d bytes from %s' % (len(data), self.what))
+            #logger.debug('rcvd %d bytes from %s' % (len(data), self.what))
             return data
         except Exception as e:
             logger.debug('Exception while receiving from connection %s %r with reason %r' % (self.what, self.conn, e))
@@ -293,7 +294,7 @@ class Connection(object):
     def flush(self):
         sent = self.send(self.buffer)
         self.buffer = self.buffer[sent:]
-        logger.debug('flushed %d bytes to %s' % (sent, self.what))
+        #logger.debug('flushed %d bytes to %s' % (sent, self.what))
 
 class Server(Connection):
     """Establish connection to destination server."""
@@ -304,6 +305,8 @@ class Server(Connection):
     
     def connect(self):
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        #self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 262144)
         self.conn.connect((self.addr[0], self.addr[1]))
 
 class Client(Connection):
@@ -328,6 +331,19 @@ class ProxyConnectionFailed(ProxyError):
         return '<ProxyConnectionFailed - %s:%s - %s>' % (self.host, self.port, self.reason)
 
 #class Proxy(multiprocessing.Process):
+"""
+import cProfile
+class ProfiledThread(Thread):
+    # Overrides threading.Thread.run()
+    def run(self):
+        profiler = cProfile.Profile()
+        try:
+            return profiler.runcall(Thread.run, self)
+        finally:
+            profiler.dump_stats('myprofile-%d.profile' % (self.ident,))
+            
+class Proxy(ProfiledThread):
+"""
 class Proxy(Thread):
     """HTTP proxy implementation.
     
@@ -359,7 +375,8 @@ class Proxy(Thread):
         return (self._now() - self.last_activity).seconds
     
     def _is_inactive(self):
-        return self._inactive_for() > 30
+        return self.server.closed #or self._inactive_for() > 30
+#        return self._inactive_for() > 30
     
     def _process_request(self, data):
         # once we have connection to the server
@@ -376,23 +393,11 @@ class Proxy(Thread):
         # once http request parser has reached the state complete
         # we attempt to establish connection to destination server
         if self.request.state == HTTP_PARSER_STATE_COMPLETE:
-            logger.debug('request parser is in state complete')
+            #logger.debug('request parser is in state complete')
         
             if self.request.url.netloc:
                 self.request.headers.update({'host': ('Host', self.request.url.netloc)})
-                
-            # if 'range' in self.request.headers:
-                # start = self.request.headers['range'][1].split('bytes=')[1].split('-')[0]
-                # if start != '0':
-                    #time.sleep(0.01)
-                    # del self.request.headers['range']
-                    # global hack
-                    # hack %= 500
-                    # hack += 100
-                    # scheme, netloc, path, query, fragment = self.request.url
-                    # query += "&start=" + str(hack)
-                    # self.request.url = urlparse.SplitResult(scheme, netloc, path, query, fragment)
-
+    
             if self.request.method == b"CONNECT":
                 host, port = self.request.url.path.split(COLON)
             elif self.request.url:
@@ -400,9 +405,9 @@ class Proxy(Thread):
             
             self.server = Server(host, port)
             try:
-                logger.debug('connecting to server %s:%s' % (host, port))
+                #logger.debug('connecting to server %s:%s' % (host, port))
                 self.server.connect()
-                logger.debug('connected to server %s:%s' % (host, port))
+                #logger.debug('connected to server %s:%s' % (host, port))
             except Exception as e:
                 self.server.closed = True
                 raise ProxyConnectionFailed(host, port, repr(e))
@@ -424,61 +429,44 @@ class Proxy(Thread):
                 ))
     
     def _process_response(self, data):
-        # parse incoming response packet
-        # only for non-https requests
-        if not self.request.method == b"CONNECT":
+        if not self.request.method == b"CONNECT" and "HTTP/1.1" == data[:8]:
             self.response.parse(data)
-
-        # Change 'Server' header to disable multi session http in curl
-        if "HTTP/1.1" == data[:8]:
+            # change 'Server' header to disable multi session http in curl
             data = self.response.build(del_headers=[b'server', b'Server'],add_headers=[(b'Server', b'Portable SDK for UPnP devices')])
-#        print repr(data)[:64]
-
+            
         # queue data for client
         self.client.queue(data)
-    
-    def _access_log(self):
-        host, port = self.server.addr if self.server else (None, None)
-        if self.request.method == b"CONNECT":
-            logger.info("%s:%s - %s %s:%s" % (self.client.addr[0], self.client.addr[1], self.request.method, host, port))
-        elif self.request.method:
-            logger.info("%s:%s - %s %s:%s%s - %s %s - %s bytes" % (self.client.addr[0], self.client.addr[1], self.request.method, host, port, self.request.build_url(), self.response.code, self.response.reason, len(self.response.raw)))
-        
+                
     def _get_waitable_lists(self):
         rlist, wlist, xlist = [self.client.conn], [], []
-        logger.debug('*** watching client for read ready')
+        #logger.debug('*** watching client for read ready')
         
         if self.client.has_buffer():
-            logger.debug('pending client buffer found, watching client for write ready')
+            #logger.debug('pending client buffer found, watching client for write ready')
             wlist.append(self.client.conn)
         
         if self.server and not self.server.closed:
-            logger.debug('connection to server exists, watching server for read ready')
-            rlist.append(self.server.conn)
+            #logger.debug('connection to server exists, watching server for read ready')
+            if self.client.buffer_size() <= 1024*READ_KBYTES*3:
+                rlist.append(self.server.conn)
         
         if self.server and not self.server.closed and self.server.has_buffer():
-            logger.debug('connection to server exists and pending server buffer found, watching server for write ready')
+            #logger.debug('connection to server exists and pending server buffer found, watching server for write ready')
             wlist.append(self.server.conn)
         
         return rlist, wlist, xlist
     
     def _process_wlist(self, w):
         if self.client.conn in w:
-            logger.debug('client is ready for writes, flushing client buffer')
             self.client.flush()
         
         if self.server and not self.server.closed and self.server.conn in w:
-            logger.debug('server is ready for writes, flushing server buffer')
             self.server.flush()
     
     def _process_rlist(self, r):
         if self.client.conn in r:
-            logger.debug('client is ready for reads, reading')
-            data = self.client.recv()
-            self.last_activity = self._now()
-            
+            data = self.client.recv()            
             if not data:
-                logger.debug('client closed connection, breaking')
                 return True
             
             try:
@@ -494,53 +482,48 @@ class Proxy(Thread):
                 ]) + b'Bad Gateway')
                 self.client.flush()
                 return True
-        
-        if self.server and not self.server.closed and self.server.conn in r:
-            logger.debug('server is ready for reads, reading')
+                
+        if self.server and not self.server.closed and self.server.conn in r and self.client.buffer_size() <= 1024*READ_KBYTES*3:
             data = self.server.recv()
-            self.last_activity = self._now()
-            
             if not data:
-                logger.debug('server closed connection')
                 self.server.close()
             else:
                 self._process_response(data)
-        
+
         return False
     
     def _process(self):
         while True:
+            #start = self._now()
             rlist, wlist, xlist = self._get_waitable_lists()
             r, w, x = select.select(rlist, wlist, xlist, 1)
-            
             self._process_wlist(w)
             if self._process_rlist(r):
                 break
             
             if self.client.buffer_size() == 0:
                 if self.response.state == HTTP_PARSER_STATE_COMPLETE:
-                    logger.debug('client buffer is empty and response state is complete, breaking')
                     break
                 
                 if self._is_inactive():
-                    logger.debug('client buffer is empty and maximum inactivity has reached, breaking')
                     break
-    
+            #print self._now() - start
+            
     def run(self):
-        logger.debug('Proxying connection %r at address %r' % (self.client.conn, self.client.addr))
+        logger.info('Proxying connection %r at address %r' % (self.client.conn, self.client.addr))
         try:
             self._process()
         except KeyboardInterrupt:
             pass
         except Exception as e:
-            logger.debug('Exception while handling connection %r with reason %r' % (self.client.conn, e))
+            logger.info('Exception while handling connection %r with reason %r' % (self.client.conn, e))
         finally:
-            logger.debug("closing client connection with pending client buffer size %d bytes" % self.client.buffer_size())
+            logger.info("closing client connection with pending client buffer size %d bytes" % self.client.buffer_size())
             self.client.close()
             if self.server:
-                logger.debug("closed client connection with pending server buffer size %d bytes" % self.server.buffer_size())
-            self._access_log()
-            logger.debug('Closing proxy for connection %r at address %r' % (self.client.conn, self.client.addr))
+                logger.info("closed client connection with pending server buffer size %d bytes" % self.server.buffer_size())
+            
+            logger.info('Closing proxy for connection %r at address %r' % (self.client.conn, self.client.addr))
 
 class TCP(object):
     """TCP server implementation."""
@@ -574,6 +557,7 @@ class TCP(object):
             self.socket.setblocking(True)
             while not self.abort:
                 conn, addr = self.socket.accept()
+                #conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) 
                 if self.abort:
                     break
                 logger.debug('Accepted connection %r at address %r' % (conn, addr))
@@ -607,3 +591,8 @@ class ProxyService(Thread):
     
     def stop(self):
         self.impl.stop()
+
+if __name__ == "__main__":
+    proxy = ProxyService(HTTP("127.0.0.1", PROXY_PORT))
+    #proxy.start()
+    proxy.run()
