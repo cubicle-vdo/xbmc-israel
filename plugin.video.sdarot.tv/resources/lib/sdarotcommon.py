@@ -19,8 +19,8 @@ from proxy import PROXY_PORT
 __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 __cachePeriod__ = __settings__.getSetting("cache")
 __PLUGIN_PATH__ = __settings__.getAddonInfo('path')
-__DEBUG__ = False
-
+__DEBUG__ = __settings__.getSetting("DEBUG") == "true"
+#__DEBUG__ = False
 
 DOMAIN = __settings__.getSetting("domain")
 HOST = DOMAIN[7:]
