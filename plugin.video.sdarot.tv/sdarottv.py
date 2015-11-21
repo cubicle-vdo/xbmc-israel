@@ -65,25 +65,24 @@ def MAIN_MENU():
 		 addDir(sp[1],"all-heb",2,'',DOMAIN+'/series/genre/'+sp[0]+sp[1])
 	
 def SearchSdarot(url,search_entered):
-	if 'חפש' in  search_entered :
-		keyboard = xbmc.Keyboard("", "חפש כאן")
-		keyboard.doModal()
-		if keyboard.isConfirmed():
-			search_entered = keyboard.getText()
+	search_entered= ''
+	keyboard = xbmc.Keyboard("", "חפש כאן")
+	keyboard.doModal()
+	if keyboard.isConfirmed():
+		search_entered = keyboard.getText()
 	page = getData(url=url,timeout=0,postData="search=" + search_entered)
-#	print page
 	matches = re.compile('<a href="/watch/(\d+)-(.*?)">').findall(page)
-	#print matches
 
 	#needs to remove duplicted result (originaly in site
-	matches = [ matches[i] for i,x in enumerate(matches) if x not in matches[i+1:]]
+	matches = [matches[i] for i,x in enumerate(matches) if x not in matches[i+1:]]
 	#print matches
 	for match in matches:
-	  series_id = match[0]
-	  link_name = match[1]
-	  image_link=DOMAIN+"/media/series/"+str(match[0])+".jpg"
-	  series_link=DOMAIN+"/watch/"+str(match[0])+"/"+match[1]
-	  addDir(link_name,series_link,"3&image="+urllib.quote(image_link)+"&series_id="+series_id+"&series_name="+urllib.quote(link_name),image_link)
+		series_id = match[0]
+		link_name = match[1]
+		image_link = DOMAIN+"/media/series/"+str(match[0])+".jpg"
+		series_link = DOMAIN+"/watch/"+str(match[0])+"/"+match[1]
+		if link_name.find('episode') == -1:
+			addDir(link_name,series_link,"3&image="+urllib.quote(image_link)+"&series_id="+series_id+"&series_name="+urllib.quote(link_name),image_link)
 		
 def INDEX_AZ(url,page):
 	page = getData(page);
@@ -287,4 +286,5 @@ elif mode==7:
 	download_season(url)
 
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__,"fanart.jpg") ))
-xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
+#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=0)
+xbmcplugin.endOfDirectory(int(sys.argv[1]))
