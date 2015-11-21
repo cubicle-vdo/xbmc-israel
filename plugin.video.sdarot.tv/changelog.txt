@@ -1,3 +1,5 @@
+[B]Version 2.3.0[/B]
+- Remove episodes from search results.
 [B]Version 2.2.9[/B]
 - Improvements to Kodi 15 compatibility (fixed buffering issue).
 [B]Version 2.2.8[/B]

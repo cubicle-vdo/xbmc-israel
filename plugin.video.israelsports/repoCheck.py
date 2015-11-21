@@ -16,7 +16,7 @@ def UpdateRepo(url= "https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/
 	
 	if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), repoName)):
 		return
-		
+
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
 	

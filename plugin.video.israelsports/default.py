@@ -14,44 +14,31 @@ def update_view(url):
 
 def CATEGORIES():
 	repoCheck.UpdateRepo()
-	repoCheck.UpdateRepo('http://fusion.tvaddons.ag/xbmc-repos/repository.p2p-streams.xbmc-1.0.3.zip','repository.p2p-streams.xbmc')
-	repoCheck.UpdateRepo('http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.SportsDevil/plugin.video.SportsDevil-1.8.8.0.zip','plugin.video.SportsDevil')
+	repoCheck.UpdateRepo('http://abeksis.com/repo/repository.abeksis/repository.abeksis.zip','repository.p2p-streams.xbmc')
+	repoCheck.UpdateRepo('http://abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2015.11.14.zip','plugin.video.SportsDevil')
 	
-	runp2p=ADDON.getSetting("P2Parsers") == "true"
-	#repoCheck.UpdateRepo('https://p2p-strm.googlecode.com/svn/addons/plugin.video.p2p-streams/plugin.video.p2p-streams-1.1.5.zip','plugin.video.p2p-streams')
-	#addDir('ptp','plugin://plugin.video.p2p-streams/',1,'','')
-	if runp2p:
-		update_view('plugin://plugin.video.p2p-streams/')
-		if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), 'plugin.video.p2p-streams')):
-			xbmc.sleep(500)
-			setupP2P()
-			
-			ADDON.setSetting("P2Parsers","false")
-	
-	addDir('PTP STREAMS *LIVE*','plugin://plugin.video.p2p-streams/?iconimage=C%3a%5cUsers%5cori%5cAppData%5cRoaming%5cKodi%5caddons%5cplugin.video.p2p-streams%2fresources%2fart%2fweb-parsers-menu.png&mode=400&name=-Addon%20Website-parsers&url=https%3a%2f%2fcode.google.com%2fp%2fp2p-strm%2f',1,'http://addons.superrepo.org/repository.p2p-streams.xbmc/icon.png','')
 	addDir('SPORTS DEVIL  *LIVE*','plugin://plugin.video.SportsDevil/?item=title%3dLive%2bSports%26url%3dlivesports.cfg%26definedIn%3dmainMenu.cfg%26director%3dSportsDevil%26genre%3dLive%2bSports%26type%3drss&mode=1 ',1,'http://xbmc-development-with-passion.googlecode.com/svn/branches/repo/plugin.video.SportsDevil/icon.png','')
 	addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
-	addDir('ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5375&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
-	addDir('ליגה ספרדית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5385&page=',2,'http://blog.tapuz.co.il/tlv1/images/%7B0B4BDB70-5D9B-463A-B894-0D5762E59AA0%7D.jpg','1')
-	addDir('תקצירי בארסה','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5383&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQYF9lIm6fqSM3cysKy_EqnRFyDOycA8lexCn7dSqp_4Av4vw1mcA','1')
-	addDir('תקצירי מדריד','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5384&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTJtSGna8A2FmzVH3WQyBLx6HGwEGqUKeBzPqvzn7cmcKvpkv8D','1')
+	addDir('     ,תקצירים    ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
+	addDir('  ליגת האלופות כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
+
 	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
-	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5403&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
+	addDir('One-  ליגת העל','stam',9,'http://www.isramedia.net/images/tvshowpic/Ligat_winner.png','1')
+	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
 	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
 	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
 	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
-	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5459&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
-	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5452&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
-	addDir('חמישיות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5463&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTSYYoacn3zS6w4JwqPORpGCDBqytoJOko8bc6usF3kQ_yoJgwS','1')
+	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5959&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
+	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5845&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
+	addDir('כדורסל   נשים ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4979&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
 	addDir('חדשות הספורט','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3968&page=',2,'http://www.nrg.co.il/images/archive/300x225/631/730.jpg','1')
-	addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5382&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
+	addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5811&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
 	addDir('בובה של לילה 3','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3473&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 2','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3186&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 1','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3185&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
-	addDir('הקישור','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3061&page=',2,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIwv5MJeZjUM4QI8iIZEhivnz71tZssEn9naosE1xWkrCNw7ontg','1')
-	addDir('One-  ליגת העל','stam',9,'http://www.isramedia.net/images/tvshowpic/Ligat_winner.png','1')
 
-	setView('movies', 'default')
+
+	xbmc.executebuiltin('Container.SetViewMode(500)')
 
 	
 def setupP2P():
