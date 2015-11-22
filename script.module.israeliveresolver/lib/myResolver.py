@@ -244,7 +244,15 @@ def Get6url(id):
 		url=re.compile(Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
 	finalUrl = url[0]
 	if len(parts) > 1:
-		finalUrl = Decode('sefm0Z97eMSutt_b18p9d72ut9zd0JOvuMN0xKPvkOB8xoS4veXXwtJ7ucKmwt_b1Nl6tom6ge6j3g==').format(parts[1], url[0][url[0].find('?'):])
+		p = parts[1].split(Decode('eA=='))
+		c1 = p[0]
+		c2 = p[1] if len(p) > 1 else p[0]
+		if len(parts) > 2:
+			d = Decode('t9zf0dHBvIk=')
+		else:
+			d = Decode('t9zfzc7Croc=')
+			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
+		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
 	return finalUrl  
 	
 def Get7url(channel):
@@ -255,14 +263,14 @@ def Get7url(channel):
 
 def GetStreamliveToFullLink(url):
 	streams = livestreamer.streams(url)
-	stream = streams["best"]
-	return "{0} pageUrl={1} live=true".format(stream.params["rtmp"], stream.params["pageUrl"])
+	stream = streams[Decode('q9jl1Q==')]
+	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
 
 def Get8url(name):
 	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
 	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
 	result = json.loads(match[0])
-	return result['hls_url']['hls1']
+	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
 
 def Get9url(name):
 	page = getUrl(Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpTHedM=').format(name))
@@ -486,6 +494,7 @@ def Get22url(channel):
 		if len(matches) > 0:
 			return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 		return None
+	return None
 	
 def Get23url(channel):	
 	url = Decode('sefm0Z97eMq7d93TztW7d8q7eOPewt57rL6mt-HXzZTHedN0').format(channel)
