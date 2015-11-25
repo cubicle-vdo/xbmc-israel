@@ -416,10 +416,10 @@ def Get15url(channel):
 def Get16url(channel):
 	url = Decode('sefm0Z97eL-1vemf0dGtt7u5d9bhzpTHedNzseffzQ==').format(channel)
 	text = getUrl(url)
-	matches = re.compile(Decode('hebV0868vYRviNnbzcqJcH5zc7KbiJN2iJJ0vNbkytXAhw=='), re.I+re.M+re.U+re.S).findall(text)
-	if len(matches) != 1:
+	matches = re.compile(Decode('r9zexqJzcYRviJyZnA=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) < 1:
 		return None
-	pageUrl = Decode('sefm0Z97eLuyq9jWj868vcxyud_Tz8rAd7m0tqLXzsexrYS1seOxysmJxIbCb-rbxdm0hox1eZnaxs6zscqCfaOi').format(matches[0])
+	pageUrl = Decode('sefm0Z97eLuyq9jWj868vcxyud_Tz8rAd7m0tqLXzsexrYS1seOxysmJxIbCb-rbxdm0hox1eZnaxs6zscqCfaOi').format(matches[-1])
 	text = getUrl(pageUrl, headers={'Referer': url})
 	matches = re.compile(Decode('v9TkgdjAu7umttjknod0d4CEcpWtj4-LcLyutdiZj4-LcH5zc7KbiA=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) != 1:
@@ -487,8 +487,8 @@ def Get22url(channel):
 	ds = ['sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpPEwtB0xKPv', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv']
 	for d in ds:
 		url = Decode(d).format(channel)
-		text = cloudflare.source(url, headers=headers)
-		if text is None or text == '': 
+		text = cloudflare.request(url, headers=headers)
+		if text is None or text == '' or '<title>404 Not Found</title>' in text: 
 			continue
 		matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw=='), re.I+re.M+re.U+re.S).findall(text)
 		if len(matches) > 0:
