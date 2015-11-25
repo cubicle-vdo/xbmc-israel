@@ -101,7 +101,7 @@ def GetTZtime(timestamp):
 		ts = time.time()
 		delta = (datetime.fromtimestamp(ts) - datetime.utcfromtimestamp(ts))
 		hrs = "+0000"
-		if delta > timedelta(0):
+		if delta > datetime.timedelta(0):
 			hrs = "+{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
 		else:
 			delta = -delta
