@@ -114,7 +114,6 @@ def getData(url, period=__cachePeriod__):
         return contentType, data
 
 def getImageNick(url):
-            print url 
             contentType,page = getData(url)
             titleMatches = re.compile('class="stripe_title w7b white">\s*(.*?)\s*</h1>\s*<img src="(.*?)"').findall(page)
             if len(titleMatches) == 0:
@@ -157,10 +156,18 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     contentType,mainPage = getData(inUrl)
     print inUrl
     if 'nick' in urlbase and  not 'page' in inUrl:
-        urlMatch = re.compile('class="w6b.?.*?href="(.*?)">').findall(mainPage)
-        print ';;;;' + str( urlMatch[0])
-        if (len(urlMatch[0])) > 0:
-          inUrl=urlbase+urlMatch[0]
+        #urlMatch = re.compile('class="w6b.?.*?href="(.*?)">').findall(mainPage)
+        block=re.compile('show_nav oflow w3 bgclr1(.*?)content_holder').findall(mainPage)
+        para=re.compile('a href="(.*?)".*?click="(.*?)"').findall(block[0])
+        urlMatch='' 
+        for item in para:
+           print  item[1]
+           if  str(item[1]).decode('windows-1255').encode('utf-8').find('פרקים')!=-1:
+               print "da"
+               urlMatch=item[0]  
+        print ';;;;' + str( urlMatch)
+        if (len(urlMatch)) > 0:
+          inUrl=urlbase+urlMatch
           contentType,mainPage = getData(inUrl)
     print "modulename=" + modulename
     print "inUrl=" + inUrl
@@ -206,7 +213,7 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
                 else:
                     time = '00:00'
 
-                url='http://62.90.90.56/walla_vod/_definst_/'+ re.compile('<src>(.*?)</src>').findall(page)[0]+'.mp4/master.m3u8'
+                url='http://62.90.90.56/walla_vod/_definst_/'+ re.compile('<src>(.*?)</src>').findall(page)[0]+'.mp4/playlist.m3u8'
                 epi1 = Episode(content=contentType, title=title, url=url, iconImage=iconImage, time=str(time), epiDetails=epiDetails)
                 episodes.append(epi1)
                 addLink(contentType, title, url, iconImage, str(time), epiDetails)
