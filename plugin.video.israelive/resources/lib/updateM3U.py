@@ -14,8 +14,8 @@ iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
 iptvLogosDir = os.path.join(user_dataDir, "logos")
 
-if Addon.getSetting("useIPTV") == "true":
-	myIPTV.makeIPTVlist(iptvChannelsFile)
-	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
-
-xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunScript({1}),{2},silent)".format("IsraeLiveM3U", os.path.join(libDir, "updateM3U.py"), 720))
+def Update():
+	if Addon.getSetting("useIPTV") == "true":
+		myIPTV.makeIPTVlist(iptvChannelsFile)
+		myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+	xbmc.executebuiltin("XBMC.AlarmClock({0},XBMC.RunPlugin(plugin://plugin.video.israelive/default.py?mode=101&url=checkUpdates),{1},silent)".format("IsraeLiveM3U", 720))

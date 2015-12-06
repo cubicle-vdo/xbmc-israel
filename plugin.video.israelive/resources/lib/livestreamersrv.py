@@ -127,6 +127,3 @@ def stop(portNum):
 			print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
 	except Exception as ex:
 		print ex
-		#pass
-
-start(int(sys.argv[1]))
