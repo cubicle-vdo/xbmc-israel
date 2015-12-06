@@ -8,7 +8,7 @@ Addon = xbmcaddon.Addon(AddonID)
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common, myIPTV
+import common, myIPTV, checkUpdates, updateM3U
 import myResolver
 localizedString = Addon.getLocalizedString
 AddonName = Addon.getAddonInfo("name")
@@ -781,6 +781,12 @@ elif mode == 44: # Import IsraeLIVE favourites
 	updateList = False
 elif mode == 45: # Add an external channel to IsraeLIVE favourites
 	AddUserChannelToFavorites()
+	updateList = False
+elif mode == 100: # CheckUpdates
+	checkUpdates.Update()
+	updateList = False
+elif mode == 101: # Update IPTV lists
+	updateM3U.Update()
 	updateList = False
 else:
 	updateList = False

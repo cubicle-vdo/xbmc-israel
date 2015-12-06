@@ -484,7 +484,7 @@ def Get21url(channel):
 def Get22url(channel):
 	UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
 	headers = {'User-Agent': UA}
-	ds = ['sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpPEwtB0xKPv', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv']
+	ds = ['sefm0Z97eM28wKHl1dexqsN5r-XXxpO5roXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpPEwtB0xKPv', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpO7v750xKPv', 'sefm0Z97eM28wKHl1dexqsN5r-XXxpO8u8U=']
 	for d in ds:
 		url = Decode(d).format(channel)
 		text = cloudflare.request(url, headers=headers)
