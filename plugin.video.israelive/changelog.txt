@@ -1,3 +1,5 @@
+[B]v4.6.7[/B]
+- Bugfix.
 [B]v4.6.6[/B]
 - Maintenance.
 [B]v4.6.5[/B]
