@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 import os, sys, io, uuid, base64
-import urllib, urllib2, json
-import repoCheck
+import urllib, urllib2, urlparse, json
 
 xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
 isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
@@ -20,7 +19,6 @@ if isXbmc and not os.path.exists(userDir):
 	os.makedirs(userDir)
 
 def GetCategoriesList():
-	repoCheck.UpdateRepo()
 	name = "תכניות MakoTV"
 	addDir(name, "http://www.mako.co.il/mako-vod-index", 0, "http://img.mako.co.il/2010/08/11/mako%20vod%20c.jpg", {"Title": name, "Plot": "צפיה בתכני MakoTV"})
 	name = "תכניות ילדים"
@@ -163,7 +161,6 @@ def Play(url):
 	if isXbmc:
 		urls = ReadList(os.path.join(userDir, 'urls.txt'))
 		url = urls[int(url)]
-	
 	guid = url[url.find('vcmid=')+6: url.find('&videoChannelId=')]
 	link = Decode('tdXf346FfNji5oLDrszanbfFe8rXnpXArtm70Lu7jMve36K3usao38C3xs3U4siEt9Tblcq5usrPrM-Gyofh2Li7vKTT0MLEss2005HRft6R0sPEwNbY1MaTxMbNlbnEsNPk38i_vM-o3cM=')
 	text = OpenURL(link.format(guid, url[url.find('&videoChannelId=')+16:]))
@@ -173,7 +170,7 @@ def Play(url):
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
 			break
-
+	DelCookies(url)
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
@@ -188,7 +185,23 @@ def Play(url):
 	final = "{0}?{1}".format(url, result["tickets"][0]["ticket"])
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
-	
+
+def DelCookies(url):
+	try:
+		cookieDomain = urlparse.urlparse(url).netloc
+		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+		tempCookies = os.path.join(tempDir, 'cookies.dat')
+		f = open(tempCookies, "r")
+		lines = f.readlines()
+		f.close()
+		f = open(tempCookies ,"w")
+		for line in lines:
+			if cookieDomain not in line:
+				f.write(line)
+		f.close()
+	except Exception as ex:
+		print ex
+
 def ReadList(fileName):
 	try:
 		with open(fileName, 'r') as handle:
