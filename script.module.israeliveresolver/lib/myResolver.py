@@ -433,12 +433,12 @@ def Get17url(channel):
 	return Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(Decode('r9_omw=='), Decode('aePewt68qsqthg==')), matches[0][1], url)
 	
 def Get18url(channel):
-	text = getUrl(Decode('sefm0Z97eM28wKHYwti0ssWzvemgxNS5eNF1xg==').format(channel))
-	matches = re.compile(Decode('stevg9W4qs-qu9bhz9mtssSqu5Wwj4-LvMiohpWaj4-Lcng='), re.I+re.M+re.U+re.S).findall(text)
-	text = getUrl(Decode('sefm0Z_HedM=').format(matches[0]))
+	text = getUrl(channel)
+	matches = re.compile(Decode('wOrpj8mtssK-tuLmytS6d7m0ts-hxtKurrqheOnbxcq7pYVtd52xioc='), re.I+re.M+re.U+re.S).findall(text)
+	text = getUrl(Decode('sefm0Z97eM28wKHWws64wsO0vdzhz5OvuMN0ruDUxsl7v7-pruKh3JXJ').format(matches[0]))
 	matches = re.compile(Decode('xJXm2tWxa5BnquPizc6vqsquuOGgi6R4a8u3tZWsg416c5Vua_A='), re.I+re.M+re.U+re.S).findall(text)
 	for retries in range(4):
-		streamUrl = getUrl(Decode('xKPvh9exrb-3rtbmnpU=').format(matches[3].replace(Decode('pQ=='), '')))
+		streamUrl = getUrl(Decode('xKPvh9exrb-3rtbmnpU=').format(matches[0].replace(Decode('pQ=='), '')))
 		if Decode('vOfkxsa5druo') in streamUrl:
 			return streamUrl
 	return None
