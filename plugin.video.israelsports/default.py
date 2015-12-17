@@ -13,7 +13,6 @@ def update_view(url):
     return ok
 
 def CATEGORIES():
-	repoCheck.UpdateRepo()
 	repoCheck.UpdateRepo('http://abeksis.com/repo/repository.abeksis/repository.abeksis.zip','repository.p2p-streams.xbmc')
 	repoCheck.UpdateRepo('http://abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2015.11.14.zip','plugin.video.SportsDevil')
 	
@@ -136,7 +135,7 @@ def one_videopage(url,description):
 	setView('movies', 'default')
 
 def YoutubeUser(username):
-	xbmc.executebuiltin('XBMC.Container.Update(plugin://plugin.video.youtube/user/{0}/)'.format(username))
+	xbmc.executebuiltin('XBMC.Container.Update(plugin://plugin.video.youtube/channel/{0}/)'.format(username))
 	
 def play_one(name,url,iconimage,description):
 	url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
@@ -213,8 +212,9 @@ def addDir(name,url,mode,iconimage,description):
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	if mode==1:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-	elif mode==3 or mode==5 or mode==9 or mode==14:
+	elif mode==15 or mode==16 or mode==3:
 		liz.setProperty("IsPlayable","true")
+	if mode==15 or mode==16 or mode==9 or mode==3:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	else:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -238,6 +238,26 @@ def setView(content, viewType):
 		xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
 
 
+#finds youtube live link  fro awe and playing it 
+
+
+
+
+def PlayAwe():
+	FAV = OPEN_URL('https://www.dropbox.com/s/zulccjfsjc21mcx/AWE.txt?dl=1')
+	content=json.loads(FAV)
+	url=content["Url"]
+	link=OPEN_URL(url)
+	id=re.compile('youtube_id":"(.*?)"').findall(link)
+	if  not id :
+			dialog = xbmcgui.Dialog()
+			ok = dialog.ok('ELI OHANA 11', 'אין כרגע שידור ישיר')	
+	else:
+		print "id=====" + str(id)
+		url = 'plugin://plugin.video.youtube/?action=play_video&videoid='+id[0]
+		xbmc.executebuiltin('PlayMedia(' +url+')')
+		#xbmc.executebuiltin('PlayMedia(plugin://plugin.video.youtube/?action=play_video&videoid=L2928xxYc7c)')
+		
 params=get_params()
 url=None
 name=None
@@ -291,8 +311,13 @@ elif mode==6:
 elif mode==8:
 	LIVE()
 elif mode==9:
-	YoutubeUser('one')
+	YoutubeUser('UCW3Nh3OwO6oqwwjgNyJw7qQ')
 elif mode==14:
+	addDir('לשידור הישיר','blah',15,'','')
+	addDir('?מה זה בית"ר נורדיה ירושלים','blah',16,'','')
+	addDir('סרטוני בית"ר נורדיה ירושלים','eli',9,'','')
+elif mode==15:
+	PlayAwe()
+elif mode==16:
 	xbmc.executebuiltin('PlayMedia(plugin://plugin.video.youtube/?action=play_video&videoid=L2928xxYc7c)')
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
-

@@ -323,7 +323,10 @@ def GetMinus1url():
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]))
 	result = json.loads(text)["tickets"][0]["ticket"]
-	return "{0}&{1}".format(url, result)
+	if '?' in url:
+		return "{0}&{1}".format(url, result)
+	else:
+		return "{0}?{1}".format(url, result)
 	
 def Get11url(channel):
 	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')
