@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, uuid, json, random, base64, io, os, gzip, time
+import urllib, urllib2, urlparse, re, uuid, json, random, base64, io, os, gzip, time
 from StringIO import StringIO
 import jsunpack, myFilmon, cloudflare
 import xbmc, xbmcaddon
@@ -171,6 +171,22 @@ def ReadList(fileName):
 
 	return content
 	
+def DelCookies(url):
+	try:
+		cookieDomain = urlparse.urlparse(url).netloc
+		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+		tempCookies = os.path.join(tempDir, 'cookies.dat')
+		f = open(tempCookies, "r")
+		lines = f.readlines()
+		f.close()
+		f = open(tempCookies ,"w")
+		for line in lines:
+			if cookieDomain not in line:
+				f.write(line)
+		f.close()
+	except Exception as ex:
+		print ex
+		
 def GetUrl(url):
 	if not os.path.exists(user_dataDir):
 		os.makedirs(user_dataDir)
@@ -317,8 +333,9 @@ def GetMinus1url():
 	for item in result:
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
+			DelCookies(url)
 			break
-		
+	
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]))
