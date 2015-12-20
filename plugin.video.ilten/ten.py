@@ -13,7 +13,7 @@
     Initial Developer: Shai Bentin.
 
 """
-import urllib, urllib2, re, os, sys, unicodedata, random, json
+import urllib, urllib2, urlparse, re, os, sys, unicodedata, random, json
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 
 ##General vars
@@ -150,7 +150,7 @@ def playMovie(item):
     _hls_cookie = item.getHLSCookie()
     xbmc.log('***** vod_item --> %s' % (item.getId()), xbmc.LOGDEBUG)
     xbmc.log('***** playable _url --> %s' % (_url), xbmc.LOGDEBUG)
-    
+    DelCookies(_url)
     title = item.getTitle().encode('UTF-8')
     summary = item.getDescription().encode('UTF-8')
     thumbnail = item.getThumbnail()
@@ -171,6 +171,22 @@ def playMovie(item):
     # Gotham properly probes the mime type now, no need to do anything special
     xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
+def DelCookies(url):
+    try:
+        cookieDomain = urlparse.urlparse(url).netloc
+        tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+        tempCookies = os.path.join(tempDir, 'cookies.dat')
+        f = open(tempCookies, "r")
+        lines = f.readlines()
+        f.close()
+        f = open(tempCookies ,"w")
+        for line in lines:
+            if cookieDomain not in line:
+                f.write(line)
+        f.close()
+    except Exception as ex:
+        print ex
+		
 def getParams(arg):
     param=[]
     paramstring=arg

@@ -12,7 +12,7 @@
     Initial Developer: Shai Bentin.
 
 """
-import urllib, urllib2, re, os, sys, unicodedata, random
+import urllib, urllib2, urlparse, re, os, sys, unicodedata, random
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 
 ##General vars
@@ -32,14 +32,12 @@ sys.path.append (M3U8_PATH)
 
 import MakoVodIndexLoader, MakoProgramNode, MakoProgramLoader, MakoSeasonNode, MakoSeasonLoader, MakoVodItemLoader, MakoVodItemNode
 import MakoTicketLoader
-import repoCheck
 
 # define properties dictionary to be delivered down the hierarchy
 __properties = { 'consumer':'android4', 'appId':'0c4f6ec6-9194-450e-a963-e524bb6404g2', 'appVer':'3.3' }
 
 def getProgramsIndex():
     # obtain VOD index
-    #repoCheck.UpdateRepo()
     indexLoader = MakoVodIndexLoader.MakoVodIndexLoader(__properties)
     jsonProgramsIndex = indexLoader.loadURL()
     if None == jsonProgramsIndex:
@@ -162,6 +160,7 @@ def playItem(vodItemURL, vodItemId):
 	else:
 	    _url = _url + '&' + urlEncodedTicket
 	xbmc.log('***** Mako: final video URL with ticket: %s' % _url, xbmc.LOGDEBUG)
+	DelCookies(_url)
 	title = ''
 	summary = ''
 	thumbnail = ''
@@ -176,6 +175,22 @@ def playItem(vodItemURL, vodItemId):
 
         # Gotham properly probes the mime type
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
+
+def DelCookies(url):
+    try:
+        cookieDomain = urlparse.urlparse(url).netloc
+        tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+        tempCookies = os.path.join(tempDir, 'cookies.dat')
+        f = open(tempCookies, "r")
+        lines = f.readlines()
+        f.close()
+        f = open(tempCookies ,"w")
+        for line in lines:
+            if cookieDomain not in line:
+                f.write(line)
+        f.close()
+    except Exception as ex:
+        print ex
 
 def getParams(arg):
     param=[]
