@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 import os, sys, io, uuid, base64
-import urllib, urllib2, urlparse, json
+import urllib, urllib2, json
 
 xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
 isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
@@ -158,6 +158,7 @@ def PlayItem(url):
 	Play(url)
 		
 def Play(url):
+	DelCookies()
 	if isXbmc:
 		urls = ReadList(os.path.join(userDir, 'urls.txt'))
 		url = urls[int(url)]
@@ -170,7 +171,6 @@ def Play(url):
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
 			break
-	DelCookies(url)
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
@@ -186,19 +186,12 @@ def Play(url):
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
 
-def DelCookies(url):
+def DelCookies():
 	try:
-		cookieDomain = urlparse.urlparse(url).netloc
 		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
 		tempCookies = os.path.join(tempDir, 'cookies.dat')
-		f = open(tempCookies, "r")
-		lines = f.readlines()
-		f.close()
-		f = open(tempCookies ,"w")
-		for line in lines:
-			if cookieDomain not in line:
-				f.write(line)
-		f.close()
+		if os.path.isfile(tempCookies):
+			os.unlink(tempCookies)
 	except Exception as ex:
 		print ex
 

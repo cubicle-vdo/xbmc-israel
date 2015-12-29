@@ -91,10 +91,10 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.ilten" name="ערוץ 10" version="1.3.1" provider-name="vmaster">
+<addon id="plugin.video.ilten" name="ערוץ 10" version="1.3.2" provider-name="vmaster">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="repository.xbmc-israel" />
+        <import addon="repository.xbmc-israel" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="ten.py">
         <provides>video</provides>
@@ -194,7 +194,7 @@
 
 <addon id="plugin.video.MakoTV"
        name="MakoTV (web)"
-       version="1.1.0"
+       version="1.1.1"
        provider-name="xbmc-israel team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
@@ -212,7 +212,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.35.0" provider-name="sbentin \V Master">
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.35.1" provider-name="sbentin \V Master">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="repository.xbmc-israel" />
@@ -268,10 +268,10 @@ http://www.hometheater.co.il</description>
   </extension>
 </addon>
 
-<addon id="plugin.video.reshet.video" name="רשת" version="1.3.2" provider-name="sbentin">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.3.3" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="repository.xbmc-israel" />
+        <import addon="repository.xbmc-israel" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="reshet.py">
         <provides>video</provides>
@@ -395,7 +395,7 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.2.2" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.2.3" provider-name="Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
 	<import addon="repository.xbmc-israel" />

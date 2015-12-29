@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ilten" name="ערוץ 10" version="1.3.1" provider-name="vmaster">
+<addon id="plugin.video.ilten" name="ערוץ 10" version="1.3.2" provider-name="vmaster">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="repository.xbmc-israel" />
+        <import addon="repository.xbmc-israel" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="ten.py">
         <provides>video</provides>
