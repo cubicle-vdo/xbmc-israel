@@ -12,7 +12,7 @@
     Initial Developer: Shai Bentin.
 
 """
-import urllib, urllib2, urlparse, re, os, sys, unicodedata, random
+import urllib, urllib2, re, os, sys, unicodedata, random
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 
 ##General vars
@@ -140,6 +140,7 @@ def addVodItemView(vodItemNode):
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
 
 def playItem(vodItemURL, vodItemId):
+    DelCookies()
     # obtain a ticket for the video item
     ticketLoader = MakoTicketLoader.MakoTicketLoader(__properties, vodItemURL, vodItemId)
     ticketLoader.loadURL()
@@ -160,7 +161,6 @@ def playItem(vodItemURL, vodItemId):
 	else:
 	    _url = _url + '&' + urlEncodedTicket
 	xbmc.log('***** Mako: final video URL with ticket: %s' % _url, xbmc.LOGDEBUG)
-	DelCookies(_url)
 	title = ''
 	summary = ''
 	thumbnail = ''
@@ -176,21 +176,14 @@ def playItem(vodItemURL, vodItemId):
         # Gotham properly probes the mime type
         xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 
-def DelCookies(url):
-    try:
-        cookieDomain = urlparse.urlparse(url).netloc
-        tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
-        tempCookies = os.path.join(tempDir, 'cookies.dat')
-        f = open(tempCookies, "r")
-        lines = f.readlines()
-        f.close()
-        f = open(tempCookies ,"w")
-        for line in lines:
-            if cookieDomain not in line:
-                f.write(line)
-        f.close()
-    except Exception as ex:
-        print ex
+def DelCookies():
+	try:
+		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+		tempCookies = os.path.join(tempDir, 'cookies.dat')
+		if os.path.isfile(tempCookies):
+			os.unlink(tempCookies)
+	except Exception as ex:
+		print ex
 
 def getParams(arg):
     param=[]

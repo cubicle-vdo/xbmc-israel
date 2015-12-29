@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, urlparse, re, uuid, json, random, base64, io, os, gzip, time
+import urllib, urllib2, re, uuid, json, random, base64, io, os, gzip, time, hashlib
 from StringIO import StringIO
 import jsunpack, myFilmon, cloudflare
 import xbmc, xbmcaddon
@@ -171,19 +171,12 @@ def ReadList(fileName):
 
 	return content
 	
-def DelCookies(url):
+def DelCookies():
 	try:
-		cookieDomain = urlparse.urlparse(url).netloc
 		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
 		tempCookies = os.path.join(tempDir, 'cookies.dat')
-		f = open(tempCookies, "r")
-		lines = f.readlines()
-		f.close()
-		f = open(tempCookies ,"w")
-		for line in lines:
-			if cookieDomain not in line:
-				f.write(line)
-		f.close()
+		if os.path.isfile(tempCookies):
+			os.unlink(tempCookies)
 	except Exception as ex:
 		print ex
 		
@@ -333,7 +326,7 @@ def GetMinus1url():
 	for item in result:
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
-			DelCookies(url)
+			DelCookies()
 			break
 	
 	uuidStr = str(uuid.uuid1()).upper()
@@ -348,53 +341,77 @@ def GetMinus1url():
 def Get11url(channel):
 	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')
 	channel = Decode('r9nk1Zdsscq5ua2hkNG7rLexseLl1ZSvsYXAefA=').format(channel)
-	info = retrieveData(url, values = {
+	#mac = ':'.join(re.findall('..', '%012x' % uuid.getnode())).upper()
+	mac = '00:1A:79:12:34:7D'
+	key = None
+	info = retrieveData(url, mac, key, values = {
+		'type' : 'stb', 
+		'action' : 'handshake',
+		'JsHttpRequest' : '1-xml'})
+	if info == None:
+		return None
+	key = info['js']['token']
+	sn = hashlib.md5(mac).hexdigest().upper()[13:]
+	device_id = hashlib.sha256(sn).hexdigest().upper()
+	device_id2 = hashlib.sha256(mac).hexdigest().upper()
+	signature = hashlib.sha256(sn + mac).hexdigest().upper()
+	info = retrieveData(url, mac, key, values = {
+		'type' : 'stb', 
+		'action' : 'get_profile',
+		'hd' : '1',
+		'ver' : 'ImageDescription:%200.2.18-r11-pub-254;%20ImageDate:%20Wed%20Mar%2018%2018:09:40%20EET%202015;%20PORTAL%20version:%204.9.14;%20API%20Version:%20JS%20API%20version:%20331;%20STB%20API%20version:%20141;%20Player%20Engine%20version:%200x572',
+		'num_banks' : '1',
+		'stb_type' : 'MAG254',
+		'image_version' : '218',
+		'auth_second_step' : '0',
+		'hw_version' : '2.6-IB-00',
+		'not_valid_token' : '0',
+		'JsHttpRequest' : '1-xml',
+		'sn': sn,
+		'device_id': device_id,
+		'device_id2': device_id2,
+		'signature': signature })
+	info = retrieveData(url, mac, key, values = {
 		'type' : 'itv', 
 		'action' : 'create_link', 
 		'cmd' : channel,
 		'forced_storage' : 'undefined',
 		'disable_ad' : '0',
-		'JsHttpRequest' : '1-xml'});
-	
-	cmd = info['js']['cmd'];
-	s = cmd.split(' ');
+		'JsHttpRequest' : '1-xml'})
+	if info == None:
+		return None
+	cmd = info['js']['cmd']
+	s = cmd.split(' ')
 	url = s[1] if len(s)>1 else s[0]
 	return url
-
-	'''
-	# RETRIEVE THE 1 EXTM3U
-	request = urllib2.Request(url)
-	request.get_method = lambda : 'HEAD'
-	response  = urllib2.urlopen(request)
-	data = response.read().decode("utf-8")
-	data = data.splitlines()
-	data = data[len(data) - 1]
-
-	# RETRIEVE THE 2 EXTM3U
-	url = response.geturl().split('?')[0];
-	url_base = url[: -(len(url) - url.rfind('/'))]
-	return url_base + '/' + data
-	'''
 	
-def retrieveData(url, values):
-	mac = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+def retrieveData(url, mac, key, values):
 	url += Decode('eObmwtG3rsikueLk1ca4')
 	load = Decode('eObX09uxu4WxuNTWj9W0uQ==')
-
 	headers = { 
-		'User-Agent': 'Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 2 rev: 250 Safari/533.3', 
-		'Cookie': 'mac=' + mac + '; stb_lang=en; timezone=Europe%2FKiev',
+		'User-Agent': 'Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 4 rev: 1812 Mobile Safari/533.3', 
+		'Cookie': 'mac=' + mac + '; stb_lang=en; timezone=America%2FChicago',
 		'Referer': url + '/c/',
 		'Accept': '*/*',
-		'X-User-Agent': 'Model: MAG250; Link: WiFi' }
-		
-	data = urllib.urlencode(values);
+		'Connection' : 'Keep-Alive',
+		'X-User-Agent': 'Model: MAG254; Link: Ethernet' }
+	if key != None:
+		headers['Authorization'] = 'Bearer ' + key
+	data = urllib.urlencode(values)
 	req = urllib2.Request(url + load, data, headers)
-	data = urllib2.urlopen(req).read().decode("utf-8")
-	info = json.loads(data)
-
+	resp = urllib2.urlopen(req).read().decode("utf-8")
+	info = None
+	try:
+		info = json.loads(resp)
+	except:
+		req = urllib2.Request(url + load + '?' + data, headers=headers)
+		resp = urllib2.urlopen(req).read().decode("utf-8")
+		try:
+			info = json.loads(resp)
+		except:
+			print resp
 	return info
-	
+ 	
 def Get12url(channel):
 	url = Decode('sefm0Z97eM28wKHVwtO4ssq7tdzoxpOvuMN0xKPvj83AtsI=').format(channel)
 	text = getUrl(url)
@@ -444,7 +461,10 @@ def Get16url(channel):
 	matches = re.compile(Decode('v9TkgdjAu7umttjknod0d4CEcpWtj4-LcLyutdiZj4-LcH5zc7KbiA=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) != 1:
 		return None
-	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkMq5q7upd9zi1dt5ucKmt9jmj8i7toW4wNnlkNW4qs-qu6Hl2MtsubesrsjkzaLHe9M=').format(matches[0][0], matches[0][1], pageUrl)
+	url = matches[0][0]
+	#if 'Hi_mbc1' in matches[0][1] or 'mbcmasr' in matches[0][1] or 'rc' in matches[0][1]:
+	#	url = url.replace('web1', 'web3').replace('web2', 'web3')
+	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkMq5q7upd9zi1dt5ucKmt9jmj8i7toW4wNnlkNW4qs-qu6Hl2MtsubesrsjkzaLHe9M=').format(url, matches[0][1], pageUrl)
 
 def Get17url(channel):
 	url = Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')

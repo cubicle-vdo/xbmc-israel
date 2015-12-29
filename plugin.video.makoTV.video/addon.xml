@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.35.0" provider-name="sbentin \V Master">
+<addon id="plugin.video.makoTV.video" name="Mako TV" version="1.35.1" provider-name="sbentin \V Master">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="repository.xbmc-israel" />

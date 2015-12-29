@@ -1,5 +1,7 @@
+[B]1.1.1[/B]
+- Delete 'cookies.dat' file before playing an item.
 [B]1.1.0[/B]
-- fix for items not playing on kodi 15. (Thanks to BenHT from http://www.hometheater.co.il)
+- Fix for items not playing on kodi 15. (Thanks to BenHT from http://www.hometheater.co.il)
 [B]1.0.9[/B]
 - Added search option.
 - Added sorting method option. (website-order / alphabetic-order)
