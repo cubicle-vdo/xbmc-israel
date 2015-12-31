@@ -1,3 +1,6 @@
+1.0.7
+- Added option to set logos for lists and channels.
+- Added option to set logos base url or folder for m3u lists.
 1.0.6
 - Fix for checking if file exist before backup.
 1.0.5
