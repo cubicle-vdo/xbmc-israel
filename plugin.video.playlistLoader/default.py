@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #code by Avigdor 
 import urllib, sys, xbmcplugin ,xbmcgui, xbmcaddon, xbmc, os, json
-import repoCheck
 
 AddonID = 'plugin.video.playlistLoader'
 Addon = xbmcaddon.Addon(AddonID)
@@ -28,7 +27,6 @@ if  not (os.path.isfile(favoritesFile)):
 	f.close() 
 	
 def Categories():
-	repoCheck.UpdateRepo()
 	AddDir("[COLOR yellow][B]{0}[/B][/COLOR]".format(localizedString(10001).encode('utf-8')), "settings" , 20, os.path.join(addonDir, "resources", "images", "NewList.ico"), isFolder=False)
 	AddDir("[COLOR white][B][{0}][/B][/COLOR]".format(localizedString(10003).encode('utf-8')), "favorites" ,30 ,os.path.join(addonDir, "resources", "images", "bright_yellow_star.png"))
 	
@@ -36,7 +34,9 @@ def Categories():
 	for item in list:
 		mode = 1 if item["url"].find(".plx") > 0 else 2
 		name = common.GetEncodeString(item["name"])
-		AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,item["url"], mode, "")
+		image = item.get('image', '')
+		logos = item.get('logos', '')
+		AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,item["url"], mode, image, logos)
 
 def AddNewList():
 	listName = GetKeyboardText(localizedString(10004).encode('utf-8')).strip()
@@ -44,27 +44,43 @@ def AddNewList():
 		return
 
 	method = GetSourceLocation(localizedString(10002).encode('utf-8'), [localizedString(10016).encode('utf-8'), localizedString(10017).encode('utf-8')])	
-	#print method
-	if method == -1:
-		return
-	elif method == 0:
+	if method == 0:
 		listUrl = GetKeyboardText(localizedString(10005).encode('utf-8')).strip()
-	else:
-		listUrl = xbmcgui.Dialog().browse(int(1), localizedString(10006).encode('utf-8'), 'myprograms','.plx|.m3u').decode("utf-8")
+	elif method == 1:
+		listUrl = xbmcgui.Dialog().browse(int(1), localizedString(10006).encode('utf-8'), 'myprograms','.plx|.m3u|.m3u8').decode("utf-8")
 		if not listUrl:
 			return
+	else:
+		return
 	
 	if len(listUrl) < 1:
 		return
-
+		
+	image = ''
+	method = GetSourceLocation(localizedString(10022).encode('utf-8'), [localizedString(10024).encode('utf-8'), localizedString(10025).encode('utf-8'), localizedString(10021).encode('utf-8')])	
+	if method == 0:
+		image = GetKeyboardText(localizedString(10022).encode('utf-8')).strip()
+	elif method == 1:
+		image = xbmcgui.Dialog().browse(2, localizedString(10022).encode('utf-8'), 'myprograms').decode("utf-8")
+		
+	logosUrl = ''
+	method = GetSourceLocation(localizedString(10018).encode('utf-8'), [localizedString(10019).encode('utf-8'), localizedString(10020).encode('utf-8'), localizedString(10021).encode('utf-8')])	
+	if method == 0:
+		logosUrl = GetKeyboardText(localizedString(10020).encode('utf-8')).strip()
+	elif method == 1:
+		logosUrl = xbmcgui.Dialog().browse(0, localizedString(10019).encode('utf-8'), 'myprograms').decode("utf-8")
+		
+	if logosUrl.startswith('http') and not logosUrl.endswith('/'):
+		logosUrl += '/'
+			
 	list = common.ReadList(playlistsFile)
 	for item in list:
 		if item["url"].lower() == listUrl.lower():
 			xbmc.executebuiltin('Notification({0}, "{1}" {2}, 5000, {3})'.format(AddonName, listName, localizedString(10007).encode('utf-8'), icon))
 			return
-	list.append({"name": listName.decode("utf-8"), "url": listUrl})
+	list.append({"name": listName.decode("utf-8"), "url": listUrl, "image": image, "logos": logosUrl})
 	if common.SaveList(playlistsFile, list):
-		xbmc.executebuiltin("XBMC.Container.Update('plugin://{0}')".format(AddonID))
+		xbmc.executebuiltin("XBMC.Container.Refresh()")
 	
 def RemoveFromLists(url):
 	list = common.ReadList(playlistsFile)
@@ -90,14 +106,20 @@ def PlxCategory(url):
 			
 	common.SaveList(tmpListFile, tmpList)
 			
-def m3uCategory(url):	
+def m3uCategory(url, logos):	
 	tmpList = []
 	list = common.m3u2list(url)
 
 	for channel in list:
 		name = common.GetEncodeString(channel["display_name"])
-		AddDir(name ,channel["url"], 3, "", isFolder=False)
-		tmpList.append({"url": channel["url"], "image": "", "name": name.decode("utf-8")})
+		image = channel.get("tvg_logo", "")
+		if image == "":
+			image = channel.get("logo", "")
+		if logos is not None and logos != '' and not image.startswith('http'):
+			image = logos + image
+
+		AddDir(name ,channel["url"], 3, image, isFolder=False)
+		tmpList.append({"url": channel["url"], "image": image, "name": name.decode("utf-8")})
 
 	common.SaveList(tmpListFile, tmpList)
 		
@@ -107,8 +129,8 @@ def PlayUrl(name, url, iconimage=None):
 	listitem.setInfo(type="Video", infoLabels={ "Title": name })
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
-def AddDir(name, url, mode, iconimage, description="", isFolder=True, background=None):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
+def AddDir(name, url, mode, iconimage, logos="", description="", isFolder=True, background=None):
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&logos="+urllib.quote_plus(logos)+"&description="+urllib.quote_plus(description)
 
 	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setInfo(type="Video", infoLabels={ "Title": name, "Plot": description})
@@ -185,17 +207,24 @@ def AddNewFavortie():
 	if len(chUrl) < 1:
 		return
 		
+	image = ''
+	method = GetSourceLocation(localizedString(10023).encode('utf-8'), [localizedString(10024).encode('utf-8'), localizedString(10025).encode('utf-8'), localizedString(10021).encode('utf-8')])	
+	if method == 0:
+		image = GetKeyboardText(localizedString(10023).encode('utf-8')).strip()
+	elif method == 1:
+		image = xbmcgui.Dialog().browse(2, localizedString(10023).encode('utf-8'), 'myprograms').decode("utf-8")
+		
 	favList = common.ReadList(favoritesFile)
 	for item in favList:
 		if item["url"].lower() == url.lower():
 			xbmc.executebuiltin("Notification({0}, '{1}' {2}, 5000, {3})".format(AddonName, chName, localizedString(10011).encode('utf-8'), icon))
 			return
 			
-	data = {"url": chUrl, "image": "", "name": chName.decode("utf-8")}
+	data = {"url": chUrl, "image": image, "name": chName.decode("utf-8")}
 	
 	favList.append(data)
 	if common.SaveList(favoritesFile, favList):
-		xbmc.executebuiltin("XBMC.Container.Update('plugin://{0}?mode=30&url=favorites')".format(AddonID))
+		xbmc.executebuiltin("XBMC.Container.Refresh()")
 
 def get_params():
 	param = []
@@ -217,6 +246,7 @@ def get_params():
 	
 params=get_params()
 url=None
+logos=None
 name=None
 mode=None
 iconimage=None
@@ -224,6 +254,10 @@ description=None
 
 try:
 	url = urllib.unquote_plus(params["url"])
+except:
+	pass
+try:
+	logos = urllib.unquote_plus(params.get("logos", ''))
 except:
 	pass
 try:
@@ -249,7 +283,7 @@ if mode == None or url == None or len(url) < 1:
 elif mode == 1:
 	PlxCategory(url)
 elif mode == 2:
-	m3uCategory(url)
+	m3uCategory(url, logos)
 elif mode == 3 or mode == 32:
 	PlayUrl(name, url, iconimage)
 elif mode == 20:
