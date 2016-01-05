@@ -12,6 +12,7 @@ AddonName = "MakoTV"
 icon = Addon.getAddonInfo('icon')
 localizedString = Addon.getLocalizedString
 sortBy = int(Addon.getSetting("sortBy"))
+forwarded = Addon.getSetting("Forwarded")
 handle = int(sys.argv[1])
 
 userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
@@ -183,6 +184,8 @@ def Play(url):
 		xbmc.executebuiltin("XBMC.Notification({0}, Cannot get access for this video., {1}, {2})".format(AddonName, 5000 ,icon))
 		return
 	final = "{0}?{1}".format(url, result["tickets"][0]["ticket"])
+	if forwarded != '':
+		final = '{0}|X-Forwarded-For={1}'.format(final, forwarded)
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
 
@@ -227,6 +230,9 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 	req.add_header('User-Agent', UA)
 	for k, v in headers.items():
 		req.add_header(k, v)
+	
+	if forwarded != '':
+		req.add_header('X-Forwarded-For', forwarded)
 
 	link = None
 	for i in range(retries):
