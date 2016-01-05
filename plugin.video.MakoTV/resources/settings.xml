@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <setting id="sortBy" type="enum" label="30000" lvalues="30001|30002" default="0" />
+    <setting id="Forwarded" type="text" label="30010" default="" />
 </settings>
