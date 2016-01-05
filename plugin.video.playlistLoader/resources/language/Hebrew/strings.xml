@@ -23,9 +23,16 @@
 	<string id="10021">ללא</string>
 	<string id="10022">בחירת סמל הרשימה</string>
 	<string id="10023">בחירת סמל הערוץ</string>
-	<string id="10024">סמל מקובץ</string>
-	<string id="10025">סמל מכתובת</string>
-	
+	<string id="10024">סמל מכתובת</string>
+	<string id="10025">סמל מקובץ</string>
+	<string id="10026">שינוי שם</string>
+	<string id="10027">שינוי מקור</string>
+	<string id="10028">שינוי סמל</string>
+	<string id="10029">שינוי מקור סמלי ערוצים</string>
+	<string id="10030">הזז למעלה</string>
+	<string id="10031">הזז למטה</string>
+	<string id="10032">הזז למיקום</string>
+	<string id="10033">בחר מיקום חדש</string>
 	<string id="10101">מחיקת קובץ הרשימות</string>
 	<string id="10102">מחיקת קובץ המועדפים</string>
 </strings>

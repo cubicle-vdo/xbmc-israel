@@ -15,8 +15,8 @@
 	<string id="10013">Add a new channel</string>
 	<string id="10014">Channel name</string>
 	<string id="10015">Channel URL</string>
-	<string id="10016">New remote-list</string>
-	<string id="10017">New local-list</string>
+	<string id="10016">Remote-list (URL)</string>
+	<string id="10017">Local-list (File)</string>
 	<string id="10018">Select channels logos source</string>
 	<string id="10019">Channels logos base URL</string>
 	<string id="10020">Channels logos Folder</string>
@@ -25,7 +25,14 @@
 	<string id="10023">Choose channel logo</string>
 	<string id="10024">Logo from URL</string>
 	<string id="10025">Logo from file</string>
-	
+	<string id="10026">Rename</string>
+	<string id="10027">Change source</string>
+	<string id="10028">Change logo</string>
+	<string id="10029">Change channels logos source</string>
+	<string id="10030">Move up</string>
+	<string id="10031">Move down</string>
+	<string id="10032">Move to</string>
+	<string id="10033">Select a new location</string>
 	<string id="10101">Delete Playlists file</string>
 	<string id="10102">Delete Favourites file</string>
 </strings>

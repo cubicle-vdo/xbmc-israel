@@ -1,3 +1,6 @@
+1.0.8
+- Added option to change (edit) list and favorites properties (context menu).
+- Added option to move items in list and favorites-list (context menu).
 1.0.7
 - Added option to set logos for lists and channels.
 - Added option to set logos base url or folder for m3u lists.
