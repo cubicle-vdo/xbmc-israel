@@ -179,7 +179,12 @@ def DelCookies():
 			os.unlink(tempCookies)
 	except Exception as ex:
 		print ex
-		
+
+def IsIsrael():
+	text = getUrl(Decode('sefm0Z97eL-1e9ag0NezeMk='))
+	country = text.split(';')
+	return True if country[0] == '1' and country[2].upper() == 'ISR' else False
+	
 def GetUrl(url):
 	if not os.path.exists(user_dataDir):
 		os.makedirs(user_dataDir)
@@ -315,12 +320,14 @@ def GetMinus2url(url):
 	return url
 	
 def GetMinus1url():
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdoupfNWlwsqxrLirr9amkpV8f4StveCx1d68rpO4ruXoysix'))
+	israel = IsIsrael()
+	headers = None if israel else {Decode('oaC40NfDqsiprtefp9S-'): Decode('eqykj5Z9gYR9e6Gkk5g=')}
+	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdoupfNWlwsqxrLirr9amkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
 	result = json.loads(text)["root"]["video"]
 	guid = result["guid"]
 	chId = result["chId"]
 	galleryChId = result["galleryChId"]
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId))
+	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId), headers=headers)
 	result = json.loads(text)["media"]
 	url = ""
 	for item in result:
@@ -331,12 +338,13 @@ def GetMinus1url():
 	
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]))
+	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]), headers=headers)
 	result = json.loads(text)["tickets"][0]["ticket"]
+	extra = '' if israel else Decode('xcufp9S-wLe3rdjWjqu7u5N2gqWgkpaEd453d6WklA==')
 	if '?' in url:
-		return "{0}&{1}".format(url, result)
+		return "{0}&{1}{2}".format(url, result, extra)
 	else:
-		return "{0}?{1}".format(url, result)
+		return "{0}?{1}{2}".format(url, result, extra)
 	
 def Get11url(channel):
 	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')

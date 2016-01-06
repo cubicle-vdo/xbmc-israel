@@ -528,7 +528,7 @@ def AddUserChannelToFavorites():
 		if len(logoFile) < 1:
 			return
 	elif logoInd == 1:
-		logoFile = xbmcgui.Dialog().browse(int(1), localizedString(30230).encode('utf-8'), 'myprograms')
+		logoFile = xbmcgui.Dialog().browse(2, localizedString(30230).encode('utf-8'), 'myprograms')
 		if logoFile is None or len(logoFile) < 1:
 			return
 	elif logoInd == 2:
