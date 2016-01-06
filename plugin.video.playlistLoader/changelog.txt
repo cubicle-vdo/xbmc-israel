@@ -1,3 +1,5 @@
+1.0.9
+- Bugfix.
 1.0.8
 - Added option to change (edit) list and favorites properties (context menu).
 - Added option to move items in list and favorites-list (context menu).
