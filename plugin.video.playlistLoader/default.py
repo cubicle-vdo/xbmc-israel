@@ -118,9 +118,9 @@ def m3uCategory(url, logos):
 			image = channel.get("logo", "")
 		if logos is not None and logos != '' and image is not None and image != '' and not image.startswith('http'):
 			image = logos + image
-
-		AddDir(name ,channel["url"].encode("utf-8"), 3, image, isFolder=False)
-		tmpList.append({"url": channel["url"], "image": image.decode("utf-8"), "name": name.decode("utf-8")})
+		url = common.GetEncodeString(channel["url"])
+		AddDir(name ,url, 3, image, isFolder=False)
+		tmpList.append({"url": url.decode("utf-8"), "image": image.decode("utf-8"), "name": name.decode("utf-8")})
 
 	common.SaveList(tmpListFile, tmpList)
 		
