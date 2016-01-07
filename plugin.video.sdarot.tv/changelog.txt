@@ -1,3 +1,5 @@
+[B]Version 2.3.1[/B]
+- Default domain in addon settings is now http://www.sdarot.wf
 [B]Version 2.3.0[/B]
 - Remove episodes from search results.
 [B]Version 2.2.9[/B]

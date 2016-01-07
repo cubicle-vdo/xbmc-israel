@@ -9,7 +9,6 @@ import HTMLParser
 import json
 import cookielib
 import unicodedata
-import repoCheck
 
 ##General vars		
 __plugin__ = "Sdarot.TV Video"
@@ -266,7 +265,6 @@ except:
 		pass
 
 if mode==None or url==None or len(url)<1:
-	repoCheck.UpdateRepo()
 	MAIN_MENU()
 
 elif mode==2:

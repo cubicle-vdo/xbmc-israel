@@ -4,6 +4,6 @@
     <setting label="20001" type="bool" id="DEBUG" default="false"/>
     <setting id="username" type="text" label="20002" default="" />
     <setting id="user_password" type="text" option="hidden" label="20003" enable="!eq(-1,)" default="" />
-	<setting id="domain" type="text" label="20004" default="http://www.sdarot.pm" />
+	<setting id="domain" type="text" label="20004" default="http://www.sdarot.wf" />
 	<setting id="use_proxy" type="bool" label="20005" default="false" />
 </settings>
