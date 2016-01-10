@@ -1,3 +1,5 @@
+[B]v1.2.5[/B]
+- Fast fix to enable playing free videos from site.
 [B]v1.2.4[/B]
 - Better cache.
 - new fanart.

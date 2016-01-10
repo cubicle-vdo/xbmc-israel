@@ -3,5 +3,6 @@
 	<setting label="בדוק במחשב או בדפדפן באיזו כתובת ניתן להגיע לאתר והקלד את הכתובת כאן" type="lsep"/>
 	<setting label="                MOVIX.ME  ניתן לבדוק גם בעמוד הפייסבוק של " type="lsep"/>
 	<setting id="domain" type="text" label="DOAMIN" default="http://www.movix.me" />
-	<setting id="action" type="action" label="Clear cache   -   ניקוי מטמון" action="RunPlugin(plugin://plugin.video.movixws/maun.py?mode=20&url=clearCache)" option="close"/>
+	<setting id="userAgent" type="text" label="User-Agent" default="" />
+	<setting id="action" type="action" label="Clear cache   -   ניקוי מטמון" action="RunPlugin(plugin://plugin.video.movixws/main.py?mode=20&url=clearCache)" option="close"/>
 </settings>

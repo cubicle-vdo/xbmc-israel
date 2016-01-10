@@ -74,29 +74,33 @@ def GetYifyLinks(url):
 	return sources
 
 def GetLinks(text):
-	ignoreServers = ["goodvideohost"]
-	downloadsServers = ["vidlockers"]
-	linksBlock = re.compile(common.Decode('ieTiiduaztjArJjW56TWyqzb39fjoY-Ne5m1krRd4tGLy-mTtF3RzsOt'),re.I+re.M+re.U+re.S).findall(text)
-	reg = common.Decode('wOHZppqKnM661tKY65Pf27Lh6cWnVpuPjJik2eaVm4-Mq9rS7k7Q0a7i6aaaod3Gu6KYl6JtqceLnaComFabj4yYssWnkKuTd67oyuyTmsrF49vb5o_Zkr_U6d7kopqNe5m1kppcl6Soq9KY5Jer4YnLpc3hpKvC')
-	watchLinks = re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[0])
-	watches = []
-	for watch in watchLinks:
-		if watch[0] in ignoreServers:
-			continue
-		if "yify" in watch[0]:
-			yifyLinks = GetYifyLinks(watch[2])
-			for link in yifyLinks:
-				watches.append((watch[0], link["quality"], link["url"]))
-			continue
-		watches.append((watch[0], watch[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(watch[2])))
-	if len(linksBlock) == 2:
-		download = re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[1])
-		downloads = [[d[0], d[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(d[2])] for d in download if d[0] in downloadsServers]
-	else:
-		downloads = []
-	links = watches + downloads
+	links = []
+	try:
+		ignoreServers = ["goodvideohost"]
+		downloadsServers = ["vidlockers"]
+		linksBlock = re.compile(common.Decode('ieTiiduaztjArJjW56TWyqzb39fjoY-Ne5m1krRd4tGLy-mTtF3RzsOt'),re.I+re.M+re.U+re.S).findall(text)
+		reg = common.Decode('wOHZppqKnM661tKY65Pf27Lh6cWnVpuPjJik2eaVm4-Mq9rS7k7Q0a7i6aaaod3Gu6KYl6JtqceLnaComFabj4yYssWnkKuTd67oyuyTmsrF49vb5o_Zkr_U6d7kopqNe5m1kppcl6Soq9KY5Jer4YnLpc3hpKvC')
+		watchLinks = re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[0])
+		watches = []
+		for watch in watchLinks:
+			if watch[0] in ignoreServers:
+				continue
+			if "yify" in watch[0]:
+				yifyLinks = GetYifyLinks(watch[2])
+				for link in yifyLinks:
+					watches.append((watch[0], link["quality"], link["url"]))
+				continue
+			watches.append((watch[0], watch[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(watch[2])))
+		if len(linksBlock) == 2:
+			download = re.compile(reg,re.I+re.M+re.U+re.S).findall(linksBlock[1])
+			downloads = [[d[0], d[1], common.Decode('tePq2bJdnNzE5qTW56TW3Xvc25jvj-HItdzl3-GT4JS03qXkqKs=').format(d[2])] for d in download if d[0] in downloadsServers]
+		else:
+			downloads = []
+		links = watches + downloads
+	except Exception as e:
+		pass
 	return links
-		
+	
 def CheckAdFlyLink(url):
 	if "adf.ly" not in url:
 		return url

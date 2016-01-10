@@ -6,12 +6,17 @@ Addon = xbmcaddon.Addon(id='plugin.video.movixws')
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import resolver, repoCheck, common, urlresolver, cloudflare, cache
+import resolver, common, urlresolver, cloudflare, cache, ua
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
 #print baseUrl
 handle = int(sys.argv[1])
+
+userAgent = Addon.getSetting("userAgent")
+if userAgent == '':
+	userAgent = ua.GetRandomUA()
+	Addon.setSetting("userAgent", userAgent)
 
 def searchWs():
 	search_entered = ''
@@ -346,7 +351,6 @@ except:
 updateView = True
 
 if mode==None or url==None or len(url)<1:
-	repoCheck.UpdateRepo()
 	Categories()
 elif mode==2:
 	IndexPage(url)
