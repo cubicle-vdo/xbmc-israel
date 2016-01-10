@@ -350,7 +350,7 @@ def Get11url(channel):
 	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')
 	channel = Decode('r9nk1Zdsscq5ua2hkNG7rLexseLl1ZSvsYXAefA=').format(channel)
 	#mac = ':'.join(re.findall('..', '%012x' % uuid.getnode())).upper()
-	mac = '00:1A:79:12:34:7D'
+	mac = '00:1A:79:12:34:7E'
 	key = None
 	info = retrieveData(url, mac, key, values = {
 		'type' : 'stb', 
@@ -500,7 +500,7 @@ def Get19url(channel):
 def Get20url(channel):
 	try:
 		url = Decode('sefm0Z97eM28wKHhz9nCvb-yrqHk1pTHedNzseffzQ==').format(channel)
-		data, cookie = OpenURL(url, getCookies=True)
+		data, cookie = OpenURL(url, headers={Decode('nubX05KNsLuzvQ=='):Decode('luLsytG4qoV6d6OSic6cqrqAabbCtoWbnHZ9qKeSzc63rnaSqtaSsLhsoX9liuPizcqjrriQsuehl5V8d4dzfZOarK2glqJxad_bzMpskLuotOKbgbuxu8muuOGhmZN8aaO0q9zexpR9e552faaStMayqsiueKmikZN9d4o='),Decode('m9jYxtexuw=='):Decode('sefm0Z97eM28wKHhz9nCvb-yrqHk1g==')}, getCookies=True)
 		matches = re.compile(Decode('v9Tkgcy1rXaCaZqaj5CLcn2A'), re.I+re.M+re.U+re.S).findall(data)
 		gid = matches[0]
 		matches = re.compile(Decode('vemviZN3iH9x'), re.I+re.M+re.U+re.S).findall(cookie)
