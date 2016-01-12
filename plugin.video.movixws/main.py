@@ -10,9 +10,7 @@ import resolver, common, urlresolver, cloudflare, cache, ua
 
 Domain = Addon.getSetting("domain")
 baseUrl = Domain[:-1] if Domain.endswith('/') else Domain
-#print baseUrl
 handle = int(sys.argv[1])
-
 userAgent = Addon.getSetting("userAgent")
 if userAgent == '':
 	userAgent = ua.GetRandomUA()
@@ -70,7 +68,11 @@ def IndexPage(url):
 		try:
 			matches, last_page, step = cache.get(IndexPage_regex, 72, url, table='pages')
 			for item in matches:
-				addDir(item[2],'{0}{1}'.format(baseUrl, item[1]), 4, item[4], True, item[3])
+				name = item[3]
+				if item[0].strip() != '':
+					#name = '[COLOR red] למנויים[/COLOR] ' + name
+					continue
+				addDir(name, '{0}{1}'.format(baseUrl, item[2]), 4, item[5], True, item[4])
 		except Exception as ex:
 			print ex 
 		if current_page >= last_page:
@@ -86,12 +88,10 @@ def IndexPage(url):
 def IndexPage_regex(url): 
 	result = cloudflare.source(url)
 	last_page, step = GetPagegSteps(result, int(url.split('/')[-1]))
-	matches = re.compile(common.Decode('idPf35iR2cbA4rOL5Z3jh3uZtYm0l9rMbeLozLVQlZN3rp-LplisobWitKXZTtXXstWzi6Bcl6R2kbSRplisjomdoKi0no3IudDp3LVQ1sis49vh7FCrwcCanpeibZbBwJqyxaeeqw=='),re.I+re.M+re.U+re.S).findall(result)
+	matches = re.compile(common.Decode('idPf35iX0aJv3OXf4ZPJyXiRlszkj-DYipHfzNeR3NPB0N_X3aCPo6nioZGmWKyOidjj0Jih38iKkZ6Xom2Wh3uZtaXgYauhro_e292Uqod1naCooVCrjXuZtZK0XJekid-WzOSP4NiKkd_M16LS3cGRtMXrWZWTd66fxetZqcF837Q='),re.S).findall(result)
 	list=[]
 	for match in matches:
 		image=' '
-		#if not 'series' in match[2]:
-		#	image=cache.get(getImageLink,8760,match[1].replace('/title/', '').rsplit('-', 1)[0],table='images')
 		list.append(match + (image,))
 	return list, last_page, step
 
@@ -109,16 +109,6 @@ def GetPagegSteps(result, current_page):
 			last_page = int(pages[i][0])
 		break
 	return last_page, step
-
-def getImageLink(name) :
-	#needs to add an year to api call
-	url='http://www.omdbapi.com/?t={0}&y=&r=json'.format(name)
-	try:
-		js=json.loads(common.OPEN_URL(url))
-		return js["Poster"]
-	except:
-		pass
-	return ''
 
 def addDir(name, url, mode, iconimage, isFolder=True, description=''):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
@@ -168,14 +158,17 @@ def LinksPage(url, iconimage, description):
 	if len(descriptions) == 1:
 		description = descriptions[0]
 	
-	if seasons:
+	if seasons is None:
+		addDir('[COLOR red] למנויים באתר, לא דרך קודי. [/COLOR]','99',99,'',False, description)
+		return
+	elif seasons:
 		series_num = url.split('-')[-1]
 		GetSeasons(series_num, iconimage, description)
 	else:
 		if len(links) < 1:
 			addDir('[COLOR red] לא נמצאו מקורות ניגון [/COLOR]','99',99,'',False, description)
 			return
-		if len(links) > 1:
+		elif len(links) > 1:
 			links = SortByQuality(links)
 			playingUrlsList = []
 			for link in links:
@@ -193,11 +186,13 @@ def Links_regex(url):
 		return None
 	matches = re.compile(common.Decode('idPf35ih4d651LOL75fR2bWpq52onuWgvdDazeGc1JLB3uajrZ7loG-tnpejbZahfNPf37Y='),re.I+re.M+re.U+re.S).findall(result)
 	links=None
-	if  'get_seasons' in result:
-		seasons=True
+	if 'תוכן זה זמין כעת למנויי Movix בלבד!' in result:
+		seasons = None
+	elif 'get_seasons' in result:
+		seasons = True
 	else:
 		links = resolver.GetLinks(result)
-		seasons =False
+		seasons = False
 	return [matches,links,seasons]
 
 def PlayWs(url, autoPlay=False):

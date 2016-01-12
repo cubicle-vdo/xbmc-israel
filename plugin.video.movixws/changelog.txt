@@ -1,3 +1,6 @@
+[B]v1.2.6[/B]
+- Hide none-playable (members only) movies/series from list.
+- You may use "Clear cache" button from addon-setting.
 [B]v1.2.5[/B]
 - Fast fix to enable playing free videos from site.
 [B]v1.2.4[/B]

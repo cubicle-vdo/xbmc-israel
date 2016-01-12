@@ -236,10 +236,10 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.movixws" name="Movix.me" version="1.2.5" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
+<addon id="plugin.video.movixws" name="Movix.me" version="1.2.6" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-		<import addon="repository.xbmc-israel" />
+        <import addon="repository.xbmc-israel" />
         <import addon="script.module.urlresolver"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="main.py">
