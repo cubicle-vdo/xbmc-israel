@@ -411,7 +411,7 @@ def InstallAddon(addonID):
 
 	return True
 	
-def CheckNewVersion():
+def CheckNewVersion(remoteSettings):
 	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
 	if not os.path.isfile(versionFile):
 		version = ""
@@ -458,8 +458,33 @@ def CheckNewVersion():
 		f.write(newVersion)
 		f.close()
 	
+	CheckNewResolver(remoteSettings)
+	
 	if isUpdated and Addon.getSetting("useIPTV") == "true":
 		OKmsg(title, localizedString(30201).encode('utf-8'))
+
+def CheckNewResolver(remoteSettings):
+	try:
+		newModified = GetSubKeyValue(remoteSettings, "resolver", "lastModified")
+		resolverContent = Decode(GetSubKeyValue(remoteSettings, "resolver", "content"))
+		resolverDir = xbmc.translatePath(xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo('path')).decode("utf-8")
+		resolverFile = os.path.join(resolverDir, 'lib', 'myResolver.py')
+		lastModifiedFile = os.path.join(user_dataDir, 'resolverLastModified.txt')
+		if not os.path.isfile(lastModifiedFile):
+			lastModified = "0"
+		else:
+			f = open(lastModifiedFile, 'r')
+			lastModified = f.read()
+			f.close()
+		if newModified is not None and resolverContent is not None and lastModified < newModified:
+			f = open(resolverFile, 'w')
+			f.write(resolverContent)
+			f.close()
+			f = open(lastModifiedFile, 'w')
+			f.write(newModified)
+			f.close()
+	except Exception as ex:
+		print ex
 
 def GetLivestreamerPort():
 	portNum = 65007

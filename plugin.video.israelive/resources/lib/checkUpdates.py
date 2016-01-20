@@ -23,7 +23,7 @@ def Update():
 	if remoteSettings == []:
 		xbmc.executebuiltin('StartPVRManager')
 	else:
-		common.CheckNewVersion()
+		common.CheckNewVersion(remoteSettings)
 		#UA.CheckUA()
 		# Update channels-lists files
 		refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
