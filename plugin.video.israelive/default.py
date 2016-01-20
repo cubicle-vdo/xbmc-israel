@@ -55,7 +55,7 @@ useEPG = Addon.getSetting("useEPG") == "true"
 epg = None
 
 def CATEGORIES():
-	common.CheckNewVersion()
+	common.CheckNewVersion(remoteSettings)
 
 	addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("favColor"), localizedString(30000).encode('utf-8')), 'favorites', 16, 'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png', '', channelName=localizedString(30000).encode('utf-8'), background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	
