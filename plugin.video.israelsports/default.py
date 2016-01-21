@@ -3,8 +3,6 @@ import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, os, json,
 import repoCheck
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
-libDir = os.path.join(ADDON.getAddonInfo("path").decode("utf-8"), 'resources')
-sys.path.insert(0, libDir)
 
 def update_view(url):
 
@@ -26,6 +24,7 @@ def CATEGORIES():
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
 	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
 	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
+	addDir('ליגה ספרדית','http://svc.one.co.il/Cat/Video/?c=113&p=',4,'http://images.one.co.il/Images/OneTV/Categories/2015/08/16/1200/113.png','1')
 	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
 	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5959&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
 	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5845&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
@@ -98,11 +97,11 @@ def play_video(url,name,iconimage):
 def ligat_al():
 	link = OPEN_URL('http://svc.one.co.il/Cat/Video/Reviews.aspx?c=28')
 	#<a href="/Cat/Video/Reviews.aspx?tm=1"><img style="border:0;width:46px;height:49px;" src="http://images.one.co.il/Images/Teams/Logos_46x49/1.png" alt="הפועל חיפה" /></a>"
-	list1=re.compile('<a href="(.*?)".*?src="http://images.one.co.il/Images/Teams/Logos(.*?)" alt="(.*?)" /></a>').findall(link)
+	list1=re.compile('<a href="\/Cat\/Video\/Reviews.aspx\?tm=(.*?)".*?src="http://images.one.co.il/Images/Teams/Logos(.*?)" alt="(.*?)" /></a>').findall(link)
 	for url, image, name in list1:
 		name=name.decode('iso-8859-8').encode('utf-8')
 		name=unescape(name)
-		url='http://svc.one.co.il'+url
+		url='http://svc.one.co.il/cat/Video/Reviews.aspx?tm='+url
 		image='http://images.one.co.il/Images/Teams/Logos'+image
 		addDir(name,url,4,image,'al')
 	setView('movies', 'default')
@@ -140,22 +139,23 @@ def YoutubeUser(username):
 def play_one(name,url,iconimage,description):
 	url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
 	link = OPEN_URL(url1)
-	regex='playlist(.*?)" label="(.*?)"'
+	regex='source file="(.*?)" label="(.*?)"'
 	direct=re.compile(regex).findall(link)
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title":name} )
-	
+	HD=False
 	for item in direct:
-			if description=='True':
-				if item[1].find("HD")>0 :
-					link="http://playlist"+str(item[0])
-					liz.setPath(link)
-					xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
-			else:
-				addLink(name,"http://playlist"+str(item[0]),iconimage,'')
-
+		if item[1].find("HD")>0 :
+			link=str(item[0])
+			liz.setPath(link)
+			HD=True
+	if not HD:
+		link= str(direct[0][0])
+	liz.setPath(link)
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+	
 def OPEN_URL(url,host=None):
 	print url
 	req = urllib2.Request(url)
@@ -210,11 +210,9 @@ def addDir(name,url,mode,iconimage,description):
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
-	if mode==1:
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
-	elif mode==15 or mode==16 or mode==3:
+	if mode==15 or mode==16 or mode==3 or mode==5:
 		liz.setProperty("IsPlayable","true")
-	if mode==15 or mode==16 or mode==9 or mode==3:
+	if mode==15 or mode==16 or mode==9 or mode==3 or mode==5 or mode==1:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	else:
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
