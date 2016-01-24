@@ -165,13 +165,34 @@ def UpdateFavouritesFromRemote():
 	return False
 		
 def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=False):
+	if remoteSettings is None:
+		remoteSettings = ReadList(os.path.join(user_dataDir, "remoteSettings.txt"))
+	if remoteSettings == []:
+		return False
 	isListUpdated = False
-	
 	if UpdateFavouritesFromRemote():
 		isListUpdated = True
-		
-	if isFileOld(file, refreshInterval) and	UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate):
+	if isFileOld(file, refreshInterval):
 		isListUpdated = True
+	lastModifiedFile = os.path.join(user_dataDir, "chLastModified.txt")
+	if not os.path.isfile(lastModifiedFile):
+		old_modified = "0"
+	else:
+		f = open(lastModifiedFile,'r')
+		old_modified = f.read()
+		f.close()
+	new_modified = GetSubKeyValue(remoteSettings, "ch", "lastModified")
+	isNew = forceUpdate or new_modified is None or (old_modified < new_modified)
+	if not isNew:
+		return False
+	if not new_modified is None:
+		data = GetSubKeyValue(remoteSettings, "ch", "content")
+		f = open(file, 'w')
+		f.write(base64.b64decode(data))
+		f.close()
+		f = open(lastModifiedFile, 'w')
+		f.write(new_modified)
+		f.close()
 
 	if isListUpdated:
 		fullList = GetListFromPlx(fullScan=True)
@@ -207,7 +228,6 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 				if favsList[index].has_key("id"):
 					favsList[index]["type"] = "ignore"
 		WriteList(favoritesFile, favsList)
-		
 	return isListUpdated
 		
 def OKmsg(title, line1, line2="", line3=""):

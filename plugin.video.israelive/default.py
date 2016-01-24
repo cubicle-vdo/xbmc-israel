@@ -20,26 +20,21 @@ __icon2__= os.path.join(artDir, "signQuestionMark.png")
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
-
 FAV = os.path.join(user_dataDir, 'favorites.txt')
 if not (os.path.isfile(FAV)):
 	f = open(FAV, 'w') 
 	f.write('[]') 
 	f.close() 
-
 remoteSettings = common.GetRemoteSettings()
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 if not os.path.isfile(remoteSettingsFile):
 	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
-
 if remoteSettings == []:
 	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 	sys.exit()
-
 plxFile = os.path.join(user_dataDir, "israelive.plx")
 if not os.path.isfile(plxFile):
 	common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
-
 fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
 iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
@@ -47,7 +42,6 @@ iptvLogosDir = os.path.join(user_dataDir, "logos")
 listsDir = os.path.join(user_dataDir, 'lists')
 categoriesFile =  os.path.join(listsDir, 'categories.list')
 selectedCategoriesFile =  os.path.join(listsDir, 'selectedCategories.list')
-
 useCategories = Addon.getSetting("useCategories") == "true"
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
 useIPTV = Addon.getSetting("useIPTV") == "true"
