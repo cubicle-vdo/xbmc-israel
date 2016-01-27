@@ -20,7 +20,6 @@ def CATEGORIES():
 	addDir('  ליגת האלופות כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 
 	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
-	addDir('One-  ליגת העל','stam',9,'http://www.isramedia.net/images/tvshowpic/Ligat_winner.png','1')
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
 	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
 	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
@@ -309,7 +308,7 @@ elif mode==6:
 elif mode==8:
 	LIVE()
 elif mode==9:
-	YoutubeUser('UCW3Nh3OwO6oqwwjgNyJw7qQ')
+	YoutubeUser('UChv13q9FGA-siy4T4PcCx4Q')
 elif mode==14:
 	addDir('לשידור הישיר','blah',15,'','')
 	addDir('?מה זה בית"ר נורדיה ירושלים','blah',16,'','')

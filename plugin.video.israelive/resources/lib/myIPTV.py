@@ -265,6 +265,7 @@ def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
 	if autoIPTV == 0 or autoIPTV == 2:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
 		if Addon.getSetting("autoPVR") == "true":
+			xbmc.executebuiltin('StopPVRManager')
 			xbmc.executebuiltin('StartPVRManager')
 		
 def GetCategories():
