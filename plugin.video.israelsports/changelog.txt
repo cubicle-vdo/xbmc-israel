@@ -1,4 +1,6 @@
-﻿v.2.2.1
+﻿v.2.2.2
+-removed old content
+v.2.2.1
 -"ligat al" -fixed
 -la liga (spanish league) added.
 v.2.2.0
