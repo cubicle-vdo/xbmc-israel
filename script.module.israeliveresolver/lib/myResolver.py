@@ -341,6 +341,7 @@ def GetMinus1url():
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]), headers=headers)
 	result = json.loads(text)["tickets"][0]["ticket"]
 	extra = '' if israel else Decode('xcufp9S-wLe3rdjWjqu7u5N2gqWgkpaEd453d6WklA==')
+	extra += '|User-Agent={}’.format(UA)
 	if '?' in url:
 		return "{0}&{1}{2}".format(url, result, extra)
 	else:
