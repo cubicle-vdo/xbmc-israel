@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <string id="30000">Force using User-Agent</string>
+    <string id="30001">Specific User-Agent (if empty use random)</string>
+	<string id="30002">Israeli IP (if empty use default)</string>
+</strings>

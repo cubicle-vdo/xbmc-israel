@@ -1,0 +1,5 @@
+[B]v0.2.7[/B]
+- Added 'Addon settings':
+  * Force using User-Agent - enable it to force using User-Agent on some sites (BigBrother i.e)
+  * Specific User-Agent (if empty use random User-Agent)
+  * Israeli IP (if empty use default)
