@@ -101,7 +101,16 @@ UAs = [
 ]
 
 UA = random.choice(UAs)
-
+forceUA = False
+userUA = UA
+try:
+	userUA = Addon.getSetting("userUA").strip()
+	forceUA = Addon.getSetting("forceUA") == "true"
+except:
+	pass
+if userUA == '':
+	userUA = UA
+		
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	link = ""
 	try:
@@ -185,6 +194,19 @@ def IsIsrael():
 	country = text.split(';')
 	return True if country[0] == '1' and country[2].upper() == 'ISR' else False
 	
+def GetIsrIP():
+	israel = IsIsrael()
+	israeliIP = Decode('eqykj5Z9gYR9e6Gkk5g=')
+	if not israel:
+		try:
+			isrIP = Addon.getSetting("israeliIP").strip()
+		except:
+			isrIP = ''
+		if isrIP != '':
+			israeliIP = isrIP
+
+	return israel, israeliIP
+		
 def GetUrl(url):
 	if not os.path.exists(user_dataDir):
 		os.makedirs(user_dataDir)
@@ -320,8 +342,12 @@ def GetMinus2url(url):
 	return url
 	
 def GetMinus1url():
-	israel = IsIsrael()
-	headers = None if israel else {Decode('oaC40NfDqsiprtefp9S-'): Decode('eqykj5Z9gYR9e6Gkk5g=')}
+	headers = {} 
+	israel, israeliIP = GetIsrIP()
+	if not israel:
+		headers['X-Forwarded-For'] = israeliIP
+	if forceUA:
+		headers['User-Agent'] = userUA
 	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdoupfNWlwsqxrLirr9amkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
 	result = json.loads(text)["root"]["video"]
 	guid = result["guid"]
@@ -340,12 +366,16 @@ def GetMinus1url():
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]), headers=headers)
 	result = json.loads(text)["tickets"][0]["ticket"]
-	extra = '' if israel else Decode('xcufp9S-wLe3rdjWjqu7u5N2gqWgkpaEd453d6WklA==')
+	extra = '' 
+	if not israel: 
+		extra = '|X-Forwarded-For={0}'.format(israeliIP)
+	if forceUA:
+		extra = '|User-Agent={0}'.format(userUA) if extra == '' else '{0}&User-Agent={1}'.format(extra, userUA)
 	if '?' in url:
 		return "{0}&{1}{2}".format(url, result, extra)
 	else:
 		return "{0}?{1}{2}".format(url, result, extra)
-	
+
 def Get11url(channel):
 	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')
 	channel = Decode('r9nk1Zdsscq5ua2hkNG7rLexseLl1ZSvsYXAefA=').format(channel)
@@ -610,6 +640,14 @@ def Get27url(channel):
 	link = Decode('sefm0Z97eNF1xu6j3g==').format(linkDomain, match[0])
 	return Decode('xKPv3bq_rshyitrXz9mJxIfC').format(link, UA)
 
+def Get28url(channel):
+	url = Decode('sefm0Z97eMa3uKDm15O6rsp0xKPvj83AtsI=').format(channel)
+	text = getUrl(url)
+	match = re.compile(Decode('vuDTytOocX1td52xiox4cH5zc7KbiA==')).findall(text)
+	if len(match) < 1:
+		return None
+	return match[0][0]
+	
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -683,4 +721,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get26url(url)
 	elif mode == 27:
 		url = Get27url(url)
+	elif mode == 28:
+		url = Get28url(url)
 	return url

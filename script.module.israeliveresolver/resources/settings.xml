@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="forceUA" type="bool" label="30000" default="false"/>
+    <setting id="userUA" type="text" label="30001" default="" visible="eq(-1,true)"/>
+    <setting id="israeliIP" type="text" label="30002" default="" />
+</settings>
