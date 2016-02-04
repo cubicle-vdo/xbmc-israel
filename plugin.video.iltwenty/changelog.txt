@@ -1,3 +1,5 @@
+[B]1.0.3[/B]
+- Fit to changes in website.
 [B]1.0.2[/B]
 - Fix for not playing some videos.
 - Fix for display names for some videos.
