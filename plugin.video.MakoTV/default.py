@@ -19,6 +19,8 @@ userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if isXbmc and not os.path.exists(userDir):
 	os.makedirs(userDir)
 
+UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
+	
 def GetCategoriesList():
 	name = "תכניות MakoTV"
 	addDir(name, "http://www.mako.co.il/mako-vod-index", 0, "http://img.mako.co.il/2010/08/11/mako%20vod%20c.jpg", {"Title": name, "Plot": "צפיה בתכני MakoTV"})
@@ -183,9 +185,9 @@ def Play(url):
 	elif result["caseId"] != "1":
 		xbmc.executebuiltin("XBMC.Notification({0}, Cannot get access for this video., {1}, {2})".format(AddonName, 5000 ,icon))
 		return
-	final = "{0}?{1}".format(url, result["tickets"][0]["ticket"])
+	final = "{0}?{1}|User-Agent={2}".format(url, result["tickets"][0]["ticket"], UA)
 	if forwarded != '':
-		final = '{0}|X-Forwarded-For={1}'.format(final, forwarded)
+		final = '{0}&X-Forwarded-For={1}'.format(final, forwarded)
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
 
@@ -226,7 +228,6 @@ def OpenURL(url, headers={}, user_data={}, retries=3):
 	else:
 		req = urllib2.Request(url)
 	
-	UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 	req.add_header('User-Agent', UA)
 	for k, v in headers.items():
 		req.add_header(k, v)
