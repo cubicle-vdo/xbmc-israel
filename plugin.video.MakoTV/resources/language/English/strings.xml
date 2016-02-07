@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <strings>
-    <string id="30000">שיטת מיון רשימות</string>
-    <string id="30001">כמו באתר</string>
+	<string id="30000">שיטת מיון רשימות</string>
+	<string id="30001">כמו באתר</string>
 	<string id="30002">לפי א-ב</string>
 	<string id="30010">Israeli IP</string>
 </strings>
