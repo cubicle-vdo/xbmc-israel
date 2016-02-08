@@ -233,7 +233,7 @@ def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFER
 			return getData_attempt(url, timeout, name, postData,referer)
 		  except urllib2.URLError, e:
 			print e
-			if (i == 3):
+			if (i == 2):
 			  raise e
 
 def getFinalVideoUrl(series_id,season_id,episode_id,url,silent=False):

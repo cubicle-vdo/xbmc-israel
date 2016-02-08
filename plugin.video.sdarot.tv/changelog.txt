@@ -1,3 +1,5 @@
+[B]Version 2.3.3[/B]
+- a small bugfix.
 [B]Version 2.3.2[/B]
 - Support cloudflare protection.
 [B]Version 2.3.1[/B]
