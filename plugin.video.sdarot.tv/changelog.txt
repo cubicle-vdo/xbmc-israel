@@ -1,3 +1,5 @@
+[B]Version 2.3.2[/B]
+- Support cloudflare protection.
 [B]Version 2.3.1[/B]
 - Default domain in addon settings is now http://www.sdarot.wf
 [B]Version 2.3.0[/B]

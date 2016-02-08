@@ -15,6 +15,7 @@ import gzip
 import json
 from operator import itemgetter, attrgetter
 from proxy import PROXY_PORT
+import cloudflare
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.sdarot.tv')
 __cachePeriod__ = __settings__.getSetting("cache")
@@ -183,9 +184,10 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
 			req.add_header ('Referer',referer)
 			
 		if __DEBUG__:
-			print "sent headers:" + str(req.headers)	 
-		response = urllib2.urlopen(url=req,timeout=180,data=postData)
-		
+			print "sent headers:" + str(req.headers)           
+#		response = urllib2.urlopen(url=req,=180,data=postData)
+		response = cloudflare.ddos_open(url=req,timeout=180,data=postData)
+
 		if __DEBUG__:
 			print "received headers:" + str(response.info());
 		
@@ -225,7 +227,7 @@ def getData_attempt(url, timeout=__cachePeriod__, name='', postData=None,referer
 			return data
 	
 def getData(url, timeout=__cachePeriod__, name='', postData=None,referer=__REFERER__):
-		for i in range(1,3):
+		for i in range(3):
 		  #print "getData: Attempt " + str(i)
 		  try:
 			return getData_attempt(url, timeout, name, postData,referer)
