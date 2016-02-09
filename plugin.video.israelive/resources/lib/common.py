@@ -2,7 +2,7 @@
 import sys, os, io, re, time, base64, random, hashlib, zipfile
 import urllib, urllib2, json
 import xbmc, xbmcgui, xbmcaddon
-import multiChoiceDialog
+import multiChoiceDialog, UA
 import itertools, operator
 
 AddonID = "plugin.video.israelive"
@@ -51,13 +51,37 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 		
 	random.seed()
 	random.shuffle(urls)
-	url = Decode(urls[0])
+	urla = Decode(urls[0]).split(';')
+	url = urla[0]
+	a = '' if len(urla) < 2 else urla[1]
 	
+	if a == Decode('ttk='):
+		response = None
+		try:
+			req = urllib2.Request(url)
+			req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
+			req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
+			response = urllib2.urlopen(req)
+			text = response.read()
+			match = re.compile(Decode('tMHBgaJsa35zc7Kbg6A=')).findall(text)
+			response.close()
+			if len(match) < 1:
+				return False
+			url = match[0]
+		except Exception as ex:
+			print ex
+			if not response is None:
+				response.close()
+			return False
+
 	response = None
 	try:
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
-		req.add_header('Referer', 'http://www.IsraeLIVE.org/')
+		if a == Decode('ttk='):
+			req.add_header('User-Agent', UA.GetUA())
+		else:
+			req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
+			req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
 		response = urllib2.urlopen(req)
 	
 		if zip:

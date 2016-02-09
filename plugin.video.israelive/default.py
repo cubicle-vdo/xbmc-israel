@@ -151,10 +151,9 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	
 	listItem = xbmcgui.ListItem(path=url)
-	listItem.setInfo(type="Video", infoLabels={"title": programmeName})
+	listItem.setInfo(type="Video", infoLabels={"title": programmeName, "plot": description})
 	#listItem.setInfo(type="Video", infoLabels={ "studio": channelName})
 	listItem.setInfo(type="Video", infoLabels={"tvshowtitle": channelName, "episode": "0", "season": "0"})
-	listItem.setInfo(type="Video", infoLabels={"plot": description})
 	if iconimage is not None:
 		listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)

@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, urllib2, random
-import xbmc, xbmcaddon
-import common
-
-AddonID = "plugin.video.israelive"
-Addon = xbmcaddon.Addon(AddonID)
-user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
+import random
 
 UAs = [
 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36',
@@ -97,65 +90,8 @@ UAs = [
 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.130 Safari/537.36'
 ]
 
-def OpenURL(url, headers={}, user_data={}, user_agent=None, referer=None, Host=None):
-	from StringIO import StringIO
-	import gzip
-	link = ""
-	if user_data:
-		user_data = urllib.urlencode(user_data)
-		req = urllib2.Request(url, user_data)
-	else:
-		req = urllib2.Request(url)
-	if user_agent is None:
-		user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
-	req.add_header('User-Agent', user_agent)
-	req.add_header('Accept-encoding', 'gzip')
-	for k, v in headers.items():
-		req.add_header(k, v)
-	if referer:
-		req.add_header('Referer' ,referer)
-	if Host:
-		req.add_header('Host' ,Host)
-	try:
-		response = urllib2.urlopen(req,timeout=100)
-		if response.info().get('Content-Encoding') == 'gzip':
-			buf = StringIO( response.read())
-			f = gzip.GzipFile(fileobj=buf)
-			link = f.read()
-		else:
-			link = response.read()
-		response.close()
-	except:
-		return None
-	return link
+def GetUA():
+	return random.choice(UAs)
 	
-def CheckUA():
-	response = None
-	try:
-		remoteSettings = common.ReadList(remoteSettingsFile)
-		if remoteSettings == []:
-			return False
-		urls = common.GetSubKeyValue(remoteSettings, "UA", "urls")
-		if urls is None or len(urls) == 0:
-			return False
-		
-		random.seed()
-		random.shuffle(UAs)
-		
-		#text = OpenURL(common.Decode('sefm0Z97eL-1e9ag0NezeMk='), user_agent=UAs[0])
-		#country = text.split(';')
-		#if country[0] == '1' and country[2].upper() == 'ISR':
-		#	print "------- From Israel! ----------"
-		#else:
-		#	print '------- Come to Israel -----------'
-		
-		random.shuffle(urls)
-		req = urllib2.Request(common.Decode(urls[0]))
-		req.add_header('User-Agent', UAs[0])
-		response = urllib2.urlopen(req)
-		response.read()
-		response.close()
-	except Exception as ex:
-		#print ex
-		if not response is None:
-			response.close()
+def GetUAs():
+	return UAs
