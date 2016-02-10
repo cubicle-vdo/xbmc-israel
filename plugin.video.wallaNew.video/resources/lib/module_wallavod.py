@@ -12,7 +12,7 @@ __settings__ = xbmcaddon.Addon(id='plugin.video.wallaNew.video')
 __language__ = __settings__.getLocalizedString
 __BASE_URL__ = 'http://ws.vod.walla.co.il/ws/mobile/android/main'
 __NAME__ = 'wallavod'
-
+adults= __settings__.getSetting("Adults") == "true"
 __IMAGES_BASE__ = "http://msc.walla.co.il/w/w-160/"
 
 import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,os,sys
@@ -59,8 +59,9 @@ class manager_wallavod:
                     
                     dirName = genreName + " (" + amount + ")"
                     #iconImage = xbmc.translatePath(os.path.join(__PLUGIN_PATH__, 'cache', 'images', 'wallaBase', module + '.png'))
-                    common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_GENRE_ITEMS, elementId=__NAME__)
-            
+                    '''8515= ADULTS id'''
+                    if adults or genreId != '8515': 
+                        common.addDir('UTF-8', dirName, "genre=" + genreEnglish + "&genreId=" + genreId, self.MODES.GET_GENRE_ITEMS, elementId=__NAME__)
             
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
     
