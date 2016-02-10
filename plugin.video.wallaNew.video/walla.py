@@ -4,7 +4,6 @@
     Plugin for streaming video content from video.walla.co.il
 """
 import urllib, re, xbmc, xbmcplugin, xbmcaddon, os, sys
-import repoCheck
 
 ##General vars
 __plugin__ = "walla"
@@ -22,7 +21,6 @@ from wallacommon import *
 print "WALLA Main got URL=" + sys.argv[2]
 
 def CATEGORIES():
-	repoCheck.UpdateRepo()
 	addDir('UTF-8', "ילדים", 'englishName=kids', 1, elementId='wallavod')
 	addDir('UTF-8', "סדרות", 'englishName=tvshows', 1, elementId='wallavod')
 	addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='wallavod')
