@@ -137,7 +137,7 @@ def addDir(name,url,mode,iconimage,description):
         elif mode==8 :
                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
                return ok
-        elif mode==11 or mode==15 or mode==115 :
+        elif mode==11 or mode==15 or mode==115 or mode ==25 :
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
                 return ok
         elif mode==13:

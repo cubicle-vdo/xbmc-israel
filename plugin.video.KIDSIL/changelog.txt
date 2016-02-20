@@ -1,3 +1,6 @@
+[B]Version 1.3.8[/B]
+-removed KIDSTV
+-FIX FOR YOUTUBE WIZARD
 [B]Version 1.3.7[/B]
 -Installing kidstv addon By donatello and repo
 -Maintenance
