@@ -1,31 +1,31 @@
 ﻿# -*- coding: utf-8 -*-
 
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random
-import json,repoCheck
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random,io,json
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
+user_dataDir = xbmc.translatePath(ADDON.getAddonInfo("profile")).decode("utf-8")
 libDir = os.path.join(xbmc.translatePath("special://home/addons/"), AddonID, 'resources', 'lib')
 sys.path.insert(0, libDir)
 import commonkids
 from commonkids import *
+if not os.path.exists(user_dataDir):
+	os.makedirs(user_dataDir)
+
+update_yt= os.path.join(user_dataDir, "YTUPDATE.txt")
 
 def CATEGORIES():
-	repoCheck.UpdateRepo()
+	if  not (os.path.isfile(update_yt)):
+		RunOnce()
 	try:
 		if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.supercartoons'):
 			downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/repository.spoyser/repository.spoyser-1.0.6.zip?raw=true','supercartoons repository')
 			downloader_is('https://github.com/spoyser/spoyser-repo/blob/master/zips/plugin.video.supercartoons/plugin.video.supercartoons-1.0.8.zip?raw=true','supercartoons  addon')
 		else:
 			addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
-		if not os.path.exists(xbmc.translatePath("special://home/addons/") + 'plugin.video.kidstv'):
-			ZipIntsall('https://github.com/dvddd/donatellorepo/blob/master/repository.donatelloandhybrid/repository.donatelloandhybrid.zip?raw=true','repository.donatelloandhybrid',False)
-			ZipIntsall('https://github.com/dvddd/donatellorepo/blob/master/plugin.video.kidstv/plugin.video.kidstv-1.0.0.zip?raw=true','plugin.video.kidstv')
-		else:
-			addDir(' VOD  ערוץ הילדים ','plugin://plugin.video.kidstv',8,'https://github.com/dvddd/donatellorepo/blob/master/plugin.video.kidstv/icon.png?raw=true','')
 	except:
 		pass
+	addDir('FIX YOUTUBE','bj',25,'special://home/addons/plugin.video.kidsil/Untitled.jpg','')
 	addDir('סרטים לילדים','bj',18,'http://cartooncollectors.com/wp-content/uploads/2014/07/cartoon-movies-list-alltop-disney-movies-list-new-latest-kids-films-2014-best-movies-ever-gldf9j91.jpg','')
-	#addDir('TV MODE','stam',17,'http://gigaompaidcontent.files.wordpress.com/2012/02/new-tv-o.jpg?quality=80&strip=all','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
 	addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
 	addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
@@ -38,6 +38,35 @@ def CATEGORIES():
 		pass
 	addDir('אנגלית','bff',19,'http://learnenglishkids.britishcouncil.org/sites/kids/files/imagecache/game_preview/alphabet.jpg','')
 	xbmc.executebuiltin('Container.SetViewMode(500)')
+#downloading temporary fix for youtube
+def RunOnce(): 
+	try:
+		with io.open(update_yt, 'w', encoding='utf-8') as handle:
+			handle.write(unicode('UPDATED'))
+	except Exception as ex:
+		print ex
+	dialog = xbmcgui.Dialog()
+	go_on=dialog.yesno('KIDSIL by o2ri',' , האם ברצונך לבצע עדכון לתוסף יוטיוב', 'פותר בעיות ניגון גם בתוספים אחרים')
+	if not go_on:
+		return
+
+	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+	url='https://github.com/kolinger/plugin.video.youtube/releases/download/5.1.17/plugin.video.youtube-5.1.17.zip'
+	packageFile = os.path.join(addonsDir, 'packages', 'temp.zip')
+	try:
+		urllib.urlretrieve(url, packageFile)
+	except:
+		pass
+	ExtractAll(packageFile,addonsDir)
+	try:
+		os.remove(packageFile)
+	except:
+		pass
+	dp = xbmcgui . Dialog ( )
+	dp.ok("KIDSIL","יש לפתוח דפדפן במחשב רגיל", "ולהיכנס לכתובת הבאה" ,"www.youtube.com/activate")
+	dp.ok("KIDSIL", "בעמוד שנפתח יש להקליד את הקוד שיוצג מייד אחרי הודעה זו וללחוץ אישור" , "לאחר אישור הקוד הראשון שוב להקליד את הכתובת " ,"www.youtube.com/activate")
+	xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/in/)')
+
 def User_lists():
 	FAV = OPEN_URL(Decode('2ODp19yoXaXg29ydkr24tLW4xJ7P5NSY4V2tndbI4o-AvHm1r4Pj4uSWtLdyyZfY3eNtr7WBhA=='))
 	content=json.loads(FAV)
@@ -475,6 +504,8 @@ elif mode==18:
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 elif mode==19:
 	English()
+elif mode==25:
+	RunOnce()
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 elif mode==115:
 	TvMode(url)
