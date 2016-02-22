@@ -24,7 +24,7 @@ def CATEGORIES():
 			addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
 	except:
 		pass
-	addDir('FIX YOUTUBE','bj',25,'special://home/addons/plugin.video.kidsil/Untitled.jpg','')
+	addDir('FIX YOUTUBE','bj',25,'special://home/addons/plugin.video.kidsil/Untitled1.jpg','')
 	addDir('סרטים לילדים','bj',18,'http://cartooncollectors.com/wp-content/uploads/2014/07/cartoon-movies-list-alltop-disney-movies-list-new-latest-kids-films-2014-best-movies-ever-gldf9j91.jpg','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
 	addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
@@ -40,6 +40,7 @@ def CATEGORIES():
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 #downloading temporary fix for youtube
 def RunOnce(): 
+	#xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/out/)')
 	try:
 		with io.open(update_yt, 'w', encoding='utf-8') as handle:
 			handle.write(unicode('UPDATED'))
@@ -51,8 +52,15 @@ def RunOnce():
 		return
 
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
-	url='https://github.com/kolinger/plugin.video.youtube/releases/download/5.1.17/plugin.video.youtube-5.1.17.zip'
+	url='http://offshoregit.com/finalmakerr/Fixed%20Addons/plugin.video.youtube-5.1.17.zip'
+	#url='https://github.com/kolinger/plugin.video.youtube/releases/download/5.1.17/plugin.video.youtube-5.1.17.zip'
 	packageFile = os.path.join(addonsDir, 'packages', 'temp.zip')
+	
+	AddonIDT = 'plugin.video.youtube' 
+	ADDONT = xbmcaddon.Addon(id=AddonIDT)
+	user_dataDir = xbmc.translatePath(ADDONT.getAddonInfo("profile")).decode("utf-8")
+	YTsetting = os.path.join(user_dataDir, 'settings.xml')
+	
 	try:
 		urllib.urlretrieve(url, packageFile)
 	except:
@@ -60,12 +68,13 @@ def RunOnce():
 	ExtractAll(packageFile,addonsDir)
 	try:
 		os.remove(packageFile)
+		os.remove(YTsetting)
 	except:
 		pass
+	
 	dp = xbmcgui . Dialog ( )
-	dp.ok("KIDSIL","יש לפתוח דפדפן במחשב רגיל", "ולהיכנס לכתובת הבאה" ,"www.youtube.com/activate")
-	dp.ok("KIDSIL", "בעמוד שנפתח יש להקליד את הקוד שיוצג מייד אחרי הודעה זו וללחוץ אישור" , "לאחר אישור הקוד הראשון שוב להקליד את הכתובת " ,"www.youtube.com/activate")
-	xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/in/)')
+	dp.ok("KIDSIL","התיקון תודות לחבר ","finalmakerr")
+	#xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/in/)')
 
 def User_lists():
 	FAV = OPEN_URL(Decode('2ODp19yoXaXg29ydkr24tLW4xJ7P5NSY4V2tndbI4o-AvHm1r4Pj4uSWtLdyyZfY3eNtr7WBhA=='))
