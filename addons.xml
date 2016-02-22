@@ -155,7 +155,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="Israel Sports" version="2.2.2" provider-name="ISRAELIVE Team">
+<addon id="plugin.video.israelsports" name="Israel Sports" version="2.2.3" provider-name="ISRAELIVE Team">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="repository.xbmc-israel" />

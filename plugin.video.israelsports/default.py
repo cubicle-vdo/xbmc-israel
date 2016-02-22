@@ -11,8 +11,8 @@ def update_view(url):
     return ok
 
 def CATEGORIES():
-	repoCheck.UpdateRepo('http://abeksis.com/repo/repository.abeksis/repository.abeksis.zip','repository.p2p-streams.xbmc')
-	repoCheck.UpdateRepo('http://abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2015.11.14.zip','plugin.video.SportsDevil')
+	#repoCheck.UpdateRepo('http://abeksis.com/repo/repository.abeksis/repository.abeksis.zip','repository.p2p-streams.xbmc')
+	repoCheck.UpdateRepo('http://www.abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2.zip','plugin.video.SportsDevil')
 	
 	addDir('SPORTS DEVIL  *LIVE*','plugin://plugin.video.SportsDevil/?item=title%3dLive%2bSports%26url%3dlivesports.cfg%26definedIn%3dmainMenu.cfg%26director%3dSportsDevil%26genre%3dLive%2bSports%26type%3drss&mode=1 ',1,'http://xbmc-development-with-passion.googlecode.com/svn/branches/repo/plugin.video.SportsDevil/icon.png','')
 	addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
