@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, urllib, xbmc, zipfile
+import os, urllib, xbmc, xbmcgui, zipfile
 
 def ExtractAll(_in, _out):
 	try:
@@ -12,11 +12,17 @@ def ExtractAll(_in, _out):
 
 	return True
 	
-def UpdateRepo(url= "https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip",repoName='repository.xbmc-israel'):
+def UpdateRepo(url= "https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/repository.xbmc-israel/repository.xbmc-israel-1.0.4.zip",repoName='repository.xbmc-israel', alert=False):
 	
 	if os.path.exists(os.path.join(xbmc.translatePath("special://home/addons/").decode("utf-8"), repoName)):
-		return
+		return True
 	#print repoName
+	
+	if alert:
+		dialog = xbmcgui.Dialog()
+		go_on=dialog.yesno('IsraelSoprts','האם ברצונך להתקין את התוסף', repoName)
+		if not go_on:
+			return False
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 	packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
 	
@@ -30,3 +36,4 @@ def UpdateRepo(url= "https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/
 			
 	xbmc.executebuiltin("UpdateLocalAddons")
 	xbmc.executebuiltin("UpdateAddonRepos")
+	return True
