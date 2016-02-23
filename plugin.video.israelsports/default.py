@@ -11,13 +11,10 @@ def update_view(url):
     return ok
 
 def CATEGORIES():
-	#repoCheck.UpdateRepo('http://abeksis.com/repo/repository.abeksis/repository.abeksis.zip','repository.p2p-streams.xbmc')
-	repoCheck.UpdateRepo('http://www.abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2.zip','plugin.video.SportsDevil')
-	
 	addDir('SPORTS DEVIL  *LIVE*','plugin://plugin.video.SportsDevil/?item=title%3dLive%2bSports%26url%3dlivesports.cfg%26definedIn%3dmainMenu.cfg%26director%3dSportsDevil%26genre%3dLive%2bSports%26type%3drss&mode=1 ',1,'http://xbmc-development-with-passion.googlecode.com/svn/branches/repo/plugin.video.SportsDevil/icon.png','')
 	addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
-	addDir('     ,תקצירים    ליגת האלופות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
-	addDir('  ליגת האלופות כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
+	addDir('ליגת האלופות - תקצירים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
+	addDir('ליגת האלופות - כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 
 	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
@@ -294,7 +291,8 @@ print "IconImage: "+str(iconimage)
 if mode==None or url==None or len(url)<1:
 	CATEGORIES()
 elif mode==1:
-	update_view(url)
+	if repoCheck.UpdateRepo('http://www.abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2.zip','plugin.video.SportsDevil', True):
+		update_view(url)
 elif mode==2:
 	list_videos(url,description)
 elif mode==3:
