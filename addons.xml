@@ -401,6 +401,19 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
+<addon id="script.common.plugin.cache" name="Common plugin cache" provider-name="TheCollective" version="2.5.7">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0" />
+  </requires>
+  <extension library="default.py" point="xbmc.service" start="startup">
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">Common caching api for xbmc plugins.</summary>
+  </extension>
+  <extension library="lib" point="xbmc.python.module" />
+</addon>
+
 <addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.2.7" provider-name="Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
