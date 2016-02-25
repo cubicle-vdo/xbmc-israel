@@ -176,7 +176,7 @@ def Play(url):
 			break
 	uuidStr = str(uuid.uuid1()).upper()
 	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJe8ve35O7wZ7S43rErp6dnYR8scKopbvBv5PW4o2DgZecn4GJhpPSnLqKwJmY04uKgMjSo4qIgMydlbjLityb7Hq6w57moNF8v9eo0L-3usLUlcDGityd7A==')
+	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT')
 	text = OpenURL(link.format(du, guid, url[url.find("/i/"):]))
 	result = json.loads(text)
 	if result["caseId"] == "4":
