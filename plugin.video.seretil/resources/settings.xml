@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting label="20000" type="labelenum" values="3|4|6|7" id="pages" default="3"/>
-</settings>

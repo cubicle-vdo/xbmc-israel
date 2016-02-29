@@ -1,50 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.10qtv" name="10qtv" version="1.0.7" provider-name="GO BEITAR NORDIA">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="10qtv.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <summary lang="en">Watch video 10qtv</summary>
-        <summary lang="he">צפו בוידאו מהאתר 10qtv</summary>
-        <description lang="en">Watch video from 10qtv</description>
-        <description lang="he">צפו בוידאו מהאתר 10qtv</description>
-        <disclaimer>'כותבי הסקיפרט אינם אחראים לתוכן המצוג באתר ואין להם קשר אליו בשום צורה ,הנך כפוף לתנאי השימוש של האתר</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
- </addon>
-
-<addon id="plugin.video.gozlan.me" name="Gozlan" version="1.2.0" provider-name="cubicle">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver"/>
-        <import addon="script.module.t0mm0.common"/>
-        <import addon="script.module.simplejson" />
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="gozlan.py">
-
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary lang="en">Watch video from gozlan.eu</summary>
-        <summary lang="he">צפו בוידאו מהאתר gozlan.eu</summary>
-        <description lang="en">Watch video from gozlan.eu</description>
-        <description lang="he">צפו בוידאו מהאתר gozlan.eu</description>
-        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
-</addon>
-
 <addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.6" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -238,23 +193,6 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.movixws" name="Movix.me" version="1.2.6" provider-name="IsraeLive Team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="repository.xbmc-israel" />
-        <import addon="script.module.urlresolver"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="main.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
- </addon>
-
 <addon id="plugin.video.playlistLoader" name="Playlist Loader" version="1.0.9" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -296,51 +234,6 @@ http://www.hometheater.co.il</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.tv Video" version="2.3.3" provider-name="cubicle">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="repository.xbmc-israel" />
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="sdarottv.py">
-        <provides>video</provides>
-    </extension>
-    <extension library="service.py" point="xbmc.service" start="startup" />
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary lang="en">Watch Sdarot.tv video contents.</summary>
-        <summary lang="he">סדרות מתוך האתר sdarot.tv</summary>
-        <description lang="en">Watch the many TV series available on sdarot.tv</description>
-        <description lang="he">צפיה בסדרות (הרבות) שיש באתר sdarot.tv</description>
-        <disclaimer>This addon parsees their website, you should check their TOS before you using. It's as is</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
-
-</addon>
-
-<addon id="plugin.video.seretil" name="seretil" version="2.1.8" provider-name="YALLA BEITAR NORDIA">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.module.urlresolver" version="1.0.0"/>/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="seretil.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <summary lang="en">Watch seretil.me</summary>
-        <summary lang="he">seretil</summary>
-        <description lang="en">Watch video fromseretil</description>
-        <description lang="he">SERETIL </description>
-        <disclaimer>הנך כפוף לתנאי השימוש של האתר</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
- </addon>
-
 <addon id="plugin.video.wallaNew.video" name="וואלה" version="2.2.2" provider-name="sbentin shlomico">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -364,28 +257,6 @@ http://www.hometheater.co.il</description>
           <content>movies</content>
         </supportedcontent>
     </extension>
-</addon>
-
-<addon id="plugin.video.ynet.video" name="Ynet Video" version="1.0.4" provider-name="cubicle">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="ynet.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <platform>all</platform>
-        <minversion>31632</minversion>
-        <summary lang="en">Watch YNet video contents.</summary>
-        <summary lang="he">צפה בכתבות וידאו של YNET</summary>
-        <description lang="en">Watch Ynet Video articles from ynet.co.il</description>
-        <description lang="he">צפיה בכתבות הוידאו של YNET</description>
-        <disclaimer>This addon parse YNet's site, you should check Hot's TOS before you using. It's as is</disclaimer>
-        <supportedcontent>
-          <content>tvshows</content>
-        </supportedcontent>
-    </extension>
-
 </addon>
 
 <addon id="repository.xbmc-israel" name=".[COLOR blue]XBMC Israeli [/COLOR][COLOR white] Streaming Sites[/COLOR]" version="1.0.4" provider-name="cubicle-vdo">
