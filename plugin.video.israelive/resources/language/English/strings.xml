@@ -3,8 +3,6 @@
 	<string id="30000">Favourites</string>
 	<string id="30001">Yes</string>
 	<string id="30002">No</string>
-	<string id="30003">Yes, Ask next time</string>
-	<string id="30004">No, Ask next time</string>
 	
 	<string id="30010">Favourites text color</string>
 	<string id="30011">Categories text color</string>
@@ -82,6 +80,9 @@
 	<string id="30308">Refresh ALL Live TV required resources</string>
 	<string id="30309">Auto-update PVR?</string>
 	<string id="30310">Stop PVR while updating?</string>
+	<string id="30311">Do you want to use IsraeLIVE lists for LiveTV?</string>
+	<string id="30312">Choose Yes to update PVR IPTV Simple client settings.</string>
+	<string id="30313">Don't forget to enable LiveTV and PVR IPTV Simple client from Kodi settings.</string>
 	
 	<string id="30400">Appearance</string>
 	

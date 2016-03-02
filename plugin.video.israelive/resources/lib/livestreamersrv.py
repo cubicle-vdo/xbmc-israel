@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, xbmc
 
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 #from SocketServer import ThreadingMixIn
@@ -67,8 +67,8 @@ class StreamHandler(BaseHTTPRequestHandler):
 
 		try:
 			Streamer(s.wfile, url, quality)
-		except Exception as e:
-			print "Got Exception: ", str(e)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 			pass
 		#s.wfile.close()
 
@@ -113,17 +113,18 @@ def start(portNum):
 		t1 = threading.Thread(target = httpd.serve, args = ())
 		t1.daemon = True
 		t1.start()
-		print "Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum)
+		xbmc.log("Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum), 2)
+		
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		#pass
-	#print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
+	#xbmc.log("Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum), 2)
 	
 def stop(portNum):
 	global httpd
 	try:
 		if httpd is not None:
 			httpd.stop()
-			print "Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum)
+			xbmc.log("Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum), 2)
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)

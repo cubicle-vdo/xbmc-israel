@@ -44,7 +44,7 @@ categoriesFile =  os.path.join(listsDir, 'categories.list')
 selectedCategoriesFile =  os.path.join(listsDir, 'selectedCategories.list')
 useCategories = Addon.getSetting("useCategories") == "true"
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
-useIPTV = Addon.getSetting("useIPTV") == "true"
+useIPTV = common.getUseIPTV()
 useEPG = Addon.getSetting("useEPG") == "true"
 epg = None
 
@@ -63,7 +63,7 @@ def CATEGORIES():
 					continue
 				addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), category["name"].encode("utf-8")), 'cat', 2, category["image"], '', channelName=category["id"], background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", channelID=ind)
 			except Exception as ex:
-				print ex
+				xbmc.log("{0}".format(ex), 3)
 	else:
 		ListLive("9999", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 		
@@ -143,8 +143,8 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 		if url is None or url == "down":
 			return False
 	except Exception as ex:
-		print ex
-		print "Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name))
+		xbmc.log("{0}".format(ex), 3)
+		xbmc.log("Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name)), 3)
 		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name), 5000, __icon2__))
 		return False
 	
@@ -339,7 +339,7 @@ def SaveGuide():
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide is up to date., {1}, {2})".format(AddonName, 5000 ,icon))
 		return True
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		xbmc.executebuiltin("XBMC.Notification({0}, Guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
 		return False
 
@@ -421,7 +421,7 @@ def DownloadLogos():
 
 def UpdateIPTVSimple():
 	xbmc.executebuiltin("XBMC.Notification({0}, Updating IPTVSimple settings..., {1}, {2})".format(AddonName, 300000 ,icon))
-	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir, 0)
+	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir, forceUpdate=True)
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTVSimple settings updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def CleanLogosFolder():
@@ -433,7 +433,7 @@ def CleanLogosFolder():
 			if os.path.isfile(file_path):
 				os.unlink(file_path)
 		except Exception as ex:
-			print ex
+			xbmc.log("{0}".format(ex), 3)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels logos folder cleaned., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def RefreshLiveTV():
@@ -699,12 +699,12 @@ try:
 except:
 	pass
 
-#print "----> Mode: {0}".format(mode)
-#print "----> URL: {0}".format(url)
-#print "----> Name: {0}".format(urllib.unquote_plus(str(name)))
-#print "----> IconImage: {0}".format(iconimage)
-#print "----> displayname: {0}".format(urllib.unquote_plus(str(displayname)))
-#print "----> categoryID: {0}".format(categoryID)
+#xbmc.log("----> Mode: {0}".format(mode), 2) 
+#xbmc.log("----> URL: {0}".format(url), 2)
+#xbmc.log("----> Name: {0}".format(urllib.unquote_plus(str(name))), 2)
+#xbmc.log("----> IconImage: {0}".format(iconimage), 2)
+#xbmc.log("----> displayname: {0}".format(urllib.unquote_plus(str(displayname))), 2)
+#xbmc.log("----> categoryID: {0}".format(categoryID), 2)
 
 updateList = True
 if mode==None:
