@@ -51,8 +51,9 @@ def Update():
 				
 				common.MakeCatGuides(categoriesList, epg)
 				
+		useIPTV = common.getUseIPTV()
 		# Update LiveTV channels and EPG
-		if Addon.getSetting("useIPTV") == "true":
+		if useIPTV:
 			import myIPTV
 			myIPTV.makeIPTVlist(iptvChannelsFile)
 			if isGuideUpdated:
@@ -74,7 +75,7 @@ def Update():
 			common.MakeCatGuides(categoriesList, epg)
 			
 		# Update channels-logos files
-		if Addon.getSetting("useIPTV") == "true":
+		if useIPTV:
 			myIPTV.SaveChannelsLogos(iptvLogosDir)
 
 		checkInterval = 720 # 12 hours = 720 minutes

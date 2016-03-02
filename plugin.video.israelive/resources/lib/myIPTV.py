@@ -75,8 +75,8 @@ def makeIPTVlist(iptvFile):
 			radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 			group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
 			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
-		except Exception as e:
-			print e
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 
 	f = open(iptvFile, 'w')
 	f.write(iptvList)
@@ -150,16 +150,16 @@ def SaveChannelsLogos(logosDir):
 						urllib.urlretrieve(logo, logoFile)
 					else:
 						shutil.copyfile(logo, logoFile)
-		except Exception as e:
-			print e
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 	
 	for the_file in os.listdir(logosDir):
 		file_path = os.path.join(logosDir, the_file)
 		try:
 			if os.path.isfile(file_path) and the_file not in newFilesList:
 				os.unlink(file_path)
-		except Exception as e:
-			print e
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 
 def GetIptvAddon():
 	iptvAddon = None
@@ -175,8 +175,8 @@ def GetIptvAddon():
 		osType = platform.system()
 		osVer = platform.release()
 		xbmcVer = xbmc.getInfoLabel( "System.BuildVersion" )[:2]
-		print "---- {0} ----\nIPTVSimple addon is disable.".format(AddonName)
-		print "---- {0} ----\nosType: {1}\nosVer: {2}\nxbmcVer: {3}".format(AddonName, osType, osVer, xbmcVer)
+		xbmc.log("---- {0} ----\nIPTVSimple addon is disable.".format(AddonName), 2)
+		xbmc.log("---- {0} ----\nosType: {1}\nosVer: {2}\nxbmcVer: {3}".format(AddonName, osType, osVer, xbmcVer), 2)
 		msg1 = "PVR IPTV Simple Client is Disable."
 		msg2 = "Please enable PVR IPTV Simple Client addon."
 		common.OKmsg(AddonName, msg1, msg2)
@@ -243,26 +243,14 @@ def ReadSettings(source, fromFile=False):
 		dict = {}
 		for elem in elements:
 			dict[elem.get('id')] = elem.get('value')
-	except Exception as e:
-		print e
+	except Exception as ex:
+		xbmc.log("{0}".format(ex), 3)
 		dict = None
 
 	return dict
 		
-def RefreshPVR(m3uPath, epgPath, logoPath, autoIPTV=2):
-	if autoIPTV == 0:
-		Addon.setSetting("autoIPTV", "0")
-	else:
-		autoIPTV = int(Addon.getSetting("autoIPTV"))
-		
-	if autoIPTV == 2 or autoIPTV == 3:
-		autoIPTV = common.GetMenuSelected(localizedString(30306).encode('utf-8'), [localizedString(30001).encode('utf-8'), localizedString(30002).encode('utf-8'), localizedString(30003).encode('utf-8'), localizedString(30004).encode('utf-8')])
-		if autoIPTV == -1:
-			autoIPTV = 3
-		else:
-			Addon.setSetting("autoIPTV", str(autoIPTV))
-	
-	if autoIPTV == 0 or autoIPTV == 2:
+def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
+	if common.getAutoIPTV() or forceUpdate:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
 		if Addon.getSetting("autoPVR") == "true":
 			xbmc.executebuiltin('StopPVRManager')

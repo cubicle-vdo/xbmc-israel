@@ -57,6 +57,6 @@ def GetStreamUrl(url):
 		mode = -2 if 'keshet' in streamUrl else -3
 
 	streamUrl = GetFullLink(streamUrl, mode)
-	print 'Sending "{0}" to Livestreamer.'.format(streamUrl)
+	xbmc.log('Sending "{0}" to Livestreamer.'.format(streamUrl), 2)
 	return streamUrl, quality
 	

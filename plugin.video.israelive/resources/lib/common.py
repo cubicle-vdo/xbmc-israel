@@ -69,7 +69,7 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 				return False
 			url = match[0]
 		except Exception as ex:
-			print ex
+			xbmc.log("{0}".format(ex), 3)
 			if not response is None:
 				response.close()
 			return False
@@ -95,7 +95,7 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 		response.close()
 
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		if not response is None:
 			response.close()
 		return False
@@ -115,7 +115,7 @@ def ReadList(fileName):
 		with open(fileName, 'r') as handle:
 			content = json.load(handle)
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		content=[]
 
 	return content
@@ -129,7 +129,7 @@ def WriteList(filename, list, indent=True):
 				handle.write(unicode(json.dumps(list, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		success = False
 		
 	return success
@@ -177,7 +177,7 @@ def UpdateFavouritesFromRemote():
 				responseData = urllib2.urlopen(req).read().replace('\r','')
 				remoteFavouritesList = json.loads(responseData)
 			except Exception as ex:
-				print ex
+				xbmc.log("{0}".format(ex), 3)
 				remoteFavouritesList = []
 		elif remoteFavouritesType == "2":
 			remoteFavouritesList = ReadList(Addon.getSetting("remoteFavouritesFile"))
@@ -320,7 +320,7 @@ def GetAddonDefaultRemoteSettingsUrl():
 		matches = re.compile('setting id="remoteSettingsUrl".+?default="(.+?)"',re.I+re.M+re.U+re.S).findall(data)
 		remoteSettingsUrl = matches[0]
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 	return remoteSettingsUrl
 	
 def GetRemoteSettings():
@@ -419,8 +419,8 @@ def ExtractAll(_in, _out):
 		zin = zipfile.ZipFile(_in, 'r')
 		zin.extractall(_out)
 		zin.close()
-	except Exception, e:
-		print str(e)
+	except Exception as ex:
+		xbmc.log("{0}".format(ex), 3)
 		return False
 	return True
 	
@@ -450,7 +450,7 @@ def InstallAddon(addonID):
 		xbmc.executebuiltin("UpdateLocalAddons")
 		xbmc.executebuiltin("UpdateAddonRepos")
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		return False
 
 	return True
@@ -504,7 +504,7 @@ def CheckNewVersion(remoteSettings):
 	
 	CheckNewResolver(remoteSettings)
 	
-	if isUpdated and Addon.getSetting("useIPTV") == "true":
+	if isUpdated and getUseIPTV():
 		OKmsg(title, localizedString(30201).encode('utf-8'))
 
 def CheckNewResolver(remoteSettings):
@@ -528,7 +528,7 @@ def CheckNewResolver(remoteSettings):
 			f.write(newModified)
 			f.close()
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 
 def GetLivestreamerPort():
 	portNum = 65007
@@ -537,3 +537,23 @@ def GetLivestreamerPort():
 	except:
 		pass
 	return portNum
+	
+def getUseIPTV():
+	useIPTV = Addon.getSetting("useIPTV")
+	if useIPTV == "":	#if useIPTV not set (first time or reset to default) ask the user his choice
+		useIPTVval = YesNoDialog(Addon.getAddonInfo("name"), localizedString(30311).encode('utf-8'), localizedString(30312).encode('utf-8'), localizedString(30313).encode('utf-8'), nolabel=localizedString(30002).encode('utf-8'), yeslabel=localizedString(30001).encode('utf-8'))
+		useIPTV = "true" if useIPTVval == 1 else "false"
+		Addon.setSetting("useIPTV", useIPTV)
+	return useIPTV == "true"
+	
+def getAutoIPTV():
+	autoIPTV = Addon.getSetting("autoIPTV")
+	# convert old versions values from int to bool.
+	if autoIPTV == "0" or autoIPTV == "2":
+		Addon.setSetting("autoIPTV", "true")
+		autoIPTV = Addon.getSetting("autoIPTV")
+	elif autoIPTV == "1" or autoIPTV == "3":
+		Addon.setSetting("autoIPTV", "false")
+		autoIPTV = Addon.getSetting("autoIPTV")
+	return autoIPTV == "true"
+	

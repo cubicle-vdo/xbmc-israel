@@ -3,8 +3,6 @@
 	<string id="30000">מועדפים</string>
 	<string id="30001">כן</string>
 	<string id="30002">לא</string>
-	<string id="30003">כן, שאל בפעם הבאה</string>
-	<string id="30004">לא, שאל בפעם הבאה</string>
 	
 	<string id="30010">צבע טקסט מועדפים</string>
 	<string id="30011">צבע טקסט קטגוריות</string>
@@ -19,7 +17,7 @@
 	<string id="30023">הזז למיקום</string>
 	<string id="30024">בחר מיקום חדש</string>
 	<string id="30025">בחר קובץ</string>
-	<string id="30025">שם קובץ לשמירה</string>
+	<string id="30026">שם קובץ לשמירה</string>
 	
 	<string id="30100">הגדרות הרחבה</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
@@ -82,6 +80,9 @@
 	<string id="30308">רענון כל המשאבים הנדרשים עבור טלויזיה חיה</string>
 	<string id="30309">עדכון אוטומטי של טלויזיה חיה?</string>
 	<string id="30310">עצירת טלויזיה חיה בזמן העדכון?</string>
+	<string id="30311">האם ברצונך להשתמש ברשימות IsraeLIVE בטלויזיה החיה?</string>
+	<string id="30312">בחר כן לעדכון הגדרות PVR IPTV Simple client.</string>
+	<string id="30313">לא לשכוח לאפשר בהגדרות קודי את השימוש בטלויזיה ואת PVR IPTV Simple client.</string>
 	
 	<string id="30400">מראה</string>
 	
