@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import myResolver
+import myResolver, xbmc
 
 def get_params(url):
 	param=[]

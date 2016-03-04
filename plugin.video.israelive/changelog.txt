@@ -1,3 +1,5 @@
+[B]v4.7.4[/B]
+- Bugfix for last version that some channels didn't play on LiveTV.
 [B]v4.7.3[/B]
 - On new installation, user will asked to choose to use / don't use IsraeLIVE lists for LiveTV.
 - Auto update PVR IPTV Simple client settings changed to boolean (Yes / No), default value is Yes.
