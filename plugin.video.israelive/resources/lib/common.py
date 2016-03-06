@@ -333,6 +333,10 @@ def GetRemoteSettings():
 			
 	remoteSettings = ReadList(remoteSettingsFile)
 	if remoteSettings == []:
+		try:
+			os.unlink(remoteSettingsFile)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 		remoteSettings = {}
 
 	urls = GetSubKeyValue(remoteSettings, "remoteSettings", "urls")
