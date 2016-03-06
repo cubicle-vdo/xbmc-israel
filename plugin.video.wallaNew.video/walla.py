@@ -26,7 +26,7 @@ def CATEGORIES():
 	addDir('UTF-8', "סרטים", 'englishName=movies', 1, elementId='wallavod')
 	addDir('UTF-8', "תחזוקה - מחיקת זיכרון מטמון", 'englishName=maintenance', 0, elementId='wallavod',isRealFolder=False)
 	
-	xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
 
 	
 params = getParams(sys.argv[2])
@@ -84,5 +84,7 @@ else:
 	   
 	manager.work(mode, url, name, page)
 
+	
+xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__,"fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
