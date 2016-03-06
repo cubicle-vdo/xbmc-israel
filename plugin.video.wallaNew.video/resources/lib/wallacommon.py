@@ -159,12 +159,7 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
         #urlMatch = re.compile('class="w6b.?.*?href="(.*?)">').findall(mainPage)
         block=re.compile('show_nav oflow w3 bgclr1(.*?)content_holder').findall(mainPage)
         para=re.compile('a href="(.*?)".*?click="(.*?)"').findall(block[0])
-        urlMatch='' 
-        for item in para:
-           print  item[1]
-           if  str(item[1]).decode('windows-1255').encode('utf-8').find('פרקים')!=-1:
-               print "da"
-               urlMatch=item[0]  
+        urlMatch=''
         print ';;;;' + str( urlMatch)
         if (len(urlMatch)) > 0:
           inUrl=urlbase+urlMatch

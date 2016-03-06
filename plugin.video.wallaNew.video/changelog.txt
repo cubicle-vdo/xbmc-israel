@@ -1,8 +1,10 @@
+[B]Version 2.2.3[/B]
+-added description for some episodes.
+[B]Version 2.2.2[/B]
+-saved Dora Again !
+-description fixed for wallaVod
 [B]Version 2.2.2[/B]
 -Adults is Now optional from settings .
-
-
-
 [B]Version 2.2.1[/B]
 -Maintenance
 
