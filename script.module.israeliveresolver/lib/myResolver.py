@@ -255,7 +255,7 @@ def Get4url(channelName):
 	matches = re.compile(Decode('vuPWwtmxnMq3rtTftNmtvb-4vdzV1IWocX1td56xiox4cH5zdLKbiJFscH5zdLKbiMF1hIRwiNnbzcqGcH5zdLKbiA=='), +re.S).findall(text)
 	if len(matches) < 1 or matches[0][3] == '':
 		return None
-	text = getUrl(Decode('sefm0Z97eNF1xqHnxNTBt8pzsuGh1Nmtvcl0vuPWwtmxeLm6vOfhzpS4vMq7eO6j3pTHe9NrqLDtlOJyrLextdXTxNCJiA==').format(matches[0][2], matches[0][0], matches[0][1], int(time.time()*1000)))
+	text = getUrl(Decode('sefm0Z97eNF1xqHnxNTBt8pzsuGh1Nmtvcl0vuPWwtmxeLm6vOfhzpS4vMq7eO6j3pTHe9NrqLDtlOJyrLextdXTxNCJiA==').format(matches[0][2], matches[0][0], matches[0][1], int(time.time()*1000)), headers={'Referer': url, 'User-Agent': UA})
 	#return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0][3], UA, url)
 	return matches[0][3]
 		
@@ -460,8 +460,10 @@ def Get12url(channel):
 	return matches[0]
 	
 def Get13url(channel):
-	text = getUrl(Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzpS2wMaxquzX05THedOEqujm0NW4qs8=').format(channel), headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzg==')})
+	text = getUrl(Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzpS2wMaxquzX05THedOEqujm0NW4qs8=').format(channel), headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMq7d-fk1sq4sryqd9bhzg=='), Decode('oaC40NfDqsiprtefp9S-'): Decode('eqSrj5mCd4h9d6Spkg==')})
 	matches = re.compile(Decode('r9zexp9sa35zc7Kbgw=='), re.I+re.M+re.U+re.S).findall(text)
+	if len(matches) < 1:
+		return None
 	return matches[0]
 	
 def Get14url(channel):
@@ -530,14 +532,14 @@ def Get19url(channel):
 def Get20url(channel):
 	try:
 		url = Decode('sefm0Z97eM28wKHhz9nCvb-yrqHk1pTHedNzseffzQ==').format(channel)
-		data, cookie = OpenURL(url, headers={Decode('nubX05KNsLuzvQ=='):Decode('luLsytG4qoV6d6OSic6cqrqAabbCtoWbnHZ9qKeSzc63rnaSqtaSsLhsoX9liuPizcqjrriQsuehl5V8d4dzfZOarK2glqJxad_bzMpskLuotOKbgbuxu8muuOGhmZN8aaO0q9zexpR9e552faaStMayqsiueKmikZN9d4o='),Decode('m9jYxtexuw=='):Decode('sefm0Z97eM28wKHhz9nCvb-yrqHk1g==')}, getCookies=True)
+		data, cookie = OpenURL(url, headers={Decode('nubX05KNsLuzvQ=='):Decode('luLsytG4qoV6d6OSic6cqrqAabbCtoWbnHZ9qKfRkoW4ssGqacDTxIWbnHadcpOz0dW4rq2qq77b1ZSCeYZzeqGmgY2XkaqSlZ-Szc63rnaMrtbd0I5sn7u3vNzhz5SEd4ZlluLUytGxeId3kaakkoWfqrymu9yhl5V8d4dzfQ=='),Decode('m9jYxtexuw=='):Decode('sefm0Z97eM28wKHhz9nCvb-yrqHk1g==')}, getCookies=True)
 		matches = re.compile(Decode('v9Tkgcy1rXaCaZqaj5CLcn2A'), re.I+re.M+re.U+re.S).findall(data)
 		gid = matches[0]
 		matches = re.compile(Decode('vemviZN3iH9x'), re.I+re.M+re.U+re.S).findall(cookie)
-		host =  urllib.unquote_plus(matches[0])
+		host = urllib.unquote_plus(matches[0])
 		matches = re.compile(Decode('vemkno16dJVudQ=='), re.I+re.M+re.U+re.S).findall(cookie)
 		stream = Decode('su6i3tW4qs-xsubmj9J_vo4=').format(matches[0])
-		return Decode('sefm0Z97eNF1xqLl1dexqsN0xKTvkOB-xtKavNjkjqazrsS5hsDh2864tbd0fqGigY21mbephJO1sbpsmKllgdKmgdG1tLtlltTVgbSfaa5uabTi0dGxoLunlNzmkJt8eYR2d6eSibCUnaORdZPeytCxaZ2qrN7hioWirsi4suLgkJ16eXaSuNXbzcp7eoiNeqelgbitr7e3sqKokZV6eoR5').format(host, gid, stream)
+		return Decode('sefm0Z97eNF1xqLl1dexqsN0xKTvkOB-xtKavNjkjqazrsS5hsDh2864tbd0fqGigY21mbephJO1sbpsmKllgdKmwJZstb-wrpO_wshsmKlloZySotW8tbucrtW9ytl7f4Z1d6SglYV0lJ6Zlr-egdG1tLtlkNjVzNR1aayqu-bb0NN7gYR1acDhw864roV2e7ulk5ZsnLerquXbkJt8eYR2d6eYs8qyrsiqu7DtlOI=').format(host, gid, stream, url)
 	except Exception as ex:
 		print ex
 		return None
@@ -550,7 +552,7 @@ def Get21url(channel):
 			os.makedirs(user_dataDir)
 		url = Decode('sefm0Z97eMaqruXlj9nC')
 		text = getUrl(url)
-		matches = re.compile(Decode('dZXmytm4rnh_aZWaj5CLcnhxa9vkxstug3ZneOPk0My-qsN0caGdoI57a4Jzc7Lv3pFuucW4sufb0NNug3Zzc7Keg9jAu7umtpWsgYd0d4GEcpWej4-La7-4qN_hxNCxrXh_aZugjKR1xg=='), re.I+re.M+re.U+re.S).findall(text)
+		matches = re.compile(Decode('dZXmytm4rnh_aZWaj5CLcnhxa9vkxstug3ZneOPk0My-qsN0caGdoI57a4RviJ-U0dS_ssquuOGUm4V6c5Vxa-bm08qttnh_aZWaj5CLcnhxd52xg86_qMK0rN7XxYeGaX5zdLKbjQ=='), re.I+re.M+re.U+re.S).findall(text)
 		chList = {}
 		for match in matches:
 			chList[match[1]] = {"name": match[0].decode('utf-8'), "url": "{0}|User-Agent={1}".format(match[2].replace(Decode('pQ=='), ''), UA), "is_locked": match[3]}
@@ -598,7 +600,14 @@ def Get25url(channel):
 	text = getUrl(url)
 	matches = re.compile(Decode('s-rizcbFrsihcZrf2pLCsrqquJrOipO_rsq6uc-a3MG_dLyutdisgYx0d4GEcpo='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) < 1:
-		return None
+		matches = re.compile(Decode('hdzY08a5rna4u9avg416c5Vuaw==')).findall(text)
+		if len(matches) < 1:
+			return None
+		url = matches[-1]
+		text = getUrl(url)
+		matches = re.compile(Decode('a-Cl1p1ug3htd52xioc=')).findall(text)
+		if len(matches) < 1:
+			return None
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 
 def Get26url(channel):
@@ -623,19 +632,9 @@ def Get26url(channel):
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(final, UA, url)
 	
 def Get27url(channel):
-	url = Decode('sefm0Z97eM28wKHs0NXAv4SouOChzc7CroXAefA=').format(channel)
-	UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
-	headers = {'User-Agent': UA}
-	text = cloudflare.request(url, headers=headers)
-	match = re.compile(Decode('runTzcF0rbuouNfXtreVjMWyueLgxtPApX6mveLUvY1zcYRwiJyZvY6ocrJuhA==')).findall(text)
-	while match and len(match) == 1:
-		text = urllib.unquote_plus(base64.b64decode(match[0]))
-		match = re.compile(Decode('runTzcF0rbuouNfXtreVjMWyueLgxtPApX6mveLUvY1zcYRwiJyZvY6ocrJuhA==')).findall(text)
-	match = re.compile(Decode('a-bkxIeGa35zdLKbgw==')).findall(text)
-	src = match[-1]
+	src = Decode('sefm0Z97eMKuv9ig2Mqus7-md-fdkMm_eLuyq9jWoM6whtF1xg==').format(channel)
 	linkDomain = urlparse.urlparse(src).netloc
-	#text = getUrl(src, headers={Decode('m9jYxtexuw=='): url})
-	text = cloudflare.request(src, headers={Decode('m9jYxtexuw=='): url})
+	text = getUrl(src, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHs0NXAv4SouOChzc7CroXAefA=').format(channel), Decode('oaC40NfDqsiprtefp9S-'): Decode('eqOmj5eEd4d7d6Sjlg=='), 'User-Agent': UA})
 	match = re.compile(Decode('v9Tkgdi-rHaCaZqaj5CLcn2A')).findall(text)
 	link = Decode('sefm0Z97eNF1xu6j3g==').format(linkDomain, match[0])
 	return Decode('xKPv3bq_rshyitrXz9mJxIfC').format(link, UA)
@@ -647,7 +646,31 @@ def Get28url(channel):
 	if len(match) < 1:
 		return None
 	return match[0][0]
-	
+
+def Get29url(channel):
+	url = Decode('sefm0Z97eMquv9zqj9OxvYXAefCgydm5tQ==').format(channel)
+	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ=='), 'User-Agent': UA})
+	match = re.compile(Decode('rN_T1NiJa8yurdjhjs-_acyvvKDWxsutvsK5dubdytNstsWnst_XwNW4qs-qu5XO1JC_u7mCa5ugi6R1aw==')).findall(text)
+	if len(match) < 1:
+		return None
+	return match[0].strip()
+
+def Get30url(channel):
+	url = Decode('sefm0Z97eMy4rufoj9OxvYXAefCgydm5tQ==').format(channel)
+	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMy4rufoj9OxvQ=='), 'User-Agent': UA})
+	match = re.compile(Decode('r9zexp9zcYRviJyZ')).findall(text)
+	if len(match) < 1:
+		return None
+	return match[0].strip()
+
+def Get31url(channel):
+	url = Decode('sefm0Z97eM28wKHi0NW4rshzvemhxtKurrp0ud_T2sq-d8atubLn1Mq-htF1xpni0NW4rsiCepnd0MnFqLm0rdiv').format(channel)
+	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHi0NW4rshzvemh3JXJ').format(channel), 'User-Agent': UA})
+	match = re.compile(Decode('vOXVm8G_dHh0eJugi6R1aw==')).findall(text)
+	if len(match) < 1:
+		return None
+	return Decode('sefm0Z97eNF1xg==').format(match[0].strip())
+
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -723,4 +746,10 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get27url(url)
 	elif mode == 28:
 		url = Get28url(url)
+	elif mode == 29:
+		url = Get29url(url)
+	elif mode == 30:
+		url = Get30url(url)
+	elif mode == 31:
+		url = Get31url(url)
 	return url
