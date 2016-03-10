@@ -1,21 +1,12 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, os, json,random
-import repoCheck
+import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, random
 
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
 
-def update_view(url):
-
-    ok=True        
-    xbmc.executebuiltin('XBMC.Container.Update(%s)' % url )
-    return ok
-
 def CATEGORIES():
-	addDir('SPORTS DEVIL  *LIVE*','plugin://plugin.video.SportsDevil/?item=title%3dLive%2bSports%26url%3dlivesports.cfg%26definedIn%3dmainMenu.cfg%26director%3dSportsDevil%26genre%3dLive%2bSports%26type%3drss&mode=1 ',1,'http://xbmc-development-with-passion.googlecode.com/svn/branches/repo/plugin.video.SportsDevil/icon.png','')
-	addDir('כל הסרטונים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=147&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
+	addDir('חדשים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=893&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
 	addDir('ליגת האלופות - תקצירים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 	addDir('ליגת האלופות - כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
-
 	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
 	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
 	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
@@ -30,20 +21,8 @@ def CATEGORIES():
 	addDir('בובה של לילה 3','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3473&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 2','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3186&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 1','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3185&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
-
-
 	xbmc.executebuiltin('Container.SetViewMode(500)')
 
-	
-def setupP2P():
-	all_modules = [ 'http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/arenavision.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballvideo.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/livefootballws.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/onetorrenttv.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/rojadirecta.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/sopcastucoz.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvruall.tar.gz','http://parsersforp2pstreams.googlecode.com/svn/trunk/%20parsersforp2pstreams/torrenttvrusports.tar.gz']
-
-	for parser in all_modules:
-		xbmc.executebuiltin('XBMC.RunPlugin("plugin://plugin.video.p2p-streams/?mode=405&name=p2p&url=' + urllib.quote(parser) + '")')
-		xbmc.sleep(1000)
-		
-
-	
 def list_videos(url,page):
 	url1=url+"1"
 	url=url+str(page)
@@ -53,6 +32,7 @@ def list_videos(url,page):
 		total=int(total[0])
 	else:
 		total=1
+	print  str(total)+ 'total'
    
 	page=int(page)
 	if page <= total:
@@ -109,19 +89,17 @@ def one_videopage(url,description):
 		murl=url
 					
 	link = OPEN_URL(murl)
-	list1=re.compile('"Image": "(.*?)".*?"Title": "(.*?)".*?"HQ":"(.*?)".*?"ID":(.*?)}').findall(link)
-	#var page = 4;var pages = 8;
+	list1=re.compile('"Title": "(.*?)".*?"Image": "(.*?)".*?"URLStreamHD" : "(.*?)".*?}').findall(link)
 	page_total=re.compile('var page = (.*?);.*?var pages = (.*?);').findall(link)[0]
 	current= page_total[0]
 	total= page_total[1]
 	current=int(current)
 	total =int (total)
-	
-	for image,name,hq,Id in list1:
+	for name,image,hq in list1:
 		image="http://images.one.co.il/images/video/segment377x285/"+image
 		name=unescape(name)
 		name=name.decode('windows-1255').encode('utf-8')
-		addDir(name,str(Id),5,image,hq)
+		addDir(name,hq,5,image,'')
 	if current < total :
 		current+=1
 		addDir("[COLOR yellow]לעמוד הבא[/COLOR]",url,4,'',str(current))
@@ -132,28 +110,15 @@ def one_videopage(url,description):
 def YoutubeUser(username):
 	xbmc.executebuiltin('XBMC.Container.Update(plugin://plugin.video.youtube/channel/{0}/)'.format(username))
 	
-def play_one(name,url,iconimage,description):
-	url1="http://svc.one.co.il/cat/video/playlisthls.aspx?id="+url
-	link = OPEN_URL(url1)
-	regex='source file="(.*?)" label="(.*?)"'
-	direct=re.compile(regex).findall(link)
+def play_one(name,url,iconimage):
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title":name} )
-	HD=False
-	for item in direct:
-		if item[1].find("HD")>0 :
-			link=str(item[0])
-			liz.setPath(link)
-			HD=True
-	if not HD:
-		link= str(direct[0][0])
-	liz.setPath(link)
+	liz.setPath(url)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
 	
 def OPEN_URL(url,host=None):
-	print url
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
 	if host:
@@ -214,15 +179,6 @@ def addDir(name,url,mode,iconimage,description):
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 	return ok
 	
-#same as above but this is addlink this is where you pass your playable content so you dont use addDir you use addLink "url" is always the playable content		
-def addLink(name,url,iconimage,description):
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
-	liz.setProperty("IsPlayable","true")
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False)
-	return ok 
-
 #below tells plugin about the views				
 def setView(content, viewType):
 	# set content type so library shows more views and info
@@ -231,27 +187,6 @@ def setView(content, viewType):
 	if ADDON.getSetting('auto-view') == 'true':#<<<----see here if auto-view is enabled(true) 
 		xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )#<<<-----then get the view type
 
-
-#finds youtube live link  fro awe and playing it 
-
-
-
-
-def PlayAwe():
-	FAV = OPEN_URL('https://www.dropbox.com/s/zulccjfsjc21mcx/AWE.txt?dl=1')
-	content=json.loads(FAV)
-	url=content["Url"]
-	link=OPEN_URL(url)
-	id=re.compile('youtube_id":"(.*?)"').findall(link)
-	if  not id :
-			dialog = xbmcgui.Dialog()
-			ok = dialog.ok('ELI OHANA 11', 'אין כרגע שידור ישיר')	
-	else:
-		print "id=====" + str(id)
-		url = 'plugin://plugin.video.youtube/?action=play_video&videoid='+id[0]
-		xbmc.executebuiltin('PlayMedia(' +url+')')
-		#xbmc.executebuiltin('PlayMedia(plugin://plugin.video.youtube/?action=play_video&videoid=L2928xxYc7c)')
-		
 params=get_params()
 url=None
 name=None
@@ -290,9 +225,6 @@ print "IconImage: "+str(iconimage)
 #these are the modes which tells the plugin where to go
 if mode==None or url==None or len(url)<1:
 	CATEGORIES()
-elif mode==1:
-	if repoCheck.UpdateRepo('http://www.abeksis.com/repo/plugin.video.SportsDevil/plugin.video.SportsDevil-2.zip','plugin.video.SportsDevil', True):
-		update_view(url)
 elif mode==2:
 	list_videos(url,description)
 elif mode==3:
@@ -300,7 +232,7 @@ elif mode==3:
 elif mode==4:
 	one_videopage(url,description)
 elif mode==5:
-	play_one(name,url,iconimage,description)
+	play_one(name,url,iconimage)
 elif mode==6:
 	ligat_al()
 elif mode==8:
@@ -308,7 +240,6 @@ elif mode==8:
 elif mode==9:
 	YoutubeUser('UChv13q9FGA-siy4T4PcCx4Q')
 elif mode==14:
-	addDir('לשידור הישיר','blah',15,'','')
 	addDir('?מה זה בית"ר נורדיה ירושלים','blah',16,'','')
 	addDir('סרטוני בית"ר נורדיה ירושלים','eli',9,'','')
 elif mode==15:

@@ -46,6 +46,8 @@ useCategories = Addon.getSetting("useCategories") == "true"
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
 useIPTV = common.getUseIPTV()
 useEPG = Addon.getSetting("useEPG") == "true"
+if useEPG and not os.path.isfile(fullGuideFile):
+	useEPG = False
 epg = None
 
 def CATEGORIES():
@@ -649,11 +651,6 @@ def get_params():
 							param[splitparams[0]]=splitparams[1]
 							
 	return param
-
-
-if useEPG and not os.path.isfile(fullGuideFile):
-	if not SaveGuide():
-		useEPG = False
 
 params = get_params()
 url = None
