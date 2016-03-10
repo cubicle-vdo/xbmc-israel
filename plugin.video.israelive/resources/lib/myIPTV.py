@@ -2,8 +2,7 @@
 import urllib, re, os, shutil
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
-import time
-from datetime import datetime
+import time, datetime
 isDateutil = False
 try:
 	from dateutil import tz
@@ -93,21 +92,20 @@ def GetTZtime(timestamp):
 	if isDateutil:
 		from_zone = tz.tzutc()
 		to_zone = tz.tzlocal()
-		utc = datetime.utcfromtimestamp(timestamp)
+		utc = datetime.datetime.utcfromtimestamp(timestamp)
 		utc = utc.replace(tzinfo=from_zone)
 		local_time = utc.astimezone(to_zone)
 		timeStr = local_time.strftime('%Y%m%d%H%M%S %z')
 	else:
 		ts = time.time()
-		delta = (datetime.fromtimestamp(ts) - datetime.utcfromtimestamp(ts))
+		delta = (datetime.datetime.fromtimestamp(ts) - datetime.datetime.utcfromtimestamp(ts))
 		hrs = "+0000"
 		if delta > datetime.timedelta(0):
 			hrs = "+{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
 		else:
 			delta = -delta
 			hrs = "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
-		local_time = time.localtime(timestamp)
-		timeStr = "{0} {1}".format(local_time.strftime('%Y%m%d%H%M%S'), hrs)
+		timeStr = "{0} {1}".format(time.strftime('%Y%m%d%H%M%S', time.localtime(timestamp)), hrs)
 	return timeStr
 	
 def MakeChannelsGuide(fullGuideFile, iptvGuideFile):

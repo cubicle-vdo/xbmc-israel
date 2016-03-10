@@ -30,7 +30,7 @@ def Update():
 		if not refresh is None:
 			common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
 
-		# Update EPG files for LiveTV selected channels first
+		# Update EPG files for selected LiveTV channels first
 		isGuideUpdated = False
 		if Addon.getSetting("useEPG") == "true":
 			refresh = common.GetSubKeyValue(remoteSettings, "fullGuide", "refresh")
@@ -56,11 +56,10 @@ def Update():
 		if useIPTV:
 			import myIPTV
 			myIPTV.makeIPTVlist(iptvChannelsFile)
-			if isGuideUpdated:
-				myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
+			myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
 			myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
 		
-		# Update EPG files for LiveTV non-sSelected channels
+		# Update EPG files for non-selected LiveTV channels
 		if isGuideUpdated:
 			if fullCategoriesList == []:
 				fullCategoriesList =  common.ReadList(os.path.join(user_dataDir, "lists", "categories.list"))
