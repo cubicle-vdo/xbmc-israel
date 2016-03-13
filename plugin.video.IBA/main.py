@@ -15,7 +15,6 @@
 """
 import urllib, urllib2, re, os, sys, unicodedata, random, json
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
-import repoCheck
 
 ##General vars
 
@@ -35,7 +34,6 @@ import APEpgLoader, APVodItem, APCategory, APExtensions, APItemListsLoader, APIt
 
 
 def getMainCategoryList():
-    repoCheck.UpdateRepo()
     ## Get the account details
     ## account
     accountLoader = APAccountLoader.APAccountLoader(__properties)
@@ -92,7 +90,7 @@ def getCategory(categoryId):
     print categoryLoader.getQuery()
     jsonCategoryDictionary = categoryLoader.loadURL()
     categories = APCategoryList.APCategoryList(jsonCategoryDictionary["category"])
-    
+
     if (categories.hasSubCategories()):
         for category in categories.getSubCategories():
             if category.getId() not in ['36', '3103']: # omit the non video stuff
@@ -121,8 +119,10 @@ def addCategoryView(category):
 
     title = category.getTitle().encode('UTF-8')
     summary = category.getDescription().encode('UTF-8')
-    thumbnail = category.getThumbnail()
-    fanart = category.getFanartImage()
+    fanart = ''
+    thumbnail = category.getFanartImage()
+    #thumbnail = category.getThumbnail()
+    #fanart = category.getFanartImage()
     
     liz = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
     liz.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary)})
@@ -147,7 +147,7 @@ def addItemView(item):
     
     listItem = xbmcgui.ListItem(title, iconImage = thumbnail, thumbnailImage = thumbnail)
     listItem.setInfo(type="Video", infoLabels={ "Title": urllib.unquote(title), "Plot": urllib.unquote(summary), "Season": urllib.unquote(season), "Aired": urllib.unquote(airdate)})
-    listItem.setProperty("Fanart_Image", thumbnail)
+    #listItem.setProperty("Fanart_Image", thumbnail)
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
 
@@ -250,6 +250,6 @@ elif None != categoryId:
 elif None != itemId:
     getItem(itemId)
 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-xbmc.executebuiltin("Container.SetViewMode(500)")
+xbmc.executebuiltin("Container.SetViewMode(504)")
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__, "fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
