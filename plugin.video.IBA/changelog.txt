@@ -1,3 +1,5 @@
+[B]Version 1.0.5[/B]
+- Change the menus view to add some details.
 [B]Version 1.0.4[/B]
 - New version, applicaster based.
 [B]Version 1.0.3[/B]

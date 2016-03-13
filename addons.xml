@@ -23,9 +23,10 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.IBA" name="ערוץ 1" version="1.0.4" provider-name="Vmaster,Sbentin,Nordia">
+<addon id="plugin.video.IBA" name="ערוץ 1" version="1.0.5" provider-name="Vmaster,Sbentin,Nordia">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
+        <import addon="repository.xbmc-israel" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="main.py">
         <provides>video</provides>
