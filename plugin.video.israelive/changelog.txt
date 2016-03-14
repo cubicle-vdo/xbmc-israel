@@ -1,3 +1,5 @@
+[B]v4.7.8[/B]
+- Bugfix for empty list on Mac OS.
 [B]v4.7.7[/B]
 - Bugfixes.
 [B]v4.7.6[/B]

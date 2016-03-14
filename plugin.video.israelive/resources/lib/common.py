@@ -223,13 +223,16 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 		fullList.sort(key=operator.itemgetter('group'))
 		categories_list = []
 		for key, group in itertools.groupby(fullList, lambda item: item["group"]):
-			list1 = [{"url": item["url"], "image": item["image"], "name": item["name"].decode("utf-8"), "type": item["type"], "group": item["group"].decode("utf-8"), "id": item["id"]} for item in group]
-			filename = os.path.join(listsDir, "{0}.list".format(key.strip()))
-			WriteList(filename, list1)
-			categories = [{"name": item["name"], "image": item["image"], "group": item["group"], "id": item["id"]} for item in list1 if item['type'] == "playlist"]
-			if len(categories) > 0:
-				for category in categories:
-					categories_list.append(category)
+			try:
+				list1 = [{"url": item["url"], "image": item["image"], "name": GetEncodeString(item["name"]).decode("utf-8"), "type": item["type"], "group": GetEncodeString(item["group"]).decode("utf-8"), "id": item["id"]} for item in group]
+				filename = os.path.join(listsDir, "{0}.list".format(key.strip()))
+				WriteList(filename, list1)
+				categories = [{"name": item["name"], "image": item["image"], "group": item["group"], "id": item["id"]} for item in list1 if item['type'] == "playlist"]
+				if len(categories) > 0:
+					for category in categories:
+						categories_list.append(category)
+			except Exception as ex:
+				xbmc.log("{0}".format(ex), 3)
 
 		categories_list.sort(key=operator.itemgetter('id'))
 		WriteList(os.path.join(listsDir, "categories.list"), categories_list)
