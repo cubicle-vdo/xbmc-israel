@@ -19,7 +19,7 @@ iptvLogosDir = os.path.join(user_dataDir, "logos")
 
 def Update():
 	remoteSettings = common.GetRemoteSettings()
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings)
 	if remoteSettings == []:
 		xbmc.executebuiltin('StartPVRManager')
 	else:
@@ -79,7 +79,7 @@ def Update():
 
 		checkInterval = 720 # 12 hours = 720 minutes
 		try:
-			checkInterval = remoteSettings["remoteSettings"]["refresh"] * 60 # hours to minutes
+			checkInterval = remoteSettings["checkInterval"] * 60 # hours to minutes
 		except:
 			pass
 		
