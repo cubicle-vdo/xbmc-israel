@@ -696,6 +696,7 @@ try:
 except:
 	pass
 
+#xbmc.log("----> {0}".format(sys.argv), 2) 
 #xbmc.log("----> Mode: {0}".format(mode), 2) 
 #xbmc.log("----> URL: {0}".format(url), 2)
 #xbmc.log("----> Name: {0}".format(urllib.unquote_plus(str(name))), 2)
