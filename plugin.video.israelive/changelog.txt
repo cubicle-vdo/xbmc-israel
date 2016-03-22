@@ -1,3 +1,5 @@
+[B]v4.8.0[/B]
+- Maintenance to deal better with remoteSettings.txt (broken or missing).
 [B]v4.7.9[/B]
 - Maintenance to reduce loads on server.
 [B]v4.7.8[/B]

@@ -76,33 +76,32 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 
 	response = None
 	try:
-		req = urllib2.Request(url)
-		if a == Decode('ttk='):
-			req.add_header('User-Agent', UA.GetUA())
-		else:
-			req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
-			req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
-		response = urllib2.urlopen(req)
-	
 		if zip:
 			urllib.urlretrieve(url, file)
 		else:
+			req = urllib2.Request(url)
+			if a == Decode('ttk='):
+				req.add_header('User-Agent', UA.GetUA())
+			else:
+				req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
+				req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
+			response = urllib2.urlopen(req)
 			data = response.read().replace('\r','')
+			response.close()
+			
+			if key == "remoteSettings":
+				remoteSettings = json.loads(data)
+				last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
+		
 			f = open(file, 'w')
 			f.write(data)
 			f.close()
-		
-		response.close()
 
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
 		if not response is None:
 			response.close()
 		return False
-
-	if key == "remoteSettings":
-		remoteSettings = json.loads(data)
-		last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
 		
 	f = open(lastModifiedFile, 'w')
 	f.write(last_modified)
