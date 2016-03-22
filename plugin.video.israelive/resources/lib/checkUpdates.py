@@ -19,7 +19,9 @@ iptvLogosDir = os.path.join(user_dataDir, "logos")
 
 def Update():
 	remoteSettings = common.GetRemoteSettings()
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings)
+	refresh = common.GetSubKeyValue(remoteSettings, "remoteSettings", "refresh")
+	forceUpdate = True if refresh is None or common.isFileOld(remoteSettingsFile, refresh * 3600) else False
+	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=forceUpdate)
 	if remoteSettings == []:
 		xbmc.executebuiltin('StartPVRManager')
 	else:
