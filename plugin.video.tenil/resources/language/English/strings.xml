@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<string id="20000">How many episodes to show in each screen</string>
+	<string id="20001">Move to previous page</string>
+	<string id="20002">Move to next page</string>
+	<string id="20003">Move to a specific page</string>
+</strings>

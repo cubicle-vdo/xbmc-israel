@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<setting id="episodes" label="20000" type="number" default="24"/>
+</settings>
