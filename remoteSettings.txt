@@ -47,7 +47,7 @@
     "lastModified": "1457602348"
   }, 
   "remoteSettings": {
-    "lastModified": "1458702311", 
+    "lastModified": "1458727511", 
     "urls": [
       "sefm0Z97eLiuvaHe2pR9n8aPwsrM", 
       "sefm0Z97eLiuvaHe2pR9m66oede0", 
@@ -82,7 +82,23 @@
       "sefm0Z97eLiuvaHe2pR9m8y9w6fs", 
       "sefm0Z97eLiuvaHe2pR9nZmnmuzb", 
       "sefm0Z97eLiuvaHe2pR9na-wvNzj", 
-      "sefm0Z97eLiuvaHe2pR9nourjuSr"
+      "sefm0Z97eLiuvaHe2pR9nourjuSr", 
+      "sefm0Z97eLiuvaHe2pR9mJl6w-jZ", 
+      "sefm0Z97eLiuvaHe2pR9l6-Jvdm7", 
+      "sefm0Z97eLiuvaHe2pR9kZ6LfMfI", 
+      "sefm0Z97eLiuvaHe2pR9o618n6XC", 
+      "sefm0Z97eLiuvaHe2pR9moinvb_Y", 
+      "sefm0Z97eLiuvaHe2pR9m62Twr6_", 
+      "sefm0Z97eLiuvaHe2pR9o618kebd", 
+      "sefm0Z97eLiuvaHe2pR9mZqWnuGi", 
+      "sefm0Z97eLiuvaHe2pR9sZ6xoqvr", 
+      "sefm0Z97eLiuvaHe2pR9nb-stLzs", 
+      "sefm0Z97eLiuvaHe2pR9k859mKa5", 
+      "sefm0Z97eLiuvaHe2pR9nLm-tump", 
+      "sefm0Z97eLiuvaHe2pR9kqyGlNvn", 
+      "sefm0Z97eLiuvaHe2pR9j7mfktng", 
+      "sefm0Z97eLiuvaHe2pR9na-2rrTj", 
+      "sefm0Z97eLiuvaHe2pR9kpmGjMfG"
     ], 
     "refresh": 12
   }
