@@ -40,34 +40,30 @@ def makeIPTVlist(iptvFile):
 			url = item['url']
 			tvg_id = item['name']
 			view_name = item['name']
-			if url.find('plugin.video.f4mTester') > 0:
-				url = "http://localhost:{0}/{1}".format(portNum, url[url.find('?'):])
-			elif url.find('www.youtube.com') > 0 or url == "BB":
-				url = "http://localhost:{0}/?url={1}".format(portNum, url)
-			else:
-				matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
-				if len(matches) > 0:
-					url = matches[0][0]
-					mode = matches[0][1]
-					if len(matches[0]) > 2:
-						url += matches[0][2]
-					if mode == '1':
-						url = "http://localhost:{0}/{1}&mode={2}".format(portNum, url[url.find('?'):], mode)
-					elif mode == '3':
-						url = "http://localhost:{0}/?url={1}".format(portNum, url)
-					elif mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25' or mode == '27':
-						if mode == '21':
-							if first21:
-								first21 = False
-							else:
-								url += ";s"
-						url = myResolver.Resolve(url, mode)
-						if url is None or url == "down":
-							continue
-					elif mode == '10' or mode == '13':
+			if '.f4m' in url or 'www.youtube.com' in url:
+				url = "{0}&mode=3".format(url.replace('plugin://plugin.video.f4mTester/?url=', '').replace('&mode=3', ''))
+			elif url == "BB":
+				url = "{0}?mode=-1".format(url.replace('?mode=-1', ''))
+				
+			matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
+			if len(matches) > 0:
+				url = matches[0][0]
+				mode = matches[0][1]
+				if len(matches[0]) > 2:
+					url += matches[0][2]
+				if mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25' or mode == '27':
+					if mode == '21':
+						if first21:
+							first21 = False
+						else:
+							url += ";s"
+					url = myResolver.Resolve(url, mode)
+					if url is None or url == "down":
 						continue
-					else:
-						url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, url.replace('?', '&'), mode)
+				elif mode == '10' or mode == '13':
+					continue
+				else:
+					url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, url.replace('?', '&'), mode)
 
 			tvg_name = item['name'].replace(' ','_')
 			tvg_logo = common.GetLogoFileName(item)

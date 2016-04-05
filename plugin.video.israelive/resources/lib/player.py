@@ -19,13 +19,14 @@ def get_params(url):
 	return param
 		
 def GetFullLink(url, mode):
-	if mode != 0 and mode != -3:
+	#xbmc.log('player   ======>> url: {0},  mode: {1}'.format(url, mode), 2)
+	if mode != 0 and mode != 3:
 		url = myResolver.Resolve(url, mode)
-	if mode == -2 or mode == -3:
+	if '.f4m' in url:
 		url = "hds://{0}".format(url)
 	elif mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15:
 		url = "hls://{0}".format(url)
-	elif mode != 0:
+	elif mode != 0 and mode != 3:
 		url = "hlsvariant://{0}".format(url)
 	return url
 
@@ -34,7 +35,6 @@ def GetStreamUrl(url):
 		params = get_params(url)
 	except:
 		pass
-
 	try:
 		streamUrl = params["url"]
 	except:
@@ -45,18 +45,16 @@ def GetStreamUrl(url):
 		quality = "best"
 	try:
 		mode = int(params["mode"])
-		if mode == 1:
-			streamUrl = url
 	except:
 		mode = 0
 		streamUrl = url[5:]
 	
-	if streamUrl == "BB":
-		mode = -1
-	elif '.f4m' in streamUrl:
-		mode = -2 if 'keshet' in streamUrl else -3
-
-	streamUrl = GetFullLink(streamUrl, mode)
+	if mode == 1 or mode == 3:
+		streamUrl = url[5:url.find('&mode')]
+	if '.f4m' in streamUrl and 'keshet' in streamUrl:
+		mode = -2
+		
+	streamUrl = GetFullLink(streamUrl.replace('&', '?', 1), mode)
 	xbmc.log('Sending "{0}" to Livestreamer.'.format(streamUrl), 2)
 	return streamUrl, quality
 	
