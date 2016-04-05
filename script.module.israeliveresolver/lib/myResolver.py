@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, urlparse, re, uuid, json, random, base64, io, os, gzip, time, hashlib
+import urllib, urllib2, urlparse, re, uuid, json, random, base64, io, os, gzip, time, datetime, hashlib
 from StringIO import StringIO
 import jsunpack, myFilmon, cloudflare
 import xbmc, xbmcaddon
@@ -165,7 +165,7 @@ def WriteList(filename, list, indent=True):
 				handle.write(unicode(json.dumps(list, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		success = False
 		
 	return success
@@ -175,7 +175,7 @@ def ReadList(fileName):
 		with open(fileName, 'r') as handle:
 			content = json.load(handle)
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		content=[]
 
 	return content
@@ -187,7 +187,7 @@ def DelCookies():
 		if os.path.isfile(tempCookies):
 			os.unlink(tempCookies)
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 
 def IsIsrael():
 	text = getUrl(Decode('sefm0Z97eL-1e9ag0NezeMk='))
@@ -207,6 +207,17 @@ def GetIsrIP():
 
 	return israel, israeliIP
 		
+def GetFullDate():
+	ts = time.time()
+	delta = (datetime.datetime.fromtimestamp(ts) - datetime.datetime.utcfromtimestamp(ts))
+	if delta > datetime.timedelta(0):
+		hrs = "{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
+	else:
+		delta = -delta
+		hrs = "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
+	t = time.strftime("%a %b %d %Y %H:%M:%S GMT {0} (%Z)", time.localtime())
+	return  t.format(hrs)
+	
 def GetUrl(url):
 	if not os.path.exists(user_dataDir):
 		os.makedirs(user_dataDir)
@@ -243,11 +254,12 @@ def Get2url(url):
 		return url
 	except:
 		return ""
-		
+	
 def GetYoutubeFullLink(url):
-	streams = livestreamer.streams(url)
-	stream = streams["best"]
-	return stream.url
+	return GetLivestreamerLink(url)
+
+def GetLivestreamerLink(url):
+	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
 	
 def Get4url(channelName):
 	url = Decode('sefm0Z97eM28wKHeytuxdsm5u9jTzpPAv4W0t9_bz8p7r7u3t-bXycq6eLqqvuflxM17xIbCd9vmztE=').format(channelName.lower())
@@ -298,8 +310,7 @@ def Get7url(channel):
 	return finalUrl
 
 def GetStreamliveToFullLink(url):
-	streams = livestreamer.streams(url)
-	stream = streams[Decode('q9jl1Q==')]
+	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
 	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
 
 def Get8url(name):
@@ -447,7 +458,7 @@ def retrieveData(url, mac, key, values):
 		try:
 			info = json.loads(resp)
 		except:
-			print resp
+			xbmc.log("{0}".format(resp), 3)
 	return info
  	
 def Get12url(channel):
@@ -527,6 +538,7 @@ def Get19url(channel):
 	url = Decode('sefm0Z97eM28wKHl1dexqsOut9qfydqud7m0tqLtkeJ7').format(channel)
 	text = getUrl(url)
 	matches = re.compile(Decode('pObkxOG_uMu3rNjPm4VucYRviJyU'), re.I+re.M+re.U+re.S).findall(text)
+	text = getUrl(Decode('sefm0Z97eM28wKHl1dexqsOut9qfydqud7m0tqLn1Mq-d8atubLing==').format(GetFullDate()))
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
 	
 def Get20url(channel):
@@ -541,7 +553,7 @@ def Get20url(channel):
 		stream = Decode('su6i3tW4qs-xsubmj9J_vo4=').format(matches[0])
 		return Decode('sefm0Z97eNF1xqLl1dexqsN0xKTvkOB-xtKavNjkjqazrsS5hsDh2864tbd0fqGigY21mbephJO1sbpsmKllgdKmwJZstb-wrpO_wshsmKlloZySotW8tbucrtW9ytl7f4Z1d6SglYV0lJ6Zlr-egdG1tLtlkNjVzNR1aayqu-bb0NN7gYR1acDhw864roV2e7ulk5ZsnLerquXbkJt8eYR2d6eYs8qyrsiqu7DtlOI=').format(host, gid, stream, url)
 	except Exception as ex:
-		print ex
+		xbmc.log("{0}".format(ex), 3)
 		return None
 
 def Get21url(channel):
@@ -670,6 +682,19 @@ def Get31url(channel):
 	if len(match) < 1:
 		return None
 	return Decode('sefm0Z97eNF1xg==').format(match[0].strip())
+	
+def Get32url(channel):
+	b = Decode('uKfdysm5wse1werexZq1usO7weLmxJbGuLi7vA==')
+	text = getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eL25v6KjkNG1v7t0rNvTz9Oxtb26stfXkKTAuMGqt7DtkeI=').format(b))
+	aa = json.loads(text)[Decode('u9jl1tHAvA==')]
+	for a in aa:
+		if a[Decode('uOXWxtc=')] == 1 and a[Decode('vOfkxsa5qLm0rdg=')].lower() == channel.lower():
+			text = getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eL25v6KjkNG1v7t0v9zX2MnCu8KuvOex1dS3rsSCxKPv').format(b))
+			c = json.loads(text)[Decode('sN_hw8a4ube3quDl')][Decode('udTl1NCxwg==')]
+			d = random.choice([Decode('temn'), Decode('temp'), Decode('temr')])
+			e = 3 if channel == Decode('mbXF') or channel == Decode('luyr') else 4
+			return Decode('sefm0Z97eNF1xqHn1NnCt8W8d9bhzpSwv8i5rubmkNK8fZDAevDtk-J7ucKmwt_b1Nl6tom6gbLdxt6JxInC').format(d, a[Decode('vOfkxsa5t7eyrg==')], e, c)
+	return None
 
 def Decode(string):
 	key = AddonName
@@ -683,6 +708,7 @@ def Decode(string):
 	return decoded_string
 	
 def Resolve(url, mode, useRtmp=False):
+	#xbmc.log('resolver ======>> url: {0},  mode: {1}'.format(url, mode), 2)
 	mode = int(mode)
 	if mode == -3:
 		url = GetMinus3url(url)
@@ -693,9 +719,13 @@ def Resolve(url, mode, useRtmp=False):
 	elif mode == 0:
 		url = GetUrl(url)
 	elif mode == 1:
-		url = myFilmon.GetUrlStream(url, useRtmp=useRtmp)
+		url = url.replace('plugin://plugin.video.israelive/?url=', '')
+		url = url.replace('?', '&', 1)
+		url = myFilmon.GetUrlStream('?url={0}'.format(url), useRtmp=useRtmp)
 	elif mode == 2:
 		url = Get2url(url)
+	elif mode == 3:
+		url = GetLivestreamerLink(url)
 	elif mode == 4:
 		url = Get4url(url)
 	elif mode == 5:
@@ -752,4 +782,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get30url(url)
 	elif mode == 31:
 		url = Get31url(url)
+	elif mode == 32:
+		url = Get32url(url)
 	return url

@@ -44,7 +44,6 @@ categoriesFile =  os.path.join(listsDir, 'categories.list')
 selectedCategoriesFile =  os.path.join(listsDir, 'selectedCategories.list')
 useCategories = Addon.getSetting("useCategories") == "true"
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
-useIPTV = common.getUseIPTV()
 useEPG = Addon.getSetting("useEPG") == "true"
 if useEPG and not os.path.isfile(fullGuideFile):
 	useEPG = False
@@ -89,14 +88,9 @@ def ListLive(categoryID, iconimage=None):
 		isFolder=True
 		
 		if channel["type"] == 'video' or channel["type"] == 'audio':
-			if url.find('?mode=3') > 0 and not useIPTV:
-				continue
-			else:
-				mode = 10
-				isFolder=False
-				
+			mode = 10
+			isFolder=False
 			displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, categoryID)
-		
 		elif not useCategories and channel["type"] == 'playlist':
 			mode = 2
 			displayName = "[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), channelName)
@@ -114,12 +108,12 @@ def ListLive(categoryID, iconimage=None):
 
 def PlayChannel(url, name, iconimage, description, categoryName):
 	try:
-		if url.find('www.youtube.com') > 0:
-			url = myResolver.GetYoutubeFullLink(url)
+		if 'www.youtube.com' in url:
+			url = "{0}&mode=3".format(url.replace('&mode=3', ''))
 		elif url == "BB":
-			url = myResolver.Resolve(url, -1)
-		elif '.f4m' in url:
-			url = url[url.find('http://'):]
+			url += "?mode=-1"
+		if '.f4m' in url:
+			url = url.replace('plugin://plugin.video.f4mTester/?url=', '').replace('&mode=3', '').replace('?mode=3', '')
 			if 'keshet' in url:
 				ticket = myResolver.GetMinus2Ticket()
 				url = "{0}?{1}&hdcore=3.0.3".format(url, ticket)
@@ -132,16 +126,11 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 				mode = matches[0][1]
 				if len(matches[0]) > 2:
 					url += matches[0][2]
-				if mode == '3':  
-					if useIPTV:
-						url = GetLivestreamerLink(url)
-					else:
-						return False
-				else:
-					if mode == '0':
-						mode = '-3'
-						url = url[url.rfind(';')+1:]
-					url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
+				if mode == '0':
+					mode = '-3'
+					url = url[url.rfind(';')+1:]
+
+				url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
 		if url is None or url == "down":
 			return False
 	except Exception as ex:
@@ -160,11 +149,6 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 		listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	return True
-
-def GetLivestreamerLink(url):
-	portNum = common.GetLivestreamerPort()
-	url = "http://localhost:{0}/?url={1}".format(portNum, url)
-	return url
 
 def GetPlayingDetails(channelName, categoryName):
 	programmeName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
@@ -271,7 +255,6 @@ def listFavorites():
 	if favsList == []:
 		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30202).encode('utf-8')), '', 99, '', '', isFolder=False)
 		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30203).encode('utf-8')), '', 99, '', '', isFolder=False)
-		
 	ind = -1
 	for favourite in favsList:
 		ind += 1
@@ -283,17 +266,8 @@ def listFavorites():
 		description = ""
 		background = None
 		isTvGuide = False
-		isFolder=True
-
-		if url.find('?mode=3') > 0 and not useIPTV:
-			continue
-		else:
-			mode = 11
-			isFolder=False
-			
 		displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, "Favourites")
-		addDir(displayName, url, mode, image, description, isFolder=isFolder, channelName=channelName, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
-		
+		addDir(displayName, url, 11, image, description, isFolder=False, channelName=channelName, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
 	SetViewMode()
 
 def addFavorites(channelsIDs, categoryID, showNotification=True):
@@ -628,9 +602,7 @@ def ImportFavourites():
 	common.WriteList(FAV, favsList)
 	common.MakeFavouritesGuide(fullGuideFile)
 	xbmc.executebuiltin('Notification({0}, Favourites list is saved., {2}, {3})'.format(AddonName, fullPath, 5000, __icon__))
-	
-	iptvList = int(Addon.getSetting("iptvList"))
-	if useIPTV and iptvList == 0:
+	if common.getUseIPTV() and int(Addon.getSetting("iptvList")) == 0:
 		MakeIPTVlists()
 		DownloadLogos()
 
