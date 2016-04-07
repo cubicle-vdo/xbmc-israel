@@ -7,7 +7,7 @@ import urllib, urllib2
 handle = int(sys.argv[1])
 
 def GetSeriesList():
-	text = OpenURL('http://www.ch-20.tv/')
+	text = OpenURL('http://www.20il.co.il/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%95%D7%AA/')
 	matches = re.compile('<div class="show">\s+<h3><a href="(.*?)">(.*?)</a></h3>.*?<img src="(.*?)".*?</a></div>\s+</div>', re.S).findall(text)
 	for link, name, iconimage in matches:
 		name = UnEscapeXML(name)
@@ -18,20 +18,22 @@ def GetEpisodesList(url, image):
 	parts = text.split('<div id="catabpart"')
 	name = "תכניות מלאות"
 	addDir("[COLOR green]--- {0} ---[/COLOR]".format(name), '..', 99, image, {"Title": name, "Plot": name}, isFolder=False)
-	episodes = re.compile('<div class="post-thumbnail">\s+<a href="(.*?)" rel="bookmark">.*?src="(.*?)".*?</a>.*?<div class="entry">.*?rel="bookmark">(.*?)</a></h2>\s+<p>(.*?)</p>.*?>.*?</a>', re.S).findall(parts[0])
-	for link, iconimage, name, desc in episodes:
-		name = UnEscapeXML(name)
-		desc = UnEscapeXML(desc)
-		addDir(name, link, 2, iconimage, {"Title": name, "Plot": desc}, isFolder=False)
+	episodes = re.compile('<div class="post-thumbnail">\s+<a href="(.*?)</p>', re.S).findall(parts[0])
+	EpisodesToList(episodes)
 	if len(parts) < 2:
 		return
 	name = "קטעים נבחרים"
 	addDir("[COLOR green]--- {0} ---[/COLOR]".format(name), '..', 99, image, {"Title": name, "Plot": name}, isFolder=False)
-	episodes = re.compile('<div class="post-thumbnail">\s+<a href="(.*?)" rel="bookmark">.*?src="(.*?)".*?</a>.*?<div class="entry">.*?rel="bookmark">(.*?)</a></h2>\s+<p>(.*?)</p>.*?>.*?</a>', re.S).findall(parts[1])
-	for link, iconimage, name, desc in episodes:
-		name = UnEscapeXML(name)
-		desc = UnEscapeXML(desc)
-		addDir(name, link, 2, iconimage, {"Title": name, "Plot": desc}, isFolder=False)
+	episodes = episodes = re.compile('<div class="post-thumbnail">\s+<a href="(.*?)</p>', re.S).findall(parts[1])
+	EpisodesToList(episodes)
+
+def EpisodesToList(episodes):
+	for episode in episodes:
+		ps = re.compile('^(.*?)" rel="bookmark">.*?src="(.*?)".*?</a>.*?<div class="entry">.*?rel="bookmark">(.*?)</a></h2>\s+<p>(.*?)$', re.S).findall(episode)
+		for link, iconimage, name, desc in ps:
+			name = UnEscapeXML(name)
+			desc = UnEscapeXML(desc)
+			addDir(name, link, 2, iconimage, {"Title": name, "Plot": desc}, isFolder=False)
 
 def Play(name, url, iconimage, desc):
 	text = OpenURL(url)
