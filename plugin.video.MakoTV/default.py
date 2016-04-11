@@ -30,7 +30,9 @@ def GetCategoriesList():
 	addDir(name, "http://www.mako.co.il/mako-vod-kids", 0, "http://img.agora.co.il/deals_images/2013-08/936426.jpg", {"Title": name, "Plot": "צפיה בקלטות ילדים"})
 	name = "לייף סטייל"
 	addDir(name, "http://www.mako.co.il/mako-vod-more/lifestyle", 0, "http://cdn-media-2.lifehack.org/wp-content/files/2012/12/healthy-lifestyle.jpg", {"Title": name, "Plot": "צפיה בתכניות לייף סטייל"})
-	name = "דוקו"
+	name = "דוקומנטרי - תכניות"
+	addDir(name, "http://www.mako.co.il/mako-vod-more/docu_tv", 0, "http://opendoclab.mit.edu/wp/wp-content/uploads/2011/09/camera.jpg", {"Title": name, "Plot": "צפיה בתכנים דוקומנטריים"})
+	name = "דוקומנטרי - סרטים"
 	addDir(name, "http://www.mako.co.il/mako-vod-more/docu_tv", 0, "http://opendoclab.mit.edu/wp/wp-content/uploads/2011/09/camera.jpg", {"Title": name, "Plot": "צפיה בתכנים דוקומנטריים"})
 	name = "הופעות"
 	addDir(name, "http://www.mako.co.il/mako-vod-more/concerts", 0, "http://www.scenewave.com/wp-content/uploads/An-argument-for-live-music1.jpg", {"Title": name, "Plot": "צפיה בהופעות חיות"})
@@ -58,7 +60,7 @@ def GetSeriesList(catName, url, iconimage):
 		key1 = "kidsPrograms"
 	elif catName == "קלטות ילדים":
 		key1 = "kidsCassettes"
-	elif catName == "הופעות" or catName == "הרצאות":
+	elif catName == "הופעות" or catName == "הרצאות" or catName == "דוקומנטרי - סרטים":
 		key1 = "moreVOD"
 		key2 = "items"
 		picKey = "picB"
