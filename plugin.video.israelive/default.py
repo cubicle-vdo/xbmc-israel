@@ -72,7 +72,7 @@ def CATEGORIES():
 
 def SetViewMode():
 	if useEPG:
-		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 		xbmc.executebuiltin("Container.SetViewMode(504)")
 
 def ListLive(categoryID, iconimage=None):
@@ -108,12 +108,8 @@ def ListLive(categoryID, iconimage=None):
 
 def PlayChannel(url, name, iconimage, description, categoryName):
 	try:
-		if 'www.youtube.com' in url:
-			url = "{0}&mode=3".format(url.replace('&mode=3', ''))
-		elif url == "BB":
-			url += "?mode=-1"
 		if '.f4m' in url:
-			url = url.replace('plugin://plugin.video.f4mTester/?url=', '').replace('&mode=3', '').replace('?mode=3', '')
+			url = url.replace('&mode=3', '').replace('?mode=3', '')
 			if 'keshet' in url:
 				ticket = myResolver.GetMinus2Ticket()
 				url = "{0}?{1}&hdcore=3.0.3".format(url, ticket)
@@ -142,9 +138,7 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	
 	listItem = xbmcgui.ListItem(path=url)
-	listItem.setInfo(type="Video", infoLabels={"title": programmeName, "plot": description})
-	#listItem.setInfo(type="Video", infoLabels={ "studio": channelName})
-	listItem.setInfo(type="Video", infoLabels={"tvshowtitle": channelName, "episode": "0", "season": "0"})
+	listItem.setInfo(type="Video", infoLabels={"mediatype": "movie", "studio": channelName, "title": programmeName, "plot": description})
 	if iconimage is not None:
 		listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
