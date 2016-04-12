@@ -40,11 +40,7 @@ def makeIPTVlist(iptvFile):
 			url = item['url']
 			tvg_id = item['name']
 			view_name = item['name']
-			if '.f4m' in url or 'www.youtube.com' in url:
-				url = "{0}&mode=3".format(url.replace('plugin://plugin.video.f4mTester/?url=', '').replace('&mode=3', ''))
-			elif url == "BB":
-				url = "{0}?mode=-1".format(url.replace('?mode=-1', ''))
-				
+
 			matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
 			if len(matches) > 0:
 				url = matches[0][0]
