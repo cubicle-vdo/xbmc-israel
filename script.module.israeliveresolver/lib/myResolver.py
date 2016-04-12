@@ -719,9 +719,7 @@ def Resolve(url, mode, useRtmp=False):
 	elif mode == 0:
 		url = GetUrl(url)
 	elif mode == 1:
-		url = url.replace('plugin://plugin.video.israelive/?url=', '')
-		url = url.replace('?', '&', 1)
-		url = myFilmon.GetUrlStream('?url={0}'.format(url), useRtmp=useRtmp)
+		url = myFilmon.GetUrlStream('?url={0}'.format(url.replace('?', '&', 1)), useRtmp=useRtmp)
 	elif mode == 2:
 		url = Get2url(url)
 	elif mode == 3:
