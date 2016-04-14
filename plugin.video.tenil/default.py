@@ -74,11 +74,9 @@ def Play(name, url, iconimage):
 	url = 'http://vod.ch10.cloudvideoplatform.com/api/getlink/GetFlash?showID={0}&userID={1}'.format(matches[0][1], matches[0][0])
 	text = OpenURL(url)
 	matches = re.compile('<Bitrates>(.*?)</Bitrates>.*?<MediaFile>(.*?)</MediaFile>.*?<MediaRoot>(.*?)</MediaRoot>.*?<Params>(.*?)</Params>.*?<ProtocolType>(.*?)</ProtocolType>.*?<ServerAddress>(.*?)</ServerAddress>.*?<StreamingType>(.*?)</StreamingType>').findall(text)
-	xbmc.log('{0}'.format(matches), 2)
 	Bitrates, MediaFile, MediaRoot, Params, ProtocolType, ServerAddress, StreamingType = matches[0]
 	mf = MediaFile.split('.')
 	link = '{0}{1}{2}{3}{4}.{5}{6}{7}'.format(ProtocolType, ServerAddress, MediaRoot, mf[0], Bitrates, mf[1], StreamingType, Params.replace('&amp;', '&'))
-	xbmc.log('{0}'.format(link), 2)
 	listItem = xbmcgui.ListItem(path=link)
 	listItem.setInfo(type="Video", infoLabels={"title": name})
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
