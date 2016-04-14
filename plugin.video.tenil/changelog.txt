@@ -1,2 +1,4 @@
+[B]1.0.1[/B]
+- Maintenance (changes in website).
 [B]1.0.0[/B]
 - Initial release.
