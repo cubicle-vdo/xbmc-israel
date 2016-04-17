@@ -1,3 +1,5 @@
+[B]v4.8.3[/B]
+- Bugfix - Logos not showed on some display-modes.
 [B]v4.8.2[/B]
 - Maintenance.
 [B]v4.8.1[/B]
