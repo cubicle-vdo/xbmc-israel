@@ -72,7 +72,7 @@ def CATEGORIES():
 
 def SetViewMode():
 	if useEPG:
-		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		xbmc.executebuiltin("Container.SetViewMode(504)")
 
 def ListLive(categoryID, iconimage=None):

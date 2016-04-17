@@ -696,6 +696,14 @@ def Get32url(channel):
 			return Decode('sefm0Z97eNF1xqHn1NnCt8W8d9bhzpSwv8i5rubmkNK8fZDAevDtk-J7ucKmwt_b1Nl6tom6gbLdxt6JxInC').format(d, a[Decode('vOfkxsa5t7eyrg==')], e, c)
 	return None
 
+def Get33url(channel):
+	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel)
+	text = getUrl(url)
+	match = re.compile(Decode('cNfXx8bBtcpsh5ugi6R1hQ==')).findall(text)
+	if len(match) < 1:
+		return None
+	return match[0].replace(Decode('b9Tf0aA='), Decode('bw=='))
+
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -782,4 +790,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get31url(url)
 	elif mode == 32:
 		url = Get32url(url)
+	elif mode == 33:
+		url = Get33url(url)
 	return url
