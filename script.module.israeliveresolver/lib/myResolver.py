@@ -254,9 +254,6 @@ def Get2url(url):
 		return url
 	except:
 		return ""
-	
-def GetYoutubeFullLink(url):
-	return GetLivestreamerLink(url)
 
 def GetLivestreamerLink(url):
 	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
