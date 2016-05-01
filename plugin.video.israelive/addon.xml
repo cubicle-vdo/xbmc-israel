@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.8.3" provider-name="Benny123, Avigdor (xbmc-israel repo)">
+<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.8.4" provider-name="Benny123, Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="repository.xbmc-israel" />

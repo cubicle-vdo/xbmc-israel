@@ -5,6 +5,12 @@ import urllib
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
+if Addon.getSetting("unverifySSL") == "true":
+	try:
+		import ssl
+		ssl._create_default_https_context = ssl._create_unverified_context
+	except:
+		pass
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)

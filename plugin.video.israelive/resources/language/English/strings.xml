@@ -21,6 +21,7 @@
 	
 	<string id="30100">Addon Settings</string>
 	<string id="30101">Remote Settings URL</string>
+	<string id="30102">Unverify SSL</string>
 	<string id="30110">Filmon's stream protocol</string>
 	<string id="30104">HLS</string>
 	<string id="30105">RTMP</string>
