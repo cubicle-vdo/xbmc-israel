@@ -696,10 +696,15 @@ def Get32url(channel):
 def Get33url(channel):
 	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel)
 	text = getUrl(url)
-	match = re.compile(Decode('cNfXx8bBtcpsh5ugi6R1hQ==')).findall(text)
+	match = re.compile(Decode('hbnbzcqhm6Jzc7KwiZN2iH-BeLnbzcqhm6KD')).findall(text)
 	if len(match) < 1:
 		return None
-	return match[0].replace(Decode('b9Tf0aA='), Decode('bw=='))
+	a = match[-1]
+	match = re.compile(Decode('g6KhiZN2iH90')).findall(a)
+	b = match[0]
+	match = re.compile(Decode('hcbX09uxu3a1u9zh087AwpNsepqwiZN2iH-BeMbX09uxu5Q=')).findall(text)
+	c = b if len(match) < 1 else match[0]
+	return a.replace(b, c).replace(Decode('b9Tf0aA='), Decode('bw=='))
 
 def Decode(string):
 	key = AddonName
