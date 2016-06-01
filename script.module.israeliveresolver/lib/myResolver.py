@@ -706,6 +706,18 @@ def Get33url(channel):
 	c = b if len(match) < 1 else match[0]
 	return a.replace(b, c).replace(Decode('b9Tf0aA='), Decode('bw=='))
 
+def Get34url(url):
+	request = urllib2.Request(url)
+	response  = urllib2.urlopen(request)
+	data = response.read().decode("utf-8")
+	data = data.splitlines()
+	#data = data[len(data) - 1]
+	data = data[3]
+	url = response.geturl().split('?')[0]
+	url_base = url[: -(len(url) - url.rfind('/'))]
+	return '{0}/{1}'.format(url_base, data)
+	
+
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -794,4 +806,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get32url(url)
 	elif mode == 33:
 		url = Get33url(url)
+	elif mode == 34:
+		url = Get34url(url)
 	return url

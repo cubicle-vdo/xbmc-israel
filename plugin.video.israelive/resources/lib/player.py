@@ -24,7 +24,7 @@ def GetFullLink(url, mode):
 		url = myResolver.Resolve(url, mode)
 	if '.f4m' in url:
 		url = "hds://{0}".format(url)
-	elif mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15:
+	elif mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15 or mode == 34:
 		url = "hls://{0}".format(url)
 	elif mode != 0 and mode != 3:
 		url = "hlsvariant://{0}".format(url)
