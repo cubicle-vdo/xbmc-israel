@@ -131,7 +131,6 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 				if mode == '0':
 					mode = '-3'
 					url = url[url.rfind(';')+1:]
-
 				url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
 		if url is None or url == "down":
 			return False
@@ -144,9 +143,12 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
 	
 	listItem = xbmcgui.ListItem(path=url)
-	listItem.setInfo(type="Video", infoLabels={"mediatype": "movie", "studio": channelName, "title": programmeName, "plot": description})
+	listItem.setInfo(type="Video", infoLabels={"mediatype": "movie", "studio": channelName, "title": programmeName, "plot": description, "tvshowtitle": channelName, "episode": "0", "season": "0"})
 	if iconimage is not None:
-		listItem.setThumbnailImage(iconimage)
+		try:
+			listItem.setArt({'thumb' : iconimage})
+		except:
+			listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	return True
 
@@ -321,7 +323,12 @@ def SaveGuide():
 
 def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None, isTvGuide=False, channelID=None, categoryID=None):
 	chName = channelName if channelName is not None else ""
-	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	try:
+		liz=xbmcgui.ListItem(name)
+		liz.setArt({'thumb' : iconimage, 'icon': 'DefaultFolder.png'})
+	except:
+		liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+		
 	liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
 	
 	if mode==10 or mode==11:
