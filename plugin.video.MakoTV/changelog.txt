@@ -1,3 +1,5 @@
+[B]1.1.6[/B]
+- Added News category.
 [B]1.1.5[/B]
 - Added Documentary movies category.
 [B]1.1.4[/B]

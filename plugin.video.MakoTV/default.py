@@ -2,6 +2,7 @@
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 import os, sys, io, uuid, base64
 import urllib, urllib2, json
+from datetime import date
 
 xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
 isXbmc = int(xbmc_version[:xbmc_version.find('.')]) < 14
@@ -38,6 +39,8 @@ def GetCategoriesList():
 	addDir(name, "http://www.mako.co.il/mako-vod-more/concerts", 0, "http://www.scenewave.com/wp-content/uploads/An-argument-for-live-music1.jpg", {"Title": name, "Plot": "צפיה בהופעות חיות"})
 	name = "הרצאות"
 	addDir(name, "http://www.mako.co.il/mako-vod-more/lectures", 0, "http://static1.squarespace.com/static/545c3cefe4b0263200cf8bb7/t/5474d191e4b0dda9e3ce84e7/1416941970318/lecture.jpg?format=1500w", {"Title": name, "Plot": "צפיה בהרצאות"})
+	name = "חדשות 2"
+	addDir(name, "news", 10, "http://www.orian.com/_uploads/imagesgallery/logo.bmp", {"Title": name, "Plot": "צפיה בחדשות ערוץ 2"})
 	sortString = localizedString(30001).encode('utf-8') if sortBy == 0 else localizedString(30002).encode('utf-8')
 	name = "{0}: {1}".format(localizedString(30000).encode('utf-8'), sortString)
 	addDir(name, "toggleSortingMethod", 6, "", {"Title": name, "Plot": "{0}[CR]לחץ לשינוי השיטה:[CR]{1} / {2}".format(name, localizedString(30001).encode('utf-8'), localizedString(30002).encode('utf-8'))}, isFolder=False)
@@ -60,6 +63,10 @@ def GetSeriesList(catName, url, iconimage):
 		key1 = "kidsPrograms"
 	elif catName == "קלטות ילדים":
 		key1 = "kidsCassettes"
+	elif "חדשות 2" in catName:
+		key1 = "newsData"
+		key2 = "list"
+		picKey = "picI"
 	elif catName == "הופעות" or catName == "הרצאות" or catName == "דוקומנטרי - סרטים":
 		key1 = "moreVOD"
 		key2 = "items"
@@ -95,6 +102,9 @@ def GetSeriesList(catName, url, iconimage):
 			description = prm["brief"].encode("utf-8") if prm.has_key("brief") else ""
 			if prm.has_key("plot"):
 				description = "{0} - {1}".format(description, prm["plot"].encode("utf-8"))
+			if "חדשות 2" in catName:
+				name = "{0} - {1}".format(prm["label"].encode("utf-8"), prm["title"].encode("utf-8"))
+				description = prm["subtitle"].encode("utf-8")
 			infos = {"Title": name, "Plot": description}
 			addDir(name, url, mode, iconimage, infos, totalItems=seriesCount)
 		except Exception as ex:
@@ -201,6 +211,18 @@ def DelCookies():
 			os.unlink(tempCookies)
 	except Exception as ex:
 		print ex
+
+def ShowYears():
+	for year in range(date.today().year, 2007, -1):
+		name = 'חדשות 2 לשנת {0}'.format(year)
+		addDir(name, str(year), 11, "http://www.orian.com/_uploads/imagesgallery/logo.bmp", {"Title": name, "Plot": "צפיה ב{0}".format(name)})
+
+def ShowMonthes(year):
+	fromMonth = 12 if date.today().year != int(year) else date.today().month
+	toMonth = 0 if year != '2008' else 4
+	for month in range(fromMonth, toMonth, -1):
+		name = 'חדשות 2 לחודש {0:02d}-{1}'.format(month, year)
+		addDir(name, 'http://www.mako.co.il/mako-vod-channel2-news/{0}-{1:02d}'.format(year, month), 0, "http://www.orian.com/_uploads/imagesgallery/logo.bmp", {"Title": name, "Plot": "צפיה ב{0}".format(name)})
 
 def ReadList(fileName):
 	try:
@@ -360,30 +382,25 @@ except:
 	
 
 if mode == None or url == None or len(url) < 1:
-	#print "------------- Categories: -----------------"
 	GetCategoriesList()
-elif mode == 0:
-	#print "------------- Series: -----------------"
+elif mode == 0:	#"------------- Series: -----------------
 	GetSeriesList(name, url, iconimage)
-elif mode == 1:
-	#print "------------- Seasons: -----------------"
+elif mode == 1:	#------------- Seasons: -----------------
 	GetSeasonsList(url, iconimage)
-elif mode == 2:
-	#print "------------- Episodes: -----------------"
+elif mode == 2:	#------------- Episodes: -----------------
 	GetEpisodesList(url)
-elif mode == 3:
-	#print "------------- Playing episode  -----------------"
+elif mode == 3:	#------------- Playing episode  -----------------
 	Play(url)
-elif mode == 4:
-	#print "------------- Playing item: -----------------"
+elif mode == 4:	#------------- Playing item: -----------------
 	PlayItem(url)
-elif mode == 5:
-	#print "------------- Search items: -----------------"
+elif mode == 5:	#------------- Search items: -----------------
 	Search(url)
-elif mode == 6:
-	#print "------------- Toggle Lists' sorting method: -----------------"
+elif mode == 6:	#------------- Toggle Lists' sorting method: -----------------
 	ToggleSortMethod()
-	
+elif mode == 10:
+	ShowYears()
+elif mode == 11:
+	ShowMonthes(url)
 
 xbmcplugin.setContent(handle, 'episodes')
 xbmc.executebuiltin("Container.SetViewMode(504)")
