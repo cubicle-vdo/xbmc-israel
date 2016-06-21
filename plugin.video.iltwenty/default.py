@@ -37,10 +37,13 @@ def EpisodesToList(episodes):
 
 def Play(name, url, iconimage, desc):
 	text = OpenURL(url)
-	video = re.compile('<iframe class="tie_embed_code" src="(.*?)".*?<div class="entry">\s+<p.*?>(.*?)</p>', re.S).findall(text)
-	desc = UnEscapeXML(video[0][1])
-	text = OpenURL(video[0][0])
-	link = re.compile('\("#content"\).html\(\'<source src="(.*?)"/>').findall(text)
+	try:
+		desc = UnEscapeXML(re.compile('<meta property="og:description" content="(.*?)"/>').findall(text)[0])
+	except:
+		pass
+	video = re.compile('<iframe src="(.*?)".*?class="player-frame arti-media".*?</iframe>').findall(text)
+	text = OpenURL(video[0])
+	link = re.compile('src: "(.*?)"').findall(text)
 	listItem = xbmcgui.ListItem(path=link[0])
 	listItem.setInfo(type="Video", infoLabels={"title": name, "plot": desc})
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
