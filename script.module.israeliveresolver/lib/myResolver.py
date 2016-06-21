@@ -500,25 +500,30 @@ def Get15url(channel):
 	
 def Get16url(channel):
 	url = Decode('sefm0Z97eL-1vemf0dGtt7u5d9bhzpTHedNzseffzQ==').format(channel)
-	text = getUrl(url)
+	text = cloudflare.request(url)
 	matches = re.compile(Decode('r9zexqJzcYRviJyZnA=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) < 1:
 		return None
-	pageUrl = Decode('sefm0Z97eLuyq9jWj868vcxyud_Tz8rAd7m0tqLXzsexrYS1seOxysmJxIbCb-rbxdm0hox1eZnaxs6zscqCfaOi').format(matches[-1])
-	text = getUrl(pageUrl, headers={Decode('m9jYxtexuw=='): url})
+	pageUrl = Decode('sefm0Z97eLuyq9jWj868vcxyud_Tj9OxvYWqttXXxZO8scaEstev3JXJb82urefanpqFfXytrtzZydmJfYZ5b97X2peJeod2gQ==').format(matches[-1])
+	text = cloudflare.request(pageUrl, headers={Decode('m9jYxtexuw=='): url})
 	matches = re.compile(Decode('v9TkgdjAu7umttjknod0d4CEcpWtj4-LcLyutdiZj4-LcH5zc7KbiA=='), re.I+re.M+re.U+re.S).findall(text)
 	if len(matches) != 1:
 		return None
 	url = matches[0][0]
-	#if 'Hi_mbc1' in matches[0][1] or 'mbcmasr' in matches[0][1] or 'rc' in matches[0][1]:
-	#	url = url.replace('web1', 'web3').replace('web2', 'web3')
-	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkMq5q7upd9zi1dt5ucKmt9jmj8i7toW4wNnlkNW4qs-qu6Hl2MtsubesrsjkzaLHe9M=').format(url, matches[0][1], pageUrl)
+	return Decode('xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkMq5q7upd9zi1dt5ucKmd-HX1ZS_wLy4eOPewt6xu4S4wNmS0cazrqu3tbDtk-I=').format(url, matches[0][1], pageUrl)
 
 def Get17url(channel):
-	url = Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')
-	text = getUrl(url)
-	matches = re.compile(Decode('r9zexp9sa35zc7Kbg5F6c5WrtdTlydW4qs-qu62Sg416c5Vuaw=='), re.I+re.M+re.U+re.S).findall(text)
-	return Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(Decode('r9_omw=='), Decode('aePewt68qsqthg==')), matches[0][1], url)
+	if Decode('ud_T2pc=') in channel:
+		url = Decode('sefm0Z97eLmxvtXUytOzvcxzrOLfkNjArsatquGhxNHBq7iqu6HiydU=')
+		text = cloudflare.request(url)
+		matches = re.compile(Decode('r9zexp9sa35zc7Kbgw==')).findall(text)
+		return matches[0]
+	else:
+		url = Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')
+		text = cloudflare.request(url)
+		xbmc.log(text, 2)
+		matches = re.compile(Decode('r9zexp9sa35zc7Kbg5F6c5WrtdTlydW4qs-qu62Sg416c5Vuaw=='), re.S).findall(text)
+		return Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(Decode('r9_omw=='), Decode('aePewt68qsqthg==')), matches[0][1], url)
 	
 def Get18url(channel):
 	text = getUrl(channel)
@@ -673,8 +678,8 @@ def Get30url(channel):
 	return match[0].strip()
 
 def Get31url(channel):
-	url = Decode('sefm0Z97eM28wKHi0NW4rshzvemhxtKurrp0ud_T2sq-d8atubLn1Mq-htF1xpni0NW4rsiCepnd0MnFqLm0rdiv').format(channel)
-	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHi0NW4rshzvemh3JXJ').format(channel), 'User-Agent': UA})
+	url = Decode('sefm0Z97eM28wKHi0NW4rshzvemhxtKurrp0ud_T2sq-scqytaig0c28iMu4ruWv3JXJb8a0ud_X06J9b8G0rezRxNSwrpM=').format(channel)
+	text = cloudflare.request(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHi0NW4rshzvemh0dS-vbexd-Pa0Q=='), 'User-Agent': UA})
 	match = re.compile(Decode('vOXVm8G_dHh0eJugi6R1aw==')).findall(text)
 	if len(match) < 1:
 		return None
@@ -694,12 +699,22 @@ def Get32url(channel):
 	return None
 
 def Get33url(channel):
-	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel)
+	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel) if 'http' not in channel else channel
 	text = getUrl(url)
 	match = re.compile(Decode('hbnbzcqhm6Jzc7KwiZN2iH-BeLnbzcqhm6KD')).findall(text)
 	if len(match) < 1:
 		return None
-	a = match[-1]
+	#a = match[-1]
+	a = match[0]
+	d = 1
+	for m in match:
+		f = re.compile(Decode('qJvOxZB1d8m5u9jTzg==')).findall(m)
+		if len(f) < 1:
+			continue
+		e = int(f[0])
+		if d < e:
+			a = m
+			d = e
 	match = re.compile(Decode('g6KhiZN2iH90')).findall(a)
 	b = match[0]
 	match = re.compile(Decode('hcbX09uxu3a1u9zh087AwpNsepqwiZN2iH-BeMbX09uxu5Q=')).findall(text)
@@ -717,6 +732,13 @@ def Get34url(url):
 	url_base = url[: -(len(url) - url.rfind('/'))]
 	return '{0}/{1}'.format(url_base, data)
 	
+def Get35url(channel):
+	url = Decode('sefm0Z97eM28wKHeytuxuMSxsuHX1dt-fY1zsuHY0JSxtriqraLtkeJ6ub61').format(channel)
+	text = getUrl(url)
+	match = re.compile(Decode('hebh1tevroRviJPl08iJa35zc7Kbg6M=')).findall(text)
+	if len(match) < 1:
+		return None
+	return Decode('xKPv3bexr7u3ruWvydnAuZB0eOrp2JO4ssyquOHeytOxvcx3faqgytOyuIWqttXXxZTHetNzudvioNy1rcqthqmnkYu0rr-sseevlZ18b6u4ruWfosyxt8qCxKXv').format(match[0], channel, UA)
 
 def Decode(string):
 	key = AddonName
@@ -808,4 +830,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get33url(url)
 	elif mode == 34:
 		url = Get34url(url)
+	elif mode == 35:
+		url = Get35url(url)
 	return url
