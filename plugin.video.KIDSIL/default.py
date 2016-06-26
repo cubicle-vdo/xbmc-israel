@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random,io,json
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,random,io,json,cookielib
 AddonID = 'plugin.video.KIDSIL' 
 ADDON = xbmcaddon.Addon(id=AddonID)
 user_dataDir = xbmc.translatePath(ADDON.getAddonInfo("profile")).decode("utf-8")
@@ -12,8 +12,10 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
 update_yt= os.path.join(user_dataDir, "YTUPDATE.txt")
+lists = 'https://raw.githubusercontent.com/cubicle-vdo/xbmc-israel/master/repo/plugin.video.KIDSIL/lists.txt'
 
 def CATEGORIES():
+
 	if  not (os.path.isfile(update_yt)):
 		RunOnce()
 	try:
@@ -38,9 +40,8 @@ def CATEGORIES():
 		pass
 	addDir('אנגלית','bff',19,'http://learnenglishkids.britishcouncil.org/sites/kids/files/imagecache/game_preview/alphabet.jpg','')
 	xbmc.executebuiltin('Container.SetViewMode(500)')
-#downloading temporary fix for youtube
+
 def RunOnce(): 
-	#xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/out/)')
 	try:
 		with io.open(update_yt, 'w', encoding='utf-8') as handle:
 			handle.write(unicode('UPDATED'))
@@ -53,7 +54,6 @@ def RunOnce():
 
 	addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 	url='http://offshoregit.com/finalmakerr/Fixed%20Addons/plugin.video.youtube-5.1.17.zip'
-	#url='https://github.com/kolinger/plugin.video.youtube/releases/download/5.1.17/plugin.video.youtube-5.1.17.zip'
 	packageFile = os.path.join(addonsDir, 'packages', 'temp.zip')
 	
 	AddonIDT = 'plugin.video.youtube' 
@@ -71,13 +71,9 @@ def RunOnce():
 		os.remove(YTsetting)
 	except:
 		pass
-	
-	dp = xbmcgui . Dialog ( )
-	dp.ok("KIDSIL","התיקון תודות לחבר ","finalmakerr")
-	#xbmc.executebuiltin('XBMC.RunPlugin(plugin://plugin.video.youtube/sign/in/)')
 
 def User_lists():
-	FAV = OPEN_URL(Decode('2ODp19yoXaXg29ydkr24tLW4xJ7P5NSY4V2tndbI4o-AvHm1r4Pj4uSWtLdyyZfY3eNtr7WBhA=='))
+	FAV = OPEN_URL(lists)
 	content=json.loads(FAV)
 	playlists=content["Playlists"]
 	for list in playlists:
@@ -436,7 +432,7 @@ def MoviesAddons():
 	addDir('10Q  ומשפחה סרטי אנימציה ','plugin://plugin.video.10qtv/?mode=6&name=אנימציה&url=http://www.10q.tv/board/filmy/mshfhha/17',8,'http://mirror.cinosure.com/superrepo/v5/addons/plugin.video.10qtv/icon.png','')
 
 def English():
-	FAV = OPEN_URL(Decode('2ODp19yoXaXg29ydkr24tLW4xJ7P5NSY4V2tndbI4o-AvHm1r4Pj4uSWtLdyyZfY3eNtr7WBhA=='))
+	FAV = OPEN_URL(lists)
 	content=json.loads(FAV)
 	english=content["English"]
 	for ch in english :
