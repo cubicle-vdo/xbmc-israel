@@ -226,7 +226,7 @@ def GetProgrammeDetails(channelName, categoryName):
 def GetProgrammes(epg, channelName ,full=False):
 	programmes = []
 	try:
-		matches = [x["tvGuide"] for x in epg if x["channel"].encode('utf-8') == channelName]
+		matches = [x["tvGuide"] for x in epg if x["channel"].encode('utf-8').strip() == common.GetUnColor(channelName)]
 		programmes = matches[0]
 	except Exception, e:
 		pass

@@ -562,4 +562,7 @@ def getAutoIPTV():
 		Addon.setSetting("autoIPTV", "false")
 		autoIPTV = Addon.getSetting("autoIPTV")
 	return autoIPTV == "true"
-	
+
+def GetUnColor(name):
+	regex = re.compile("(\[/?(?:COLOR|B).*?\])", re.IGNORECASE)
+	return regex.sub('', name).strip()
