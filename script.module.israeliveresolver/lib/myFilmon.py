@@ -19,7 +19,7 @@ def GetChannelStream(chNum, referrerCh=None, filmonOldStrerams=True, useRtmp=Fal
 		
 	if html is None:
 		if filmonOldStrerams:
-			print "---------------------------- Trying filmonNewStrerams method for chNum {0} ----------".format(channelNum)
+			print "---------------------------- Trying filmonNewStreams method for chNum {0} ----------".format(channelNum)
 		html = GetChannelNewStreamHtml(channelNum)
 		if html is None:
 			return None

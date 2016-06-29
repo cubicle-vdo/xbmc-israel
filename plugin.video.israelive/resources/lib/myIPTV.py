@@ -47,7 +47,7 @@ def makeIPTVlist(iptvFile):
 				mode = matches[0][1]
 				if len(matches[0]) > 2:
 					url += matches[0][2]
-				if mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25' or mode == '27':
+				if mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25' or mode == '27' or mode == '34':
 					if mode == '21':
 						if first21:
 							first21 = False
@@ -267,7 +267,7 @@ def GetIptvChannels():
 		for channel in channels:
 			if channel["type"] == 'video' or channel["type"] == 'audio':
 				try:
-					channelName = channel['name'].encode("utf-8").replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
+					channelName = common.GetUnColor(channel['name'].encode("utf-8"))
 					
 					if category["id"] == "Favourites":
 						gp = [x["name"] for x in allCategories if x["id"] == channel.get("group", "")]
