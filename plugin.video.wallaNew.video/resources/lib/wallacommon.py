@@ -8,6 +8,7 @@ Created on 30/04/2011
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11'
 # __USERAGENT__ = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
 
+_PATTERN_EXTRA_='<div class="title w5b mt5"><a href="(.*?)"'
 from collections import namedtuple
 
 import StorageServer
@@ -153,8 +154,9 @@ def getCookie(url, cookiename):
         return data, "ERROR"
         
 def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"'):
+    if '2836047' in inUrl:
+         getEpisodeList(urlbase,'http://nickjr.walla.co.il/?w=//2968570',pattern, modulename, mode, patternFeatured='', patternmore='class="in_blk p_r"\sstyle=""\shref="(.*?)"')
     contentType,mainPage = getData(inUrl)
-    print inUrl
     if 'nick' in urlbase and  not 'page' in inUrl:
         #urlMatch = re.compile('class="w6b.?.*?href="(.*?)">').findall(mainPage)
         block=re.compile('show_nav oflow w3 bgclr1(.*?)content_holder').findall(mainPage)
@@ -164,8 +166,6 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
         if (len(urlMatch)) > 0:
           inUrl=urlbase+urlMatch
           contentType,mainPage = getData(inUrl)
-    print "modulename=" + modulename
-    print "inUrl=" + inUrl
     Episode = namedtuple('Episode', ['content', 'title', 'url', 'iconImage', 'time', 'epiDetails'])    
     
     cacheKey = modulename + "_" + inUrl + "_episodes"
@@ -189,6 +189,7 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
             urls += re.compile(pattern).findall(mainPage)
         else:
             urls = re.compile(pattern).findall(mainPage)
+            urls += re.compile(_PATTERN_EXTRA_).findall(mainPage)
         # # for each episode we get the episode page to parse all the info from
         for path in urls:
             contentType, page = getData(urlbase + path + '/@@/video/flv_pl')
@@ -221,7 +222,9 @@ def getEpisodeList(urlbase, inUrl, pattern, modulename, mode, patternFeatured=''
     print str (nextPage)
     if (len(nextPage)) > 0:
         addDir('UTF-8', __language__(30001), urlbase + nextPage[0], mode, 'DefaultFolder.png', modulename)
-    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+    
+	
+	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 
 def convertToUTF(name):
     return clean('utf-8',name)

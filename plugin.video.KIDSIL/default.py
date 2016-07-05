@@ -26,8 +26,9 @@ def CATEGORIES():
 			addDir('Super cartoons','plugin://plugin.video.supercartoons/?mode=400&page=1',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQQoKkxPt4MxnzTqM-ChAH7My_OdIZQJ2U6CoXIeDzOkdMBaG8G','')
 	except:
 		pass
+	addDir('חפש ביוטיוב','plugin://plugin.video.youtube/kodion/search/input/',8,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQAF6q3MmKsdn5H2uW6QUCSZpN-ZnNl2dHOQUhsbiB_xS24g7NG','')   
 	addDir('FIX YOUTUBE','bj',25,'special://home/addons/plugin.video.kidsil/Untitled1.jpg','')
-	addDir('סרטים לילדים','bj',18,'http://cartooncollectors.com/wp-content/uploads/2014/07/cartoon-movies-list-alltop-disney-movies-list-new-latest-kids-films-2014-best-movies-ever-gldf9j91.jpg','')
+	addDir('סרטים לילדים','bj',18,'http://queenbeecoupons.com/wp-content/upload/2016/06/Amazon-Summer-Movies-550x307.png','')
 	addDir('SDAROT','plugin://plugin.video.sdarot.tv/?mode=2&module=http%3a%2f%2fwww.sdarot.wf%2fseries%2fgenre%2f7%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&name=%d7%90%d7%a0%d7%99%d7%9e%d7%a6%d7%99%d7%94&url=all-heb&quot;',8,'http://www.hometheater.co.il/files/(40143)_icon.png','')   
 	addDir('קלסיקלטת','plugin://plugin.video.wallaNew.video/?mode=1&module=338&name=קלסיקלטת&url=http://vod.walla.co.il/channel/338/clasicaletet',8,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTYE2VT8CR2O31MsqAhdaydYrqrCD--HCCdGcs7blBn3Zh92Kwq','')
 	addDir('ניק','plugin://plugin.video.wallaNew.video/?mode=1&module=nick&name=ניק&url=http://nick.walla.co.il/',8,'http://www.karmieli.co.il/sites/default/files/images/nico.jpg','')
