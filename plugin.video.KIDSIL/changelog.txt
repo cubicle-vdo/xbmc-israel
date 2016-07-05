@@ -1,3 +1,8 @@
+[B]Version 1.4.1[/B]
+-Youtube direct Search
+-Maintenance in Walla 
+
+
 [B]Version 1.4.0[/B]
 -Maintenance
 [B]Version 1.3.9[/B]

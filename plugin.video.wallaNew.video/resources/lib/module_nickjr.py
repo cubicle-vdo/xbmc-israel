@@ -13,6 +13,7 @@ __NAME__ = 'nickjr'
 __PATTERN__ = '<div class="title w4b"><a href="(.*?)"'
 __PATTERN_MORE__ = 'class="p_r"\sstyle=""\shref="(.*?)"'
 __PATTERN_FEATURED__ ='<div class="title w5b mt5"><a href="(.*?)"'
+_PATTERN_EXTRA_=      '<div class="title w5b mt5"><a href="(.*?"'
 
 AddonID = "plugin.video.wallaNew.video"
 Addon = xbmcaddon.Addon(AddonID)
