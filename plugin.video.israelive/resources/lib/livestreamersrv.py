@@ -9,7 +9,6 @@ import threading
 
 try:
 	from livestreamer import Livestreamer
-	#import livestreamer
 except:
 	import common, xbmcaddon, sys
 	localizedString = xbmcaddon.Addon("plugin.video.israelive").getLocalizedString
@@ -27,9 +26,13 @@ httpd = None
 	
 def Streamer(wfile, url, quality):
 	global LIVESTREAMER
+	i = url.find('|')
+	if i > 0:
+		params = url[i+1:].replace('&',';')
+		url = url[:i]
+		LIVESTREAMER.set_option('http-headers', params)
 	channel = LIVESTREAMER.resolve_url(url)
 	streams = channel.get_streams()
-	#streams = livestreamer.streams(url)
 	if not streams:
 		raise Exception("No Stream Found!")
 	
