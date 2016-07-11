@@ -29,7 +29,6 @@ except:
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def makeIPTVlist(iptvFile):
-	first21 = True
 	iptvList = '#EXTM3U\n'
 	
 	channelsList = GetIptvChannels()
@@ -47,12 +46,7 @@ def makeIPTVlist(iptvFile):
 				mode = matches[0][1]
 				if len(matches[0]) > 2:
 					url += matches[0][2]
-				if mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '20' or mode == '21' or mode == '22' or mode == '23' or mode == '24' or mode == '25' or mode == '27' or mode == '34':
-					if mode == '21':
-						if first21:
-							first21 = False
-						else:
-							url += ";s"
+				if mode == '-3' or mode == '0' or mode == '7' or mode == '16' or mode == '34':
 					url = myResolver.Resolve(url, mode)
 					if url is None or url == "down":
 						continue
