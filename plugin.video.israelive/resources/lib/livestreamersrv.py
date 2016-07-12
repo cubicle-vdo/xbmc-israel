@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, xbmc
+import xbmc, xbmcgui, xbmcaddon
 
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 #from SocketServer import ThreadingMixIn
@@ -10,7 +10,7 @@ import threading
 try:
 	from livestreamer import Livestreamer
 except:
-	import common, xbmcaddon, sys
+	import common, sys
 	localizedString = xbmcaddon.Addon("plugin.video.israelive").getLocalizedString
 	if common.InstallAddon('script.module.israeliveresolver'):
 		common.OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
@@ -19,10 +19,14 @@ except:
 	sys.exit()
 
 from urllib import unquote
-import player
+import player, resolver
 
 LIVESTREAMER = None
 httpd = None
+
+AddonID = "plugin.video.israelive"
+Addon = xbmcaddon.Addon(AddonID)
+KodiPlayer = Addon.getSetting("dynamicPlayer") == "1"
 	
 def Streamer(wfile, url, quality):
 	global LIVESTREAMER
@@ -62,6 +66,12 @@ class StreamHandler(BaseHTTPRequestHandler):
 		#s.send_header("Content-type", "text/html")
 		s.end_headers()
 
+		if KodiPlayer:
+			url = resolver.resolveUrl(unquote(s.path[6:]))
+			listitem = xbmcgui.ListItem('LiveTV', path=url)
+			xbmc.Player().play(url, listitem)
+			return
+			
 		quality = "best"
 		try: 
 			url, quality = player.GetStreamUrl(unquote(s.path[1:]))
@@ -116,18 +126,18 @@ def start(portNum):
 		t1 = threading.Thread(target = httpd.serve, args = ())
 		t1.daemon = True
 		t1.start()
-		xbmc.log("Livestreamer: Server Starts - {0}:{1}".format("localhost", portNum), 2)
+		xbmc.log("Livestreamer: Server Starts - {0} on port {1}".format("localhost", portNum), 2)
 		
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
 		#pass
-	#xbmc.log("Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum), 2)
+	#xbmc.log("Livestreamer: Server Stops - {0} on port {1}".format("localhost", portNum), 2)
 	
 def stop(portNum):
 	global httpd
 	try:
 		if httpd is not None:
 			httpd.stop()
-			xbmc.log("Livestreamer: Server Stops - {0}:{1}".format("localhost", portNum), 2)
+			xbmc.log("Livestreamer: Server Stops - {0} on port {1}".format("localhost", portNum), 2)
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)

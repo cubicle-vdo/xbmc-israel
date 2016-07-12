@@ -14,8 +14,8 @@ if Addon.getSetting("unverifySSL") == "true":
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common, myIPTV, checkUpdates, updateM3U
-import myResolver
+import common, myIPTV, checkUpdates, updateM3U, resolver
+
 localizedString = Addon.getLocalizedString
 AddonName = Addon.getAddonInfo("name")
 icon = Addon.getAddonInfo('icon')
@@ -49,7 +49,6 @@ listsDir = os.path.join(user_dataDir, 'lists')
 categoriesFile =  os.path.join(listsDir, 'categories.list')
 selectedCategoriesFile =  os.path.join(listsDir, 'selectedCategories.list')
 useCategories = Addon.getSetting("useCategories") == "true"
-useRtmp = Addon.getSetting("StreramProtocol") == "1"
 useEPG = Addon.getSetting("useEPG") == "true"
 if useEPG and not os.path.isfile(fullGuideFile):
 	useEPG = False
@@ -113,35 +112,14 @@ def ListLive(categoryID, iconimage=None):
 	SetViewMode()
 
 def PlayChannel(url, name, iconimage, description, categoryName):
-	try:
-		if '.f4m' in url:
-			url = url.replace('&mode=3', '').replace('?mode=3', '')
-			if 'keshet' in url:
-				ticket = myResolver.GetMinus2Ticket()
-				url = "{0}?{1}&hdcore=3.0.3".format(url, ticket)
-			from F4mProxy import f4mProxyHelper
-			url = f4mProxyHelper().playF4mLink(urllib.unquote_plus(url))
-		elif "mode=" in url:
-			matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
-			if len(matches) > 0:
-				url = matches[0][0]
-				mode = matches[0][1]
-				if len(matches[0]) > 2:
-					url += matches[0][2]
-				if mode == '0':
-					mode = '-3'
-					url = url[url.rfind(';')+1:]
-				url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
-		if url is None or url == "down":
-			return False
-	except Exception as ex:
-		xbmc.log("{0}".format(ex), 3)
+	url = resolver.resolveUrl(url)
+	if url is None:
 		xbmc.log("Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name)), 3)
 		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name), 5000, __icon2__))
 		return False
 	
 	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryName)
-	
+
 	listItem = xbmcgui.ListItem(path=url)
 	listItem.setInfo(type="Video", infoLabels={"mediatype": "movie", "studio": channelName, "title": programmeName, "plot": description, "tvshowtitle": channelName, "episode": "0", "season": "0"})
 	if iconimage is not None:
@@ -149,6 +127,7 @@ def PlayChannel(url, name, iconimage, description, categoryName):
 			listItem.setArt({'thumb' : iconimage})
 		except:
 			listItem.setThumbnailImage(iconimage)
+	
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	return True
 

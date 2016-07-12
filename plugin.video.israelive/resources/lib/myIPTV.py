@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, re, os, shutil
+import urllib, re, os, shutil, threading, urllib2, gzip
 import xbmc, xbmcaddon
 import xml.etree.ElementTree as ET
 import time, datetime
@@ -9,7 +9,7 @@ try:
 	isDateutil = True
 except:
 	pass
-import common
+import common, UA
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -119,6 +119,7 @@ def SaveChannelsLogos(logosDir):
 	if not os.path.exists(logosDir):
 		os.makedirs(logosDir)
 		
+	ua = UA.GetUA()
 	newFilesList = []
 	channelsList = GetIptvChannels()
 	
@@ -131,7 +132,7 @@ def SaveChannelsLogos(logosDir):
 				if not os.path.isfile(logoFile):
 					logo = channel['image']
 					if logo.startswith('http'):
-						urllib.urlretrieve(logo, logoFile)
+						threading.Thread(target=SaveChannelBackground, args=(logo, logoFile, ua, )).start()
 					else:
 						shutil.copyfile(logo, logoFile)
 		except Exception as ex:
@@ -144,6 +145,24 @@ def SaveChannelsLogos(logosDir):
 				os.unlink(file_path)
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
+
+def SaveChannelBackground(logoUrl, logoFile, ua):
+	try:
+		req = urllib2.Request(logoUrl)
+		req.add_header('User-Agent', ua)
+		req.add_header('Accept-encoding', 'gzip')
+		response = urllib2.urlopen(req,timeout=100)
+		if response.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO(response.read())
+			f = gzip.GzipFile(fileobj=buf)
+			data = f.read()
+		else:
+			data = response.read()
+		response.close()
+	except:
+		return
+	with open(logoFile, 'wb') as f:
+		f.write(data)
 
 def GetIptvAddon():
 	iptvAddon = None
