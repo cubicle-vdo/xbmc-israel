@@ -7,7 +7,6 @@ Addon = xbmcaddon.Addon(AddonID)
 useRtmp = Addon.getSetting("StreramProtocol") == "1"
 
 def resolveUrl(url):
-	xbmc.log("{0}".format(url), 3)
 	try:
 		if '.f4m' in url:
 			url = url.replace('&mode=3', '').replace('?mode=3', '')

@@ -1,5 +1,7 @@
+[B]v4.8.9[/B]
+- Fix for Playing some dynamic channels on LiveTV with Kodi-player.
 [B]v4.8.8[/B]
-- Added option in addon settings to chanege the video-player for dynamic channels on LiveTV (Kodi-plaer is more stable than Livestreamer, but without details on playing screen).
+- Added option in addon settings to chanege the video-player for dynamic channels on LiveTV (Kodi-player is more stable than Livestreamer, but without details on playing screen).
 - Maintenance.
 [B]v4.8.7[/B]
 - Maintenance.
