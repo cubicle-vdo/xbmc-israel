@@ -15,7 +15,7 @@
 	<category label="30300">
 		<setting id="useIPTV" type="bool" label="30301" />
 		<setting id="action" type="action" label="30308" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=34&url=settings)" option="close" visible="eq(-1,true)"/>
-		<setting id="dynamicPlayer" type="enum" label="30314" lvalues="30315|30316" default="0"/>
+		<setting id="dynamicPlayer" type="enum" label="30314" lvalues="30315|30316" default="0"  visible="eq(-2,true)"/>
 		<setting type="sep"/>
 		<setting id="LiveTVadvanced" type="bool" label="30020" default="false" visible="eq(-4,true)"/>
 		<setting id="action" type="action" label="30302" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=30&url=settings)" option="close" visible="eq(-1,true) + eq(-5,true)"/>

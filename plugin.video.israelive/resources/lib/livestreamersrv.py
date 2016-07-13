@@ -67,8 +67,9 @@ class StreamHandler(BaseHTTPRequestHandler):
 		s.end_headers()
 
 		if KodiPlayer:
-			url = resolver.resolveUrl(unquote(s.path[6:]))
-			listitem = xbmcgui.ListItem('LiveTV', path=url)
+			url = resolver.resolveUrl(unquote(s.path[6:]).replace('&', '?', 1))
+			listitem = xbmcgui.ListItem(path=url)
+			listitem.setInfo(type="Video", infoLabels={"mediatype": "movie", "title": "LiveTV"})
 			xbmc.Player().play(url, listitem)
 			return
 			
