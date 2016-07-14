@@ -91,7 +91,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.8.9" provider-name="Benny123, Avigdor (xbmc-israel repo)">
+<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="4.9.0" provider-name="Benny123, Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="repository.xbmc-israel" />

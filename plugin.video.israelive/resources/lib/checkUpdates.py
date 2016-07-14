@@ -76,7 +76,7 @@ def Update():
 			common.MakeCatGuides(categoriesList, epg)
 			
 		# Update channels-logos files
-		if useIPTV:
+		if useIPTV and myIPTV.GetIptvType() < 2:
 			myIPTV.SaveChannelsLogos(iptvLogosDir)
 
 		checkInterval = 720 # 12 hours = 720 minutes
