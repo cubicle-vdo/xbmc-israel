@@ -288,7 +288,7 @@ def GetLogoFileName(item):
 		ext = item['image'][item['image'].rfind('.')+1:]
 		i = ext.rfind('?')
 		if i > 0: 
-			ext = ext[:ext.rfind('?')]
+			ext = ext[:i]
 		if len(ext) > 4:
 			ext = "png"
 		tvg_logo = hashlib.md5(item['image'].strip()).hexdigest()

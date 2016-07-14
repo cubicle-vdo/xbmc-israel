@@ -375,6 +375,8 @@ def MakeIPTVlists():
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTV channels list and TV-guide created., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def DownloadLogos():
+	if myIPTV.GetIptvType() > 1:
+		return
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
 	if not os.path.isfile(plxFile):
 		common.UpdatePlx(plxFile, "plx", forceUpdate=True)

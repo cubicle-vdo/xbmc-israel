@@ -29,6 +29,7 @@ except:
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
 def makeIPTVlist(iptvFile):
+	iptvType = GetIptvType()
 	iptvList = '#EXTM3U\n'
 	
 	channelsList = GetIptvChannels()
@@ -56,7 +57,10 @@ def makeIPTVlist(iptvFile):
 					url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, url.replace('?', '&'), mode)
 
 			tvg_name = item['name'].replace(' ','_')
-			tvg_logo = common.GetLogoFileName(item)
+			tvg_logo = item['image'] if iptvType > 1 else common.GetLogoFileName(item)
+			if iptvType == 0:
+				tvg_logo = tvg_logo[:tvg_logo.rfind('.')]
+			
 			radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 			group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
 			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
@@ -118,7 +122,8 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 def SaveChannelsLogos(logosDir):
 	if not os.path.exists(logosDir):
 		os.makedirs(logosDir)
-		
+	
+	forcePng = GetIptvType() == 0
 	ua = UA.GetUA()
 	newFilesList = []
 	channelsList = GetIptvChannels()
@@ -127,6 +132,8 @@ def SaveChannelsLogos(logosDir):
 		try:
 			logoFile = common.GetLogoFileName(channel)
 			if logoFile != "":
+				if forcePng:
+					logoFile = '{0}.png'.format(logoFile[:logoFile.rfind('.')])
 				newFilesList.append(logoFile)
 				logoFile = os.path.join(logosDir, logoFile)
 				if not os.path.isfile(logoFile):
@@ -185,7 +192,23 @@ def GetIptvAddon():
 		common.OKmsg(AddonName, msg1, msg2)
 		
 	return iptvAddon
-	
+
+def GetIptvType():
+	try:
+		ver = xbmcaddon.Addon("pvr.iptvsimple").getAddonInfo('version').split('.')
+		ver1 = int(ver[0])
+		ver2 = int(ver[1])
+		ver3 = int(ver[2])
+		if ver1 == 1 and (ver2 < 9 or (ver2 == 9 and ver3 < 3)):
+			v = 0
+		elif ver1 == 1 and ver2 < 11:
+			v = 1
+		else:
+			v = 2
+		return v
+	except:
+		return 0
+
 def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 	iptvSettingsFile = os.path.join(xbmc.translatePath("special://profile").decode("utf-8"), "addon_data", "pvr.iptvsimple", "settings.xml")
 	if not os.path.isfile(iptvSettingsFile):
@@ -194,6 +217,7 @@ def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 			return False
 		iptvAddon.setSetting("epgPathType", "0") # make 'settings.xml' in 'userdata/addon_data/pvr.iptvsimple' folder
 	
+	oldIptv = GetIptvType() < 2
 	# get settings.xml into dictionary
 	dict = ReadSettings(iptvSettingsFile, fromFile=True)
 	if dict is None:
@@ -204,25 +228,32 @@ def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 		
 	isSettingsChanged = False
 	# make changes
-	if dict.has_key("epgPathType") and dict["epgPathType"] != "0":
-		dict["epgPathType"] = "0"
-		isSettingsChanged = True
-	if dict.has_key("epgPath") and dict["epgPath"] != epgPath:
-		dict["epgPath"] = epgPath
-		isSettingsChanged = True
-	if dict.has_key("logoPathType") and dict["logoPathType"] != "0":
-		dict["logoPathType"] = "0"
-		isSettingsChanged = True
-	if dict.has_key("logoPath") and dict["logoPath"] != logoPath:
-		dict["logoPath"] = logoPath
-		isSettingsChanged = True
 	if dict.has_key("m3uPathType") and dict["m3uPathType"] != "0":
 		dict["m3uPathType"] = "0"
 		isSettingsChanged = True
 	if dict.has_key("m3uPath") and dict["m3uPath"] != m3uPath:
 		dict["m3uPath"] = m3uPath
 		isSettingsChanged = True
-		
+	if dict.has_key("epgPathType") and dict["epgPathType"] != "0":
+		dict["epgPathType"] = "0"
+		isSettingsChanged = True
+	if dict.has_key("epgPath") and dict["epgPath"] != epgPath:
+		dict["epgPath"] = epgPath
+		isSettingsChanged = True
+	if oldIptv:
+		if dict.has_key("logoPathType") and dict["logoPathType"] != "0":
+			dict["logoPathType"] = "0"
+			isSettingsChanged = True
+		if dict.has_key("logoPath") and dict["logoPath"] != logoPath:
+			dict["logoPath"] = logoPath
+			isSettingsChanged = True
+	else:
+		if dict.has_key("logoPathType") and dict["logoPathType"] != "1":
+			dict["logoPathType"] = "1"
+			isSettingsChanged = True
+		if dict.has_key("logoBaseUrl") and dict["logoBaseUrl"] != "":
+			dict["logoBaseUrl"] = ""
+			isSettingsChanged = True
 	if not isSettingsChanged:
 		return True
 		

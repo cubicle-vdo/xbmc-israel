@@ -1,3 +1,5 @@
+[B]v4.9.0[/B]
+- Use full web-addres for channel logos instead of saving logos to local folder (if IPTV Simple Client version is v1.11.0 or higher).
 [B]v4.8.9[/B]
 - Fix for Playing some dynamic channels on LiveTV with Kodi-player.
 [B]v4.8.8[/B]
