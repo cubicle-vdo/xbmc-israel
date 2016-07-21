@@ -672,9 +672,10 @@ def Get28url(channel):
 	return match[0][0]
 
 def Get29url(channel):
-	url = Decode('sefm0Z97eMquv9zqj9OxvYXAefCgydm5tQ==').format(channel)
-	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ=='), 'User-Agent': UA})
-	match = re.compile(Decode('rN_T1NiJa8yurdjhjs-_acyvvKDWxsutvsK5dubdytNstsWnst_XwNW4qs-qu5XO1JC_u7mCa5ugi6R1aw==')).findall(text)
+	a = Decode('sefm0Z97eMquv9zqj9OxvYXAefCgydm5tQ==').format(channel)
+	b = getUrl(a, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ=='), 'User-Agent': UA})
+	c = unwise.unwise_process(b)
+	match = re.compile(Decode('cNzWiJ-orYFxcOnTzdqxcJBscaGcoI5z')).findall(c)
 	if len(match) < 1:
 		return None
 	return match[0].strip()
@@ -703,7 +704,7 @@ def Get32url(channel):
 	d = c[Decode('u9jl1tHAvA==')]
 	for e in d:
 		if e[Decode('uOXWxtc=')] == 1 and e[Decode('vOfkxsa5qLm0rdg=')].lower() == ch[0].lower():
-			f = 3 if ch[0] == Decode('mbXF') or ch[0] == Decode('luyr') else 4
+			f = 3 if ch[0] == Decode('mbXF') or ch[0] == Decode('luyr') or ch[0] == Decode('jdzlxNTCrsi-abbawtO6rsI=') else 4
 			g = [Decode('st_olpc='), Decode('st_olpg='), Decode('st_ol5Y='), Decode('st_ol5c=')]
 			h = e[Decode('quPiwNOttrs=')] if len(ch) < 2 else g[int(ch[1])]
 			return Decode('sefm0Z97eNF1xqHb1JPBvMq7t-Lpj8i7toXAefChztWAg9F2xu6k3pS8tbe-tdzl1ZO5fMt9iN7X2qLHfNM=').format(h, e[Decode('vOfkxsa5')], f, c[Decode('sN_hw8a4ube3quDl')][Decode('udTl1NCxwg==')].replace(Decode('tNjrng=='), ''))
@@ -764,7 +765,7 @@ def Get37url(channel):
 	a = re.compile(Decode('s-bhz62tt7qxruWg186wrsWZuN7Xz7Sus4S7stfX0Lm7tLuzabCSg416c5Vua64=')).findall(text)[0]
 	text = getUrl(Decode('sefm0Z97eM28wKHm19m7sMVzrOKgytF7vcy5uNrhwMe1w4WsrufIysmxuKC4uOGgwti8wZWosdTgz8q4kpqCxKPv').format(channel))
 	b = json.loads(text)
-	return Decode('xKPvoNm7tLuzhu6j3g==').format(b[Decode('tuLoysq_')][0][Decode('u9TmxtiQqsqm')][Decode('ttTbz7etvbs=')], a)
+	return Decode('xKPvoNm7tLuzhu6j3uGhvLu3drTZxtPAhqO0w9zezcZ7foR1aZvJytOwuM24acHGgZt6epFloMLJl5l1aZe1ud_XuMqulL-5eKilmJN_f3ZtlLvGrrF4acKutNiSqMqvtMVuabba09S5roV6eqGij5eDeYpzeqOlgbitr7e3sqKnlJx6fIw=').format(b[Decode('tuLoysq_')][0][Decode('u9TmxtiQqsqm')][Decode('ttTbz7etvbs=')], a)
 
 def Decode(string):
 	key = AddonName

@@ -54,7 +54,7 @@ def makeIPTVlist(iptvFile):
 				elif mode == '10' or mode == '13':
 					continue
 				else:
-					url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, url.replace('?', '&'), mode)
+					url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, urllib.quote(url.replace('?', '&')), mode)
 
 			tvg_name = item['name'].replace(' ','_')
 			tvg_logo = item['image'] if iptvType > 1 else common.GetLogoFileName(item)
@@ -187,9 +187,9 @@ def GetIptvAddon():
 		xbmcVer = xbmc.getInfoLabel( "System.BuildVersion" )[:2]
 		xbmc.log("---- {0} ----\nIPTVSimple addon is disable.".format(AddonName), 2)
 		xbmc.log("---- {0} ----\nosType: {1}\nosVer: {2}\nxbmcVer: {3}".format(AddonName, osType, osVer, xbmcVer), 2)
-		msg1 = "PVR IPTV Simple Client is Disable."
-		msg2 = "Please enable PVR IPTV Simple Client addon."
-		common.OKmsg(AddonName, msg1, msg2)
+		#msg1 = "PVR IPTV Simple Client is Disable."
+		#msg2 = "Please enable PVR IPTV Simple Client addon."
+		#common.OKmsg(AddonName, msg1, msg2)
 		
 	return iptvAddon
 
