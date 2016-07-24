@@ -2,4 +2,7 @@
 <settings>
 	<setting id="sortBy" type="enum" label="30000" lvalues="30001|30002" default="0" />
 	<setting id="Forwarded" type="text" label="30010" default="" />
+	<setting id="username" type="text" label="30011" default="" />
+	<setting id="password" type="text" option="hidden" label="30012" default="" />
+	<setting id="deviceID" type="text" label="30013" default="" />
 </settings>
