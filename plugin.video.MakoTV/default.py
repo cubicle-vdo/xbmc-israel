@@ -14,6 +14,13 @@ icon = Addon.getAddonInfo('icon')
 localizedString = Addon.getLocalizedString
 sortBy = int(Addon.getSetting("sortBy"))
 forwarded = Addon.getSetting("Forwarded")
+deviceID = Addon.getSetting("deviceID")
+if deviceID.strip() == '':
+	uuidStr = str(uuid.uuid1()).upper()
+	deviceID = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
+	Addon.setSetting("deviceID", deviceID)
+username = Addon.getSetting("username")
+password = Addon.getSetting("password")
 handle = int(sys.argv[1])
 
 userDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
@@ -186,14 +193,17 @@ def Play(url):
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
 			break
-	uuidStr = str(uuid.uuid1()).upper()
-	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT')
-	text = OpenURL(link.format(du, guid, url[url.find("/i/"):]))
+	text = OpenURL(link.format(deviceID, guid, url[url.find("/i/"):]))
 	result = json.loads(text)
 	if result["caseId"] == "4":
-		xbmc.executebuiltin("XBMC.Notification({0}, You need to pay if you want to watch this video., {1}, {2})".format(AddonName, 5000 ,icon))
-		return
+		result = Login()
+		link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT')
+		text = OpenURL(link.format(deviceID, guid, url[url.find("/i/"):]))
+		result = json.loads(text)
+		if result["caseId"] != "1":
+			xbmc.executebuiltin("XBMC.Notification({0}, You need to pay if you want to watch this video., {1}, {2})".format(AddonName, 5000 ,icon))
+			return
 	elif result["caseId"] != "1":
 		xbmc.executebuiltin("XBMC.Notification({0}, Cannot get access for this video., {1}, {2})".format(AddonName, 5000 ,icon))
 		return
@@ -202,6 +212,17 @@ def Play(url):
 		final = '{0}&X-Forwarded-For={1}'.format(final, forwarded)
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
+
+def Login():
+	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbgrM-GyofP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdjbrM-HyofQ45HCu4fP5JHRf94=')
+	text = OpenURL(link.format(username, password, deviceID))
+	result = json.loads(text)
+	if result["caseId"] != "1":
+		return result
+	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMXMrIq9uNOd2sePepWhoISDgJqd1oG8gdSjnLiNgZTS1oiMf5TWoXq7wZ7S08d8sdao6oTT')
+	text = OpenURL(link.format(deviceID))
+	result = json.loads(text)
+	return result
 
 def DelCookies():
 	try:
