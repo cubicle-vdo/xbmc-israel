@@ -1,4 +1,6 @@
-﻿v.2.2.6
+﻿v.2.2.7
+- אולימפיאדה - ריו 2016.
+v.2.2.6
 - בובה של לילה 4.
 v.2.2.5
 -videos from ONE site now in better quality.

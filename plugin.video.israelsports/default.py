@@ -5,6 +5,7 @@ ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
 
 def CATEGORIES():
 	addDir('חדשים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=893&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
+	addDir('אולימפיאדה ריו 2016 ','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7439&page=',2,'http://www.romea.cz/aaa/img.php?src=/img_upload/03ec66ac77713bab242255f6194ad3ff/rio.jpg&w=630','1')
 	addDir('ליגת האלופות - תקצירים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 	addDir('ליגת האלופות - כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
 	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
