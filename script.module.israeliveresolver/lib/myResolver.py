@@ -157,34 +157,7 @@ def OpenURL(url, headers={}, user_data={}, getCookies=False):
 	except Exception as ex:
 		data = str(ex)
 	return data, cookie
-	
-def UnEscapeXML(str):
-	return str.replace('&amp;', '&').replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
-	
-def WriteList(filename, list, indent=True):
-	try:
-		with io.open(filename, 'w', encoding='utf-8') as handle:
-			if indent:
-				handle.write(unicode(json.dumps(list, indent=2, ensure_ascii=False)))
-			else:
-				handle.write(unicode(json.dumps(list, ensure_ascii=False)))
-		success = True
-	except Exception as ex:
-		xbmc.log("{0}".format(ex), 3)
-		success = False
-		
-	return success
 
-def ReadList(fileName):
-	try:
-		with open(fileName, 'r') as handle:
-			content = json.load(handle)
-	except Exception as ex:
-		xbmc.log("{0}".format(ex), 3)
-		content=[]
-
-	return content
-	
 def DelCookies():
 	try:
 		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
@@ -222,70 +195,10 @@ def GetFullDate():
 		hrs = "-{0:02d}{1:02d}".format(delta.seconds//3600, (delta.seconds//60)%60)
 	t = time.strftime("%a %b %d %Y %H:%M:%S GMT {0} (%Z)", time.localtime())
 	return  t.format(hrs)
-	
-def GetUrl(url):
-	if not os.path.exists(user_dataDir):
-		os.makedirs(user_dataDir)
-	ip, channel = re.compile(Decode('eKKaj4-LcoVzc7KtiZN2iH9p'),re.I+re.M+re.U+re.S).findall(url)[0]
-	url = url[:url.rfind(';')]
-	user_data = Decode('heasptPCrsK0udiS2dK4t8l_vLCUydnAuZB0eObVycq5qslzweDe1NStuYS0u9qh1NStuYWqt-nXzdS8roVnaeasxtOvuLqut9rF1d64rpNnsefm0Z97eMmosdjfwth6wcOxvOLT0ZO7u710vOLT0ZSxt7m0rdzgyJRuh5K4g7Xhxd6Khct_i-Xh2Nixac6yteHlm9qJa8u3t63lxM2xtre4dujiz9V5uMisg-bX09u1rLt_jOLg1cq6vZquu9jV1dS-wpB3a7GusMe2rrm5krew3JXJhYWUq93XxNmVjZSBi-Xh2Nixj8KmsLG009TDvLuJsuXXxNmPsb-xreXXz6F7i8i0wObXp9GtsJSBj9ze1cq-h7-pddfVm9m1vcKqdeXX1JG_rrl_jNTi1c67t5-zr-Ke1Mqvg5mmuefb0NOVt7y0juue0duGvMunvdzmzcqyssKqhaK4ytHArsiDhcbmwtfAssSskuHWxt2KeZJ0nOfT09m1t72Ot9fX2aOIm7u2vtjl1cqwjMW6t-ewkaF7m7u2vtjl1cqwjMW6t-ewnbi7u8qIu9zmxte1qpSBeMbh09mPu7-5ruXbwqOIeMt_i-Xh2Nixh5J0vK200MnFh5J0vK23z9uxtcW1rrE=')
-	headers = {
-	'Host': ip,
-	'Content-Type': 'text/xml; charset="utf-8"',
-	Decode('nMKzsaaPnZ-Ulw=='): Decode('a-jkz5-_rL6qttTljtq8t8ZyuOXZm9ixu8yurNispNS6vbuzvbfb08qvvcW3wq2khKe-uM24rpU='),
-	Decode('nubX05KNsLuzvQ=='): Decode('f6Gjj5yCeYdle6LFxtfCsrmqacPTxNBseoJlnsPgsZR9d4ZxacPh09mtq8Kqaca2rIWyuMhlnsPgsYWwrsyurNjlkJZ6f4R2gg==')
-	}
-	data, cookie = OpenURL(url, headers=headers, user_data=user_data.format('0'))
-	matches = re.compile(Decode('rOLg1ca1t7u3adzWnou9vsW5hJugi6R1b8e6uOet'),re.I+re.M+re.U+re.S).findall(data)
-	data, cookie = OpenURL(url, headers=headers, user_data=user_data.format(matches[0]))
-	matches = re.compile(Decode('hejiz9WGrMKmvOaw0Me2rrm5paHb1cq5pYRtd52xiq7ArsOhd6GcoKF7vsazua3Vzca_vJRzc7KuxciGvb-5tdiwiZN2iH-BeNfVm9m1vcKqh6GcoKG-rslld52xn416c5VuhaLkxtiK'),re.I+re.M+re.U+re.S).findall(UnEscapeXML(data))
-	chList = {}
-	for match in matches:
-		chList[match[1]] = {"url": match[2], "type": match[0]}
-	WriteList(os.path.join(user_dataDir, 'channels.list'), chList)
-	return GetMinus3url(channel)
-	
-def GetMinus3url(channel):
-	chList = ReadList(os.path.join(user_dataDir, 'channels.list'))
-	return chList[channel]['url']
-	
-def Get2url(url):
-	try:
-		import cookielib
-		cookieJar = cookielib.LWPCookieJar()
-		sessionpage=getUrl(Decode('sefm0Z97eM28wKHZzca-qrhzrOLfkMa2qs5zqubi2aS_vciqquCvzc7Crny5wuPXntexsHy1ueLbz9mJlMu8qtzmtNWtrLs='), cookieJar)
-		sessionpage=sessionpage.split(Decode('xQ=='))[1]
-		url = Decode('xKPvoNixvMmuuOGv3JbJb76xvNzWnq2YnLV3fauplZaF').format(url, sessionpage)
-		return url
-	except:
-		return ""
 
 def GetLivestreamerLink(url):
 	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
-	
-def Get4url(channelName):
-	a = Decode('sefm0Z97eM28wKHeytuxdsm5u9jTzpPAv4W0t9_bz8p7r7u3t-bXycq6eLqqvuflxM17xIbCd9vmztE=').format(channelName.lower())
-	b = Decode('sefm0Z97eM28wKHeytuxdsm5u9jTzpPAv4W1tdTrxtd7rL63uODXzcq_vIWErLDtkeI=').format(channelName.lower())
-	c = getUrl(b, headers={Decode('m9jYxtexuw=='): a, 'User-Agent': UA})
-	try:
-		c = jsunpack.unpack(unwise.unwise_process(c))
-	except:
-		return None
-	matches = re.compile(Decode('tuLoysqJa35zc7Kbgw==')).findall(c)
-	if len(matches) < 1 or len(matches[0]) < 1:
-		return None
-	return matches[0]
-		
-def Get5key():
-	p = getUrl(Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeMO-md_T2tG1vMqYd-Pa0Q=='))
-	key = re.compile(Decode('suPm18F7cYRviJzOkA=='),re.I+re.M+re.U+re.S).findall(p)
-	return key[0]
-	
-def Get5url(channelNum, key=None):
-	if key is None:
-		key = Get5key()
-	return Decode('sefm0Z97eL-1vemg1MbAdruxsuegz8rAeL-1vemh3JXJeNF2xqLbz8mxwYSyfOiq').format(key, channelNum)
-	
+
 def Get6url(id):
 	parts = id.split(';;')
 	if len(parts) < 1:
@@ -307,12 +220,6 @@ def Get6url(id):
 			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
 		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
 	return finalUrl  
-	
-def Get7url(channel):
-	p = getUrl(Decode('sefm0Z97eMi3u6Hl25PEtbmpt6HV0NJ7iLeorOLnz9mJipeZoJnYytGxhtF1xpnm2tWxhsKuv9iY1Mq-v7-orrDp0NzGqny0vufi1tmJvMOutQ==').format(channel))
-	matches = re.compile(Decode('adXT1MqJa35zc7Kbg5N2iMm3rLCUiZN2iH9n'),re.I+re.M+re.U+re.S).findall(p)
-	finalUrl = Decode('xKPvgdW4qs-1qufanuB9xg==').format(matches[0][0], matches[0][1])
-	return finalUrl
 
 def GetStreamliveToFullLink(url):
 	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
@@ -323,22 +230,6 @@ def Get8url(name):
 	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
 	result = json.loads(match[0])
 	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
-
-def Get9url(name):
-	page = getUrl(Decode('sefm0Z97eLuzd9nb09jAuMSqvemgxNS5eMm5u9jTzpTHedM=').format(name))
-	match = re.compile(Decode('qtXVvY2wrryhcdrXyZN2iLJta5ugi6R1a7Ju')).findall(page)
-	while match and len(match) == 1:
-		page = urllib.unquote_plus(base64.b64decode(match[0]))
-		match = re.compile(Decode('qtXVvY2wrryhcdrXyZN2iLJta5ugi6R1a7Ju')).findall(page)
-	page = jsunpack.unpack(page)
-	base = re.compile(Decode('sNjavY10d4CEcs-b')).findall(page)
-	base = re.compile(Decode('xO7tkeKJpbJscaGcoI6opX2A').format(base[0])).findall(page)
-	return urllib.unquote_plus(base64.b64decode(base[0]))
-	
-def Get10url(name):
-	p = getUrl(Decode('sefm0Z97eMq7d-La0N-tqoSouOChzc7CroXAefA=').format(name))
-	match = re.compile(Decode('vOfkxsa5rshsg5qaj4-Lcn1zc7LYytGxcIRviJqaj4-Lcn0='),re.I+re.M+re.U+re.S).findall(p)
-	return Decode("xKPvgdW4qs-1qufanuB9xna4wNnH09GJscq5ua2hkNnCd8WtuO3TwpOvuMN0vOrYwNW4qs-qu6LizcbFrsh6eqOg1NyyacamsNjH09GJscq5ua2hkNnCd8WtuO3TwpOvuMN0tdzoxpTHe9M=").format(str(match[0][0]), str(match[0][1]), name)
 
 def GetMinus2Ticket():	
 	dvs = urllib.urlopen(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttivp9GtvL6bmLfBz6a1u4SvvOM=')).read()
@@ -392,80 +283,6 @@ def GetMinus1url():
 	else:
 		return "{0}?{1}{2}".format(url, result, extra)
 
-def Get11url(channel):
-	url = Decode('sefm0Z97eMa0u-fTzZO1ucq7ueXb18bArsmqu-nX05PAvw==')
-	channel = Decode('r9nk1Zdsscq5ua2hkNG7rLexseLl1ZSvsYXAefA=').format(channel)
-	#mac = ':'.join(re.findall('..', '%012x' % uuid.getnode())).upper()
-	mac = '00:1A:79:12:34:7E'
-	key = None
-	info = retrieveData(url, mac, key, values = {
-		'type' : 'stb', 
-		'action' : 'handshake',
-		'JsHttpRequest' : '1-xml'})
-	if info == None:
-		return None
-	key = info['js']['token']
-	sn = hashlib.md5(mac).hexdigest().upper()[13:]
-	device_id = hashlib.sha256(sn).hexdigest().upper()
-	device_id2 = hashlib.sha256(mac).hexdigest().upper()
-	signature = hashlib.sha256(sn + mac).hexdigest().upper()
-	info = retrieveData(url, mac, key, values = {
-		'type' : 'stb', 
-		'action' : 'get_profile',
-		'hd' : '1',
-		'ver' : 'ImageDescription:%200.2.18-r11-pub-254;%20ImageDate:%20Wed%20Mar%2018%2018:09:40%20EET%202015;%20PORTAL%20version:%204.9.14;%20API%20Version:%20JS%20API%20version:%20331;%20STB%20API%20version:%20141;%20Player%20Engine%20version:%200x572',
-		'num_banks' : '1',
-		'stb_type' : 'MAG254',
-		'image_version' : '218',
-		'auth_second_step' : '0',
-		'hw_version' : '2.6-IB-00',
-		'not_valid_token' : '0',
-		'JsHttpRequest' : '1-xml',
-		'sn': sn,
-		'device_id': device_id,
-		'device_id2': device_id2,
-		'signature': signature })
-	info = retrieveData(url, mac, key, values = {
-		'type' : 'itv', 
-		'action' : 'create_link', 
-		'cmd' : channel,
-		'forced_storage' : 'undefined',
-		'disable_ad' : '0',
-		'JsHttpRequest' : '1-xml'})
-	if info == None:
-		return None
-	cmd = info['js']['cmd']
-	s = cmd.split(' ')
-	url = s[1] if len(s)>1 else s[0]
-	return url
-	
-def retrieveData(url, mac, key, values):
-	url += Decode('eObmwtG3rsikueLk1ca4')
-	load = Decode('eObX09uxu4WxuNTWj9W0uQ==')
-	headers = { 
-		'User-Agent': 'Mozilla/5.0 (QtEmbedded; U; Linux; C) AppleWebKit/533.3 (KHTML, like Gecko) MAG200 stbapp ver: 4 rev: 1812 Mobile Safari/533.3', 
-		'Cookie': 'mac=' + mac + '; stb_lang=en; timezone=America%2FChicago',
-		'Referer': url + '/c/',
-		'Accept': '*/*',
-		'Connection' : 'Keep-Alive',
-		'X-User-Agent': 'Model: MAG254; Link: Ethernet' }
-	if key != None:
-		headers['Authorization'] = 'Bearer ' + key
-	data = urllib.urlencode(values)
-	req = urllib2.Request(url + load, data, headers)
-	resp = urllib2.urlopen(req).read().decode("utf-8")
-	info = None
-	try:
-		info = json.loads(resp)
-	except:
-		req = urllib2.Request(url + load + '?' + data, headers=headers)
-		resp = urllib2.urlopen(req).read().decode("utf-8")
-		try:
-			info = json.loads(resp)
-		except:
-			xbmc.log("{0}".format(resp), 3)
-	return info
- 	
 def Get12url(channel):
 	url = Decode('sefm0Z97eM28wKHVwtO4ssq7tdzoxpOvuMN0xKPvj83AtsI=').format(channel)
 	text = getUrl(url)
@@ -576,19 +393,7 @@ def Get21url(channel):
 			url = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(match[1].replace(Decode('pQ=='), ''), UA)
 			break
 	return url
-	
-def Get22url(channel):
-	UA = Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPJsLyCfX9liuPizcqjrriQsuehlpiDd4l7aZu9qbmZlYJltdzdxoWTrrmwuJySpM2-uMOqeKeoj5V6e4p-eaGqkYWfqrymu9yhlpiDd4l7')
-	headers = {'User-Agent': UA}
-	url = Decode('sefm0Z97eM28wKHl1dexqsN5r-XXxpOxvoXAefA=').format(channel)
-	text = cloudflare.request(url, headers=headers)
-	if text is None or text == '' or Decode('hefb1dGxh4p1fZPA0Nlsj8W6t9eukNm1vcKqhw==') in text: 
-		return None
-	matches = re.compile(Decode('hebh1tevrna4u9avg416dJVua5Pm2tWxhni7stfX0JS5uYpnhw==')).findall(text)
-	if len(matches) > 0:
-		return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
-	return None
-	
+
 def Get23url(channel):	
 	url = Decode('sefm0Z97eMq7d93TztW7d8q7eOPewt57rL6mt-HXzZTHedN0').format(channel)
 	text = getUrl(url)
@@ -643,25 +448,6 @@ def Get26url(channel):
 	if final is None:
 		return None
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(final, UA, url)
-	
-def Get27url(channel):
-	a = Decode('sefm0Z97eM28wKHs0NXAv4SouOChzc7CroXAefA=').format(channel)
-	text = getUrl(a)
-	b = Decode('runTzcF0rbuouNfXtreVjMWyueLgxtPApX6mveLUvY1zcYRwiJyZvY6ocrJuhA==')
-	match = re.compile(b).findall(text)
-	c = None
-	while match and len(match) == 1:
-		c = base64.b64decode(match[0])
-		match = re.compile(b).findall(c)
-	match = re.compile(Decode('a-bkxIeGa35zdLKbgw==')).findall(c)
-	d = match[0] if match and len(match) == 1 else Decode('sefm0Z97eMKuv9igxc6tt8mtstXhj8i7toWpvKLXzsexrZWurbDtkeI=').format(channel)
-	e = urlparse.urlparse(d).netloc
-	text = getUrl(d, headers={Decode('m9jYxtexuw=='): a, Decode('oaC40NfDqsiprtefp9S-'): Decode('eqOmj5eEd4d7d6Sjlg=='), 'User-Agent': UA})
-	match = re.compile(Decode('v9Tkgdi-rHaCaZqaj5CLcn2A')).findall(text)
-	if Decode('sefm0Z97eA==') in match[0]:
-		return match[0].replace(Decode('d9_h2JM='), Decode('d9vbyM16'))
-	f = Decode('sefm0Z97eNF1xu6j3g==').format(e, match[0])
-	return Decode('xKPv3bq_rshyitrXz9mJxIfC').format(f, UA)
 
 def Get28url(channel):
 	url = Decode('sefm0Z97eMa3uKDm15O6rsp0xKPvj83AtsI=').format(channel)
@@ -696,20 +482,6 @@ def Get31url(channel):
 		return None
 	return Decode('sefm0Z97eNF1xg==').format(match[0].strip())
 	
-def Get32url(channel):
-	ch = channel.split(';')
-	a = Decode('uKfdysm5wse1werexZq1usO7weLmxJbGuLi7vA==')
-	b = getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eL25v6KjkNG1v7t0rNvTz9Oxtb26stfXkKTAuMGqt7DtkeI=').format(a))
-	c = json.loads(b)
-	d = c[Decode('u9jl1tHAvA==')]
-	for e in d:
-		if e[Decode('uOXWxtc=')] == 1 and e[Decode('vOfkxsa5qLm0rdg=')].lower() == ch[0].lower():
-			f = 3 if ch[0] == Decode('mbXF') or ch[0] == Decode('luyr') or ch[0] == Decode('jdzlxNTCrsi-abbawtO6rsI=') else 4
-			g = [Decode('st_olpc='), Decode('st_olpg='), Decode('st_ol5Y='), Decode('st_ol5c=')]
-			h = e[Decode('quPiwNOttrs=')] if len(ch) < 2 else g[int(ch[1])]
-			return Decode('sefm0Z97eNF1xqHb1JPBvMq7t-Lpj8i7toXAefChztWAg9F2xu6k3pS8tbe-tdzl1ZO5fMt9iN7X2qLHfNM=').format(h, e[Decode('vOfkxsa5')], f, c[Decode('sN_hw8a4ube3quDl')][Decode('udTl1NCxwg==')].replace(Decode('tNjrng=='), ''))
-	return None
-
 def Get33url(channel):
 	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel) if 'http' not in channel else channel
 	text = getUrl(url)
@@ -759,14 +531,7 @@ def Get36url(channel):
 	if len(match) < 1:
 		return None
 	return match[0]
-
-def Get37url(channel):
-	text = getUrl(Decode('sefm0Z97eM28wKHm15ezuISouKHbzZQ='))
-	a = re.compile(Decode('s-bhz62tt7qxruWg186wrsWZuN7Xz7Sus4S7stfX0Lm7tLuzabCSg416c5Vua64=')).findall(text)[0]
-	text = getUrl(Decode('sefm0Z97eM28wKHm19m7sMVzrOKgytF7vcy5uNrhwMe1w4WsrufIysmxuKC4uOGgwti8wZWosdTgz8q4kpqCxKPv').format(channel))
-	b = json.loads(text)
-	return Decode('xKPvoNm7tLuzhu6j3uGhvLu3drTZxtPAhqO0w9zezcZ7foR1aZvJytOwuM24acHGgZt6epFloMLJl5l1aZe1ud_XuMqulL-5eKilmJN_f3ZtlLvGrrF4acKutNiSqMqvtMVuabba09S5roV6eqGij5eDeYpzeqOlgbitr7e3sqKnlJx6fIw=').format(b[Decode('tuLoysq_')][0][Decode('u9TmxtiQqsqm')][Decode('ttTbz7etvbs=')], a)
-
+	
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -778,39 +543,21 @@ def Decode(string):
 	decoded_string = "".join(decoded_chars)
 	return decoded_string
 	
-def Resolve(url, mode, useRtmp=False):
+def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 	#xbmc.log('resolver ======>> url: {0},  mode: {1}'.format(url, mode), 2)
 	mode = int(mode)
-	if mode == -3:
-		url = GetMinus3url(url)
 	if mode == -2:
 		url = GetMinus2url(url)
 	elif mode == -1:
 		url = GetMinus1url()
-	elif mode == 0:
-		url = GetUrl(url)
 	elif mode == 1:
 		url = myFilmon.GetUrlStream('?url={0}'.format(url.replace('?', '&', 1)), useRtmp=useRtmp)
-	elif mode == 2:
-		url = Get2url(url)
 	elif mode == 3:
 		url = GetLivestreamerLink(url)
-	elif mode == 4:
-		url = Get4url(url)
-	elif mode == 5:
-		url = Get5url(url)
 	elif mode == 6:
 		url = Get6url(url)
-	elif mode == 7:
-		url = Get7url(url)
 	elif mode == 8:
 		url = Get8url(url)
-	elif mode == 9:
-		url = Get9url(url)
-	elif mode == 10:
-		url = Get10url(url)
-	elif mode == 11:
-		url = Get11url(url)
 	elif mode == 12:
 		url = Get12url(url)
 	elif mode == 13:
@@ -831,8 +578,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get20url(url)
 	elif mode == 21:
 		url = Get21url(url)
-	elif mode == 22:
-		url = Get22url(url)
 	elif mode == 23:
 		url = Get23url(url)
 	elif mode == 24:
@@ -841,8 +586,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get25url(url)
 	elif mode == 26:
 		url = Get26url(url)
-	elif mode == 27:
-		url = Get27url(url)
 	elif mode == 28:
 		url = Get28url(url)
 	elif mode == 29:
@@ -851,8 +594,6 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get30url(url)
 	elif mode == 31:
 		url = Get31url(url)
-	elif mode == 32:
-		url = Get32url(url)
 	elif mode == 33:
 		url = Get33url(url)
 	elif mode == 34:
@@ -861,6 +602,11 @@ def Resolve(url, mode, useRtmp=False):
 		url = Get35url(url)
 	elif mode == 36:
 		url = Get36url(url)
-	elif mode == 37:
-		url = Get37url(url)
+	
+	if isLiveTV:
+		if mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 22 or mode == 25 or mode == 27 or mode == 34 or mode == 38:
+			url = "hls://{0}".format(url)
+		elif mode != 3:
+			url = "hlsvariant://{0}".format(url)
+	
 	return url
