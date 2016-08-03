@@ -21,13 +21,9 @@ def get_params(url):
 def GetFullLink(url, mode):
 	#xbmc.log('player   ======>> url: {0},  mode: {1}'.format(url, mode), 2)
 	if mode != 0 and mode != 3:
-		url = myResolver.Resolve(url, mode)
+		url = myResolver.Resolve(url, mode, isLiveTV=True)
 	if '.f4m' in url:
 		url = "hds://{0}".format(url)
-	elif mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 22 or mode == 25 or mode == 27 or mode == 34:
-		url = "hls://{0}".format(url)
-	elif mode != 0 and mode != 3:
-		url = "hlsvariant://{0}".format(url)
 	return url
 
 def GetStreamUrl(url):

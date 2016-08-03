@@ -76,8 +76,10 @@ class StreamHandler(BaseHTTPRequestHandler):
 		quality = "best"
 		try: 
 			url, quality = player.GetStreamUrl(unquote(s.path[1:]))
-		except:
+		except Exception as ex:
 			url = None
+			xbmc.log("{0}".format(ex), 3)
+			return
 
 		try:
 			Streamer(s.wfile, url, quality)
