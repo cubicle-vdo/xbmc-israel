@@ -102,10 +102,20 @@ UAs = [
 
 UA = random.choice(UAs)
 forceUA = False
-userUA = UA
+userUA = ''
+makoDeviceID = ''
+makoUsername = ''
+makoPassword = ''
 try:
 	userUA = Addon.getSetting("userUA").strip()
 	forceUA = Addon.getSetting("forceUA") == "true"
+	makoDeviceID = Addon.getSetting("MakoDeviceID")
+	if makoDeviceID.strip() == '':
+		uuidStr = str(uuid.uuid1()).upper()
+		makoDeviceID = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
+		Addon.setSetting("MakoDeviceID", makoDeviceID)
+	makoUsername = Addon.getSetting("MakoUsername")
+	makoPassword = Addon.getSetting("MakoPassword")
 except:
 	pass
 if userUA == '':
@@ -196,72 +206,6 @@ def GetFullDate():
 	t = time.strftime("%a %b %d %Y %H:%M:%S GMT {0} (%Z)", time.localtime())
 	return  t.format(hrs)
 
-def GetLivestreamerLink(url):
-	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
-
-def Get2url(channel):
-	headers = {} 
-	if forceUA:
-		headers['User-Agent'] = userUA
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
-	result = json.loads(text)["root"]["video"]
-	guid = result["guid"]
-	chId = result["chId"]
-	galleryChId = result["galleryChId"]
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId), headers=headers)
-	result = json.loads(text)["media"]
-	url = ""
-	for item in result:
-		if item["format"] == "AKAMAI_HLS":
-			url = item["url"]
-			url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
-			DelCookies()
-			break
-	
-	uuidStr = str(uuid.uuid1()).upper()
-	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(du, guid, url[url.find("/i/"):]), headers=headers)
-	result = json.loads(text)["tickets"][0]["ticket"]
-	extra = '' 
-	if forceUA:
-		extra = '{0}&User-Agent={1}'.format(extra, userUA)
-	if '?' in url:
-		return "{0}&{1}{2}".format(url, result, extra)
-	else:
-		return "{0}?{1}{2}".format(url, result, extra)
-	
-def Get6url(id):
-	parts = id.split(';;')
-	if len(parts) < 1:
-		return "down"
-
-	p = getUrl(Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
-	url = re.compile(Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
-	if not url:
-		url=re.compile(Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
-	finalUrl = url[0]
-	if len(parts) > 1:
-		p = parts[1].split(Decode('eA=='))
-		c1 = p[0]
-		c2 = p[1] if len(p) > 1 else p[0]
-		if len(parts) > 2:
-			d = Decode('t9zf0dHBvIk=')
-		else:
-			d = Decode('t9zfzc7Croc=')
-			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
-		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
-	return finalUrl  
-
-def GetStreamliveToFullLink(url):
-	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
-	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
-
-def Get8url(name):
-	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
-	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
-	result = json.loads(match[0])
-	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
-
 def GetMinus2Ticket():	
 	dvs = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttivp9GtvL6bmLfBz6a1u4SvvOM='))
 	result = json.loads(dvs)
@@ -313,6 +257,88 @@ def GetMinus1url():
 		return "{0}&{1}{2}".format(url, result, extra)
 	else:
 		return "{0}?{1}{2}".format(url, result, extra)
+
+def GetLivestreamerLink(url):
+	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
+
+def MakoLogin(headers):
+	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrBhtF1xpnWwqKCsMG3e97lmpKAf4d1dqark8x5r4q4gaDWmJl_sL15f6WlzJdyrc21hu6j3ouxvZOxt5nW1qLHe9M=').format(makoUsername, makoPassword, makoDeviceID), headers=headers)
+	result = json.loads(text)
+	if result["caseId"] != "1":
+		return result
+	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMmthoystOWkzNiFdop7eqOflJ5-sIOrfeaqjsmDfYmssKeok5i3e3yqvbDZxdhyrcuCxKPv').format(makoDeviceID), headers=headers)
+	result = json.loads(text)
+	return result
+
+def Get2url(channel):
+	headers = {} 
+	if forceUA:
+		headers['User-Agent'] = userUA
+	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
+	result = json.loads(text)["root"]["video"]
+	guid = result["guid"]
+	chId = result["chId"]
+	galleryChId = result["galleryChId"]
+	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId), headers=headers)
+	result = json.loads(text)["media"]
+	url = ""
+	for item in result:
+		if item["format"] == "AKAMAI_HLS":
+			url = item["url"]
+			url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
+			DelCookies()
+			break
+	
+	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
+	result = json.loads(text)
+	if result["caseId"] == "4":
+		result = MakoLogin(headers)
+		text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
+		result = json.loads(text)
+		if result["caseId"] != "1":
+			return None
+	elif result["caseId"] != "1":
+		return None
+	ticket = result["tickets"][0]["ticket"]
+	extra = '' 
+	if forceUA:
+		extra = '{0}&User-Agent={1}'.format(extra, userUA)
+	if '?' in url:
+		return "{0}&{1}{2}".format(url, ticket, extra)
+	else:
+		return "{0}?{1}{2}".format(url, ticket, extra)
+	
+def Get6url(id):
+	parts = id.split(';;')
+	if len(parts) < 1:
+		return "down"
+
+	p = getUrl(Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
+	url = re.compile(Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
+	if not url:
+		url=re.compile(Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
+	finalUrl = url[0]
+	if len(parts) > 1:
+		p = parts[1].split(Decode('eA=='))
+		c1 = p[0]
+		c2 = p[1] if len(p) > 1 else p[0]
+		if len(parts) > 2:
+			d = Decode('t9zf0dHBvIk=')
+		else:
+			d = Decode('t9zfzc7Croc=')
+			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
+		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
+	return finalUrl  
+
+def GetStreamliveToFullLink(url):
+	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
+	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
+
+def Get8url(name):
+	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
+	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
+	result = json.loads(match[0])
+	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
 
 def Get12url(channel):
 	url = Decode('sefm0Z97eM28wKHVwtO4ssq7tdzoxpOvuMN0xKPvj83AtsI=').format(channel)

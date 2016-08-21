@@ -69,6 +69,10 @@
 	<string id="30236">IsraeLiveResolver installed by IsraeLIVE</string>
 	<string id="30237">IsraeLiveResolver didn't installed </string>
 	<string id="30238">Please re-install IsraeLIVE </string>
+	<string id="30239">Settings</string>
+	<string id="30240">IsraeLIVE settings</string>
+	<string id="30241">IsraeLiveResolver settings</string>
+	<string id="30242">Update channels lists and TV-Guide now</string>
 	
 	<string id="30300">LiveTV Settings</string>
 	<string id="30301">Enable Live TV</string>
