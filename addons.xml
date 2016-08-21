@@ -152,7 +152,7 @@
 
 <addon id="plugin.video.MakoTV"
        name="MakoTV (web)"
-       version="1.1.7"
+       version="1.1.8"
        provider-name="xbmc-israel team ([COLOR white]x[/COLOR][COLOR blue]b[/COLOR][COLOR white]m[/COLOR][COLOR blue]c[/COLOR]-[COLOR white]i[/COLOR][COLOR blue]s[/COLOR][COLOR white]r[/COLOR][COLOR blue]a[/COLOR][COLOR white]e[/COLOR][COLOR blue]l[/COLOR] repo)">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
