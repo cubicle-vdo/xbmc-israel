@@ -102,20 +102,10 @@ UAs = [
 
 UA = random.choice(UAs)
 forceUA = False
-userUA = ''
-makoDeviceID = ''
-makoUsername = ''
-makoPassword = ''
+userUA = UA
 try:
 	userUA = Addon.getSetting("userUA").strip()
 	forceUA = Addon.getSetting("forceUA") == "true"
-	makoDeviceID = Addon.getSetting("MakoDeviceID")
-	if makoDeviceID.strip() == '':
-		uuidStr = str(uuid.uuid1()).upper()
-		makoDeviceID = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-		Addon.setSetting("MakoDeviceID", makoDeviceID)
-	makoUsername = Addon.getSetting("MakoUsername")
-	makoPassword = Addon.getSetting("MakoPassword")
 except:
 	pass
 if userUA == '':
@@ -206,13 +196,48 @@ def GetFullDate():
 	t = time.strftime("%a %b %d %Y %H:%M:%S GMT {0} (%Z)", time.localtime())
 	return  t.format(hrs)
 
+def GetLivestreamerLink(url):
+	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
+
+def Get6url(id):
+	parts = id.split(';;')
+	if len(parts) < 1:
+		return "down"
+
+	p = getUrl(Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
+	url = re.compile(Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
+	if not url:
+		url=re.compile(Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
+	finalUrl = url[0]
+	if len(parts) > 1:
+		p = parts[1].split(Decode('eA=='))
+		c1 = p[0]
+		c2 = p[1] if len(p) > 1 else p[0]
+		if len(parts) > 2:
+			d = Decode('t9zf0dHBvIk=')
+		else:
+			d = Decode('t9zfzc7Croc=')
+			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
+		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
+	return finalUrl  
+
+def GetStreamliveToFullLink(url):
+	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
+	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
+
+def Get8url(name):
+	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
+	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
+	result = json.loads(match[0])
+	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
+
 def GetMinus2Ticket():	
-	dvs = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttivp9GtvL6bmLfBz6a1u4SvvOM='))
+	dvs = urllib.urlopen(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttivp9GtvL6bmLfBz6a1u4SvvOM=')).read()
 	result = json.loads(dvs)
 	random.seed()
 	random.shuffle(result)
 	dv = result[0]["id"]
-	makoTicket = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXy3v7DTzMa5qr9rremv3JXJb8K1hg==').format(dv))
+	makoTicket = urllib.urlopen(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXy3v7DTzMa5qr9rremv3JXJb8K1hg==').format(dv)).read()
 	result = json.loads(makoTicket)
 	ticket = result['tickets'][0]['ticket']
 	return ticket
@@ -257,88 +282,6 @@ def GetMinus1url():
 		return "{0}&{1}{2}".format(url, result, extra)
 	else:
 		return "{0}?{1}{2}".format(url, result, extra)
-
-def GetLivestreamerLink(url):
-	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
-
-def MakoLogin(headers):
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrBhtF1xpnWwqKCsMG3e97lmpKAf4d1dqark8x5r4q4gaDWmJl_sL15f6WlzJdyrc21hu6j3ouxvZOxt5nW1qLHe9M=').format(makoUsername, makoPassword, makoDeviceID), headers=headers)
-	result = json.loads(text)
-	if result["caseId"] != "1":
-		return result
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMmthoystOWkzNiFdop7eqOflJ5-sIOrfeaqjsmDfYmssKeok5i3e3yqvbDZxdhyrcuCxKPv').format(makoDeviceID), headers=headers)
-	result = json.loads(text)
-	return result
-
-def Get2url(channel):
-	headers = {} 
-	if forceUA:
-		headers['User-Agent'] = userUA
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
-	result = json.loads(text)["root"]["video"]
-	guid = result["guid"]
-	chId = result["chId"]
-	galleryChId = result["galleryChId"]
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId), headers=headers)
-	result = json.loads(text)["media"]
-	url = ""
-	for item in result:
-		if item["format"] == "AKAMAI_HLS":
-			url = item["url"]
-			url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
-			DelCookies()
-			break
-	
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
-	result = json.loads(text)
-	if result["caseId"] == "4":
-		result = MakoLogin(headers)
-		text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
-		result = json.loads(text)
-		if result["caseId"] != "1":
-			return None
-	elif result["caseId"] != "1":
-		return None
-	ticket = result["tickets"][0]["ticket"]
-	extra = '' 
-	if forceUA:
-		extra = '{0}&User-Agent={1}'.format(extra, userUA)
-	if '?' in url:
-		return "{0}&{1}{2}".format(url, ticket, extra)
-	else:
-		return "{0}?{1}{2}".format(url, ticket, extra)
-	
-def Get6url(id):
-	parts = id.split(';;')
-	if len(parts) < 1:
-		return "down"
-
-	p = getUrl(Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
-	url = re.compile(Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
-	if not url:
-		url=re.compile(Decode('r9zexp9sa35zc7Kbgw=='),re.I+re.M+re.U+re.S).findall(p)
-	finalUrl = url[0]
-	if len(parts) > 1:
-		p = parts[1].split(Decode('eA=='))
-		c1 = p[0]
-		c2 = p[1] if len(p) > 1 else p[0]
-		if len(parts) > 2:
-			d = Decode('t9zf0dHBvIk=')
-		else:
-			d = Decode('t9zfzc7Croc=')
-			c2 = Decode('xKPvj9jAu7umtg==').format(c2)
-		finalUrl = Decode('sefm0Z97eNF1xqHZytO1tMVzrOLfkOB9xoXAe_Ch0dGtwsKuvOegzpjBgdF4xg==').format(d, c1, c2, finalUrl[finalUrl.find(Decode('iA==')):])
-	return finalUrl  
-
-def GetStreamliveToFullLink(url):
-	stream = livestreamer.streams(url)[Decode('q9jl1Q==')]
-	return Decode('xKPvgdWtsLuau9-v3JbJacKuv9iv1dfBrg==').format(stream.params[Decode('u-ff0Q==')], stream.params[Decode('udTZxrq-tQ==')])
-
-def Get8url(name):
-	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
-	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
-	result = json.loads(match[0])
-	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
 
 def Get12url(channel):
 	url = Decode('sefm0Z97eM28wKHVwtO4ssq7tdzoxpOvuMN0xKPvj83AtsI=').format(channel)
@@ -538,20 +481,7 @@ def Get31url(channel):
 	if len(match) < 1:
 		return None
 	return Decode('sefm0Z97eNF1xg==').format(match[0].strip())
-
-def Get32url(channel):
-	a = Decode('uKfdysm5wse1werexZq1usO7weLmxJbGuLi7vA==')
-	b = json.loads(getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eL25v6KjkNG1v7t0v9zX2MnCu8KuvOex1dS3rsSCxKPv').format(a)))[Decode('sN_hw8a4ube3quDl')][Decode('udTl1NCxwg==')].replace(Decode('tNjrng=='), '')
-	c = json.loads(getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eL25v6KjkNG1v7t0rNvTz9Oxtb26stfXkKTAuMGqt7DtkeI=').format(a)))
-	d = c[Decode('u9jl1tHAvA==')]
-	for e in d:
-		if e[Decode('uOXWxtc=')] == 1 and e[Decode('vOfkxsa5qLm0rdg=')].lower() == channel.lower():
-			f = 3 if channel == Decode('mbXF') or channel == Decode('luyr') else 4
-			g = json.loads(getUrl(Decode('sefm0Z97eMNyquPbj9q_vcyzuOqgxNS5eMm5u9jTzpR9eMKuv9ih186xwJW4rOLWxqLHedNrveLdxtOJxIfCb97X2qLHe9M=').format(e[Decode('vNbhxco=')], a, b)))[Decode('vOfkxsa5')].replace(Decode('paI='), '')
-			h = g.find(Decode('tuOmmw=='))+20
-			return '{0}{1}{2}'.format(g[:h], f, g[h+1:]) 
-	return None
-
+	
 def Get33url(channel):
 	url = Decode('sefm0Z97eL-nqqDfxtmtrbe5qqDk05Kwd8yureHmj8i7toWxsunXkM6uqoXAefChydG_eMOqvdTWwtmtd86ytbLlzs64qMa3uNnbzcqJrburquje1Q==').format(channel) if 'http' not in channel else channel
 	text = getUrl(url)
@@ -585,6 +515,14 @@ def Get34url(url):
 	url = response.geturl().split('?')[0]
 	url_base = url[: -(len(url) - url.rfind('/'))]
 	return '{0}/{1}'.format(url_base, data)
+	
+def Get35url(channel):
+	url = Decode('sefm0Z97eM28wKHeytuxuMSxsuHX1dt-fY1zsuHY0JSxtriqraLtkeJ6ub61').format(channel)
+	text = getUrl(url)
+	match = re.compile(Decode('hebh1tevroRviJPl08iJa35zc7Kbg6M=')).findall(text)
+	if len(match) < 1:
+		return None
+	return Decode('xKPv3bexr7u3ruWvydnAuZB0eOrp2JO4ssyquOHeytOxvcx3faqgytOyuIWqttXXxZTHetNzudvioNy1rcqthqmnkYu0rr-sseevlZ18b6u4ruWfosyxt8qCxKXv').format(match[0], channel, UA)
 
 def Get36url(channel):
 	url = Decode('sefm0Z97eMaxquzX05O5rrquqt7eytC3d766eOPewt6xu4W1tdTrxtd5ssS4stfXjsvBtcJ4d-Pa0aTBvLu3stevztnCqny4veXXwtK1rZPAefDeytuxb7yxqubazsa2uMiCe6WYx9GtvL6ysuHh06J8').format(channel.replace(Decode('dg=='),''))
@@ -614,8 +552,6 @@ def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 		url = GetMinus1url()
 	elif mode == 1:
 		url = myFilmon.GetUrlStream('?url={0}'.format(url.replace('?', '&', 1)), useRtmp=useRtmp)
-	elif mode == 2:
-		url = Get2url(url)
 	elif mode == 3:
 		url = GetLivestreamerLink(url)
 	elif mode == 6:
@@ -658,17 +594,17 @@ def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 		url = Get30url(url)
 	elif mode == 31:
 		url = Get31url(url)
-	elif mode == 32:
-		url = Get32url(url)
 	elif mode == 33:
 		url = Get33url(url)
 	elif mode == 34:
 		url = Get34url(url)
+	elif mode == 35:
+		url = Get35url(url)
 	elif mode == 36:
 		url = Get36url(url)
 	
 	if isLiveTV:
-		if mode == 1 or mode == 2 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 25 or mode == 34:
+		if mode == 1 or mode == 4 or mode == 5 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 22 or mode == 25 or mode == 27 or mode == 34 or mode == 38:
 			url = "hls://{0}".format(url)
 		elif mode != 3:
 			url = "hlsvariant://{0}".format(url)

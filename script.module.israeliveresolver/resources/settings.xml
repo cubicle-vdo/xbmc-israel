@@ -3,7 +3,4 @@
     <setting id="forceUA" type="bool" label="30000" default="false"/>
     <setting id="userUA" type="text" label="30001" default="" visible="eq(-1,true)"/>
     <setting id="israeliIP" type="text" label="30002" default="" />
-	<setting id="MakoUsername" type="text" label="30003" default="" />
-	<setting id="MakoPassword" type="text" option="hidden" label="30004" default="" />
-	<setting id="MakoDeviceID" type="text" label="30005" default="" />
 </settings>

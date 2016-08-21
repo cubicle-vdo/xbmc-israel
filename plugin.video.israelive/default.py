@@ -57,7 +57,6 @@ epg = None
 def CATEGORIES():
 	common.CheckNewVersion(remoteSettings)
 
-	addDir("[COLOR yellow][B][{0}][/B][/COLOR]".format(localizedString(30239).encode('utf-8')), 'settings', 50, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30239).encode('utf-8'), background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("favColor"), localizedString(30000).encode('utf-8')), 'favorites', 16, 'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png', '', channelName=localizedString(30000).encode('utf-8'), background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	
 	if useCategories:
@@ -83,6 +82,7 @@ def SetViewMode():
 
 def ListLive(categoryID, iconimage=None):
 	channels = common.GetChannels(categoryID)
+	
 	for channel in channels:
 		url = channel['url']
 		image = channel['image']
@@ -289,7 +289,7 @@ def SaveGuide():
 		if common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings, forceUpdate=True):
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 			epg = common.ReadList(fullGuideFile)
-			fullCategoriesList =  common.ReadList(categoriesFile)
+			fullCategoriesList =  common.ReadList(os.path.join(user_dataDir, "lists", "categories.list"))
 			fullCategoriesList.append({"id": "Favourites"})
 			common.MakeCatGuides(fullCategoriesList, epg)
 		else:			
@@ -594,12 +594,6 @@ def ImportFavourites():
 		MakeIPTVlists()
 		DownloadLogos()
 
-def Settings():
-	addDir(localizedString(30240).encode('utf-8'), 'settings', 51, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30240).encode('utf-8'), isFolder=False)
-	addDir(localizedString(30241).encode('utf-8'), 'settings', 52, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
-	addDir(localizedString(30242).encode('utf-8'), 'settings', 53, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30242).encode('utf-8'), isFolder=False)
-	SetViewMode()
-
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -671,8 +665,7 @@ except:
 #xbmc.log("----> categoryID: {0}".format(categoryID), 2)
 
 updateList = True
-
-if mode == None:
+if mode==None:
 	CATEGORIES()
 elif mode == 2:
 	ListLive(urllib.unquote_plus(displayname), iconimage)
@@ -739,18 +732,6 @@ elif mode == 44: # Import IsraeLIVE favourites
 elif mode == 45: # Add an external channel to IsraeLIVE favourites
 	AddUserChannelToFavorites()
 	updateList = False
-elif mode == 50:
-	Settings()
-elif mode == 51:
-	Addon.openSettings()
-elif mode == 52:
-	xbmc.executebuiltin('Addon.OpenSettings("script.module.israeliveresolver")')
-elif mode == 53:
-	UpdateChannelsLists()
-	SaveGuide()
-	if Addon.getSetting("useIPTV") == "true":
-		MakeIPTVlists()
-		DownloadLogos()
 elif mode == 100: # CheckUpdates
 	checkUpdates.Update()
 	updateList = False
