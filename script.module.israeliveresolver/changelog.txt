@@ -1,3 +1,6 @@
+[B]v0.3.0[/B]
+- Fix installation problem on some linux devices (OpenSSLv3 issue).
+- Added an option to enter the paid MakoTV username and password in addon settings.
 [B]v0.2.7[/B]
 - Added 'Addon settings':
   * Force using User-Agent - enable it to force using User-Agent on some sites (BigBrother i.e)
