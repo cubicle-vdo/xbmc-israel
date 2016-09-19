@@ -1,29 +1,29 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, random
-
+import urllib, urllib2, sys, re, xbmcplugin, xbmcgui, xbmcaddon, xbmc, random, gzip
+from StringIO import StringIO
 ADDON = xbmcaddon.Addon(id='plugin.video.israelsports')
-
+UA = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3"
 def CATEGORIES():
 	addDir('חדשים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=893&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTvo6GmRkhBMgJHX0DiWtikRpet97rNyCTsSi_OdsdF7Dp4K-96','1')
-	addDir('אולימפיאדה ריו 2016 ','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7439&page=',2,'http://www.romea.cz/aaa/img.php?src=/img_upload/03ec66ac77713bab242255f6194ad3ff/rio.jpg&w=630','1')
-	addDir('ליגת האלופות - תקצירים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5813&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
-	addDir('ליגת האלופות - כתבות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5935&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRf7mZyApMKwnQyHcJ5shoFE8OhLOlbmUIhytkWAP05suAGv9h8xA','1')
-	addDir('ליגת העל בכדורגל','www.stam.com',6,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpi-QusXtg3bBYigUFBxDmVj-nbBuPqJsGhWybwI8zx1Rlh2mw','')
-	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5808&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ5MZPuGkXGn4XoaDo72fi0gKIOik_0GVZHgHXmkQ1avptCA4WS','1')
-	addDir('ליגה אנגלית','http://svc.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
-	addDir('EUROLEAGUE','http://svc.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
-	addDir('ליגה ספרדית','http://svc.one.co.il/Cat/Video/?c=113&p=',4,'http://images.one.co.il/Images/OneTV/Categories/2015/08/16/1200/113.png','1')
+	
+	addDir('ליגת האלופות - תקצירים','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7503&page=',2,'http://www.sport5.co.il/Sip_Storage/FILES/0/Black137X104/552510.png','1')
+	addDir('ליגת העל בכדורגל','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7506&page=',2,'http://www.sport5.co.il/Sip_Storage/FILES/1/Black137X104/638331.jpg','1')
+	addDir('מוקדמות מונדיאל','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7527&page=',2,'http://www.sport5.co.il/Sip_Storage/FILES/6/size475x318/477396.jpg','1')
+	addDir('ליגה איטלקית','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7508&page=',2,'http://www.sport5.co.il/Sip_Storage/FILES/7/Black137X104/638037.jpg','1')
+	addDir('ליגה אנגלית','http://www.one.co.il/Cat/Video/?c=85&p=',4,'http://www.bettingexpert.com/deprecated/assets/images/blog/PremLeagueBettingAwards/premier-league-logo.jpg','1')
+	addDir('EUROLEAGUE','http://www.one.co.il/Cat/Video/?c=77&p=',4,'http://www.isramedia.net/images/tvshowpic/euroleague.jpg','1')
+	addDir('ליגה ספרדית','http://www.one.co.il/Cat/Video/?c=113&p=',4,'http://images.one.co.il/Images/OneTV/Categories/2015/08/16/1200/113.png','1')
 	addDir('בית"ר נורדיה ירושלים','open',14,'http://www.headstart.co.il/components/img.aspx?img=images%5C2(25).jpg','1')
 	addDir('NBA','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5959&page=',2,'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTMaYyCKAudTxqAh0YUsGGbL5axGDZV5YT-wL1-dYK25VfNNTzhKg','1')
-	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5845&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
-	addDir('כדורסל   נשים ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=4979&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
+	addDir('כדורסל ישראלי','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7511&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcROtyknPHO9KMMRBxTivXvWDngNdMzr5Mf5VMyJLyPEx_WEpxtk','1')
 	addDir('חדשות הספורט','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3968&page=',2,'http://www.nrg.co.il/images/archive/300x225/631/730.jpg','1')
-	addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=5811&page=',2,'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRVDQaVdqH65g5IqYdUf1zqt_FMHSOsbJPYzLI6tC1lxyh_FS97','1')
+	addDir('יציע העיתונות','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7512&page=',2,'http://www.sport5.co.il/Sip_Storage/FILES/4/Black137X104/637824.jpg','1')
 	addDir('בובה של לילה 4','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=7056&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 3','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3473&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 2','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3186&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	addDir('בובה של לילה 1','http://vod.sport5.co.il/Ajax/GetVideos.aspx?Type=B&Vc=3185&page=',2,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRjTjLnpK8ye6aN68h5HgcPo08Xtr1KJZd9iRSRQ3GlU9zB0pPViQ','1')
 	xbmc.executebuiltin('Container.SetViewMode(500)')
+
 
 def list_videos(url,page):
 	url1=url+"1"
@@ -39,7 +39,7 @@ def list_videos(url,page):
 	page=int(page)
 	if page <= total:
 		link=OPEN_URL(url)
-		matches=re.compile('<li id.*?<a href="(.*?)"><img src="(.*?)" title="(.*?)"').findall(link)
+		matches=re.compile('<li id.*?<a href="(.*?)"><img src="(.*?)" title="(.*?)"',re.S).findall(link)
 		for  newurl ,image , title  in matches :
 			title=title.decode('iso-8859-8').encode('utf-8')
 			title=unescape(title)
@@ -54,9 +54,9 @@ def list_videos(url,page):
 def play_video(url,name,iconimage):	  
 	link=OPEN_URL(url)
 	clipid=re.compile('clipid=(.*?)&Width',re.M+re.I+re.S).findall(link)
-	secondurl = "http://sport5-metadata-rr-d.nsacdn.com/vod/vod/" + str(clipid[0]) +"/HLS/metadata.xml?smil_profile=default"
-	
-	if  not ('delivery' in clipid[0]) :
+	clipid = str(clipid[0].replace(' ', '%20'))
+	if  not ('delivery' in clipid) :
+		secondurl = "http://sport5-metadata-rr-d.nsacdn.com/vod/vod/" + clipid +"/HLS/metadata.xml?smil_profile=default"
 		link=OPEN_URL(secondurl)
 		highres=re.compile('http://s5-s.nsacdn.com/sport5_vod/(.*?)</FileURL>',re.M+re.I+re.S).findall(link)
 		ip=re.compile('<Server priority=.*?>(.*?)<',re.M+re.I+re.S).findall(link)
@@ -64,7 +64,7 @@ def play_video(url,name,iconimage):
 		ip=ip[random.randint(0, len(ip)-1)]
 		direct=  "http://"+ip+"/sport5_vod/" + str (highres[-1])
 	else:
-		direct='http://sport5-vh.akamaihd.net/i/video/'+clipid[0]+'.csmil/master.m3u8'
+		direct='http://sport5-vh.akamaihd.net/i/video'+clipid+'.csmil/master.m3u8'
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
 	liz = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -73,13 +73,13 @@ def play_video(url,name,iconimage):
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
 			  
 def ligat_al():
-	link = OPEN_URL('http://svc.one.co.il/Cat/Video/Reviews.aspx?c=28')
+	link = OPEN_URL('http://www.one.co.il/Cat/Video/Reviews.aspx?c=28')
 	#<a href="/Cat/Video/Reviews.aspx?tm=1"><img style="border:0;width:46px;height:49px;" src="http://images.one.co.il/Images/Teams/Logos_46x49/1.png" alt="הפועל חיפה" /></a>"
 	list1=re.compile('<a href="\/Cat\/Video\/Reviews.aspx\?tm=(.*?)".*?src="http://images.one.co.il/Images/Teams/Logos(.*?)" alt="(.*?)" /></a>').findall(link)
 	for url, image, name in list1:
 		name=name.decode('iso-8859-8').encode('utf-8')
 		name=unescape(name)
-		url='http://svc.one.co.il/cat/Video/Reviews.aspx?tm='+url
+		url='http://www.one.co.il/cat/Video/Reviews.aspx?tm='+url
 		image='http://images.one.co.il/Images/Teams/Logos'+image
 		addDir(name,url,4,image,'al')
 	setView('movies', 'default')
@@ -89,8 +89,7 @@ def one_videopage(url,description):
 		murl=url+str(description)
 	else:
 		murl=url
-					
-	link = OPEN_URL(murl)
+	link = OPEN_URL(murl) 
 	list1=re.compile('"Title": "(.*?)".*?"Image": "(.*?)".*?"URLStreamHD" : "(.*?)".*?}').findall(link)
 	page_total=re.compile('var page = (.*?);.*?var pages = (.*?);').findall(link)[0]
 	current= page_total[0]
@@ -120,14 +119,33 @@ def play_one(name,url,iconimage):
 	liz.setPath(url)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
 	
-def OPEN_URL(url,host=None):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	if host:
-			req.add_header('HOST',host)
-	response = urllib2.urlopen(req,timeout=180)
-	link=response.read()
-	response.close()
+def OPEN_URL(url, headers={}, user_data={}, referer=None, Host=None):
+	link = ""
+	if user_data:
+		user_data = urllib.urlencode(user_data)
+		req = urllib2.Request(url, user_data)
+	else:
+		req = urllib2.Request(url)
+	req.add_header('User-Agent', UA)
+	req.add_header('Accept-encoding', 'gzip')
+	for k, v in headers.items():
+		req.add_header(k, v)
+	if referer:
+		req.add_header('Referer' ,referer)
+	if Host:
+		req.add_header('Host' ,Host)
+	try:
+		response = urllib2.urlopen(req,timeout=100)
+		if response.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO( response.read())
+			f = gzip.GzipFile(fileobj=buf)
+			link = f.read()
+		else:
+			link = response.read()
+		response.close()
+	except:
+		return None
+		
 	return link
 	
 def get_params():

@@ -99,14 +99,10 @@ UAs = [
 ]
 
 UA = random.choice(UAs)
-forceUA = False
-userUA = ''
 makoDeviceID = ''
 makoUsername = ''
 makoPassword = ''
 try:
-	userUA = Addon.getSetting("userUA").strip()
-	forceUA = Addon.getSetting("forceUA") == "true"
 	makoDeviceID = Addon.getSetting("MakoDeviceID")
 	if makoDeviceID.strip() == '':
 		uuidStr = str(uuid.uuid1()).upper()
@@ -116,8 +112,6 @@ try:
 	makoPassword = Addon.getSetting("MakoPassword")
 except:
 	pass
-if userUA == '':
-	userUA = UA
 		
 def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 	link = ""
@@ -167,13 +161,16 @@ def OpenURL(url, headers={}, user_data={}, getCookies=False):
 	return data, cookie
 
 def DelCookies():
-	try:
-		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
-		tempCookies = os.path.join(tempDir, 'cookies.dat')
-		if os.path.isfile(tempCookies):
-			os.unlink(tempCookies)
-	except Exception as ex:
-		xbmc.log("{0}".format(ex), 3)
+	tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+	for the_file in os.listdir(tempDir):
+		if not '.fi' in the_file and the_file != 'cookies.dat':
+			continue
+		file_path = os.path.join(tempDir, the_file)
+		try:
+			if os.path.isfile(file_path):
+				os.unlink(file_path)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 
 def IsIsrael():
 	text = getUrl(Decode('sefm0Z97eL-1e9ag0NezeMk='))
@@ -222,12 +219,10 @@ def GetMinus2url(url):
 	return url
 	
 def GetMinus1url():
-	headers = {} 
+	headers = {'User-Agent': UA} 
 	israel, israeliIP = GetIsrIP()
 	if not israel:
 		headers['X-Forwarded-For'] = israeliIP
-	if forceUA:
-		headers['User-Agent'] = userUA
 	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdoupfNWlwsqxrLirr9amkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
 	result = json.loads(text)["root"]["video"]
 	guid = result["guid"]
@@ -242,19 +237,15 @@ def GetMinus1url():
 			DelCookies()
 			break
 	
-	uuidStr = str(uuid.uuid1()).upper()
-	du = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(du, guid, url[url.find("/i/"):]), headers=headers)
-	result = json.loads(text)["tickets"][0]["ticket"]
-	extra = '' 
+	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
+	ticket = urllib.unquote_plus(json.loads(text)["tickets"][0]["ticket"])
+	extra = '|User-Agent={0}'.format(UA)
 	if not israel: 
-		extra = '|X-Forwarded-For={0}'.format(israeliIP)
-	if forceUA:
-		extra = '|User-Agent={0}'.format(userUA) if extra == '' else '{0}&User-Agent={1}'.format(extra, userUA)
+		extra = '{0}&X-Forwarded-For={1}'.format(extra, israeliIP)
 	if '?' in url:
-		return "{0}&{1}{2}".format(url, result, extra)
+		return "{0}&{1}{2}".format(url, ticket, extra)
 	else:
-		return "{0}?{1}{2}".format(url, result, extra)
+		return "{0}?{1}{2}".format(url, ticket, extra)
 
 def GetLivestreamerLink(url):
 	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
@@ -269,10 +260,11 @@ def MakoLogin(headers):
 	return result
 
 def Get2url(channel):
-	headers = {} 
-	if forceUA:
-		headers['User-Agent'] = userUA
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
+	headers = {'User-Agent': UA}
+	if 'http' in channel:
+		text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
+	else:
+		text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdtF1xqHa1dKLvc-1rrDlxtfCsrmq').format(channel), headers=headers)
 	result = json.loads(text)["root"]["video"]
 	guid = result["guid"]
 	chId = result["chId"]
@@ -283,7 +275,8 @@ def Get2url(channel):
 	for item in result:
 		if item["format"] == "AKAMAI_HLS":
 			url = item["url"]
-			url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
+			if channel == '6540b8dcb64fd31006' or 'http' in channel:
+				url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
 			DelCookies()
 			break
 	
@@ -297,14 +290,11 @@ def Get2url(channel):
 			return None
 	elif result["caseId"] != "1":
 		return None
-	ticket = result["tickets"][0]["ticket"]
-	extra = '' 
-	if forceUA:
-		extra = '{0}&User-Agent={1}'.format(extra, userUA)
+	ticket = urllib.unquote_plus(result["tickets"][0]["ticket"])
 	if '?' in url:
-		return "{0}&{1}{2}".format(url, ticket, extra)
+		return "{0}&{1}|User-Agent={2}".format(url, ticket, UA)
 	else:
-		return "{0}?{1}{2}".format(url, ticket, extra)
+		return "{0}?{1}|User-Agent={2}".format(url, ticket, UA)
 	
 def Get6url(id):
 	parts = id.split(';;')
@@ -461,9 +451,9 @@ def Get23url(channel):
 	return s
 	
 def Get24url(channel):
-	url = Decode('sefm0Z97eM28wKHeytuxvcxzqu2h3JXJ').format(channel)
+	url = Decode('sefm0diGeIW8wOqgzc7Crsq7d9TskOB8xg==').format(channel)
 	text = getUrl(url)
-	matches = re.compile(Decode('vOXVm4VucYRwiJyU'), re.I+re.M+re.U+re.S).findall(text)
+	matches = re.compile(Decode('hebh1tevrrK4dObkxKJ0d4CEcs_ljNnFubs=')).findall(text)
 	if len(matches) < 1:
 		return None
 	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
@@ -591,7 +581,16 @@ def Get36url(channel):
 	if len(match) < 1:
 		return None
 	return match[0]
-	
+
+def Get39url(channel):
+	a = None
+	try:
+		text = getUrl(Decode('sefm0Z97eM28wKHY08a6rLtyvemf1dPAd7m0tqLtkeJ7').format(channel))
+		a = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(re.compile(Decode('vOLn08ixg3ZncaGcoI5u')).findall(text)[0], UA)
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+	return a
+
 def Decode(string):
 	key = AddonName
 	decoded_chars = []
@@ -664,9 +663,11 @@ def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 		url = Get34url(url)
 	elif mode == 36:
 		url = Get36url(url)
+	elif mode == 39:
+		url = Get39url(url)
 	
 	if isLiveTV:
-		if mode == 1 or mode == 2 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 25 or mode == 34:
+		if mode == 1 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 24 or mode == 25 or mode == 34:
 			url = "hls://{0}".format(url)
 		elif mode != 3:
 			url = "hlsvariant://{0}".format(url)
