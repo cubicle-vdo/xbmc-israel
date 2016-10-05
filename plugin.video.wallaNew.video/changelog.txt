@@ -1,5 +1,7 @@
+[B]Version 2.2.5[/B]
+-Paw Patrol Season
 [B]Version 2.2.4[/B]
--Paw Petrol Season 3 
+-Paw Patrol Season 3 
 -More episodes For new Shows .
 [B]Version 2.2.3[/B]
 -added description for some episodes.
