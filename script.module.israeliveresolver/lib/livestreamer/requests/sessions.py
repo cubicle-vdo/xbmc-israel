@@ -305,7 +305,7 @@ class Session(SessionRedirectMixin):
         self.stream = False
 
         #: SSL Verification default.
-        self.verify = True
+        self.verify = False
 
         #: SSL certificate default.
         self.cert = None

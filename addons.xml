@@ -303,7 +303,7 @@ http://www.hometheater.co.il</description>
   <extension library="lib" point="xbmc.python.module" />
 </addon>
 
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.0" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.1" provider-name="Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
 	<import addon="repository.xbmc-israel" />

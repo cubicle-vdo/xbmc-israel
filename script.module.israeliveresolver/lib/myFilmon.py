@@ -35,8 +35,6 @@ def GetChannelStream(chNum, referrerCh=None, filmonOldStrerams=True, useRtmp=Fal
 			if newStreamUrl is not None:
 				url = newStreamUrl
 		
-	url = url.replace('low','high')
-		
 	if referrerCh != None:
 		url = url.replace("{0}.".format(referrerCh), "{0}.".format(chNum))
 		
@@ -91,7 +89,7 @@ def GetChannelNewStreamHtml(channelNum):
 	cookie = OpenURL('http://www.filmon.com/tv/htmlmain', justCookie=True)
 	if cookie is not None:
 		headers = {'X-Requested-With': 'XMLHttpRequest', 'Connection': 'Keep-Alive', 'Cookie': cookie}
-		html = OpenURL('http://www.filmon.com/ajax/getChannelInfo?channel_id={0}'.format(channelNum), headers)
+		html = OpenURL('http://www.filmon.com/channel/{0}'.format(channelNum), headers)
 	return html
 
 def GetSelectedStreamUrl(html, useRtmp):
@@ -157,7 +155,7 @@ def GetFilmonStream(selectedStream, useRtmp=True):
 		
 	if "rtmp" in url:
 		streamUrl = selectedStream['url'] + '<'
-		streamName = selectedStream['name'].replace("low", "high")
+		streamName = selectedStream['name']
 
 		if not useRtmp and not re.search('mp4', streamName, re.IGNORECASE):
 			regx = re.compile('rtmp://(.+?)\?id=(.+?)<')
