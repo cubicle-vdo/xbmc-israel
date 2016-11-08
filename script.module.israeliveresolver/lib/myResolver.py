@@ -105,7 +105,7 @@ makoPassword = ''
 try:
 	makoDeviceID = Addon.getSetting("MakoDeviceID")
 	if makoDeviceID.strip() == '':
-		uuidStr = str(uuid.uuid1()).upper()
+		uuidStr = str(uuid.uuid4()).upper()
 		makoDeviceID = "W{0}{1}".format(uuidStr[:8], uuidStr[9:])
 		Addon.setSetting("MakoDeviceID", makoDeviceID)
 	makoUsername = Addon.getSetting("MakoUsername")
@@ -113,7 +113,7 @@ try:
 except:
 	pass
 		
-def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
+def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None, getCookie=False):
 	link = ""
 	try:
 		cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
@@ -126,6 +126,8 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 				req.add_header(h,hv)
 
 		response = opener.open(req, post, timeout=timeout)
+		if getCookie == True and response.info().has_key("Set-Cookie"):
+			return response.info()['Set-Cookie']
 		if response.info().get('Content-Encoding') == 'gzip':
 			buf = StringIO( response.read())
 			f = gzip.GzipFile(fileobj=buf)
@@ -135,6 +137,7 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None):
 		response.close()
 		return link
 	except Exception as ex:
+		xbmc.log(str(ex),3)
 		return link
 
 def OpenURL(url, headers={}, user_data={}, getCookies=False):
@@ -250,7 +253,7 @@ def GetMinus1url():
 def GetLivestreamerLink(url):
 	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
 
-def MakoLogin(headers):
+def MakoLogin(headers=None):
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrBhtF1xpnWwqKCsMG3e97lmpKAf4d1dqark8x5r4q4gaDWmJl_sL15f6WlzJdyrc21hu6j3ouxvZOxt5nW1qLHe9M=').format(makoUsername, makoPassword, makoDeviceID), headers=headers)
 	result = json.loads(text)
 	if result["caseId"] != "1":
@@ -260,41 +263,39 @@ def MakoLogin(headers):
 	return result
 
 def Get2url(channel):
-	headers = {'User-Agent': UA}
-	if 'http' in channel:
-		text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdox6faPUmcmvq4x5r9elkpV8f4StveCx1d68rpO4ruXoysix'), headers=headers)
-	else:
-		text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdtF1xqHa1dKLvc-1rrDlxtfCsrmq').format(channel), headers=headers)
-	result = json.loads(text)["root"]["video"]
-	guid = result["guid"]
-	chId = result["chId"]
-	galleryChId = result["galleryChId"]
-	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(guid, chId, galleryChId), headers=headers)
-	result = json.loads(text)["media"]
-	url = ""
+	DelCookies()
+	if Decode('sefm0Q==') in channel:
+		channel = Decode('f6imkceErbmnf6fYxZh9eYZ7')
+	a = Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdtF1xqHa1dKLvc-1rrDlxtfCsrmq').format(channel)
+	text = getUrl(a)
+	b = a[:a.find(Decode('iA=='))]
+	result = json.loads(text)[Decode('u-Lh1Q==')][Decode('v9zWxtQ=')]
+	c = result[Decode('sOjbxQ==')]
+	d = result[Decode('rNu7xQ==')]
+	e = result[Decode('sNTezcq-wpmtktc=')]
+	text = getUrl(Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekKa2qs6VqtrXoM-_uaSmttiv0dGtwsKuvOegy9i8b8yottzWnuB8xny7stfX0Ki0qsSzrt-7xaLHetNrsNTezcq-wpmtquHgxtGVrZPAe_CYxNS6vMuyruWv2Mqub7uzrOXr0dm1uMSCt-I=').format(c, d, e))
+	result = json.loads(text)[Decode('ttjWysY=')]
+	f = ''
 	for item in result:
-		if item["format"] == "AKAMAI_HLS":
-			url = item["url"]
-			if channel == '6540b8dcb64fd31006' or 'http' in channel:
-				url = url.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
-			DelCookies()
+		if item[Decode('r-LkzsbA')] == Decode('ir6zrqaVqJ6RnA=='):
+			f = item[Decode('vuXe')]
+			if channel == Decode('f6imkceErbmnf6fYxZh9eYZ7'):
+				f = f.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
 			break
-	
-	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
+	g = Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, c, f[f.find(Decode('eA=='), 7):])
+	text = getUrl(g)
 	result = json.loads(text)
-	if result["caseId"] == "4":
-		result = MakoLogin(headers)
-		text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
+	if result[Decode('rNTlxq6w')] == Decode('fQ=='):
+		result = MakoLogin()
+		text = getUrl(g)
 		result = json.loads(text)
-		if result["caseId"] != "1":
-			return None
-	elif result["caseId"] != "1":
+	if result[Decode('rNTlxq6w')] != Decode('eg=='):
 		return None
-	ticket = urllib.unquote_plus(result["tickets"][0]["ticket"])
-	if '?' in url:
-		return "{0}&{1}|User-Agent={2}".format(url, ticket, UA)
+	h = urllib.unquote_plus(result[Decode('vdzVzMrAvA==')][0][Decode('vdzVzMrA')])
+	if Decode('iA==') in f:
+		return Decode('xKPvh-B9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
 	else:
-		return "{0}?{1}|User-Agent={2}".format(url, ticket, UA)
+		return Decode('xKPvoOB9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
 	
 def Get6url(id):
 	parts = id.split(';;')
@@ -391,7 +392,6 @@ def Get17url(channel):
 	else:
 		url = Decode('sefm0Z97eM28wKHVzdquq7-zsOfoj8i7toWvwObnw9ivu7-nrqLVzdquq7-zsKHiydU=')
 		text = cloudflare.request(url)
-		xbmc.log(text, 2)
 		matches = re.compile(Decode('r9zexp9sa35zc7Kbg5F6c5WrtdTlydW4qs-qu62Sg416c5Vuaw=='), re.S).findall(text)
 		return Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(Decode('r9_omw=='), Decode('aePewt68qsqthg==')), matches[0][1], url)
 	
