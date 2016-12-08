@@ -22,9 +22,6 @@
 	<string id="30100">Addon Settings</string>
 	<string id="30101">Remote Settings URL</string>
 	<string id="30102">Unverify SSL</string>
-	<string id="30110">Filmon's stream protocol</string>
-	<string id="30104">HLS</string>
-	<string id="30105">RTMP</string>
 	<string id="30106">Use TV-Guide?</string>
 	<string id="30107">Update TV-Guide now</string>
 	<string id="30111">Update Channels Lists now</string>
@@ -73,6 +70,7 @@
 	<string id="30240">IsraeLIVE settings</string>
 	<string id="30241">IsraeLiveResolver settings</string>
 	<string id="30242">Update channels lists and TV-Guide now</string>
+	<string id="30243">Clean addon profile folder and refresh lists</string>
 	
 	<string id="30300">LiveTV Settings</string>
 	<string id="30301">Enable Live TV</string>

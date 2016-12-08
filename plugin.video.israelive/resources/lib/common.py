@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-import sys, os, io, re, time, base64, random, hashlib, zipfile
-import urllib, urllib2, json
+import os, io, re, time, base64, random, hashlib, urllib2, json, gzip
+from StringIO import StringIO
 import xbmc, xbmcgui, xbmcaddon
 import multiChoiceDialog, UA
-import itertools, operator
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = "IsraeLIVE"
 localizedString = Addon.getLocalizedString
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+listsFile = os.path.join(user_dataDir, "israelive.list")
 favoritesFile = os.path.join(user_dataDir, 'favorites.txt')
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 listsDir = os.path.join(user_dataDir, 'lists')
@@ -27,31 +27,28 @@ def GetSubKeyValue(remoteSettings, key, subKey):
 	
 def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 	if remoteSettings is None:
-		remoteSettings = ReadList(os.path.join(user_dataDir, "remoteSettings.txt"))
-	
+		remoteSettings = ReadList(remoteSettingsFile)
 	if remoteSettings == []:
 		return False
-			
-	lastModifiedFile = "{0}LastModified.txt".format(file[:file.rfind('.')])
-	if (zip == False and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
-		fileContent = "0"
+	i = file.rfind('.')
+	zipFile = "{0}.zip".format(file[:i])
+	lastModifiedFile = "{0}LastModified.txt".format(file[:i])
+	if (not zip and not os.path.isfile(file)) or not os.path.isfile(lastModifiedFile):
+		old_modified = "0"
 	else:
-		f = open(lastModifiedFile,'r')
-		fileContent = f.read()
-		f.close()
+		with open(lastModifiedFile, 'r') as f:
+			old_modified = f.read()
 	last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
 	
-	isNew = forceUpdate or last_modified is None or (fileContent < last_modified)
-	if not isNew:
+	if not (forceUpdate or last_modified is None or (old_modified < last_modified)):
 		return False
 	
 	urls = GetSubKeyValue(remoteSettings, key, "urls")
 	if urls is None or len(urls) == 0:
 		return False
 		
-	random.seed()
-	random.shuffle(urls)
-	urla = Decode(urls[0]).split(';')
+	url1 = random.choice(urls)
+	urla = Decode(url1).split(';')
 	url = urla[0]
 	a = '' if len(urla) < 2 else urla[1]
 	
@@ -70,43 +67,52 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 			url = match[0].replace(Decode('sefm0Q=='), Decode('sefm0dg='))
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
-			if not response is None:
+			if response is not None:
 				response.close()
 			return False
 
 	response = None
 	try:
-		if zip:
-			urllib.urlretrieve(url, file)
+		req = urllib2.Request(url)
+		if a == Decode('ttk='):
+			req.add_header('User-Agent', UA.GetUA())
 		else:
-			req = urllib2.Request(url)
-			if a == Decode('ttk='):
-				req.add_header('User-Agent', UA.GetUA())
-			else:
-				req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
-				req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
-			response = urllib2.urlopen(req)
-			data = response.read().replace('\r','')
-			response.close()
-			
-			if key == "remoteSettings":
-				remoteSettings = json.loads(data)
-				last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
-		
-			f = open(file, 'w')
-			f.write(data)
-			f.close()
-
+			req.add_header(Decode('nubX05KNsLuzvQ=='), Decode('luLsytG4qoV6d6OSiby1t7q0wOaSr7lsf4R2hJPk1599eoR1cpO5xsi3uIV3eaSikZZ8enaLsuXXx9TEeId2d6M='))
+			req.add_header(Decode('m9jYxtexuw=='), Decode('sefm0Z97eM28wKG71NetrqKOn7ig0NezeA=='))
+		req.add_header('Accept-encoding', 'gzip')
+		response = urllib2.urlopen(req)
+		if response.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO(response.read())
+			f = gzip.GzipFile(fileobj=buf)
+			data = f.read()
+		else:
+			data = response.read()
+		response.close()
+		if zip:
+			with open(zipFile, 'wb') as f:
+				f.write(data)
+			xbmc.executebuiltin("XBMC.Extract({0}, {1})".format(zipFile, user_dataDir), True)
+			try:
+				os.remove(zipFile)
+			except:
+				pass
+		else:
+			data = data.replace('\r','')
+			with open(file, 'w') as f:
+				f.write(data)
+		if key == "remoteSettings":
+			remoteSettings = json.loads(data)
+			last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
+		elif key == "remoteSettingsZip":
+			remoteSettings = ReadList(remoteSettingsFile)
+			last_modified = GetSubKeyValue(remoteSettings, key, "lastModified")
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
-		if not response is None:
+		if response is not None:
 			response.close()
 		return False
-		
-	f = open(lastModifiedFile, 'w')
-	f.write(last_modified)
-	f.close()
-	
+	with open(lastModifiedFile, 'w') as f:
+		f.write(last_modified)
 	return True
 	
 def ReadList(fileName):
@@ -140,21 +146,6 @@ def GetUnSelectedList(fullList, selectedList):
 			unSelectedList.append(item)
 	return unSelectedList
 	
-def GetUpdatedList(file, key, remoteSettings=None, forceUpdate=False):
-	UpdateFile(file, key, remoteSettings=remoteSettings, forceUpdate=forceUpdate)
-	return ReadList(file)
-	
-def UpdateZipedFile(file, key, remoteSettings=None, forceUpdate=False):
-	zipFile = "{0}.zip".format(file[:file.rfind('.')])
-	if UpdateFile(zipFile, key, remoteSettings=remoteSettings, zip=True, forceUpdate=forceUpdate):
-		xbmc.executebuiltin("XBMC.Extract({0}, {1})".format(zipFile, user_dataDir), True)
-		try:
-			os.remove(zipFile)
-		except:
-			pass
-		return True
-	return False
-	
 def GetEncodeString(str):
 	try:
 		import chardet
@@ -186,60 +177,87 @@ def UpdateFavouritesFromRemote():
 			WriteList(favoritesFile, remoteFavouritesList)
 			return True
 	return False
-		
-def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=False):
+	
+def SearchByID(item, id):
+	if item["id"] == id: 
+		return item
+	else:
+		if item["type"] == "playlist":
+			for item1 in item["list"]:
+				item2 = SearchByID(item1, id)
+				if item2 is not None:
+					return item2
+	return None
+	
+def FindByID(chanList, id):
+	item1 = None
+	for item in chanList:
+		item1 = SearchByID(item, id)
+		if item1 is not None:
+			break
+	return item1
+
+def GetChannelByID(chID):
+	chList = ReadList(listsFile)
+	channel = FindByID(chList, chID)
+	return channel
+
+def GetChannels(categoryID):
+	if categoryID == "Favourites":
+		retList = ReadList(favoritesFile)
+	elif categoryID == 'categories' or categoryID == 'selectedCategories':
+		retList = ReadList(os.path.join(listsDir, "{0}.list".format(categoryID)))
+	else:
+		retList = ReadList(listsFile)
+		if categoryID is not None and categoryID != '9999':
+			listItem = FindByID(retList, categoryID)
+			retList = [] if listItem is None or listItem["type"] != "playlist" else listItem["list"]
+	return retList
+
+global_catList = []
+global_fullChList = []
+def MakeFullLists(current_list):
+	for item in current_list:
+		if item["type"] == "playlist":
+			global_catList.append({"image": item["image"], "group": item["group"], "name": item["name"], "id": item["id"]})
+			MakeFullLists(item["list"])
+		else:
+			global_fullChList.append(item)
+
+def UpdateChList(remoteSettings=None, refreshInterval=0, forceUpdate=True):
 	if remoteSettings is None:
-		remoteSettings = ReadList(os.path.join(user_dataDir, "remoteSettings.txt"))
+		remoteSettings = ReadList(remoteSettingsFile)
 	if remoteSettings == []:
 		return False
 	isListUpdated = False
 	if UpdateFavouritesFromRemote():
 		isListUpdated = True
-	if isFileOld(file, refreshInterval):
+	if isFileOld(listsFile, refreshInterval):
 		isListUpdated = True
-	lastModifiedFile = os.path.join(user_dataDir, "chLastModified.txt")
+	lastModifiedFile = os.path.join(user_dataDir, "listsLastModified.txt")
 	if not os.path.isfile(lastModifiedFile):
 		old_modified = "0"
 	else:
-		f = open(lastModifiedFile,'r')
-		old_modified = f.read()
-		f.close()
-	new_modified = GetSubKeyValue(remoteSettings, "ch", "lastModified")
-	isNew = forceUpdate or new_modified is None or (old_modified < new_modified)
-	if not isNew:
+		with open(lastModifiedFile, 'r') as f:
+			old_modified = f.read()
+	new_modified = GetSubKeyValue(remoteSettings, "lists", "lastModified")
+	if not (forceUpdate or new_modified is None or (old_modified < new_modified)):
 		return False
-	if not new_modified is None:
-		data = GetSubKeyValue(remoteSettings, "ch", "content")
-		f = open(file, 'w')
-		f.write(base64.b64decode(data))
-		f.close()
-		f = open(lastModifiedFile, 'w')
-		f.write(new_modified)
-		f.close()
-
+	if new_modified is not None:
+		data = GetSubKeyValue(remoteSettings, "lists", "content")
+		with open(listsFile, 'w') as f:
+			f.write(base64.b64decode(data))
+		with open(lastModifiedFile, 'w') as f:
+			f.write(new_modified)
 	if isListUpdated:
-		fullList = GetListFromPlx(fullScan=True)
-		fullList.sort(key=operator.itemgetter('group'))
-		categories_list = []
-		for key, group in itertools.groupby(fullList, lambda item: item["group"]):
-			try:
-				list1 = [{"url": item["url"], "image": item["image"], "name": GetEncodeString(item["name"]).decode("utf-8"), "type": item["type"], "group": GetEncodeString(item["group"]).decode("utf-8"), "id": item["id"]} for item in group]
-				filename = os.path.join(listsDir, "{0}.list".format(key.strip()))
-				WriteList(filename, list1)
-				categories = [{"name": item["name"], "image": item["image"], "group": item["group"], "id": item["id"]} for item in list1 if item['type'] == "playlist"]
-				if len(categories) > 0:
-					for category in categories:
-						categories_list.append(category)
-			except Exception as ex:
-				xbmc.log("{0}".format(ex), 3)
-
-		categories_list.sort(key=operator.itemgetter('id'))
-		WriteList(os.path.join(listsDir, "categories.list"), categories_list)
+		fullList = ReadList(listsFile)
+		MakeFullLists(fullList)
+		WriteList(os.path.join(listsDir, "categories.list"), global_catList)
 		
 		selectedCatList = ReadList(os.path.join(listsDir, "selectedCategories.list"))
 		for index, cat in enumerate(selectedCatList):
-			if any(f["id"] == cat.get("id", "") for f in categories_list):
-				categoty = [f for f in categories_list if f["id"] == cat.get("id", "")]
+			if any(f["id"] == cat.get("id", "") for f in global_catList):
+				categoty = [f for f in global_catList if f["id"] == cat.get("id", "")]
 				selectedCatList[index] = categoty[0]
 			else:
 				selectedCatList[index]["type"] = "ignore"
@@ -247,15 +265,15 @@ def UpdatePlx(file, key, remoteSettings=None, refreshInterval=0, forceUpdate=Fal
 		
 		favsList = ReadList(favoritesFile)
 		for index, favourite in enumerate(favsList):
-			if any(f["id"] == favourite.get("id", "") for f in fullList):
-				channel = [f for f in fullList if f["id"] == favourite.get("id", "")]
-				favsList[index] = {"url": channel[0]["url"], "image": channel[0]["image"], "name": channel[0]["name"].decode("utf-8"), "type": channel[0]["type"], "group": channel[0]["group"].decode("utf-8"), "id": channel[0]["id"]}
+			if any(f["id"] == favourite.get("id", "") for f in global_fullChList):
+				channel = [f for f in global_fullChList if f["id"] == favourite.get("id", "")]
+				favsList[index] = {"url": channel[0]["url"], "image": channel[0]["image"], "name": channel[0]["name"], "type": channel[0]["type"], "group": channel[0]["group"], "id": channel[0]["id"]}
 			else:
 				if favsList[index].has_key("id"):
 					favsList[index]["type"] = "ignore"
 		WriteList(favoritesFile, favsList)
 	return isListUpdated
-		
+
 def OKmsg(title, line1, line2="", line3=""):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
@@ -316,9 +334,8 @@ def GetKey():
 def GetAddonDefaultRemoteSettingsUrl():
 	remoteSettingsUrl = ""
 	try:
-		f = open(os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'settings.xml') ,'r')
-		data = f.read()
-		f.close()
+		with open(os.path.join(Addon.getAddonInfo("path").decode("utf-8"), 'resources', 'settings.xml'), 'r') as f:
+			data = f.read()
 		matches = re.compile('setting id="remoteSettingsUrl".+?default="(.+?)"',re.I+re.M+re.U+re.S).findall(data)
 		remoteSettingsUrl = matches[0]
 	except Exception as ex:
@@ -332,65 +349,15 @@ def GetRemoteSettings():
 		if (defaultRemoteSettingsUrl != "") and (defaultRemoteSettingsUrl != remoteSettingsUrl):
 			remoteSettingsUrl = defaultRemoteSettingsUrl
 			Addon.setSetting("remoteSettingsUrl", remoteSettingsUrl)
-			
 	remoteSettings = ReadList(remoteSettingsFile)
-	if remoteSettings == []:
+	urls = GetSubKeyValue(remoteSettings, "remoteSettingsZip", "urls")
+	if urls is None or len(urls) == 0:
 		try:
 			os.unlink(remoteSettingsFile)
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
-		remoteSettings = {}
-
-	urls = GetSubKeyValue(remoteSettings, "remoteSettings", "urls")
-	if urls is None or len(urls) == 0:
-		remoteSettings = {"remoteSettings": {"urls": remoteSettingsUrl.split(","), "lastModified": "0", "refresh": 12}}
-	
+		remoteSettings = {"remoteSettingsZip": {"urls": remoteSettingsUrl.split(","), "lastModified": "0", "refresh": 12}}
 	return remoteSettings
-
-def GetListFromPlx(filterCat="9999", includeChannels=True, includeCatNames=True, fullScan=False):
-	plxFile = os.path.join(user_dataDir, "israelive.plx")
-	f = open(plxFile,'r')
-	data = f.read()
-	f.close()
-	
-	matches = re.compile('^type(.+?)#$',re.I+re.M+re.U+re.S).findall(data)
-	categories = ["9999"]
-	list = []
-	for match in matches:
-		item=re.compile('^(.*?)=(.*?)$',re.I+re.M+re.U+re.S).findall("type{0}".format(match))
-		item_data = {}
-		for field, value in item:
-			item_data[field.strip().lower()] = value.strip()
-		if not item_data.has_key("type"):
-			continue
-		
-		url = item_data['url']
-		thumb = "" if not item_data.has_key("thumb") else item_data['thumb']
-		channelName = GetEncodeString(item_data['name'])
-		
-		if item_data["type"] == 'audio' and item_data["url"] == '':
-			if channelName.find("-") != 0:
-				categories.append(item_data["id"])
-				item_data["type"] = "playlist"
-				if not includeCatNames:
-					continue
-			else:
-				del categories[-1]
-				continue
-		elif not includeChannels:
-			continue
-		
-		lenCat = len(categories)
-		subCat = categories[lenCat-1] if item_data["type"] != "playlist" else categories[lenCat-2]
-
-		if subCat == filterCat or fullScan:
-			list.append({"url": url, "image": thumb, "name": channelName, "type": item_data["type"], "group": subCat, "id": item_data["id"]})
-		
-	return list
-	
-def GetChannels(categoryID):
-	fileName = os.path.join(listsDir, "{0}.list".format(categoryID))if categoryID != "Favourites" else favoritesFile
-	return ReadList(fileName)
 
 def MakeCatGuides(categories, epg):
 	for category in categories:
@@ -419,17 +386,7 @@ def MakeFavouritesGuide(fullGuideFile, epg=None):
 def GetGuide(categoryID):
 	fileName = os.path.join(listsDir, "{0}.guide".format(categoryID))
 	return ReadList(fileName)
-	
-def ExtractAll(_in, _out):
-	try:
-		zin = zipfile.ZipFile(_in, 'r')
-		zin.extractall(_out)
-		zin.close()
-	except Exception as ex:
-		xbmc.log("{0}".format(ex), 3)
-		return False
-	return True
-	
+
 def InstallAddon(addonID):
 	try:
 		req = urllib2.Request('https://github.com/cubicle-vdo/xbmc-israel/raw/master/addons.xml')
@@ -444,14 +401,22 @@ def InstallAddon(addonID):
 		addonsDir = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
 		url = 'https://github.com/cubicle-vdo/xbmc-israel/raw/master/repo/{0}/{0}-{1}.zip'.format(addonID, addonVer)
 		packageFile = os.path.join(addonsDir, 'packages', 'isr.zip')
-		urllib.urlretrieve(url, packageFile)
-		if ExtractAll(packageFile, addonsDir):
-			try:
-				os.remove(packageFile)
-			except:
-				pass
+		req = urllib2.Request(url)
+		response = urllib2.urlopen(req)
+		if response.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO(response.read())
+			f = gzip.GzipFile(fileobj=buf)
+			data = f.read()
 		else:
-			raise Exception("--- Can't extract package. ")
+			data = response.read()
+		response.close()
+		with open(packageFile, 'wb') as f:
+			f.write(data)
+		xbmc.executebuiltin("XBMC.Extract({0}, {1})".format(packageFile, addonsDir), True)
+		try:
+			os.remove(packageFile)
+		except:
+			pass
 				
 		xbmc.executebuiltin("UpdateLocalAddons")
 		xbmc.executebuiltin("UpdateAddonRepos")
@@ -466,18 +431,16 @@ def CheckNewVersion(remoteSettings):
 	if not os.path.isfile(versionFile):
 		version = ""
 	else:
-		f = open(versionFile,'r')
-		version = f.read()
-		f.close()
+		with open(versionFile, 'r') as f:
+			version = f.read()
 	newVersion = Addon.getAddonInfo("version")
 	
 	resolverVerFile = os.path.join(user_dataDir, "resolverVersion.txt")
 	if not os.path.isfile(resolverVerFile):
 		resolverVersion = ""
 	else:
-		f = open(resolverVerFile,'r')
-		resolverVersion = f.read()
-		f.close()
+		with open(resolverVerFile, 'r') as f:
+			resolverVersion = f.read()
 		
 	resolverNewVersion = ""
 	try:
@@ -497,16 +460,14 @@ def CheckNewVersion(remoteSettings):
 	if resolverNewVersion > resolverVersion:
 		isUpdated = True
 		title = "{0}{1}".format(localizedString(30235).encode('utf-8'), resolverNewVersion)
-		f = open(resolverVerFile, 'w')
-		f.write(resolverNewVersion)
-		f.close()
+		with open(resolverVerFile, 'w') as f:
+			f.write(resolverNewVersion)
 	
 	if newVersion > version:
 		isUpdated = True
 		title = "{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion)
-		f = open(versionFile, 'w')
-		f.write(newVersion)
-		f.close()
+		with open(versionFile, 'w') as f:
+			f.write(newVersion)
 	
 	CheckNewResolver(remoteSettings)
 	
@@ -523,16 +484,13 @@ def CheckNewResolver(remoteSettings):
 		if not os.path.isfile(lastModifiedFile):
 			lastModified = "0"
 		else:
-			f = open(lastModifiedFile, 'r')
-			lastModified = f.read()
-			f.close()
+			with open(lastModifiedFile, 'r') as f:
+				lastModified = f.read()
 		if newModified is not None and resolverContent is not None and lastModified < newModified:
-			f = open(resolverFile, 'w')
-			f.write(resolverContent)
-			f.close()
-			f = open(lastModifiedFile, 'w')
-			f.write(newModified)
-			f.close()
+			with open(resolverFile, 'w') as f:
+				f.write(resolverContent)
+			with open(lastModifiedFile, 'w') as f:
+				f.write(newModified)
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
 
