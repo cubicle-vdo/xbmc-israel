@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import re, urllib, xbmc, xbmcaddon
+import re, urllib, xbmc
 import myResolver
-
-AddonID = "plugin.video.israelive"
-Addon = xbmcaddon.Addon(AddonID)
-useRtmp = Addon.getSetting("StreramProtocol") == "1"
 
 def resolveUrl(url):
 	try:
@@ -25,7 +21,7 @@ def resolveUrl(url):
 				if mode == '0':
 					mode = '-3'
 					url = url[url.rfind(';')+1:]
-				url = myResolver.Resolve(url, mode, useRtmp=useRtmp)
+				url = myResolver.Resolve(url, mode)
 		if url is None or url == "down":
 			return None
 		return url

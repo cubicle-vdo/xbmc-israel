@@ -28,26 +28,24 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 FAV = os.path.join(user_dataDir, 'favorites.txt')
 if not (os.path.isfile(FAV)):
-	f = open(FAV, 'w') 
-	f.write('[]') 
-	f.close() 
+	common.WriteList(FAV, [])
 remoteSettings = common.GetRemoteSettings()
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
 if not os.path.isfile(remoteSettingsFile):
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=True)
+	common.UpdateFile(remoteSettingsFile, "remoteSettingsZip", remoteSettings, zip=True, forceUpdate=True)
+	remoteSettings = common.ReadList(remoteSettingsFile)
 if remoteSettings == []:
 	xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 	sys.exit()
-plxFile = os.path.join(user_dataDir, "israelive.plx")
-if not os.path.isfile(plxFile):
-	common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
+listsFile = os.path.join(user_dataDir, "israelive.list")
+if not os.path.isfile(listsFile):
+	common.UpdateChList(remoteSettings)
 fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
 iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
 iptvLogosDir = os.path.join(user_dataDir, "logos")
-listsDir = os.path.join(user_dataDir, 'lists')
-categoriesFile =  os.path.join(listsDir, 'categories.list')
-selectedCategoriesFile =  os.path.join(listsDir, 'selectedCategories.list')
+categoriesFile =  os.path.join(user_dataDir, 'lists', 'categories.list')
+selectedCategoriesFile =  os.path.join(user_dataDir, 'lists', 'selectedCategories.list')
 useCategories = Addon.getSetting("useCategories") == "true"
 useEPG = Addon.getSetting("useEPG") == "true"
 if useEPG and not os.path.isfile(fullGuideFile):
@@ -111,6 +109,13 @@ def ListLive(categoryID, iconimage=None):
 
 	SetViewMode()
 
+def PlayChannelByID(chID):
+	try:
+		channel = common.GetChannelByID(chID)
+		PlayChannel(channel["url"], channel["name"].encode("utf-8"), channel["image"].encode("utf-8"), None, channel["group"])
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+		
 def PlayChannel(url, name, iconimage, description, categoryName):
 	url = resolver.resolveUrl(url)
 	if url is None:
@@ -251,28 +256,17 @@ def listFavorites():
 		addDir(displayName, url, 11, image, description, isFolder=False, channelName=channelName, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
 	SetViewMode()
 
-def addFavorites(channelsIDs, categoryID, showNotification=True):
-	channels = common.GetChannels(categoryID)
+def addFavorites(channels, showNotification=True):
 	favsList = common.ReadList(FAV)
 	
-	for channelID in channelsIDs:
-		channel = [x for x in channels if x["id"] == channelID]
-		if len(channel) < 1:
-			if showNotification:
-				xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  Cannot add to favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), channel["name"].encode("utf-8"), 5000, __icon2__))
-			continue
-		channel = channel[0]
-		
+	for channel in channels:
 		if any(f.get('id', '') == channel["id"] for f in favsList):
 			if showNotification:
 				xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  Already in favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), channel["name"].encode("utf-8"), 5000, __icon2__))
 			continue
-				
 		favsList.append(channel)
-		
 		if showNotification:
 			xbmc.executebuiltin('Notification({0}, [COLOR {1}][B]{2}[/B][/COLOR]  added to favourites, {3}, {4})'.format(AddonName, Addon.getSetting("chColor"), channel["name"].encode("utf-8"), 5000, __icon__))
-	
 	common.WriteList(FAV, favsList)
 	common.MakeFavouritesGuide(fullGuideFile)
 
@@ -286,7 +280,7 @@ def removeFavorties(indexes):
 def SaveGuide():
 	try:
 		xbmc.executebuiltin("XBMC.Notification({0}, Saving Guide..., {1}, {2})".format(AddonName, 300000 ,icon))
-		if common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings, forceUpdate=True):
+		if common.UpdateFile(fullGuideFile, "fullGuide", remoteSettings, zip=True, forceUpdate=True):
 			xbmc.executebuiltin("XBMC.Notification({0}, Guide saved., {1}, {2})".format(AddonName, 5000 ,icon))
 			epg = common.ReadList(fullGuideFile)
 			fullCategoriesList =  common.ReadList(categoriesFile)
@@ -356,18 +350,19 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 
 def UpdateChannelsLists():
 	xbmc.executebuiltin("XBMC.Notification({0}, Updating Channels Lists..., {1}, {2})".format(AddonName, 300000 ,icon))
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", forceUpdate=True)
+	common.UpdateFile(remoteSettingsFile, "remoteSettingsZip", zip=True, forceUpdate=True)
+	remoteSettings = common.ReadList(remoteSettingsFile)
 	if remoteSettings == []:
 		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 		sys.exit()
 
-	common.UpdatePlx(plxFile, "plx", remoteSettings, forceUpdate=True)
+	common.UpdateChList(remoteSettings)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels Lists updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def MakeIPTVlists():
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV channels list..., {1}, {2})".format(AddonName, 300000 ,icon))
-	if not os.path.isfile(plxFile):
-		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
+	if not os.path.isfile(listsFile):
+		common.UpdateChList()
 	myIPTV.makeIPTVlist(iptvChannelsFile)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
@@ -378,8 +373,8 @@ def DownloadLogos():
 	if myIPTV.GetIptvType() > 1:
 		return
 	xbmc.executebuiltin("XBMC.Notification({0}, Downloading channels logos..., {1}, {2})".format(AddonName, 300000 ,icon))
-	if not os.path.isfile(plxFile):
-		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
+	if not os.path.isfile(listsFile):
+		common.UpdateChList()
 	myIPTV.SaveChannelsLogos(iptvLogosDir)
 	xbmc.executebuiltin("XBMC.Notification({0}, Channels logos saved., {1}, {2})".format(AddonName, 5000 ,icon))
 
@@ -389,10 +384,11 @@ def UpdateIPTVSimple():
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTVSimple settings updated., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def CleanLogosFolder():
+	if not os.path.exists(iptvLogosDir):
+		return
 	xbmc.executebuiltin("XBMC.Notification({0}, Cleaning channels logos folder..., {1}, {2})".format(AddonName, 300000 ,icon))
-	logosFolder = iptvLogosDir
-	for the_file in os.listdir(logosFolder):
-		file_path = os.path.join(logosFolder, the_file)
+	for the_file in os.listdir(iptvLogosDir):
+		file_path = os.path.join(iptvLogosDir, the_file)
 		try:
 			if os.path.isfile(file_path):
 				os.unlink(file_path)
@@ -408,7 +404,7 @@ def RefreshLiveTV():
 
 def AddCategories():
 	if not os.path.isfile(categoriesFile):
-		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
+		common.UpdateChList()
 	allCatList = common.ReadList(categoriesFile)
 	selectedCatList = common.ReadList(selectedCategoriesFile)
 	categories = common.GetUnSelectedList(allCatList, selectedCatList)
@@ -421,7 +417,7 @@ def AddCategories():
 
 def RemoveCategories():
 	if not os.path.isfile(categoriesFile):
-		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
+		common.UpdateChList()
 	
 	selectedCatList = common.ReadList(selectedCategoriesFile)
 	categories = [u"[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), item["name"]) for item in selectedCatList]
@@ -435,13 +431,13 @@ def RemoveCategories():
 
 def AddFavoritesFromCategory(categoryID):
 	channels = common.GetChannels(categoryID)
-	channelsNames = [u"[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channel["name"]) for channel in channels]
+	channelsNames = [u"[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channel["name"]) for channel in channels if channel["type"] != "ignore"]
 	selected = common.GetMultiChoiceSelected(localizedString(30208).encode('utf-8'), channelsNames)
 	if len(selected) < 1:
 		return
 	selectedList = [channels[index] for index in selected]
 	xbmc.executebuiltin('Notification({0}, Start adding channels to favourites, {1}, {2})'.format(AddonName, 5000, icon))
-	addFavorites([channel["id"] for channel in selectedList], categoryID, showNotification=False)
+	addFavorites(selectedList, showNotification=False)
 	common.MakeFavouritesGuide(fullGuideFile)
 	xbmc.executebuiltin('Notification({0}, Channels added to favourites, {1}, {2})'.format(AddonName, 5000, __icon__))
 
@@ -452,7 +448,7 @@ def AddCategoryToFavorites(categoryID):
 	if not common.YesNoDialog(localizedString(30210).encode('utf-8'), localizedString(30221).encode('utf-8'), localizedString(30222).encode('utf-8').format(category[0].encode('utf-8'), len(channels)), localizedString(30223).encode('utf-8'), nolabel=localizedString(30002).encode('utf-8'), yeslabel=localizedString(30001).encode('utf-8')):
 		return
 	xbmc.executebuiltin('Notification({0}, Start adding channels to favourites, {1}, {2})'.format(AddonName, 5000, icon))
-	addFavorites([channel["id"] for channel in channels], categoryID, showNotification=False)
+	addFavorites(channels, showNotification=False)
 	common.MakeFavouritesGuide(fullGuideFile)
 	xbmc.executebuiltin('Notification({0}, Channels added to favourites, {1}, {2})'.format(AddonName, 5000, __icon__))
 
@@ -465,7 +461,7 @@ def AddUserChannelToFavorites():
 		return
 	
 	if not os.path.isfile(categoriesFile):
-		common.UpdatePlx(plxFile, "plx", forceUpdate=True)
+		common.UpdateChList()
 	categories = common.ReadList(categoriesFile)
 	categoriesNames = [u"[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), item["name"]) for item in categories]
 	categoryInd = common.GetMenuSelected(localizedString(30227).encode('utf-8'), categoriesNames)
@@ -598,8 +594,45 @@ def Settings():
 	addDir(localizedString(30240).encode('utf-8'), 'settings', 51, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30240).encode('utf-8'), isFolder=False)
 	addDir(localizedString(30241).encode('utf-8'), 'settings', 52, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
 	addDir(localizedString(30242).encode('utf-8'), 'settings', 53, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30242).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30243).encode('utf-8'), 'settings', 54, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30243).encode('utf-8'), isFolder=False)
 	SetViewMode()
 
+def UpdateChannelsAndGuides():
+	UpdateChannelsLists()
+	SaveGuide()
+	if Addon.getSetting("useIPTV") == "true":
+		MakeIPTVlists()
+		DownloadLogos()
+		
+def RefreshUserdataFolder():
+	xbmc.executebuiltin("XBMC.Notification({0}, Cleaning addon profile folder..., {1}, {2})".format(AddonName, 300000 ,icon))
+	settingsFile = os.path.join(user_dataDir, 'settings.xml')
+	for the_file in os.listdir(user_dataDir):
+		file_path = os.path.join(user_dataDir, the_file)
+		try:
+			if os.path.isfile(file_path) and file_path != FAV and file_path != settingsFile:
+				os.unlink(file_path)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
+	listsDir =  os.path.join(user_dataDir, 'lists')
+	for the_file in os.listdir(listsDir):
+		file_path = os.path.join(listsDir, the_file)
+		try:
+			if os.path.isfile(file_path) and file_path != selectedCategoriesFile:
+				os.unlink(file_path)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
+	xbmc.executebuiltin("XBMC.Notification({0}, Addon profile folder cleaned., {1}, {2})".format(AddonName, 5000 ,icon))
+	CleanLogosFolder()
+	remoteSettings = common.GetRemoteSettings()
+	if not os.path.isfile(remoteSettingsFile):
+		common.UpdateFile(remoteSettingsFile, "remoteSettingsZip", remoteSettings, zip=True, forceUpdate=True)
+		remoteSettings = common.ReadList(remoteSettingsFile)
+	if remoteSettings == []:
+		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
+		return
+	UpdateChannelsAndGuides()
+	
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -674,6 +707,8 @@ updateList = True
 
 if mode == None:
 	CATEGORIES()
+elif mode == 1:
+	PlayChannelByID(url)
 elif mode == 2:
 	ListLive(urllib.unquote_plus(displayname), iconimage)
 elif mode == 5:
@@ -683,7 +718,12 @@ elif mode == 10 or mode == 11:
 elif mode == 16:
 	listFavorites()
 elif mode == 17: 
-	addFavorites([url], categoryID) 
+	channels = common.GetChannels(categoryID)
+	channel = [x for x in channels if x["id"] == url]
+	if len(channel) < 1:
+		xbmc.executebuiltin('Notification({0},  Cannot add this channel to favourites, {2}, {3})'.format(AddonName, Addon.getSetting("chColor"), 5000, __icon2__))
+	else:
+		addFavorites(channel) 
 elif mode == 18:
 	removeFavorties([int(url)])
 	xbmc.executebuiltin("XBMC.Container.Refresh()")
@@ -692,6 +732,9 @@ elif mode == 20: # Download Guide now - from server
 	updateList = False
 elif mode == 22: # Update Channels Lists now
 	UpdateChannelsLists()
+	updateList = False
+elif mode == 23: # Clean addon profile folder and refresh lists
+	RefreshUserdataFolder()
 	updateList = False
 elif mode == 30: # Make IPTV channels list and TV-guide
 	MakeIPTVlists()
@@ -746,11 +789,9 @@ elif mode == 51:
 elif mode == 52:
 	xbmc.executebuiltin('Addon.OpenSettings("script.module.israeliveresolver")')
 elif mode == 53:
-	UpdateChannelsLists()
-	SaveGuide()
-	if Addon.getSetting("useIPTV") == "true":
-		MakeIPTVlists()
-		DownloadLogos()
+	UpdateChannelsAndGuides()
+elif mode == 54: # Clean addon profile folder and refresh lists
+	RefreshUserdataFolder()
 elif mode == 100: # CheckUpdates
 	checkUpdates.Update()
 	updateList = False

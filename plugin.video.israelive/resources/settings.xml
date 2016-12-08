@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="30100">
-		<setting id="action" type="action" label="30111" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=22&url=settings)" option="close"/>
-		<setting id="useEPG" type="bool" label="30106" default="true"/>
-		<setting id="action" type="action" label="30107" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=20&url=settings)" option="close" visible="eq(-1,true)"/>
+		<setting id="action" type="action" label="30243" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=23&url=settings)" option="close"/>
 		<setting type="sep"/>
 		<setting id="israeliveAdvanced" type="bool" label="30020" default="false" />
-		<setting id="unverifySSL" type="bool" label="30102" default="false"  visible="eq(-1,true)"/>
-		<setting id="StreramProtocol" type="enum" label="30110" lvalues="30104|30105" default="0" visible="eq(-2,true)"/>
-		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eLiuvaHe2pR9msq2ouXn,sefm0Z97eLiuvaHe2pR9la2Jm-ai,sefm0Z97eLiuvaHe2pR9nb6XgO3W,sefm0Z97eLiuvaHe2pR9t8WmuMW3,sefm0Z97eLiuvaHe2pR9nb6WmLi9,sefm0Z97eLiuvaHe2pR-eqV6t8nq,sefm0Z97eLiuvaHe2pR-eqiomNTI,sefm0Z97eLiuvaHe2pR9ucl5rdrD,sefm0Z97eLiuvaHe2pR9m4aGksO6,sefm0Z97eLiuvaHe2pR9nqC2sqnm,sefm0Z97eLiuvaHe2pR-eqWVkKOi,sefm0Z97eLiuvaHe2pR-eql8wNnX,sefm0Z97eLiuvaHe2pR9uY6rfM2-,sefm0Z97eLiuvaHe2pR9lY6avrrh,sefm0Z97eLiuvaHe2pR9nMm_e8Km,sefm0Z97eLiuvaHe2pR9nqJ3tcDf,sefm0Z97eLiuvaHe2pR9m8y9w6fs,sefm0Z97eLiuvaHe2pR9nZmnmuzb,sefm0Z97eLiuvaHe2pR9na-wvNzj,sefm0Z97eLiuvaHe2pR9nourjuSr,sefm0Z97eLiuvaHe2pR9kpmGjMfG,sefm0Z97eLiuvaHe2pR9j7mfktng,sefm0Z97eLiuvaHe2pR9nLm-tump,sefm0Z97eLiuvaHe2pR9na-2rrTj,sefm0Z97eLiuvaHe2pR9kqyGlNvn,sefm0Z97eLiuvaHe2pR9tMWzk82o,sefm0Z97eLiuvaHe2pR9nb-rj8vA,sefm0Z97eLiuvaHe2pR9nb-stLzs,sefm0Z97eLiuvaHe2pR9k859mKa5,sefm0Z97eLiuvaHe2pR9sZ6xoqvr,sefm0Z97eLiuvaHe2pR9mZqWnuGi,sefm0Z97eLiuvaHe2pR9o618kebd,sefm0Z97eLiuvaHe2pR9m62Twr6_,sefm0Z97eLiuvaHe2pR9moinvb_Y,sefm0Z97eLiuvaHe2pR9o618n6XC,sefm0Z97eLiuvaHe2pR9kZ6LfMfI,sefm0Z97eLiuvaHe2pR9l6-Jvdm7,sefm0Z97eLiuvaHe2pR9mJl6w-jZ,sefm0Z97eLiuvaHe2pR9n8aPwsrM,sefm0Z97eLiuvaHe2pR9m66oede0,sefm0Z97eLiuvaHe2pR9m66nn6y5,sefm0Z97eLiuvaHe2pR-epi2vcXj,sefm0Z97eLiuvaHe2pR9t6-XvqfU,sefm0Z97eLiuvaHe2pR9mcF4vaXc,sefm0Z97eLiuvaHe2pR9m7mqnLfl,sefm0Z97eLiuvaHe2pR9m42ml7fI,sefm0Z97eLiuvaHe2pR-epi-rKTM,sefm0Z97eLiuvaHe2pR9m8u9rb_e,sefm0Z97eLiuvaHe2pR9np95vKbT,sefm0Z97eLiuvaHe2pR9uZmpvcSo,sefm0Z97eLiuvaHe2pR9m663uuzY,sefm0Z97eLiuvaHe2pR9o7ycgKrr" visible="eq(-3,true)"/>
-		<setting id="forceRemoteDefaults" type="bool" label="30112" default="true" visible="eq(-4,true)"/>
+		<setting id="action" type="action" label="30111" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=22&url=settings)" option="close" visible="eq(-1,true)"/>
+		<setting id="useEPG" type="bool" label="30106" default="true" visible="eq(-2,true)"/>
+		<setting id="action" type="action" label="30107" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=20&url=settings)" option="close" visible="eq(-1,true) + eq(-3,true)"/>
+		<setting id="unverifySSL" type="bool" label="30102" default="false"  visible="eq(-4,true)"/>
+		<setting id="remoteSettingsUrl" type="text" label="30101" default="sefm0Z97eLiuvaHe2pR-sJq5r6vG,sefm0Z97eLiuvaHe2pR-sMKzoNq_,sefm0Z97eLiuvaHe2pR-sY2nkePh,sefm0Z97eLiuvaHe2pR-sLl6j6TI,sefm0Z97eLiuvaHe2pR-scGNleCl,sefm0Z97eLiuvaHe2pR-sKycveC5,sefm0Z97eLiuvaHe2pR-sY1-kNTb,sefm0Z97eLiuvaHe2pR-sb6IlOy2,sefm0Z97eLiuvaHe2pR-sLiUeerp,sefm0Z97eLiuvaHe2pR-sLl4n-O4,sefm0Z97eLiuvaHe2pR-scGResLZ,sefm0Z97eLiuvaHe2pR-sKyTkr2r,sefm0Z97eLiuvaHe2pR-sJq6rKPH,sefm0Z97eLiuvaHe2pR-sb6Toqmq,sefm0Z97eLiuvaHe2pR-scGSl9zh,sefm0Z97eLiuvaHe2pR-sYuMn765,sefm0Z97eLiuvaHe2pR-sLqwuqe7,sefm0Z97eLiuvaHe2pR-sY6se-PJ,sefm0Z97eLiuvaHe2pR-sLq9feOq,sefm0Z97eLiuvaHe2pR-sY6wsN2-,sefm0Z97eLiuvaHe2pR-sK6eeeak,sefm0Z97eLiuvaHe2pR-sLqwv764,sefm0Z97eLiuvaHe2pR-sLqxksDM,sefm0Z97eLiuvaHe2pR-sY6zfOS7,sefm0Z97eLiuvaHe2pR-sLqvgeTl,sefm0Z97eLiuvaHe2pR-sLqnv7TW,sefm0Z97eLiuvaHe2pR-scO4udq4,sefm0Z97eLiuvaHe2pR-sLqyfNy4,sefm0Z97eLiuvaHe2pR-sY61r7S3,sefm0Z97eLiuvaHe2pR-sMORjcm-,sefm0Z97eLiuvaHe2pR-sMOPgsu2,sefm0Z97eLiuvaHe2pR-sY6ulrrV,sefm0Z97eLiuvaHe2pR-sb-NvOqo,sefm0Z97eLiuvaHe2pR-sLq_squl,sefm0Z97eLiuvaHe2pR-sJu3ltzB,sefm0Z97eLiuvaHe2pR-sY60rr2q,sefm0Z97eLiuvaHe2pR-sMOWitu4,sefm0Z97eLiuvaHe2pR-sLqnvsC3,sefm0Z97eLiuvaHe2pR-sK6Ye8zi,sefm0Z97eLiuvaHe2pR-scO8r-Tc,sefm0Z97eLiuvaHe2pR-sLq2lOyl,sefm0Z97eLiuvaHe2pR-sJuvqr2l,sefm0Z97eLiuvaHe2pR-sYuRkKm-,sefm0Z97eLiuvaHe2pR-sJu1juXZ,sefm0Z97eLiuvaHe2pR-scOIetXg,sefm0Z97eLiuvaHe2pR-scO-nt29,sefm0Z97eLiuvaHe2pR-sYuKq-rE,sefm0Z97eLiuvaHe2pR-sY67vaaz,sefm0Z97eLiuvaHe2pR-sY6zs-ao,sefm0Z97eLiuvaHe2pR-sMOUgOHd,sefm0Z97eLiuvaHe2pR-scO4i8Ha,sefm0Z97eLiuvaHe2pR-scOHr9jo" visible="eq(-5,true)"/>
+		<setting id="forceRemoteDefaults" type="bool" label="30112" default="true" visible="eq(-6,true)"/>
 	</category>
 	
 	<category label="30300">
 		<setting id="useIPTV" type="bool" label="30301" />
 		<setting id="action" type="action" label="30308" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=34&url=settings)" option="close" visible="eq(-1,true)"/>
-		<setting id="dynamicPlayer" type="enum" label="30314" lvalues="30315|30316" default="0"  visible="eq(-2,true)"/>
 		<setting type="sep"/>
-		<setting id="LiveTVadvanced" type="bool" label="30020" default="false" visible="eq(-4,true)"/>
-		<setting id="action" type="action" label="30302" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=30&url=settings)" option="close" visible="eq(-1,true) + eq(-5,true)"/>
-		<setting id="action" type="action" label="30303" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=31&url=settings)" option="close" visible="eq(-2,true) + eq(-6,true)"/>
-		<setting id="action" type="action" label="30304" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=32&url=settings)" option="close" visible="eq(-3,true) + eq(-7,true)"/>
-		<setting id="autoIPTV" type="bool" label="30306" default="true" visible="eq(-4,true) + eq(-8,true)"/>
-		<setting id="autoPVR" type="bool" label="30309" default="true" visible="eq(-5,true) + eq(-9,true)"/>
-		<setting id="autoStopPVR" type="bool" label="30310" default="false" visible="eq(-6,true) + eq(-10,true) + eq(-1,true)"/>
-		<setting id="action" type="action" label="30307" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=33&url=settings)" option="close" visible="eq(-7,true) + eq(-11,true)"/>
-		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-8,true) + eq(-12,true)"/>
+		<setting id="LiveTVadvanced" type="bool" label="30020" default="false" visible="eq(-3,true)"/>
+		<setting id="dynamicPlayer" type="enum" label="30314" lvalues="30315|30316" default="0"  visible="eq(-1,true) + eq(-4,true)"/>
+		<setting id="action" type="action" label="30302" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=30&url=settings)" option="close" visible="eq(-2,true) + eq(-5,true)"/>
+		<setting id="action" type="action" label="30303" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=31&url=settings)" option="close" visible="eq(-3,true) + eq(-6,true)"/>
+		<setting id="action" type="action" label="30304" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=32&url=settings)" option="close" visible="eq(-4,true) + eq(-7,true)"/>
+		<setting id="autoIPTV" type="bool" label="30306" default="true" visible="eq(-5,true) + eq(-8,true)"/>
+		<setting id="autoPVR" type="bool" label="30309" default="true" visible="eq(-6,true) + eq(-9,true)"/>
+		<setting id="autoStopPVR" type="bool" label="30310" default="false" visible="eq(-7,true) + eq(-10,true) + eq(-1,true)"/>
+		<setting id="action" type="action" label="30307" action="RunPlugin(plugin://plugin.video.israelive/default.py?mode=33&url=settings)" option="close" visible="eq(-8,true) + eq(-11,true)"/>
+		<setting id="LiveStreamerPort" type="text" label="30305" default="65007" visible="eq(-9,true) + eq(-12,true)"/>
 	</category>
 	
 	<category label="30500">

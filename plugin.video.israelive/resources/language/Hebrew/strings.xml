@@ -22,9 +22,6 @@
 	<string id="30100">הגדרות הרחבה</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>
 	<string id="30102">ביטול וידוא SSL</string>
-	<string id="30110">פרוטוקול ניגון ערוצי פילמון</string>
-	<string id="30104">HLS</string>
-	<string id="30105">RTMP</string>
 	<string id="30106">שימוש במדריך שידורים?</string>
 	<string id="30107">עדכון מדריך שידורים</string>
 	<string id="30111">עדכון רשימות ערוצים</string>
@@ -73,6 +70,7 @@
 	<string id="30240">הגדרות IsraeLIVE</string>
 	<string id="30241">הגדרות IsraeLiveResolver</string>
 	<string id="30242">עדכון רשימות ערוצים ומדריכי שידורים</string>
+	<string id="30243">ניקוי תיקיית המשתמש ועדכון רשימות</string>
 	
 	<string id="30300">טלויזיה חיה</string>
 	<string id="30301">שימוש בטלויזיה חיה</string>

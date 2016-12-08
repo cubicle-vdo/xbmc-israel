@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-import urllib, re, os, shutil, threading, urllib2, gzip
-import xbmc, xbmcaddon
+import urllib, re, os, shutil, threading, urllib2, gzip, json, time, datetime
+from StringIO import StringIO
 import xml.etree.ElementTree as ET
-import time, datetime
-isDateutil = False
+import xbmc, xbmcaddon
+import common, UA
 try:
 	from dateutil import tz
 	isDateutil = True
 except:
-	pass
-import common, UA
+	isDateutil = False
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -67,9 +66,8 @@ def makeIPTVlist(iptvFile):
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
 
-	f = open(iptvFile, 'w')
-	f.write(iptvList)
-	f.close()
+	with open(iptvFile, 'w') as f:
+		f.write(iptvList)
 	
 def EscapeXML(str):
 	return str.replace('&', '&amp;').replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#39;")
@@ -107,17 +105,16 @@ def MakeChannelsGuide(fullGuideFile, iptvGuideFile):
 	programmeList = ""
 	for channel in FullGuideList:
 		chName = channel["channel"].encode("utf-8")
-		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{0}</display-name>\n\t</channel>\n".format(chName)
+		channelsList += "\t<channel id=\"{0}\">\n\t\t<display-name>{1}</display-name>\n\t</channel>\n".format(EscapeXML(chName), chName)
 		for programme in channel["tvGuide"]:
 			start = GetTZtime(programme["start"])
 			end = GetTZtime(programme["end"])
 			name = EscapeXML(programme["name"].encode("utf-8")) if programme["name"] != None else ""
 			description = EscapeXML(programme["description"].encode("utf-8")) if programme["description"] != None else ""
-			programmeList += "\t<programme start=\"{0}\" stop=\"{1}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(start, end, chName, name, description)
+			programmeList += "\t<programme start=\"{0}\" stop=\"{1}\" channel=\"{2}\">\n\t\t<title>{3}</title>\n\t\t<desc>{4}</desc>\n\t</programme>\n".format(start, end, EscapeXML(chName), name, description)
 	xmlList = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tv>\n{0}{1}</tv>".format(channelsList, programmeList)
-	f = open(iptvGuideFile, 'w')
-	f.write(xmlList)
-	f.close()
+	with open(iptvGuideFile, 'w') as f:
+		f.write(xmlList)
 	
 def SaveChannelsLogos(logosDir):
 	if not os.path.exists(logosDir):
@@ -171,14 +168,34 @@ def SaveChannelBackground(logoUrl, logoFile, ua):
 	with open(logoFile, 'wb') as f:
 		f.write(data)
 
+def EnableIptvClient():
+	try:
+		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled']:
+			xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
+			return True
+	except:
+		pass
+	return False
+
+def EnableIPVR():
+	try:
+		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']:
+			xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
+			return True
+	except:
+		pass
+	return False
+
 def GetIptvAddon():
 	iptvAddon = None
-	
 	if xbmc.getCondVisibility("System.HasAddon(pvr.iptvsimple)"):
 		try:
 			iptvAddon = xbmcaddon.Addon("pvr.iptvsimple")
 		except:
 			pass
+	else:
+		if EnableIptvClient():
+			iptvAddon = xbmcaddon.Addon("pvr.iptvsimple")
 
 	if iptvAddon is None:
 		import platform
@@ -187,10 +204,6 @@ def GetIptvAddon():
 		xbmcVer = xbmc.getInfoLabel( "System.BuildVersion" )[:2]
 		xbmc.log("---- {0} ----\nIPTVSimple addon is disable.".format(AddonName), 2)
 		xbmc.log("---- {0} ----\nosType: {1}\nosVer: {2}\nxbmcVer: {3}".format(AddonName, osType, osVer, xbmcVer), 2)
-		#msg1 = "PVR IPTV Simple Client is Disable."
-		#msg2 = "Please enable PVR IPTV Simple Client addon."
-		#common.OKmsg(AddonName, msg1, msg2)
-		
 	return iptvAddon
 
 def GetIptvType():
@@ -264,9 +277,8 @@ def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 	xml += "</settings>\n"
 	
 	# write updates back to settings.xml
-	f = open(iptvSettingsFile, 'w') 
-	f.write(xml)
-	f.close()
+	with open(iptvSettingsFile, 'w') as f:
+		f.write(xml)
 	return True
 	
 def ReadSettings(source, fromFile=False):
@@ -287,8 +299,10 @@ def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 	if common.getAutoIPTV() or forceUpdate:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
 		if Addon.getSetting("autoPVR") == "true":
-			xbmc.executebuiltin('StopPVRManager')
-			xbmc.executebuiltin('StartPVRManager')
+			EnableIptvClient()
+			if not EnableIPVR():
+				xbmc.executebuiltin('StopPVRManager')
+				xbmc.executebuiltin('StartPVRManager')
 		
 def GetCategories():
 	iptvList = int(Addon.getSetting("iptvList"))
@@ -305,7 +319,7 @@ def GetIptvChannels():
 	categories = GetCategories()
 	channelsList = []
 	for category in categories:
-		if category.has_key("type") and category["type"] == "ignore":
+		if category.get('type', '') == "ignore":
 			continue
 		channels = common.GetChannels(category["id"]) if category["id"] != "Favourites" else common.ReadList(os.path.join(user_dataDir, 'favorites.txt'))
 		for channel in channels:

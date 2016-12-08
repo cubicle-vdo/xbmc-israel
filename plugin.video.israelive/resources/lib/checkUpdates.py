@@ -1,5 +1,5 @@
 import xbmc, xbmcaddon, os, sys
-import common#, UA
+import common
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -11,7 +11,6 @@ if not os.path.exists(user_dataDir):
 	os.makedirs(user_dataDir)
 
 remoteSettingsFile = os.path.join(user_dataDir, "remoteSettings.txt")
-plxFile = os.path.join(user_dataDir, "israelive.plx")
 fullGuideFile = os.path.join(user_dataDir, 'fullGuide.txt')
 iptvChannelsFile = os.path.join(user_dataDir, "iptv.m3u")
 iptvGuideFile = os.path.join(user_dataDir, "guide.xml")
@@ -19,24 +18,24 @@ iptvLogosDir = os.path.join(user_dataDir, "logos")
 
 def Update():
 	remoteSettings = common.GetRemoteSettings()
-	refresh = common.GetSubKeyValue(remoteSettings, "remoteSettings", "refresh")
+	refresh = common.GetSubKeyValue(remoteSettings, "remoteSettingsZip", "refresh")
 	forceUpdate = True if refresh is None or common.isFileOld(remoteSettingsFile, refresh * 3600) else False
-	remoteSettings = common.GetUpdatedList(remoteSettingsFile, "remoteSettings", remoteSettings, forceUpdate=forceUpdate)
+	common.UpdateFile(remoteSettingsFile, "remoteSettingsZip", remoteSettings, zip=True, forceUpdate=forceUpdate)
+	remoteSettings = common.ReadList(remoteSettingsFile)
 	if remoteSettings == []:
 		xbmc.executebuiltin('StartPVRManager')
 	else:
 		common.CheckNewVersion(remoteSettings)
-		#UA.CheckUA()
 		# Update channels-lists files
-		refresh = common.GetSubKeyValue(remoteSettings, "plx", "refresh")
+		refresh = common.GetSubKeyValue(remoteSettings, "lists", "refresh")
 		if not refresh is None:
-			common.UpdatePlx(plxFile, "plx", remoteSettings, refreshInterval = refresh * 3600)
+			common.UpdateChList(remoteSettings, refreshInterval = refresh * 3600, forceUpdate = False)
 
 		# Update EPG files for selected LiveTV channels first
 		isGuideUpdated = False
 		if Addon.getSetting("useEPG") == "true":
 			refresh = common.GetSubKeyValue(remoteSettings, "fullGuide", "refresh")
-			if not refresh is None and common.isFileOld(fullGuideFile, refresh * 3600) and common.UpdateZipedFile(fullGuideFile, "fullGuide", remoteSettings):
+			if refresh is not None and common.isFileOld(fullGuideFile, refresh * 3600) and common.UpdateFile(fullGuideFile, "fullGuide", remoteSettings, zip=True):
 				isGuideUpdated = True
 				epg = common.ReadList(fullGuideFile)
 				fullCategoriesList = []

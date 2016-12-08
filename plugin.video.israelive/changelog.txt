@@ -1,3 +1,6 @@
+[B]v4.9.4[/B]
+- Added option to clean addon-profile folder and refresh channels list and tv-guides.
+- Maintenance.
 [B]v4.9.3[/B]
 - Added 'Settings' folder to addon.
 - Maintenance.
