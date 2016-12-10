@@ -23,7 +23,7 @@ def isFileOld(file, deltaInSec):
 	return isFileNotUpdate
 	
 def GetSubKeyValue(remoteSettings, key, subKey):
-	return remoteSettings[key][subKey] if (remoteSettings.has_key(key) and remoteSettings[key].has_key(subKey)) else None
+	return remoteSettings[key][subKey] if (remoteSettings and remoteSettings.has_key(key) and remoteSettings[key].has_key(subKey)) else None
 	
 def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 	if remoteSettings is None:

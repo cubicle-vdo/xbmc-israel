@@ -1,3 +1,5 @@
+[B]v4.9.5[/B]
+- Bugfix for last version error on fresh install.
 [B]v4.9.4[/B]
 - Added option to clean addon-profile folder and refresh channels list and tv-guides.
 - Maintenance.
