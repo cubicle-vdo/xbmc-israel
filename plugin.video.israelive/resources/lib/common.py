@@ -384,6 +384,8 @@ def MakeFavouritesGuide(fullGuideFile, epg=None):
 	MakeCatGuide("Favourites", epg)
 			
 def GetGuide(categoryID):
+	if categoryID == '9999':
+		return []
 	fileName = os.path.join(listsDir, "{0}.guide".format(categoryID))
 	return ReadList(fileName)
 

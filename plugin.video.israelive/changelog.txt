@@ -1,3 +1,10 @@
+[B]v4.9.6[/B]
+- Group all links of channel.
+- Autonatic enable IPTV Simple Client.
+- Autonatic enable LiveTV setting in Kodi settings.
+- Prompt to choose what to do in case of LiveTV setting disable in Kodi settings but enable in addon settings.
+- Shows Now-playing and next program in program details too.
+- Direct link to channel by ID (from israelive.list): plugin://plugin.video.israelive/?mode=1&channelid=ID
 [B]v4.9.5[/B]
 - Bugfix for last version error on fresh install.
 [B]v4.9.4[/B]

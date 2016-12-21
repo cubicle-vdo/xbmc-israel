@@ -84,11 +84,14 @@
 	<string id="30309">עדכון אוטומטי של טלויזיה חיה?</string>
 	<string id="30310">עצירת טלויזיה חיה בזמן העדכון?</string>
 	<string id="30311">האם ברצונך להשתמש ברשימות IsraeLIVE בטלויזיה החיה?</string>
-	<string id="30312">בחר כן לעדכון הגדרות PVR IPTV Simple client.</string>
-	<string id="30313">לא לשכוח לאפשר בהגדרות קודי את השימוש בטלויזיה ואת PVR IPTV Simple client.</string>
+	<string id="30312">בחר כן לעדכון הגדרות PVR IPTV Simple client,</string>
+	<string id="30313">והפעלת הטלויזיה החיה בהגדרות קודי</string>
 	<string id="30314">נגן הוידאו עבור ערוצים דינאמים (מצריך אתחול)</string>
 	<string id="30315">Livestreamer</string>
 	<string id="30316">Kodi-player</string>
+	<string id="30317">הטלויזיה החיה לא מאופשרת בהגדרות של קודי</string>
+	<string id="30318">הפעלת טלויזיה חיה ושימוש ברשימות IsraeLIVE</string>
+	<string id="30319">הפסקת שימוש ברשימות IsraeLIVE עבור טלויזיה חיה</string>
 	
 	<string id="30400">מראה</string>
 	
