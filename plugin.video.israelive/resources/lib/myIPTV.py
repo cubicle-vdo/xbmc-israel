@@ -180,8 +180,12 @@ def EnableIptvClient():
 def EnableIPVR():
 	try:
 		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']:
-			xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
-			return True
+			tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
+			if tvOption == 0:
+				xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
+				return True
+			elif tvOption == 1:
+				Addon.setSetting("useIPTV", "False")
 	except:
 		pass
 	return False
@@ -212,7 +216,7 @@ def GetIptvType():
 		ver1 = int(ver[0])
 		ver2 = int(ver[1])
 		ver3 = int(ver[2])
-		if ver1 == 1 and (ver2 < 9 or (ver2 == 9 and ver3 < 3)):
+		if ver1 < 1 or (ver1 == 1 and (ver2 < 9 or (ver2 == 9 and ver3 < 3))):
 			v = 0
 		elif ver1 == 1 and ver2 < 11:
 			v = 1
@@ -347,7 +351,7 @@ def GetIptvGuide():
 		channels = common.GetGuide(category["id"])		
 		for channel in channels:
 			try:
-				if not any(d.get('channel', '').encode('utf-8') == channel["channel"].encode("utf-8") for d in epg):
+				if not any(channel["channel"] == d.get('channel', '') for d in epg):
 					epg.append(channel)
 			except Exception, e:
 				pass

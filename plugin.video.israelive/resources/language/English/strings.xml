@@ -84,11 +84,14 @@
 	<string id="30309">Auto-update PVR?</string>
 	<string id="30310">Stop PVR while updating?</string>
 	<string id="30311">Do you want to use IsraeLIVE lists for LiveTV?</string>
-	<string id="30312">Choose Yes to update PVR IPTV Simple client settings.</string>
-	<string id="30313">Don't forget to enable LiveTV and PVR IPTV Simple client from Kodi settings.</string>
+	<string id="30312">Choose Yes to update PVR IPTV Simple client settings,</string>
+	<string id="30313">and to enabe LiveTV in Kodi settings.</string>
 	<string id="30314">LiveTV video-player for dynamic channels (require restart)</string>
 	<string id="30315">Livestreamer</string>
 	<string id="30316">Kodi-player</string>
+	<string id="30317">Your LiveTV is disabled in Kodi settings</string>
+	<string id="30318">Enable LiveTV and use IsraeLIVE lists</string>
+	<string id="30319">Stop using IsraeLIVE lists for LiveTV</string>
 	
 	<string id="30400">Appearance</string>
 	
