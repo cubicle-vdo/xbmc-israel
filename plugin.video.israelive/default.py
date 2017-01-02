@@ -55,8 +55,8 @@ epg = None
 def CATEGORIES():
 	common.CheckNewVersion(remoteSettings)
 
-	addDir("[COLOR yellow][B][{0}][/B][/COLOR]".format(localizedString(30239).encode('utf-8')), 'settings', 50, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30239).encode('utf-8'), background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
-	addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("favColor"), localizedString(30000).encode('utf-8')), 'favorites', 16, 'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png', '', channelName=localizedString(30000).encode('utf-8'), background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
+	addDir("[COLOR yellow][B][{0}][/B][/COLOR]".format(localizedString(30239).encode('utf-8')), 50, 'https://www.ostraining.com/cdn/images/coding/setting.png', background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
+	addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("favColor"), localizedString(30000).encode('utf-8')), 16, 'http://cdn3.tnwcdn.com/files/2010/07/bright_yellow_star.png', background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 	
 	if useCategories:
 		categories = common.ReadList(selectedCategoriesFile)
@@ -66,11 +66,11 @@ def CATEGORIES():
 			try:
 				if category.has_key("type") and category["type"] == "ignore":
 					continue
-				addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), category["name"].encode("utf-8")), 'cat', 2, category["image"], '', channelName=category["id"], background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", channelID=ind)
+				addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), category["name"].encode("utf-8")), 2, category["image"], background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", channelID=ind)
 			except Exception as ex:
 				xbmc.log("{0}".format(ex), 3)
 	else:
-		ListLive("9999", "http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
+		ListLive(categoryID="9999", iconimage="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
 		
 	SetViewMode()
 
@@ -80,8 +80,9 @@ def SetViewMode():
 		viewMode = 504 if int(xbmc.getInfoLabel("System.BuildVersion")[:2]) < 17 else 55
 		xbmc.executebuiltin("Container.SetViewMode({0})".format(viewMode))
 
-def ListLive(categoryID, iconimage=None, chID=None):
-	catChannels = common.GetChannels(categoryID)
+def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None):
+	if catChannels is None:
+		catChannels = common.GetChannels(categoryID)
 
 	groupChannels = []
 	for channel in catChannels:
@@ -98,7 +99,6 @@ def ListLive(categoryID, iconimage=None, chID=None):
 		isGroupChannel = len(channels) > 1 and chID is None
 		chs = [channels[0]] if isGroupChannel else channels
 		for channel in chs:
-			url = channel['url']
 			image = channel['image']
 			description = ""
 			channelName = channel['name'].encode("utf-8")
@@ -111,7 +111,6 @@ def ListLive(categoryID, iconimage=None, chID=None):
 			if isGroupChannel:
 				mode = 3
 				displayName = displayName.replace('[COLOR {0}][B]'.format(Addon.getSetting("chColor")), '[COLOR {0}][B]['.format(Addon.getSetting("catColor")), 1).replace('[/B]', '][/B]', 1)
-				channelName=categoryID
 			elif channel["type"] == 'video' or channel["type"] == 'audio':
 				mode = 10
 				isFolder=False
@@ -119,32 +118,33 @@ def ListLive(categoryID, iconimage=None, chID=None):
 				mode = 2
 				displayName = displayName.replace('[COLOR {0}][B]'.format(Addon.getSetting("chColor")), '[COLOR {0}][B]['.format(Addon.getSetting("catColor")), 1).replace('[/B]', '][/B]', 1)
 				background = image
-				channelName=channel["id"]
 			else:
 				continue
 						
 			if background is None or background == "":
 				background = iconimage
 				
-			addDir(displayName, url, mode, image, description, isFolder=isFolder, channelName=channelName, background=background, isTvGuide=isTvGuide, channelID=channel["id"], categoryID=categoryID)
+			addDir(displayName, mode, image, description, isFolder=isFolder, background=background, isTvGuide=isTvGuide, channelID=channel["id"], categoryID=categoryID)
 
 	SetViewMode()
 
-def PlayChannelByID(chID):
+def PlayChannelByID(chID=None, fromFav=False, channel=None):
 	try:
-		channel = common.GetChannelByID(chID)
-		PlayChannel(channel["url"], channel["name"].encode("utf-8"), channel["image"].encode("utf-8"), None, channel["group"])
+		if channel is None:
+			channel = common.ReadList(FAV)[int(chID)] if fromFav else common.GetChannelByID(chID)
+		categoryID = 'Favourites' if fromFav else channel["group"]
+		PlayChannel(channel["url"], channel["name"].encode("utf-8"), channel["image"].encode("utf-8"), categoryID)
 	except Exception as ex:
 		xbmc.log(str(ex), 3)
 		
-def PlayChannel(url, name, iconimage, description, categoryID):
+def PlayChannel(url, name, iconimage, categoryID):
 	url = resolver.resolveUrl(url)
 	if url is None:
 		xbmc.log("Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name)), 3)
 		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name), 5000, __icon2__))
 		return False
 	
-	channelName, programmeName = GetPlayingDetails(urllib.unquote_plus(name), categoryID)
+	channelName, programmeName, description = GetPlayingDetails(urllib.unquote_plus(name), categoryID)
 
 	listItem = xbmcgui.ListItem(path=url)
 	listItem.setInfo(type="Video", infoLabels={"mediatype": "movie", "studio": channelName, "title": programmeName, "plot": description, "tvshowtitle": channelName, "episode": "0", "season": "0"})
@@ -159,48 +159,53 @@ def PlayChannel(url, name, iconimage, description, categoryID):
 
 def GetPlayingDetails(channelName, categoryID):
 	programmeName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
-
 	if not useEPG:
 		return programmeName, programmeName
-
 	global epg
 	if epg is None:
 		epg = common.GetGuide(categoryID)
 	programmes = GetProgrammes(epg, channelName)
-	
 	channelName = programmeName
-	
+	description = ''
 	if len(programmes) > 0:
 		programme = programmes[0]
 		programmeName = '[COLOR {0}][B]{1}[/B][/COLOR] [COLOR {2}][{3}-{4}][/COLOR]'.format(Addon.getSetting("prColor"), programme["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programme["end"]).strftime('%H:%M'))
+		if programmes[0]["description"] is not None:
+			description = '{0}[CR]{1}'.format(programmeName, programmes[0]["description"].encode('utf-8'))
 		if len(programmes) > 1:
 			nextProgramme = programmes[1]
 			channelName = "{0} - [COLOR {1}]Next: [B]{2}[/B][/COLOR] [COLOR {3}][{4}-{5}][/COLOR]".format(channelName, Addon.getSetting("nprColor"), nextProgramme["name"].encode("utf-8"), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(nextProgramme["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(nextProgramme["end"]).strftime('%H:%M'))
+			description = '{0}[CR][CR]Next: [COLOR {1}][B]{2}[/B][/COLOR] [COLOR {3}][{4}-{5}][/COLOR]'.format(description, Addon.getSetting("prColor"), programmes[1]["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
 
-	return channelName, programmeName
+	return channelName, programmeName, description
 
-def ChannelGuide(channelName, iconimage, categoryID):
+def ChannelGuide(chID, categoryID):
 	epg = common.GetGuide(categoryID)
+	if categoryID == 'Favourites':
+		channel = common.ReadList(FAV)[int(chID)]
+	else:
+		channel = common.GetChannelByID(chID)
+	channelName = channel["name"].encode("utf-8")
 	programmes = GetProgrammes(epg, channelName, full=True)
-	ShowGuide(programmes, channelName, iconimage)
+	ShowGuide(programmes, channelName, channel["image"].encode("utf-8"))
 
 def ShowGuide(programmes, channelName, iconimage):
 	if programmes is None or len(programmes) == 0:
-		addDir('[COLOR red][B]{0}[/B] "{1}".[/COLOR]'.format(localizedString(30204).encode('utf-8'), channelName), '.', 99, iconimage, "", isFolder=False)
+		addDir('[COLOR red][B]{0}[/B] "{1}".[/COLOR]'.format(localizedString(30204).encode('utf-8'), channelName), 99, iconimage, isFolder=False)
 	else:
-		addDir('------- [B][COLOR {0}]{1}[/COLOR] - [COLOR {2}]{3}[/COLOR][/B] -------'.format(Addon.getSetting("chColor"), channelName, Addon.getSetting("prColor"), localizedString(30205).encode('utf-8')), '.', 99, iconimage, "", isFolder=False)
+		addDir('------- [B][COLOR {0}]{1}[/COLOR] - [COLOR {2}]{3}[/COLOR][/B] -------'.format(Addon.getSetting("chColor"), channelName, Addon.getSetting("prColor"), localizedString(30205).encode('utf-8')), 99, iconimage, isFolder=False)
 		day = ""
 		for programme in programmes:
 			startdate = datetime.datetime.fromtimestamp(programme["start"]).strftime('%d/%m/%y')
 			if startdate != day:
 				day = startdate
-				addDir('[COLOR {0}][B]{1}:[/B][/COLOR]'.format(Addon.getSetting("nprColor"), day), '.', 99, iconimage, "", isFolder=False)
+				addDir('[COLOR {0}][B]{1}:[/B][/COLOR]'.format(Addon.getSetting("nprColor"), day), 99, iconimage, isFolder=False)
 			startdatetime = datetime.datetime.fromtimestamp(programme["start"]).strftime('%H:%M')
 			enddatetime = datetime.datetime.fromtimestamp(programme["end"]).strftime('%H:%M')
 			programmeName = "[COLOR {0}][{1}-{2}][/COLOR] [COLOR {3}][B]{4}[/B][/COLOR]".format(Addon.getSetting("timesColor"), startdatetime, enddatetime, Addon.getSetting("prColor"), programme["name"].encode('utf-8'))
 			description = "" if programme["description"] is None else programme["description"].encode('utf-8')
 			image = programme["image"] if programme["image"] else iconimage
-			addDir(programmeName, channelName, 99, image, description, isFolder=False)
+			addDir(programmeName, 99, image, description, isFolder=False)
 		
 	SetViewMode()
 
@@ -261,21 +266,20 @@ def GetProgrammes(epg, channelName ,full=False):
 def listFavorites():
 	favsList = common.ReadList(FAV)
 	if favsList == []:
-		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30202).encode('utf-8')), '', 99, '', '', isFolder=False)
-		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30203).encode('utf-8')), '', 99, '', '', isFolder=False)
+		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30202).encode('utf-8')), 99, isFolder=False)
+		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30203).encode('utf-8')), 99, isFolder=False)
 	ind = -1
 	for favourite in favsList:
 		ind += 1
 		if favourite["type"] == "ignore":
 			continue
-		channelName = favourite["name"].encode("utf-8").replace("[COLOR yellow][B]", "").replace("[/B][/COLOR]", "")
-		url = favourite["url"]
+		channelName = common.GetUnColor(favourite["name"].encode("utf-8"))
 		image = favourite["image"].encode("utf-8")
-		description = ""
+		description = None
 		background = None
 		isTvGuide = False
 		displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, "Favourites")
-		addDir(displayName, url, 11, image, description, isFolder=False, channelName=channelName, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
+		addDir(displayName, 11, image, description, isFolder=False, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
 	SetViewMode()
 
 def addFavorites(channels, showNotification=True):
@@ -316,7 +320,7 @@ def SaveGuide():
 		xbmc.executebuiltin("XBMC.Notification({0}, Guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
 		return False
 
-def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=None, background=None, isTvGuide=False, channelID=None, categoryID=None):
+def addDir(name, mode, iconimage=None, description=None, background=None, isFolder=True, isTvGuide=False, channelID=None, categoryID=None):
 	try:
 		liz=xbmcgui.ListItem(name)
 		liz.setArt({'thumb' : iconimage, 'icon': 'DefaultFolder.png'})
@@ -331,28 +335,31 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 
 		if mode == 10:
 			if isTvGuide:
-				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3}&categoryid={4})'.format(sys.argv[0], urllib.quote_plus(url), urllib.quote_plus(iconimage), channelName, categoryID)))
-			items.append((localizedString(30206).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&categoryid={2}&mode=17)'.format(sys.argv[0], channelID, categoryID)))
+				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?mode=5&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID)))
+			items.append((localizedString(30206).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=17&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID)))
 		elif mode == 11:
 			if isTvGuide:
-				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?url={1}&mode=5&iconimage={2}&name={3}&categoryid={4})'.format(sys.argv[0], urllib.quote_plus(url), urllib.quote_plus(iconimage), channelName, categoryID)))
-			items.append((localizedString(30207).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=18)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=41&iconimage=-1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=41&iconimage=1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=41&iconimage=0)'.format(sys.argv[0], channelID)))
+				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?mode=5&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID)))
+			items.append((localizedString(30207).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=18&channelid={1})'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=-1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=0)'.format(sys.argv[0], channelID)))
 
 		liz.addContextMenuItems(items = items)
 		
 	elif mode == 2:
 		items = []
-		items.append((localizedString(30210).encode('utf-8'), 'XBMC.Container.Update({0}?mode=37&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))))
-		items.append((localizedString(30212).encode('utf-8'), 'XBMC.Container.Update({0}?mode=38&categoryid={1})'.format(sys.argv[0], urllib.quote_plus(channelName))))
+		items.append((localizedString(30210).encode('utf-8'), 'XBMC.Container.Update({0}?mode=37&categoryid={1})'.format(sys.argv[0], channelID)))
+		items.append((localizedString(30212).encode('utf-8'), 'XBMC.Container.Update({0}?mode=38&categoryid={1})'.format(sys.argv[0], channelID)))
 		if useCategories:
-			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=-1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?url={1}&mode=42&iconimage=0)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=-1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=1)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=0)'.format(sys.argv[0], channelID)))
 		liz.addContextMenuItems(items = items)
-		
+	
+	elif mode == 3:
+		iconimage = background
+	
 	elif mode == 16:
 		liz.addContextMenuItems(items = 
 			[(localizedString(30211).encode('utf-8'), 'XBMC.Container.Update({0}?mode=39)'.format(sys.argv[0])),
@@ -362,9 +369,8 @@ def addDir(name, url, mode, iconimage, description, isFolder=True, channelName=N
 	if background is not None:
 		liz.setProperty("Fanart_Image", background)
 
-	fullUrl = "{0}?url={1}&mode={2}&name={3}&iconimage={4}&description={5}&channelid={6}".format(sys.argv[0], urllib.quote_plus(url), mode, urllib.quote_plus(name), urllib.quote_plus(iconimage), urllib.quote_plus(description),channelID)
-	if channelName is not None:
-		fullUrl = "{0}&displayname={1}".format(fullUrl, urllib.quote_plus(channelName))
+	if iconimage is None: iconimage = 'DefaultFolder.png'
+	fullUrl = "{0}?mode={1}&iconimage={2}&channelid={3}".format(sys.argv[0], mode, urllib.quote_plus(iconimage),channelID)
 	if categoryID is not None:
 		fullUrl = "{0}&categoryid={1}".format(fullUrl, urllib.quote_plus(categoryID))
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=fullUrl, listitem=liz, isFolder=isFolder)
@@ -613,10 +619,10 @@ def ImportFavourites():
 		DownloadLogos()
 
 def Settings():
-	addDir(localizedString(30240).encode('utf-8'), 'settings', 51, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30240).encode('utf-8'), isFolder=False)
-	addDir(localizedString(30241).encode('utf-8'), 'settings', 52, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
-	addDir(localizedString(30242).encode('utf-8'), 'settings', 53, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30242).encode('utf-8'), isFolder=False)
-	addDir(localizedString(30243).encode('utf-8'), 'settings', 54, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30243).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30240).encode('utf-8'), 51, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30240).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30241).encode('utf-8'), 52, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30242).encode('utf-8'), 53, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30242).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30243).encode('utf-8'), 54, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30243).encode('utf-8'), isFolder=False)
 	SetViewMode()
 
 def UpdateChannelsAndGuides():
@@ -675,73 +681,63 @@ def get_params():
 
 params = get_params()
 
-try:
-	url = urllib.unquote_plus(params["url"])
+try:		
+	mode = int(params["mode"])
 except:
-	url = None
-try:
-	name = params["name"]
-except:
-	name = None
+	mode = None
 try:
 	iconimage = urllib.unquote_plus(params["iconimage"])
 except:
 	iconimage = None
 try:		
-	mode = int(params["mode"])
+	channelID = str(params["channelid"])
 except:
-	mode = None
-try:		
-	description = urllib.unquote_plus(params["description"])
-except:
-	description = None
-try:		
-	displayname = params["displayname"]
-except:
-	displayname = None
+	channelID  = None
 try:
 	categoryID = str(params["categoryid"])
 except:
 	categoryID  = None
-try:		
-	channelID = str(params["channelid"])
-except:
-	channelID  = None
+
 
 #xbmc.log("----> {0}".format(sys.argv), 2) 
 #xbmc.log("----> Mode: {0}".format(mode), 2) 
-#xbmc.log("----> URL: {0}".format(url), 2)
-#xbmc.log("----> Name: {0}".format(urllib.unquote_plus(str(name))), 2)
 #xbmc.log("----> IconImage: {0}".format(iconimage), 2)
-#xbmc.log("----> displayname: {0}".format(urllib.unquote_plus(str(displayname))), 2)
 #xbmc.log("----> categoryID: {0}".format(categoryID), 2)
 #xbmc.log("----> channelID: {0}".format(channelID), 5)
 
 updateList = True
 
-if mode == None:
-	CATEGORIES()
+if mode is None:
+	if channelID is None:
+		CATEGORIES()
+	else:
+		item = common.GetChannelByID(channelID)
+		type = item.get('type', '')
+		if type == 'video' or type == 'audio':
+			PlayChannelByID(channel=item)
+		elif type == 'playlist':
+			ListLive(catChannels=item["list"])
 elif mode == 1 or mode == 10:
-	PlayChannelByID(channelID)
+	updateList = PlayChannelByID(chID=channelID)
 elif mode == 2:
-	ListLive(urllib.unquote_plus(displayname), iconimage)
+	ListLive(categoryID=channelID, iconimage=iconimage)
 elif mode == 3:
-	ListLive(urllib.unquote_plus(displayname), iconimage, chID=channelID)
+	ListLive(categoryID=categoryID, iconimage=iconimage, chID=channelID)
 elif mode == 5:
-	ChannelGuide(name, iconimage, categoryID)
+	ChannelGuide(channelID, categoryID)
 elif mode == 11:
-	updateList = PlayChannel(url, displayname, iconimage, description, categoryID)
+	updateList = PlayChannelByID(chID=channelID, fromFav=True)
 elif mode == 16:
 	listFavorites()
 elif mode == 17: 
 	channels = common.GetChannels(categoryID)
-	channel = [x for x in channels if x["id"] == url]
+	channel = [x for x in channels if x["id"] == channelID]
 	if len(channel) < 1:
 		xbmc.executebuiltin('Notification({0},  Cannot add this channel to favourites, {2}, {3})'.format(AddonName, Addon.getSetting("chColor"), 5000, __icon2__))
 	else:
 		addFavorites(channel) 
 elif mode == 18:
-	removeFavorties([int(url)])
+	removeFavorties([int(channelID)])
 	xbmc.executebuiltin("XBMC.Container.Refresh()")
 elif mode == 20: # Download Guide now - from server
 	SaveGuide()
@@ -786,9 +782,9 @@ elif mode == 40: # Remove all channels from favorites
 	EmptyFavorties()
 	updateList = False
 elif mode == 41: # Move channels location in favourites
-	MoveInList(int(url), int(iconimage), FAV)
+	MoveInList(int(channelID), int(iconimage), FAV)
 elif mode == 42: # Move categoties location
-	MoveInList(int(url), int(iconimage), selectedCategoriesFile)
+	MoveInList(int(channelID), int(iconimage), selectedCategoriesFile)
 elif mode == 43: # Export IsraeLIVE favourites
 	ExportFavourites()
 	updateList = False
