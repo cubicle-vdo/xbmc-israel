@@ -1,3 +1,5 @@
+[B]v4.9.8[/B]
+- Fix for empty lists for selected categories.
 [B]v4.9.7[/B]
 - Fix for program description of channel disapeares after playing it.
 - Code improvements (If you added channels or categories to Kodi favourites, you may re-add them.)

@@ -66,7 +66,7 @@ def CATEGORIES():
 			try:
 				if category.has_key("type") and category["type"] == "ignore":
 					continue
-				addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), category["name"].encode("utf-8")), 2, category["image"], background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", channelID=ind)
+				addDir("[COLOR {0}][B][{1}][/B][/COLOR]".format(Addon.getSetting("catColor"), category["name"].encode("utf-8")), 2, category["image"], background="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", channelID=category["id"], categoryID=category["group"], index=ind)
 			except Exception as ex:
 				xbmc.log("{0}".format(ex), 3)
 	else:
@@ -279,7 +279,7 @@ def listFavorites():
 		background = None
 		isTvGuide = False
 		displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, "Favourites")
-		addDir(displayName, 11, image, description, isFolder=False, background=background, isTvGuide=isTvGuide, channelID=ind, categoryID="Favourites")
+		addDir(displayName, 11, image, description, isFolder=False, background=background, isTvGuide=isTvGuide, categoryID="Favourites", index=ind)
 	SetViewMode()
 
 def addFavorites(channels, showNotification=True):
@@ -320,7 +320,7 @@ def SaveGuide():
 		xbmc.executebuiltin("XBMC.Notification({0}, Guide NOT saved!, {1}, {2})".format(AddonName, 5000 ,icon))
 		return False
 
-def addDir(name, mode, iconimage=None, description=None, background=None, isFolder=True, isTvGuide=False, channelID=None, categoryID=None):
+def addDir(name, mode, iconimage=None, description=None, background=None, isFolder=True, isTvGuide=False, channelID=None, categoryID=None, index=None):
 	try:
 		liz=xbmcgui.ListItem(name)
 		liz.setArt({'thumb' : iconimage, 'icon': 'DefaultFolder.png'})
@@ -339,12 +339,12 @@ def addDir(name, mode, iconimage=None, description=None, background=None, isFold
 			items.append((localizedString(30206).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=17&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID)))
 		elif mode == 11:
 			if isTvGuide:
-				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?mode=5&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID)))
-			items.append((localizedString(30207).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=18&channelid={1})'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=-1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=0)'.format(sys.argv[0], channelID)))
-
+				items.append((localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?mode=5&channelid={1}&categoryid={2})'.format(sys.argv[0], index, categoryID)))
+			items.append((localizedString(30207).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=18&channelid={1})'.format(sys.argv[0], index)))
+			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=-1)'.format(sys.argv[0], index)))
+			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=1)'.format(sys.argv[0], index)))
+			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=41&channelid={1}&iconimage=0)'.format(sys.argv[0], index)))
+			channelID = index
 		liz.addContextMenuItems(items = items)
 		
 	elif mode == 2:
@@ -352,9 +352,9 @@ def addDir(name, mode, iconimage=None, description=None, background=None, isFold
 		items.append((localizedString(30210).encode('utf-8'), 'XBMC.Container.Update({0}?mode=37&categoryid={1})'.format(sys.argv[0], channelID)))
 		items.append((localizedString(30212).encode('utf-8'), 'XBMC.Container.Update({0}?mode=38&categoryid={1})'.format(sys.argv[0], channelID)))
 		if useCategories:
-			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=-1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=1)'.format(sys.argv[0], channelID)))
-			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=0)'.format(sys.argv[0], channelID)))
+			items.append((localizedString(30021).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=-1)'.format(sys.argv[0], index)))
+			items.append((localizedString(30022).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=1)'.format(sys.argv[0], index)))
+			items.append((localizedString(30023).encode('utf-8'), 'XBMC.RunPlugin({0}?mode=42&channelid={1}&iconimage=0)'.format(sys.argv[0], index)))
 		liz.addContextMenuItems(items = items)
 	
 	elif mode == 3:
@@ -781,9 +781,9 @@ elif mode == 39: # Remove selected channels from favorites
 elif mode == 40: # Remove all channels from favorites
 	EmptyFavorties()
 	updateList = False
-elif mode == 41: # Move channels location in favourites
+elif mode == 41: # Move channel location in favourites
 	MoveInList(int(channelID), int(iconimage), FAV)
-elif mode == 42: # Move categoties location
+elif mode == 42: # Move selected category location
 	MoveInList(int(channelID), int(iconimage), selectedCategoriesFile)
 elif mode == 43: # Export IsraeLIVE favourites
 	ExportFavourites()
