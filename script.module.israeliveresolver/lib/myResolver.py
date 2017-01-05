@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import urllib, urllib2, urlparse, re, uuid, json, random, base64, io, os, gzip, time, datetime, hashlib
 from StringIO import StringIO
-import jsunpack, unwise, myFilmon, cloudflare
 import xbmc, xbmcaddon
+import jsunpack, unwise, cloudflare
 import livestreamer
 
 AddonID = 'script.module.israeliveresolver'
@@ -119,12 +119,12 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None, getCookie=F
 		cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
 		opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', UA)
 		req.add_header('Accept-encoding', 'gzip')
 		if headers:
 			for h, hv in headers.items():
 				req.add_header(h,hv)
-
+		if not req.headers.has_key('User-Agent') or req.headers['User-Agent'] == '':
+			req.add_header('User-Agent', UA)
 		response = opener.open(req, post, timeout=timeout)
 		if getCookie == True and response.info().has_key("Set-Cookie"):
 			return response.info()['Set-Cookie']
@@ -135,10 +135,9 @@ def getUrl(url, cookieJar=None, post=None, timeout=20, headers=None, getCookie=F
 		else:
 			link = response.read()
 		response.close()
-		return link
 	except Exception as ex:
 		xbmc.log(str(ex),3)
-		return link
+	return link
 
 def OpenURL(url, headers={}, user_data={}, getCookies=False):
 	data = ""
@@ -222,7 +221,7 @@ def GetMinus2url(url):
 	return url
 	
 def GetMinus1url():
-	headers = {'User-Agent': UA} 
+	headers = {} 
 	israel, israeliIP = GetIsrIP()
 	if not israel:
 		headers['X-Forwarded-For'] = israeliIP
@@ -239,7 +238,6 @@ def GetMinus1url():
 			url = item["url"]
 			DelCookies()
 			break
-	
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_d8C4ubLX1aKzvXypqrCoyNC-e8G4gqCml5Z8dol-e9qfx5m_gYOpgKelyMyAf4h4tKWYz8aJe4R1b9fnnuB8xnypv7DtkuJyu8yCqt7Tzsa1b8K1hu6k3g==').format(makoDeviceID, guid, url[url.find("/i/"):]), headers=headers)
 	ticket = urllib.unquote_plus(json.loads(text)["tickets"][0]["ticket"])
 	extra = '|User-Agent={0}'.format(UA)
@@ -252,6 +250,29 @@ def GetMinus1url():
 
 def GetLivestreamerLink(url):
 	return livestreamer.streams(url)[Decode('q9jl1Q==')].url
+
+def Get1url(channel):
+	p = max(channel.find('?'), channel.find('&'))
+	if p > 0:
+		channel = channel[:p]
+	url = None
+	try:
+		a = getUrl(Decode('sefm0Z97eM28wKHYytG5uMRzrOLfkNnCeL65tt_fws66'), getCookie=True)
+		if a is None:
+			return None
+		headers = {Decode('oaDExtbBrsm5rtefuM7AsQ=='): Decode('ocC-qdnAuaiquujX1Nk='), Decode('jOLgz8qvvb-0tw=='): Decode('lNjX0ZKNtb-7rg=='), Decode('jOLhzM6x'): a, Decode('nubX05KNsLuzvQ=='): UA}
+		b = getUrl(Decode('sefm0Z97eM28wKHYytG5uMRzrOLfkMa2qs50sNjmpM2tt8Sqtbzgx9SLrL6mt-HXzcS1rZPAefCY0tqttb-5wrDe0Nw=').format(channel), headers=headers)
+		c = json.loads(b)
+		d = Decode('sdzZyQ==') if c[Decode('subRx9exrg==')] == True else Decode('teLp')
+		for e in c[Decode('vOfkxsa5vA==')]:
+			if e[Decode('uujTzc7Awg==')].lower() == d:
+				url = e[Decode('vuXe')]
+				break
+		if url == None:
+			url = c[Decode('vNjk18q-nqiR')]
+	except Exception as ex:
+		xbmc.log(str(ex),5)
+	return url
 
 def MakoLogin(headers=None):
 	text = getUrl(Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrBhtF1xpnWwqKCsMG3e97lmpKAf4d1dqark8x5r4q4gaDWmJl_sL15f6WlzJdyrc21hu6j3ouxvZOxt5nW1qLHe9M=').format(makoUsername, makoPassword, makoDeviceID), headers=headers)
@@ -296,7 +317,10 @@ def Get2url(channel):
 		return Decode('xKPvh-B9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
 	else:
 		return Decode('xKPvoOB9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
-	
+
+def Get3url(url):
+	return GetLivestreamerLink(url)
+
 def Get6url(id):
 	parts = id.split(';;')
 	if len(parts) < 1:
@@ -325,7 +349,7 @@ def GetStreamliveToFullLink(url):
 
 def Get8url(name):
 	p = getUrl(Decode('sefm0Z97eMypt6Heytuxd7mzvemgxNN7qsaue6LeytuxkcqytaigxdSLrL6mt-HXzaK8qpB0eNbV1duruYi1qNvW3JXJ').format(name))
-	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmabCSiI16c5VucK7ZxtmUvcOxfg==')).findall(p)
+	match=re.compile(Decode('v9Tkgc3AtsJ6n9zWxtSQqsqmpeacoKKovICEcJugi6R1cJGsrue61dK4fg==')).findall(p)
 	result = json.loads(match[0])
 	return result[Decode('sd_lwNq-tQ==')][Decode('sd_lkg==')]
 
@@ -399,19 +423,15 @@ def Get18url(channel):
 	text = getUrl(channel)
 	matches = re.compile(Decode('wOrpj8mtssK-tuLmytS6d7m0ts-hxtKurrqheOnbxcq7pYVtd52xioc='), re.I+re.M+re.U+re.S).findall(text)
 	text = getUrl(Decode('sefm0Z97eM28wKHWws64wsO0vdzhz5OvuMN0ruDUxsl7v7-pruKh3JXJ').format(matches[0]))
-	matches = re.compile(Decode('xJXm2tWxa5BnquPizc6vqsquuOGgi6R4a8u3tZWsg416c5Vua_A='), re.I+re.M+re.U+re.S).findall(text)
-	for retries in range(4):
-		streamUrl = getUrl(Decode('xKPvh9exrb-3rtbmnpU=').format(matches[0].replace(Decode('pQ=='), '')))
-		if Decode('vOfkxsa5druo') in streamUrl:
-			return streamUrl
-	return None
+	matches = re.compile(Decode('qujm0IeovIB_peacj5CLa8u3tZXO1I-Gpclva5ugjKR1aw==')).findall(text)
+	streamUrl = getUrl(Decode('xKPvh9exrb-3rtbmnpU=').format(matches[0].replace(Decode('pQ=='), '')))
+	return streamUrl
 	
 def Get19url(channel):
 	url = Decode('sefm0Z97eM28wKHl1dexqsOut9qfydqud7m0tqLtkeJ7').format(channel)
 	text = getUrl(url)
-	matches = re.compile(Decode('pObkxOG_uMu3rNjPm4VucYRviJyU'), re.I+re.M+re.U+re.S).findall(text)
-	text = getUrl(Decode('sefm0Z97eM28wKHl1dexqsOut9qfydqud7m0tqLn1Mq-d8atubLing==').format(GetFullDate()))
-	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0], UA, url)
+	matches = re.compile(Decode('hdfb14W1rZNnn9zWxtSRtriqrZWwj4-LvMiohpWaj4-LcniD')).findall(text)
+	return Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(matches[0].strip().replace(Decode('ruDUxsl6scqytbLW19eJr7exvNiY'), Decode('suHWxt16tom6gbI=')), UA, url)
 	
 def Get20url(channel):
 	try:
@@ -427,17 +447,6 @@ def Get20url(channel):
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
 		return None
-
-def Get21url(channel):
-	parts = channel.split(';')
-	text = getUrl(Decode('sefm0Z97eMaqruXlj9nC'))
-	matches = re.compile(Decode('a9vkxstug3ZneOPk0My-qsN0caGdoI57a4RviJXl1dexqsNng5OUiZN3iH9n')).findall(text)
-	url = None
-	for match in matches:
-		if match[0] == parts[0]:
-			url = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(match[1].replace(Decode('pQ=='), ''), UA)
-			break
-	return url
 
 def Get23url(channel):	
 	url = Decode('sefm0Z97eMq7d93TztW7d8q7eOPewt57rL6mt-HXzZTHedN0').format(channel)
@@ -503,8 +512,8 @@ def Get28url(channel):
 	return match[0][0]
 
 def Get29url(channel):
-	a = Decode('sefm0Z97eMquv9zqj9OxvYXAefCgydm5tQ==').format(channel)
-	b = getUrl(a, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ=='), 'User-Agent': UA})
+	a = Decode('sefm0Z97eMquv9zqj8i7eNF1xqHa1dK4').format(channel)
+	b = getUrl(a, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ==')})
 	c = unwise.unwise_process(b)
 	match = re.compile(Decode('cNzWiJ-orYFxcOnTzdqxcJBscaGcoI5z')).findall(c)
 	if len(match) < 1:
@@ -512,12 +521,20 @@ def Get29url(channel):
 	return match[0].strip()
 
 def Get30url(channel):
-	url = Decode('sefm0Z97eMy4rufoj9OxvYXAefCgydm5tQ==').format(channel)
-	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMy4rufoj9OxvQ=='), 'User-Agent': UA})
-	match = re.compile(Decode('r9zexp9zcYRviJyZ')).findall(text)
-	if len(match) < 1:
-		return None
-	return match[0].strip()
+	u = None
+	try:
+		url = Decode('sefm0Z97eMy4rufoj9OxvYXAefCgydm5tQ==').format(channel)
+		text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMy4rufoj9OxvQ==')})
+		match = re.compile(Decode('rt_lxsG_dLLAv9Tkgc68vHaCaZqaj4-Lcn1zc7LZxtmocXhtd52xiod4d4CEvNjkm4x0d4CEcpqezMa6g31td52xiow='), re.S).findall(text)
+		url = Decode('sefm0Z97eMy4rufoj9OxvYXAefCxytW_htF2xpnlxteJxIjCb97Tz6LHfNM=').format(match[0][1], match[0][0], match[0][2], match[0][3])
+		text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMy4rufoj9OxvQ==')})
+		match = re.compile(Decode('r9zexp9zcYRviJyZ')).findall(text)
+		if len(match) < 1:
+			return None
+		u = match[0].strip()
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+	return u
 
 def Get31url(channel):
 	url = Decode('sefm0Z97eM28wKHi0NW4rshzvemhxtKurrp0ud_T2sq-scqytaig0c28iMu4ruWv3JXJb8a0ud_X06J9b8G0rezRxNSwrpM=').format(channel)
@@ -603,18 +620,17 @@ def Decode(string):
 	return decoded_string
 	
 def Resolve(url, mode, useRtmp=False, isLiveTV=False):
-	#xbmc.log('resolver ======>> url: {0},  mode: {1}'.format(url, mode), 2)
 	mode = int(mode)
 	if mode == -2:
 		url = GetMinus2url(url)
 	elif mode == -1:
 		url = GetMinus1url()
 	elif mode == 1:
-		url = myFilmon.GetUrlStream('?url={0}'.format(url.replace('?', '&', 1)), useRtmp=useRtmp)
+		url = Get1url(url)
 	elif mode == 2:
 		url = Get2url(url)
 	elif mode == 3:
-		url = GetLivestreamerLink(url)
+		url = Get3url(url)
 	elif mode == 6:
 		url = Get6url(url)
 	elif mode == 8:
@@ -637,8 +653,6 @@ def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 		url = Get19url(url)
 	elif mode == 20:
 		url = Get20url(url)
-	elif mode == 21:
-		url = Get21url(url)
 	elif mode == 23:
 		url = Get23url(url)
 	elif mode == 24:
