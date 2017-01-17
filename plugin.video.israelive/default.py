@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import sys, os, time, datetime, re
-import urllib
+import urllib, urlparse
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
@@ -51,6 +51,8 @@ useEPG = Addon.getSetting("useEPG") == "true"
 if useEPG and not os.path.isfile(fullGuideFile):
 	useEPG = False
 epg = None
+cat = None
+catname = None
 
 def CATEGORIES():
 	common.CheckNewVersion(remoteSettings)
@@ -70,31 +72,43 @@ def CATEGORIES():
 			except Exception as ex:
 				xbmc.log("{0}".format(ex), 3)
 	else:
-		ListLive(categoryID="9999", iconimage="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg")
+		ListLive(categoryID="9999", iconimage="http://3.bp.blogspot.com/-vVfHI8TbKA4/UBAbrrZay0I/AAAAAAAABRM/dPFgXAnF8Sg/s1600/retro-tv-icon.jpg", showSearch=True)
 		
 	SetViewMode()
 
 def SetViewMode():
 	if useEPG:
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-		viewMode = 504 if int(xbmc.getInfoLabel("System.BuildVersion")[:2]) < 17 else 55
+		skindir = xbmc.getSkinDir()
+		viewMode = Addon.getSetting("viewMode")
+		if viewMode == 'Auto':
+			if 'confluence' in skindir:
+				viewMode = '504'
+			elif 'eminence' in skindir:
+				viewMode = '54'
+			elif 'estouchy' in skindir:
+				viewMode = '500'
+			elif 'amber' in skindir:
+				viewMode = '50'
+			else: 
+				viewMode = '55'
 		xbmc.executebuiltin("Container.SetViewMode({0})".format(viewMode))
 
-def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None):
+def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None, showSearch=False, makeGroup=True, catName=False):
 	if catChannels is None:
 		catChannels = common.GetChannels(categoryID)
-
 	groupChannels = []
 	for channel in catChannels:
 		if channel["type"] == 'ignore':
 			continue
 		matches = [groupChannels.index(x) for x in groupChannels if len(x) > 0 and x[0]["name"] == channel["name"]]
-		if len(matches) == 1:
+		if len(matches) == 1 and makeGroup:
 			groupChannels[matches[0]].append(channel)
 		else:
 			if chID is None or chID == channel['id']:
 				groupChannels.append([channel])
-
+	if showSearch and len(groupChannels) > 0:
+		addDir("[COLOR white][B]<{0}>[/B][/COLOR]".format(localizedString(30027).encode('utf-8')), 60, categoryID=categoryID)
 	for channels in groupChannels:
 		isGroupChannel = len(channels) > 1 and chID is None
 		chs = [channels[0]] if isGroupChannel else channels
@@ -106,7 +120,7 @@ def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None):
 			isTvGuide = False
 			isFolder=True
 			
-			displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, categoryID)
+			displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, channel['group'], catName= catName and categoryID != channel['group'])
 
 			if isGroupChannel:
 				mode = 3
@@ -124,7 +138,7 @@ def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None):
 			if background is None or background == "":
 				background = iconimage
 				
-			addDir(displayName, mode, image, description, isFolder=isFolder, background=background, isTvGuide=isTvGuide, channelID=channel["id"], categoryID=categoryID)
+			addDir(displayName, mode, image, description, isFolder=isFolder, background=background, isTvGuide=isTvGuide, channelID=channel["id"], categoryID=channel['group'])
 
 	SetViewMode()
 
@@ -160,7 +174,7 @@ def PlayChannel(url, name, iconimage, categoryID):
 def GetPlayingDetails(channelName, categoryID):
 	programmeName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
 	if not useEPG:
-		return programmeName, programmeName
+		return programmeName, programmeName, None
 	global epg
 	if epg is None:
 		epg = common.GetGuide(categoryID)
@@ -209,15 +223,24 @@ def ShowGuide(programmes, channelName, iconimage):
 		
 	SetViewMode()
 
-def GetProgrammeDetails(channelName, categoryID):
+def GetProgrammeDetails(channelName, categoryID, catName=False):
 	global epg
+	global cat
+	global catname
 	displayName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
 	description = ""
 	background = None
 	isTvGuide = False
 	if useEPG:
-		if epg is None:
+		if epg is None or cat != categoryID:
+			cat = categoryID
+			if catName:
+				allCatList = common.ReadList(categoriesFile)
+				cats = [item["name"] for item in allCatList if categoryID == item["id"]]
+				catname = '' if len(cats) == 0 else cats[0].encode('utf-8')
 			epg = common.GetGuide(categoryID)
+		if catName:
+			displayName = '[COLOR {0}][B][{1}][/B][/COLOR] - {2}'.format(Addon.getSetting("catColor"), catname, displayName)
 		programmes = GetProgrammes(epg, channelName)
 
 		if programmes is not None and len(programmes) > 0:
@@ -370,9 +393,10 @@ def addDir(name, mode, iconimage=None, description=None, background=None, isFold
 		liz.setProperty("Fanart_Image", background)
 
 	if iconimage is None: iconimage = 'DefaultFolder.png'
-	fullUrl = "{0}?mode={1}&iconimage={2}&channelid={3}".format(sys.argv[0], mode, urllib.quote_plus(iconimage),channelID)
+	urlParams = {'mode': str(mode), 'iconimage': iconimage, 'channelid': str(channelID)}
 	if categoryID is not None:
-		fullUrl = "{0}&categoryid={1}".format(fullUrl, urllib.quote_plus(categoryID))
+		urlParams['categoryid'] = str(categoryID)
+	fullUrl = '{0}?{1}'.format(sys.argv[0], urllib.urlencode(urlParams))
 	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=fullUrl, listitem=liz, isFolder=isFolder)
 
 def UpdateChannelsLists():
@@ -660,52 +684,41 @@ def RefreshUserdataFolder():
 		xbmc.executebuiltin('Notification({0}, Cannot load settings, {1}, {2})'.format(AddonName, 5000, icon))
 		return
 	UpdateChannelsAndGuides()
+
+def SearchChannel(categoryID):
+	filter = common.GetKeyboardText(localizedString(30028).encode('utf-8'), '').strip().lower()
+	if filter == '':
+		return
+	urlParams = {'mode': '4', 'categoryid': categoryID, 'channelid': filter}
+	fullUrl = '{0}?{1}'.format(sys.argv[0], urllib.urlencode(urlParams))
+	xbmc.executebuiltin('Container.Update({0})'.format(fullUrl))
 	
-def get_params():
-	param=[]
-	paramstring=sys.argv[2]
-	if len(paramstring)>=2:
-			params=sys.argv[2]
-			cleanedparams=params.replace('?','')
-			if (params[len(params)-1]=='/'):
-					params=params[0:len(params)-2]
-			pairsofparams=cleanedparams.split('&')
-			param={}
-			for i in range(len(pairsofparams)):
-					splitparams={}
-					splitparams=pairsofparams[i].split('=')
-					if (len(splitparams))==2:
-							param[splitparams[0]]=splitparams[1]
-							
-	return param
+def SearchResults(filter, categoryID):
+	catChannels = common.GetChannelsFlat(categoryID)
+	channels = []
+	for channel in catChannels:
+		if channel["type"] == 'ignore':
+			continue
+		if filter in channel['name'].encode('utf-8').lower():
+			channels.append(channel)
+	if len(channels) > 0:
+		ListLive(categoryID=categoryID, catChannels=channels, makeGroup=False, catName=True)
+	else:
+		addDir('[COLOR red]{0}[/COLOR]'.format(localizedString(30029).encode('utf-8')), 99, isFolder=False)
+	
+params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+mode = params.get('mode')
+iconimage = params.get('iconimage')
+channelID = params.get('channelid')
+categoryID = params.get('categoryid')
 
-params = get_params()
-
-try:		
-	mode = int(params["mode"])
-except:
-	mode = None
-try:
-	iconimage = urllib.unquote_plus(params["iconimage"])
-except:
-	iconimage = None
-try:		
-	channelID = str(params["channelid"])
-except:
-	channelID  = None
-try:
-	categoryID = str(params["categoryid"])
-except:
-	categoryID  = None
-
-
-#xbmc.log("----> {0}".format(sys.argv), 2) 
+#xbmc.log("----> {0}".format(sys.argv), 5) 
 #xbmc.log("----> Mode: {0}".format(mode), 2) 
 #xbmc.log("----> IconImage: {0}".format(iconimage), 2)
 #xbmc.log("----> categoryID: {0}".format(categoryID), 2)
-#xbmc.log("----> channelID: {0}".format(channelID), 5)
+#xbmc.log("----> channelID: {0}".format(channelID), 2)
 
-updateList = True
+updateList = False
 
 if mode is None:
 	if channelID is None:
@@ -716,102 +729,95 @@ if mode is None:
 		if type == 'video' or type == 'audio':
 			PlayChannelByID(channel=item)
 		elif type == 'playlist':
-			ListLive(catChannels=item["list"])
-elif mode == 1 or mode == 10:
+			ListLive(catChannels=item["list"], showSearch=True)
+	updateList = True
+elif mode == '1' or mode == '10':
 	updateList = PlayChannelByID(chID=channelID)
-elif mode == 2:
-	ListLive(categoryID=channelID, iconimage=iconimage)
-elif mode == 3:
+elif mode == '2':
+	ListLive(categoryID=channelID, iconimage=iconimage, showSearch=True)
+	updateList = True
+elif mode == '3':
 	ListLive(categoryID=categoryID, iconimage=iconimage, chID=channelID)
-elif mode == 5:
+	updateList = True
+elif mode == '4':
+	SearchResults(channelID, categoryID)
+	updateList = True
+elif mode == '5':
 	ChannelGuide(channelID, categoryID)
-elif mode == 11:
+	updateList = True
+elif mode == '11':
 	updateList = PlayChannelByID(chID=channelID, fromFav=True)
-elif mode == 16:
+elif mode == '16':
 	listFavorites()
-elif mode == 17: 
+	updateList = True
+elif mode == '17': 
 	channels = common.GetChannels(categoryID)
 	channel = [x for x in channels if x["id"] == channelID]
 	if len(channel) < 1:
 		xbmc.executebuiltin('Notification({0},  Cannot add this channel to favourites, {2}, {3})'.format(AddonName, Addon.getSetting("chColor"), 5000, __icon2__))
 	else:
 		addFavorites(channel) 
-elif mode == 18:
+	updateList = True
+elif mode == '18':
 	removeFavorties([int(channelID)])
 	xbmc.executebuiltin("XBMC.Container.Refresh()")
-elif mode == 20: # Download Guide now - from server
+elif mode == '20': # Download Guide now - from server
 	SaveGuide()
-	updateList = False
-elif mode == 22: # Update Channels Lists now
+elif mode == '22': # Update Channels Lists now
 	UpdateChannelsLists()
-	updateList = False
-elif mode == 23: # Clean addon profile folder and refresh lists
+elif mode == '23': # Clean addon profile folder and refresh lists
 	RefreshUserdataFolder()
-	updateList = False
-elif mode == 30: # Make IPTV channels list and TV-guide
+elif mode == '30': # Make IPTV channels list and TV-guide
 	MakeIPTVlists()
-	updateList = False
-elif mode == 31: # Download channels logos
+elif mode == '31': # Download channels logos
 	DownloadLogos()
-	updateList = False
-elif mode == 32: # Update IPTVSimple settings
+elif mode == '32': # Update IPTVSimple settings
 	UpdateIPTVSimple()
-	updateList = False
-elif mode == 33: # Empty channels logos folder
+elif mode == '33': # Empty channels logos folder
 	CleanLogosFolder()
-	updateList = False
-elif mode == 34: # Refresh ALL Live TV required resources
+elif mode == '34': # Refresh ALL Live TV required resources
 	RefreshLiveTV()
-	updateList = False
-elif mode == 35: # Add categories to display in addon
+elif mode == '35': # Add categories to display in addon
 	AddCategories()
-	updateList = False
-elif mode == 36: # Remove categories from display in addon
+elif mode == '36': # Remove categories from display in addon
 	RemoveCategories()
-	updateList = False
-elif mode == 37: # Add selected channels from category to favourites
+elif mode == '37': # Add selected channels from category to favourites
 	AddFavoritesFromCategory(categoryID)
-	updateList = False
-elif mode == 38: # Add the whole group channels from category to favourites
+elif mode == '38': # Add the whole group channels from category to favourites
 	AddCategoryToFavorites(categoryID)
-	updateList = False
-elif mode == 39: # Remove selected channels from favorites
+elif mode == '39': # Remove selected channels from favorites
 	RemoveSelectedFavorties()
-	updateList = False
-elif mode == 40: # Remove all channels from favorites
+elif mode == '40': # Remove all channels from favorites
 	EmptyFavorties()
-	updateList = False
-elif mode == 41: # Move channel location in favourites
+elif mode == '41': # Move channel location in favourites
 	MoveInList(int(channelID), int(iconimage), FAV)
-elif mode == 42: # Move selected category location
+	updateList = True
+elif mode == '42': # Move selected category location
 	MoveInList(int(channelID), int(iconimage), selectedCategoriesFile)
-elif mode == 43: # Export IsraeLIVE favourites
+	updateList = True
+elif mode == '43': # Export IsraeLIVE favourites
 	ExportFavourites()
-	updateList = False
-elif mode == 44: # Import IsraeLIVE favourites
+elif mode == '44': # Import IsraeLIVE favourites
 	ImportFavourites()
-	updateList = False
-elif mode == 45: # Add an external channel to IsraeLIVE favourites
+elif mode == '45': # Add an external channel to IsraeLIVE favourites
 	AddUserChannelToFavorites()
-	updateList = False
-elif mode == 50:
+elif mode == '50':
 	Settings()
-elif mode == 51:
+	updateList = True
+elif mode == '51':
 	Addon.openSettings()
-elif mode == 52:
+elif mode == '52':
 	xbmc.executebuiltin('Addon.OpenSettings("script.module.israeliveresolver")')
-elif mode == 53:
+elif mode == '53':
 	UpdateChannelsAndGuides()
-elif mode == 54: # Clean addon profile folder and refresh lists
+elif mode == '54': # Clean addon profile folder and refresh lists
 	RefreshUserdataFolder()
-elif mode == 100: # CheckUpdates
+elif mode == '60': # Search
+	SearchChannel(categoryID=categoryID)
+elif mode == '100': # CheckUpdates
 	checkUpdates.Update()
-	updateList = False
-elif mode == 101: # Update IPTV lists
+elif mode == '101': # Update IPTV lists
 	updateM3U.Update()
-	updateList = False
-else:
-	updateList = False
 
 if updateList:
-	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+	xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)

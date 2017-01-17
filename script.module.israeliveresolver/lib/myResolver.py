@@ -266,10 +266,10 @@ def Get1url(channel):
 		d = Decode('sdzZyQ==') if c[Decode('subRx9exrg==')] == True else Decode('teLp')
 		for e in c[Decode('vOfkxsa5vA==')]:
 			if e[Decode('uujTzc7Awg==')].lower() == d:
-				url = e[Decode('vuXe')]
+				url = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(e[Decode('vuXe')], UA)
 				break
 		if url == None:
-			url = c[Decode('vNjk18q-nqiR')]
+			url = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(c[Decode('vNjk18q-nqiR')], UA)
 	except Exception as ex:
 		xbmc.log(str(ex),5)
 	return url
@@ -513,12 +513,12 @@ def Get28url(channel):
 
 def Get29url(channel):
 	a = Decode('sefm0Z97eMquv9zqj8i7eNF1xqHa1dK4').format(channel)
-	b = getUrl(a, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj9OxvQ==')})
+	b = getUrl(a, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eMquv9zqj8i7')})
 	c = unwise.unwise_process(b)
 	match = re.compile(Decode('cNzWiJ-orYFxcOnTzdqxcJBscaGcoI5z')).findall(c)
-	if len(match) < 1:
+	if len(match) < 2:
 		return None
-	return match[0].strip()
+	return match[1].strip()
 
 def Get30url(channel):
 	u = None

@@ -10,6 +10,7 @@
 	<string id="30013">צבע טקסט התוכנית המשודרת</string>
 	<string id="30014">צבע טקסט התוכנית הבאה</string>
 	<string id="30015">צבע טקסט זמנים</string>
+	<string id="30016">מזהה תצוגת רשימות</string>
 	
 	<string id="30020">הצגת הגדרות מתקדמות</string>
 	<string id="30021">הזז למעלה</string>
@@ -18,6 +19,9 @@
 	<string id="30024">בחר מיקום חדש</string>
 	<string id="30025">בחר קובץ</string>
 	<string id="30026">שם קובץ לשמירה</string>
+	<string id="30027">חיפוש</string>
+	<string id="30028">מילים לחיפוש</string>
+	<string id="30029">לא נמצאו התאמות..</string>
 	
 	<string id="30100">הגדרות הרחבה</string>
 	<string id="30101">מיקום קובץ הגדרות מרוחק</string>

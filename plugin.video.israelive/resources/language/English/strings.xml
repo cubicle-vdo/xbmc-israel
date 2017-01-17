@@ -10,6 +10,7 @@
 	<string id="30013">Now playing programs text color</string>
 	<string id="30014">Next playing programs text color</string>
 	<string id="30015">Times text color</string>
+	<string id="30016">Lists View mode</string>
 	
 	<string id="30020">Show advanced settings</string>
 	<string id="30021">Move up</string>
@@ -18,6 +19,9 @@
 	<string id="30024">Select a new location</string>
 	<string id="30025">Select a file</string>
 	<string id="30026">Enter file name</string>
+	<string id="30027">Search</string>
+	<string id="30028">Enter string</string>
+	<string id="30029">No matches..</string>
 	
 	<string id="30100">Addon Settings</string>
 	<string id="30101">Remote Settings URL</string>

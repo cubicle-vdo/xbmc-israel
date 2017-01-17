@@ -1,3 +1,7 @@
+[B]v4.9.9[/B]
+- Added search channels in categories.
+- Added option to choose the lists view mode in addon settings (Appearance tab).
+- Fix for channels not playing if EPG is disable in addon settings.
 [B]v4.9.8[/B]
 - Fix for empty lists for selected categories.
 [B]v4.9.7[/B]

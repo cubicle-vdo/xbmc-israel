@@ -224,6 +224,11 @@ def MakeFullLists(current_list):
 		else:
 			global_fullChList.append(item)
 
+def GetChannelsFlat(categoryID):
+	catList = GetChannels(categoryID)
+	MakeFullLists(catList)
+	return global_fullChList
+		
 def UpdateChList(remoteSettings=None, refreshInterval=0, forceUpdate=True):
 	if remoteSettings is None:
 		remoteSettings = ReadList(remoteSettingsFile)
