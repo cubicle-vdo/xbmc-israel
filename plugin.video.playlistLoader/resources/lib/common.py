@@ -52,7 +52,7 @@ def ReadList(fileName):
 		with open(fileName, 'r') as handle:
 			content = json.load(handle)
 	except Exception as ex:
-		xbmc.log(srt(ex), 5)
+		xbmc.log(str(ex), 5)
 		if os.path.isfile(fileName):
 			shutil.copyfile(fileName, "{0}_bak.txt".format(fileName[:fileName.rfind('.')]))
 			xbmc.executebuiltin('Notification({0}, Cannot read file: "{1}". \nBackup createad, {2}, {3})'.format(AddonName, os.path.basename(fileName), 5000, icon))
@@ -66,7 +66,7 @@ def SaveList(filname, list):
 			handle.write(unicode(json.dumps(list, indent=4, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
-		xbmc.log(srt(ex), 5)
+		xbmc.log(str(ex), 5)
 		success = False
 	return success
 
@@ -80,7 +80,6 @@ def isFileNew(file, deltaInSec):
 	return False if (now - lastUpdate) > deltaInSec else True 
 	
 def GetList(address, cache=0):
-	cache=2
 	if address.startswith('http'):
 		fileLocation = os.path.join(cacheDir, hashlib.md5(address).hexdigest())
 		fromCache = isFileNew(fileLocation, cache*60)
@@ -90,7 +89,7 @@ def GetList(address, cache=0):
 			response = OpenURL(address)
 			SaveFile(fileLocation, response)
 	else:
-		response = ReadFile(address)
+		response = ReadFile(address.decode('utf-8'))
 	return response
 		
 def plx2list(url, cache):
@@ -140,4 +139,4 @@ def DelFile(filname):
 		if os.path.isfile(filname):
 			os.unlink(filname)
 	except Exception as ex:
-		xbmc.log(srt(ex), 5)
+		xbmc.log(str(ex), 5)
