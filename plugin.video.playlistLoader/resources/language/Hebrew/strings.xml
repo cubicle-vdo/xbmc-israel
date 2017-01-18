@@ -6,7 +6,7 @@
 	<string id="10004">שם הרשימה</string>
 	<string id="10005">כתובת הרשימה</string>
 	<string id="10006">בחירת רשימה</string>
-	<string id="10007">נמצאת כבר ברשימות</string>
+	<string id="10007">מפנה לאותה הכתובת</string>
 	<string id="10008">מחיקה מ- Playlist Loader</string>
 	<string id="10009">הוספה למועדפי Playlist Loader</string>
 	<string id="10010">הסרה ממועדפי Playlist Loader</string>
@@ -33,6 +33,8 @@
 	<string id="10031">הזז למטה</string>
 	<string id="10032">הזז למיקום</string>
 	<string id="10033">בחר מיקום חדש</string>
+	<string id="10034">בחר כמה דקות לשמור את הרשימה בזיכרון</string>
+	<string id="10035">שינוי משך שמירת הרשימה בזיכרון</string>
 	<string id="10101">מחיקת קובץ הרשימות</string>
 	<string id="10102">מחיקת קובץ המועדפים</string>
 </strings>

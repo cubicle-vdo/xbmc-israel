@@ -1,9 +1,11 @@
-import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re
+import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re, chardet, shutil, time, hashlib
 
 AddonID = 'plugin.video.playlistLoader'
 Addon = xbmcaddon.Addon(AddonID)
 icon = Addon.getAddonInfo('icon')
 AddonName = Addon.getAddonInfo("name")
+addon_data_dir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+cacheDir = os.path.join(addon_data_dir, "cache")
 
 def OpenURL(url, headers={}, user_data={}, justCookie=False):
 	if user_data:
@@ -31,22 +33,27 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 
 def ReadFile(fileName):
 	try:
-		f = open(fileName,'r')
-		content = f.read().replace("\n\n", "\n")
-		f.close()
+		with open(fileName, 'r') as handle:
+			content = handle.read().replace("\n\n", "\n")
 	except:
 		content = ""
-
 	return content
+
+def SaveFile(fileName, text):
+	try:
+		with open(fileName, 'w') as handle:
+			content = handle.write(text)
+	except:
+		return False
+	return True
 	
 def ReadList(fileName):
 	try:
 		with open(fileName, 'r') as handle:
 			content = json.load(handle)
 	except Exception as ex:
-		print ex
+		xbmc.log(srt(ex), 5)
 		if os.path.isfile(fileName):
-			import shutil
 			shutil.copyfile(fileName, "{0}_bak.txt".format(fileName[:fileName.rfind('.')]))
 			xbmc.executebuiltin('Notification({0}, Cannot read file: "{1}". \nBackup createad, {2}, {3})'.format(AddonName, os.path.basename(fileName), 5000, icon))
 		content=[]
@@ -59,20 +66,35 @@ def SaveList(filname, list):
 			handle.write(unicode(json.dumps(list, indent=4, ensure_ascii=False)))
 		success = True
 	except Exception as ex:
-		print ex
+		xbmc.log(srt(ex), 5)
 		success = False
-		
 	return success
 
 def OKmsg(title, line1, line2 = None, line3 = None):
 	dlg = xbmcgui.Dialog()
 	dlg.ok(title, line1, line2, line3)
 	
-def plx2list(url, group="Main"):
-	if url.find("http") >= 0:
-		response = OpenURL(url)
+def isFileNew(file, deltaInSec):
+	lastUpdate = 0 if not os.path.isfile(file) else int(os.path.getmtime(file))
+	now = int(time.time())
+	return False if (now - lastUpdate) > deltaInSec else True 
+	
+def GetList(address, cache=0):
+	cache=2
+	if address.startswith('http'):
+		fileLocation = os.path.join(cacheDir, hashlib.md5(address).hexdigest())
+		fromCache = isFileNew(fileLocation, cache*60)
+		if fromCache:
+			response = ReadFile(fileLocation)
+		else:
+			response = OpenURL(address)
+			SaveFile(fileLocation, response)
 	else:
-		response = ReadFile(url)
+		response = ReadFile(address)
+	return response
+		
+def plx2list(url, cache):
+	response = GetList(url, cache)
 	matches = re.compile("^background=(.*?)$",re.I+re.M+re.U+re.S).findall(response)
 	background = None if len(matches) < 1 else matches[0]
 	list = [{"background": background}]
@@ -82,31 +104,12 @@ def plx2list(url, group="Main"):
 		item_data = {}
 		for field, value in item:
 			item_data[field.strip().lower()] = value.strip()
-		item_data['group'] = group
+		item_data['group'] = 'Main'
 		list.append(item_data)
 	return list
 
-'''
-flattenList = []
-def flatten(list):
-	global flattenList
-	for item in list:
-		if item['type'] != 'playlist':
-			flattenList.append(item)
-		else:
-			list2 = plx2list(item['url'], item['name'])
-			flatten(list2)
-			
-#list = plx2list(mainPlxUrl, "Main")
-#flatten(list) 
-'''
-
-def m3u2list(url):
-	if url.find("http") >= 0:
-		response = OpenURL(url)
-	else:
-		response = ReadFile(url)
-		
+def m3u2list(url, cache):
+	response = GetList(url, cache)	
 	matches=re.compile('^#EXTINF:-?[0-9]*(.*?),(.*?)\n(.*?)$',re.I+re.M+re.U+re.S).findall(response)
 	li = []
 	for params, display_name, url in matches:
@@ -124,7 +127,6 @@ def m3u2list(url):
 	
 def GetEncodeString(str):
 	try:
-		import chardet
 		str = str.decode(chardet.detect(str)["encoding"]).encode("utf-8")
 	except:
 		try:
@@ -137,5 +139,5 @@ def DelFile(filname):
 	try:
 		if os.path.isfile(filname):
 			os.unlink(filname)
-	except Exception as e:
-		print e
+	except Exception as ex:
+		xbmc.log(srt(ex), 5)
