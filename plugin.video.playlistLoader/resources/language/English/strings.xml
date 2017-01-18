@@ -6,7 +6,7 @@
 	<string id="10004">List name</string>
 	<string id="10005">List URL</string>
 	<string id="10006">Choose list</string>
-	<string id="10007">already in playlists</string>
+	<string id="10007">has the same address</string>
 	<string id="10008">Remove from Playlist Loader</string>
 	<string id="10009">Add to Playlist Loader favorites</string>
 	<string id="10010">Remove from Playlist Loader favorites</string>
@@ -33,6 +33,8 @@
 	<string id="10031">Move down</string>
 	<string id="10032">Move to</string>
 	<string id="10033">Select a new location</string>
+	<string id="10034">Select minutes for cache the list on disc</string>
+	<string id="10035">Change caching time of list</string>
 	<string id="10101">Delete Playlists file</string>
 	<string id="10102">Delete Favourites file</string>
 </strings>
