@@ -87,7 +87,8 @@ def GetList(address, cache=0):
 			response = ReadFile(fileLocation)
 		else:
 			response = OpenURL(address)
-			SaveFile(fileLocation, response)
+			if cache > 0:
+				SaveFile(fileLocation, response)
 	else:
 		response = ReadFile(address.decode('utf-8'))
 	return response

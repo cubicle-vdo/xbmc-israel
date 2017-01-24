@@ -132,9 +132,16 @@ def m3uCategory(url, logos, cache):
 	common.SaveList(tmpListFile, tmpList)
 		
 def PlayUrl(name, url, iconimage=None):
-	print '--- Playing "{0}". {1}'.format(name, url)
-	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
-	listitem.setInfo(type="Video", infoLabels={ "Title": name })
+	if 'acestream://' in url:
+		url = 'plugin://program.plexus/?mode=1&url={0}&name={1}&iconimage={2}'.format(url, name, iconimage)
+	xbmc.log('--- Playing "{0}". {1}'.format(name, url), 2)
+	listitem = xbmcgui.ListItem(path=url)
+	listitem.setInfo(type="Video", infoLabels={"mediatype": "movie", "Title": name })
+	if iconimage is not None:
+		try:
+			listItem.setArt({'thumb' : iconimage})
+		except:
+			listItem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def AddDir(name, url, mode, iconimage, logos="", index=-1, move=0, isFolder=True, background=None, cacheMin='0'):
