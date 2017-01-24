@@ -1,3 +1,5 @@
+1.1.2
+- Added routing acestream links to plexus.
 1.1.1
 - Bugfix for last ver.
 1.1.0
