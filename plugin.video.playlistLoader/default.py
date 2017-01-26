@@ -143,9 +143,9 @@ def PlayUrl(name, url, iconimage=None):
 	listitem.setInfo(type="Video", infoLabels={"mediatype": "movie", "Title": name })
 	if iconimage is not None:
 		try:
-			listItem.setArt({'thumb' : iconimage})
+			listitem.setArt({'thumb' : iconimage})
 		except:
-			listItem.setThumbnailImage(iconimage)
+			listitem.setThumbnailImage(iconimage)
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def AddDir(name, url, mode, iconimage, logos="", index=-1, move=0, isFolder=True, background=None, cacheMin='0'):
