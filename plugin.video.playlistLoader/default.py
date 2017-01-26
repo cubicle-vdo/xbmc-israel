@@ -66,6 +66,8 @@ def AddNewList():
 	if logosUrl.startswith('http') and not logosUrl.endswith('/'):
 		logosUrl += '/'
 	cacheInMinutes = GetNumFromUser(getLocaleString(10034), '0') if listUrl.startswith('http') else 0
+	if cacheInMinutes is None:
+		cacheInMinutes = 0
 	list = common.ReadList(playlistsFile)
 	for item in list:
 		if item["url"].lower() == listUrl.lower():
@@ -132,8 +134,10 @@ def m3uCategory(url, logos, cache):
 	common.SaveList(tmpListFile, tmpList)
 		
 def PlayUrl(name, url, iconimage=None):
-	if 'acestream://' in url:
+	if url.startswith('acestream://'):
 		url = 'plugin://program.plexus/?mode=1&url={0}&name={1}&iconimage={2}'.format(url, name, iconimage)
+	else:
+		url = common.getFinalUrl(url)
 	xbmc.log('--- Playing "{0}". {1}'.format(name, url), 2)
 	listitem = xbmcgui.ListItem(path=url)
 	listitem.setInfo(type="Video", infoLabels={"mediatype": "movie", "Title": name })
@@ -278,17 +282,19 @@ def MoveInList(index, step, listFile):
 def GetNumFromUser(title, defaultt=''):
 	dialog = xbmcgui.Dialog()
 	choice = dialog.input(title, defaultt=defaultt, type=xbmcgui.INPUT_NUMERIC)
-	return 0 if choice == '' else int(choice)
+	return None if choice == '' else int(choice)
 
 def GetIndexFromUser(listLen, index):
 	dialog = xbmcgui.Dialog()
 	location = GetNumFromUser('{0} (1-{1})'.format(getLocaleString(10033), listLen))
-	return 0 if location > listLen or location <= 0 else location - 1 - index
+	return 0 if location is None or location > listLen or location <= 0 else location - 1 - index
 
 def ChangeCache(index, listFile):
 	list = common.ReadList(listFile)
 	defaultText = list[index].get('cache', 0)
 	cacheInMinutes = GetNumFromUser(getLocaleString(10034), str(defaultText)) if list[index].get('url', '0').startswith('http') else 0
+	if cacheInMinutes is None:
+		return
 	list[index]['cache'] = cacheInMinutes
 	if common.SaveList(listFile, list):
 		xbmc.executebuiltin("XBMC.Container.Refresh()")
