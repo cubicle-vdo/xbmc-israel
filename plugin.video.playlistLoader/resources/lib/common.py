@@ -6,19 +6,47 @@ icon = Addon.getAddonInfo('icon')
 AddonName = Addon.getAddonInfo("name")
 addon_data_dir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 cacheDir = os.path.join(addon_data_dir, "cache")
+UA = 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0'
 
-def OpenURL(url, headers={}, user_data={}, justCookie=False):
+class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
+	def http_error_301(self, req, fp, code, msg, headers):
+		result = urllib2.HTTPRedirectHandler.http_error_301(self, req, fp, code, msg, headers)
+		return result
+
+	def http_error_302(self, req, fp, code, msg, headers):
+		result = urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
+		return result
+
+def getFinalUrl(url):
+	link = url
+	try:
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', UA)
+		opener = urllib2.build_opener(SmartRedirectHandler())
+		f = opener.open(req)
+		link = f.url
+		if link is None or link == '':
+			link = url
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+	return link
+		
+def OpenURL(url, headers={}, user_data={}, cookieJar=None, justCookie=False):
+	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
+	opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 	if user_data:
 		user_data = urllib.urlencode(user_data)
 		req = urllib2.Request(url, user_data)
 	else:
 		req = urllib2.Request(url)
 	
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0')
 	for k, v in headers.items():
 		req.add_header(k, v)
-	
-	response = urllib2.urlopen(req)
+	if not req.headers.has_key('User-Agent') or req.headers['User-Agent'] == '':
+		req.add_header('User-Agent', UA)
+			
+	response = opener.open(req)
+	#response = urllib2.urlopen(req)
 	
 	if justCookie == True:
 		if response.info().has_key("Set-Cookie"):
@@ -26,7 +54,12 @@ def OpenURL(url, headers={}, user_data={}, justCookie=False):
 		else:
 			data = None
 	else:
-		data = response.read().replace("\r", "")
+		if response.info().get('Content-Encoding') == 'gzip':
+			buf = StringIO( response.read())
+			f = gzip.GzipFile(fileobj=buf)
+			data = f.read()
+		else:
+			data = response.read().replace("\r", "")
 	
 	response.close()
 	return data
