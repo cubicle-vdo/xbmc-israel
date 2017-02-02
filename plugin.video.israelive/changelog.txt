@@ -1,3 +1,7 @@
+[B]v5.0.0[/B]
+- Fix EPG not shown in Kodi 17.
+- Default view for channels list change to channel names without program names.
+- Added option in addon settings (Appearance) to show/hide program names in channels list.
 [B]v4.9.9[/B]
 - Added search channels in categories.
 - Added option to choose the lists view mode in addon settings (Appearance tab).

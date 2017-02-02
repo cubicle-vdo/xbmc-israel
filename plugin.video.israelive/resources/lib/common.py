@@ -64,7 +64,7 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 			response.close()
 			if len(match) < 1:
 				return False
-			url = match[0].replace(Decode('sefm0Q=='), Decode('sefm0dg='))
+			url = Decode('xKPvoNeJxIfC').format(match[0], random.randint(0, 9223372036854775807))
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
 			if response is not None:
