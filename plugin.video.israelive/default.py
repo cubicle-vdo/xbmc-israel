@@ -47,6 +47,7 @@ iptvLogosDir = os.path.join(user_dataDir, "logos")
 categoriesFile =  os.path.join(user_dataDir, 'lists', 'categories.list')
 selectedCategoriesFile =  os.path.join(user_dataDir, 'lists', 'selectedCategories.list')
 useCategories = Addon.getSetting("useCategories") == "true"
+showProgNames = Addon.getSetting("showProgNames") == "true"
 useEPG = Addon.getSetting("useEPG") == "true"
 if useEPG and not os.path.isfile(fullGuideFile):
 	useEPG = False
@@ -80,18 +81,22 @@ def SetViewMode():
 	if useEPG:
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		skindir = xbmc.getSkinDir()
-		viewMode = Addon.getSetting("viewMode")
-		if viewMode == 'Auto':
+		viewMode = Addon.getSetting("viewMode").strip()
+		if viewMode == 'Auto' or viewMode == '':
 			if 'confluence' in skindir:
 				viewMode = '504'
-			elif 'eminence' in skindir:
-				viewMode = '54'
+			elif 'estuary' in skindir: 
+				viewMode = '55'
 			elif 'estouchy' in skindir:
 				viewMode = '500'
+			elif 'eminence.2' in skindir or 'eminence.he.2' in skindir:
+				viewMode = '54'
+			elif 'eminence.zeev' in skindir:
+				viewMode = '510'
 			elif 'amber' in skindir:
 				viewMode = '50'
 			else: 
-				viewMode = '55'
+				return
 		xbmc.executebuiltin("Container.SetViewMode({0})".format(viewMode))
 
 def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None, showSearch=False, makeGroup=True, catName=False):
@@ -120,7 +125,7 @@ def ListLive(categoryID=None, iconimage=None, chID=None, catChannels=None, showS
 			isTvGuide = False
 			isFolder=True
 			
-			displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, channel['group'], catName= catName and categoryID != channel['group'])
+			displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, channel['group'], catName= catName and categoryID != channel['group'], progName=showProgNames)
 
 			if isGroupChannel:
 				mode = 3
@@ -223,7 +228,7 @@ def ShowGuide(programmes, channelName, iconimage):
 		
 	SetViewMode()
 
-def GetProgrammeDetails(channelName, categoryID, catName=False):
+def GetProgrammeDetails(channelName, categoryID, catName=False, progName=False):
 	global epg
 	global cat
 	global catname
@@ -246,13 +251,15 @@ def GetProgrammeDetails(channelName, categoryID, catName=False):
 		if programmes is not None and len(programmes) > 0:
 			isTvGuide = True
 			programmeName = "[COLOR {0}][B]{1}[/B][/COLOR] [COLOR {2}][{3}-{4}][/COLOR]".format(Addon.getSetting("prColor"), programmes[0]["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programmes[0]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[0]["end"]).strftime('%H:%M'))
-			displayName = "{0} - {1}".format(displayName, programmeName)
+			if progName:
+				displayName = "{0} - {1}".format(displayName, programmeName)
 			if programmes[0]["description"] is not None:
 				description = '{0}[CR]{1}'.format(programmeName, programmes[0]["description"].encode('utf-8'))
 			if programmes[0]["image"] is not None:
 				background = programmes[0]["image"]
 			if len(programmes) > 1:
-				displayName = "{0} - [COLOR {1}]Next: [B]{2}[/B][/COLOR] [COLOR {3}][{4}-{5}][/COLOR]".format(displayName, Addon.getSetting("nprColor"), programmes[1]["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
+				if progName:
+					displayName = "{0} - [COLOR {1}]Next: [B]{2}[/B][/COLOR] [COLOR {3}][{4}-{5}][/COLOR]".format(displayName, Addon.getSetting("nprColor"), programmes[1]["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
 				description = '{0}[CR][CR]Next: [COLOR {1}][B]{2}[/B][/COLOR] [COLOR {3}][{4}-{5}][/COLOR]'.format(description, Addon.getSetting("prColor"), programmes[1]["name"].encode('utf-8'), Addon.getSetting("timesColor"), datetime.datetime.fromtimestamp(programmes[1]["start"]).strftime('%H:%M'), datetime.datetime.fromtimestamp(programmes[1]["end"]).strftime('%H:%M'))
 				
 	return displayName, description, background, isTvGuide
@@ -301,7 +308,7 @@ def listFavorites():
 		description = None
 		background = None
 		isTvGuide = False
-		displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, "Favourites")
+		displayName, description, background, isTvGuide = GetProgrammeDetails(channelName, "Favourites", progName=showProgNames)
 		addDir(displayName, 11, image, description, isFolder=False, background=background, isTvGuide=isTvGuide, categoryID="Favourites", index=ind)
 	SetViewMode()
 
@@ -381,6 +388,8 @@ def addDir(name, mode, iconimage=None, description=None, background=None, isFold
 		liz.addContextMenuItems(items = items)
 	
 	elif mode == 3:
+		if isTvGuide:
+			liz.addContextMenuItems(items = [(localizedString(30205).encode('utf-8'), 'XBMC.Container.Update({0}?mode=5&channelid={1}&categoryid={2})'.format(sys.argv[0], channelID, categoryID))])
 		iconimage = background
 	
 	elif mode == 16:
