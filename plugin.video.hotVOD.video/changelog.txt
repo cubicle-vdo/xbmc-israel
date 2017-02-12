@@ -1,3 +1,8 @@
+[B]Version 1.1.7[/B]
+- Fixed some icons for genres.
+- Fixed "Main" category.
+- Added "Zoom" category.
+
 [B]Version 1.1.6[/B]
 -fixed "empty folders".
 

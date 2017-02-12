@@ -20,15 +20,15 @@ sys.path.append (LIB_PATH)
 from common import *
 
 def GENRES():
-    addDir(__language__(30004), 'http://hot.ynet.co.il/', 5, __image_path__ + 'hot/genre/shows.png')
-    addDir('ערוץ 8', 'http://hot.ynet.co.il/home/0,7340,L-7461,00.html', 5,'http://ilvideo.googlecode.com/svn/trunk/hot/genre/genre-1.png')
-    addDir(' HOT 3', 'http://hot.ynet.co.il/home/0,7340,L-7456,00.html', 5,'http://upload.wikimedia.org/wikipedia/he/2/2c/Hot3.gif')
-    addDir(' קומדי סנטרל', 'http://hot.ynet.co.il/home/0,7340,L-7479,00.html', 5,'http://ilvideo.googlecode.com/svn/trunk/hot/genre/genre-0.png')
-    addDir(' הוט בידור ישראלי', 'http://hot.ynet.co.il/home/0,7340,L-7261,00.html', 5,'http://blog.tapuz.co.il/tvav/images/%7B9DF988F0-F567-4026-8EFD-94F0E46792D3%7D.jpg')
-    addDir(' HOT VOD', 'http://hot.ynet.co.il/home/0,7340,L-7482,00.html', 5,'http://msc.wcdn.co.il/w/w-700/174718-5.jpg')
-    addDir(' HOT VOD YOUNG', 'http://hot.ynet.co.il/home/0,7340,L-7449,00.html', 5,'http://ilvideo.googlecode.com/svn/trunk/hot/genre/genre-6.png')
+    addDir('ראשי', 'http://hot.ynet.co.il/home/0,7340,L-7250,00.html', 5,'http://www.dtown.co.il/thumbnail.php?file=thumbnail/article_medium/hot_170812955.jpg&size=article_medium')
+    addDir('HOT 3', 'http://hot.ynet.co.il/home/0,7340,L-7456,00.html', 5,'https://upload.wikimedia.org/wikipedia/he/thumb/e/e1/HOT3_logo_2010.svg/185px-HOT3_logo_2010.svg.png')
+    addDir('הוט בידור ישראלי', 'http://hot.ynet.co.il/home/0,7340,L-7261,00.html', 5,'http://blog.tapuz.co.il/tvav/images/%7B9DF988F0-F567-4026-8EFD-94F0E46792D3%7D.jpg')
+    addDir('ערוץ 8', 'http://hot.ynet.co.il/home/0,7340,L-7461,00.html', 5,'http://www.nrg.co.il/images/archive/300x225/657/080.jpg')
+    addDir('HOT XTRA VOD', 'http://hot.ynet.co.il/home/0,7340,L-7482,00.html', 5,'http://msc.wcdn.co.il/w/w-700/174718-5.jpg')
+    addDir('HOT VOD YOUNG', 'http://hot.ynet.co.il/home/0,7340,L-7449,00.html', 5,'http://www.hot.net.il/UploadedImages/12_2013/HOTVODyoung59X49.png')
     addDir('החיים הטובים', 'http://hot.ynet.co.il/home/0,7340,L-7421,00.html', 5,'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRsTHHZMA4SabVhgHUM1ehzeMW7Q8QVbjCviGkRcv9Hf97CkTgZ')
     addDir('אופנה ישראלית', 'http://hot.ynet.co.il/home/0,7340,L-10312,00.html', 5,'http://msc.wcdn.co.il/w/w-700/1244322-5.jpg')
+    addDir('ZOOM', 'http://hot.ynet.co.il/home/0,7340,L-11527,00.html', 5,'https://upload.wikimedia.org/wikipedia/he/thumb/6/65/ZOOM_Israel.png/200px-ZOOM_Israel.png')
     xbmc.executebuiltin("Container.SetViewMode(500)")# see the image view
     
             

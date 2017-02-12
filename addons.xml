@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.6" provider-name="sbentin">
+<addon id="plugin.video.hotVOD.video" name="Hot VOD" version="1.1.7" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
+        <import addon="repository.xbmc-israel" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="Hot.py">
         <provides>video</provides>
