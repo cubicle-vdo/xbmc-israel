@@ -14,16 +14,13 @@ AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
+KodiPlayer = Addon.getSetting("dynamicPlayer") == "1"
 
-try:
-	import myResolver
-except:
-	import sys
-	if common.InstallAddon('script.module.israeliveresolver'):
-		common.OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
-	else:
-		common.OKmsg(localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
-	sys.exit()
+if not KodiPlayer:
+	try:
+		import myResolver
+	except:
+		myResolver = None
 		
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 
@@ -36,32 +33,37 @@ def makeIPTVlist(iptvFile):
 		
 	for item in channelsList:
 		try:
-			url = item['url']
 			tvg_id = item['name']
 			view_name = item['name']
-
-			matches = re.compile('^(.*?)[\?|&]mode=(\-?[0-9]+)(.*?)$', re.I+re.M+re.U+re.S).findall(url)
-			if len(matches) > 0:
-				url = matches[0][0]
-				mode = matches[0][1]
-				if len(matches[0]) > 2:
-					url += matches[0][2]
-				if mode == '-3' or mode == '0' or mode == '16' or mode == '34':
-					url = myResolver.Resolve(url, mode)
-					if url is None or url == "down":
-						continue
-				elif mode == '13':
-					continue
-				else:
-					url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, urllib.quote(url.replace('?', '&')), mode)
-
 			tvg_name = item['name'].replace(' ','_')
 			tvg_logo = item['image'] if iptvType > 1 else common.GetLogoFileName(item)
 			if iptvType == 0:
 				tvg_logo = tvg_logo[:tvg_logo.rfind('.')]
-			
 			radio = ' radio="true"' if item['type'].lower() == "audio" else ''
 			group = ' group-title="{0}"'.format(item['group']) if item.has_key('group') else ''
+
+			url = item['url']
+			if "mode=" in url:
+				if KodiPlayer:
+					url = "http://localhost:{0}/?url=plugin://plugin.video.israelive/&channelid={1}".format(portNum, item['id'])
+					if item.get('catid') == 'Favourites':
+						url += '&mode=11'
+					else:
+						url += '&mode=10'
+				else:
+					regex = re.compile('[\?|&]mode=(\-?[0-9]+)', re.I+re.M+re.U+re.S)
+					matches = regex.findall(url)
+					if len(matches) > 0:
+						url = regex.sub('', url).strip()
+						mode = matches[0]
+						if myResolver is not None and (mode == '-3' or mode == '0' or mode == '16' or mode == '34'):
+							url = myResolver.Resolve(url, mode)
+							if url is None:
+								continue
+						elif mode == '13':
+							continue
+						else:
+							url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, urllib.quote(url.replace('?', '&')), mode)
 			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
@@ -326,7 +328,9 @@ def GetIptvChannels():
 		if category.get('type', '') == "ignore":
 			continue
 		channels = common.GetChannels(category["id"]) if category["id"] != "Favourites" else common.ReadList(os.path.join(user_dataDir, 'favorites.txt'))
+		ind = -1
 		for channel in channels:
+			ind += 1
 			if channel["type"] == 'video' or channel["type"] == 'audio':
 				try:
 					channelName = common.GetUnColor(channel['name'].encode("utf-8"))
@@ -334,10 +338,12 @@ def GetIptvChannels():
 					if category["id"] == "Favourites":
 						gp = [x["name"] for x in allCategories if x["id"] == channel.get("group", "")]
 						groupName = gp[0] if len(gp) > 0 else 'Favourites'
+						channelID = ind
 					else:
 						groupName = category['name']
+						channelID = channel['id']
 							
-					data = {'name': channelName, 'url': channel['url'], 'image': channel['image'], 'type': channel['type'], 'group': groupName.encode("utf-8")}
+					data = {'name': channelName, 'url': channel['url'], 'image': channel['image'], 'type': channel['type'], 'group': groupName.encode("utf-8"), 'id': channelID, 'catid': category["id"]}
 					channelsList.append(data)
 				except Exception, e:
 					pass

@@ -3,6 +3,7 @@ import xbmc, xbmcaddon, xbmcplugin, xbmcgui
 import sys, os, time, datetime, re
 import urllib, urlparse
 
+resolverID = 'script.module.israeliveresolver'
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 if Addon.getSetting("unverifySSL") == "true":
@@ -14,7 +15,7 @@ if Addon.getSetting("unverifySSL") == "true":
 addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
 libDir = os.path.join(addonPath, 'resources', 'lib')
 sys.path.insert(0, libDir)
-import common, myIPTV, checkUpdates, updateM3U, resolver
+import common, myIPTV, checkUpdates, updateM3U
 
 localizedString = Addon.getLocalizedString
 AddonName = Addon.getAddonInfo("name")
@@ -157,7 +158,7 @@ def PlayChannelByID(chID=None, fromFav=False, channel=None):
 		xbmc.log(str(ex), 3)
 		
 def PlayChannel(url, name, iconimage, categoryID):
-	url = resolver.resolveUrl(url)
+	url = ResolveUrl(url)
 	if url is None:
 		xbmc.log("Cannot resolve stream URL for channel '{0}'".format(urllib.unquote_plus(name)), 3)
 		xbmc.executebuiltin("Notification({0}, Cannot resolve stream URL for channel '[COLOR {1}][B]{2}[/B][/COLOR]', {3}, {4})".format(AddonName, Addon.getSetting("chColor"), urllib.unquote_plus(name), 5000, __icon2__))
@@ -175,6 +176,26 @@ def PlayChannel(url, name, iconimage, categoryID):
 	
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listItem)
 	return True
+
+def ResolveUrl(url):
+	try:
+		if "mode=" in url:
+			regex = re.compile('[\?|&]mode=(\-?[0-9]+)', re.I+re.M+re.U+re.S)
+			matches = regex.findall(url)
+			if len(matches) > 0:
+				url = regex.sub('', url).strip()
+				mode = matches[0]
+				if mode == '0':
+					mode = '-3'
+					url = url[url.rfind(';')+1:]
+				url = 'plugin://{0}/?url={1}&mode={2}'.format(resolverID, url, mode)
+			else:
+				url = None
+	except Exception as ex:
+		xbmc.log("{0}".format(ex), 3)
+		url = None
+	finally:
+		return url
 
 def GetPlayingDetails(channelName, categoryID):
 	programmeName = "[COLOR {0}][B]{1}[/B][/COLOR]".format(Addon.getSetting("chColor"), channelName)
@@ -722,10 +743,10 @@ channelID = params.get('channelid')
 categoryID = params.get('categoryid')
 
 #xbmc.log("----> {0}".format(sys.argv), 5) 
-#xbmc.log("----> Mode: {0}".format(mode), 2) 
-#xbmc.log("----> IconImage: {0}".format(iconimage), 2)
-#xbmc.log("----> categoryID: {0}".format(categoryID), 2)
-#xbmc.log("----> channelID: {0}".format(channelID), 2)
+#xbmc.log("----> Mode: {0}".format(mode), 5) 
+#xbmc.log("----> IconImage: {0}".format(iconimage), 5)
+#xbmc.log("----> categoryID: {0}".format(categoryID), 5)
+#xbmc.log("----> channelID: {0}".format(channelID), 5)
 
 updateList = False
 
@@ -816,7 +837,7 @@ elif mode == '50':
 elif mode == '51':
 	Addon.openSettings()
 elif mode == '52':
-	xbmc.executebuiltin('Addon.OpenSettings("script.module.israeliveresolver")')
+	xbmc.executebuiltin('Addon.OpenSettings("{0}")'.format(resolverID))
 elif mode == '53':
 	UpdateChannelsAndGuides()
 elif mode == '54': # Clean addon profile folder and refresh lists

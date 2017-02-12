@@ -271,7 +271,7 @@ def Get1url(channel):
 		if url == None:
 			url = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(c[Decode('vNjk18q-nqiR')], UA)
 	except Exception as ex:
-		xbmc.log(str(ex),5)
+		xbmc.log(str(ex), 3)
 	return url
 
 def MakoLogin(headers=None):
@@ -324,7 +324,7 @@ def Get3url(url):
 def Get6url(id):
 	parts = id.split(';;')
 	if len(parts) < 1:
-		return "down"
+		return None
 
 	p = getUrl(Decode('sefm0Z97eM28wKHZytO1tMVzrOLfkNytvbmtd-Pa0aS1rZPAefA=').format(parts[0]))
 	url = re.compile(Decode('v9zWxtRssrqCd52x1Nevhnhtd52xioc='),re.I+re.M+re.U+re.S).findall(p)
@@ -619,7 +619,7 @@ def Decode(string):
 	decoded_string = "".join(decoded_chars)
 	return decoded_string
 	
-def Resolve(url, mode, useRtmp=False, isLiveTV=False):
+def Resolve(url, mode, isLiveTV=False):
 	mode = int(mode)
 	if mode == -2:
 		url = GetMinus2url(url)
@@ -681,9 +681,10 @@ def Resolve(url, mode, useRtmp=False, isLiveTV=False):
 		url = Get39url(url)
 	
 	if isLiveTV:
-		if mode == 1 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 24 or mode == 25 or mode == 34:
-			url = "hls://{0}".format(url)
-		elif mode != 3:
-			url = "hlsvariant://{0}".format(url)
+		if url is not None:
+			if mode == 1 or mode == 12 or mode == 15 or mode == 19 or mode == 20 or mode == 24 or mode == 25 or mode == 34:
+				url = "hls://{0}".format(url)
+			elif mode != 3:
+				url = "hlsvariant://{0}".format(url)
 	
 	return url

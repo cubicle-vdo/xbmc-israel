@@ -91,7 +91,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="5.0.0" provider-name="Benny123, Avigdor (xbmc-israel repo)">
+<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="5.0.1" provider-name="Benny123, Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="repository.xbmc-israel" />
@@ -101,7 +101,7 @@
   <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
   </extension>
-  <extension point="xbmc.service" library="service.py" start="[login|startup]"/>
+  <extension point="xbmc.service" library="resources/lib/service.py" start="[login|startup]"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Benny123's project</summary>
     <summary lang="he">הפרויקט של Benny123</summary>
@@ -301,12 +301,14 @@
   <extension library="lib" point="xbmc.python.module" />
 </addon>
 
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.1" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.2" provider-name="Avigdor (xbmc-israel repo)">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
 	<import addon="repository.xbmc-israel" />
   </requires>
   <extension point="xbmc.python.module" library="lib" />
+  <extension point="xbmc.python.pluginsource" library="lib/default.py" />
+  <extension point="xbmc.service" library="lib/service.py" start="[login|startup]"/>
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <summary lang="en">Resolve dynamic URL's to be playable in XBMC/Kodi.</summary>

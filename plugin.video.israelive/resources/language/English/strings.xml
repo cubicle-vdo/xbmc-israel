@@ -32,7 +32,6 @@
 	<string id="30111">Update Channels Lists now</string>
 	<string id="30112">Force remote-settings default URL</string>
 	
-	<string id="30200">IsraeLIVE addon updated to </string>
 	<string id="30201">Please restart XBMC/Kodi</string>
 	<string id="30202">No channels in your favourites</string>
 	<string id="30203">Add one by right clicking on any channel</string>
@@ -67,10 +66,9 @@
 	<string id="30232">Channel's type</string>
 	<string id="30233">TV</string>
 	<string id="30234">Radio</string>
-	<string id="30235">IsraeLiveResolver updated to </string>
-	<string id="30236">IsraeLiveResolver installed by IsraeLIVE</string>
-	<string id="30237">IsraeLiveResolver didn't installed </string>
-	<string id="30238">Please re-install IsraeLIVE </string>
+	<string id="30235">IsraeLiveResolver updated</string>
+	<string id="30237">IsraeLiveResolver didn't installed</string>
+	<string id="30238">Please install IsraeLiveResolver manually</string>
 	<string id="30239">Settings</string>
 	<string id="30240">IsraeLIVE settings</string>
 	<string id="30241">IsraeLiveResolver settings</string>

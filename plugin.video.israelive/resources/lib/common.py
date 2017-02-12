@@ -4,6 +4,7 @@ from StringIO import StringIO
 import xbmc, xbmcgui, xbmcaddon
 import multiChoiceDialog, UA
 
+resolverAddonID = "script.module.israeliveresolver"
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
 AddonName = "IsraeLIVE"
@@ -70,7 +71,7 @@ def UpdateFile(file, key, remoteSettings=None, zip=False, forceUpdate=False):
 			if response is not None:
 				response.close()
 			return False
-
+	
 	response = None
 	try:
 		req = urllib2.Request(url)
@@ -434,14 +435,6 @@ def InstallAddon(addonID):
 	return True
 	
 def CheckNewVersion(remoteSettings):
-	versionFile = os.path.join(user_dataDir, "addonVersion.txt")
-	if not os.path.isfile(versionFile):
-		version = ""
-	else:
-		with open(versionFile, 'r') as f:
-			version = f.read()
-	newVersion = Addon.getAddonInfo("version")
-	
 	resolverVerFile = os.path.join(user_dataDir, "resolverVersion.txt")
 	if not os.path.isfile(resolverVerFile):
 		resolverVersion = ""
@@ -451,41 +444,35 @@ def CheckNewVersion(remoteSettings):
 		
 	resolverNewVersion = ""
 	try:
-		resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
+		resolverNewVersion = xbmcaddon.Addon(resolverAddonID).getAddonInfo("version")	
 	except:
-		if InstallAddon('script.module.israeliveresolver'):
+		if InstallAddon(resolverAddonID):
 			try:
-				resolverNewVersion = xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo("version")	
-			except:
-				pass
-			#OKmsg(localizedString(30236).encode('utf-8'), localizedString(30201).encode('utf-8'))
+				resolverNewVersion = xbmcaddon.Addon(resolverAddonID).getAddonInfo("version")	
+			except Exception as ex:
+				xbmc.log("{0}".format(ex), 3)
+				return
 		else:
-			OKmsg(localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
+			OKmsg(localizedString(30237).encode('utf-8'), localizedString(30237).encode('utf-8'), localizedString(30238).encode('utf-8'))
 			return
-	
+			
 	isUpdated = False
 	if resolverNewVersion > resolverVersion:
 		isUpdated = True
-		title = "{0}{1}".format(localizedString(30235).encode('utf-8'), resolverNewVersion)
 		with open(resolverVerFile, 'w') as f:
 			f.write(resolverNewVersion)
 	
-	if newVersion > version:
+	if CheckNewResolver(remoteSettings):
 		isUpdated = True
-		title = "{0}{1}".format(localizedString(30200).encode('utf-8'), newVersion)
-		with open(versionFile, 'w') as f:
-			f.write(newVersion)
-	
-	CheckNewResolver(remoteSettings)
-	
-	if isUpdated and getUseIPTV():
-		OKmsg(title, localizedString(30201).encode('utf-8'))
+		
+	if isUpdated and getUseIPTV() and Addon.getSetting("dynamicPlayer") != "1":
+		OKmsg(localizedString(30235).encode('utf-8'), localizedString(30235).encode('utf-8'), localizedString(30201).encode('utf-8'))
 
 def CheckNewResolver(remoteSettings):
 	try:
 		newModified = GetSubKeyValue(remoteSettings, "resolver", "lastModified")
 		resolverContent = Decode(GetSubKeyValue(remoteSettings, "resolver", "content"))
-		resolverDir = xbmc.translatePath(xbmcaddon.Addon("script.module.israeliveresolver").getAddonInfo('path')).decode("utf-8")
+		resolverDir = xbmc.translatePath(xbmcaddon.Addon(resolverAddonID).getAddonInfo('path')).decode("utf-8")
 		resolverFile = os.path.join(resolverDir, 'lib', 'myResolver.py')
 		lastModifiedFile = os.path.join(user_dataDir, 'resolverLastModified.txt')
 		if not os.path.isfile(lastModifiedFile):
@@ -498,8 +485,11 @@ def CheckNewResolver(remoteSettings):
 				f.write(resolverContent)
 			with open(lastModifiedFile, 'w') as f:
 				f.write(newModified)
+			return True
+		return False
 	except Exception as ex:
 		xbmc.log("{0}".format(ex), 3)
+		return False
 
 def GetLivestreamerPort():
 	portNum = 65007

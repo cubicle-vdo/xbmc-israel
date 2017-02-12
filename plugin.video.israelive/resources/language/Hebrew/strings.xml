@@ -32,7 +32,6 @@
 	<string id="30111">עדכון רשימות ערוצים</string>
 	<string id="30112">שימוש בברירת מחדל עבור מיקום קובץ הגדרות מרוחק</string>
 	
-	<string id="30200">הרחבת IsraeLIVE עודכנה לגירסה </string>
 	<string id="30201">נא להפעיל מחדש את XBMC/Kodi</string>
 	<string id="30202">אין ערוצים ברשימת המועדפים</string>
 	<string id="30203">הוסף ערוץ על ידי קליק ימני על הערוץ</string>
@@ -67,10 +66,9 @@
 	<string id="30232">סוג הערוץ</string>
 	<string id="30233">טלויזיה</string>
 	<string id="30234">רדיו</string>
-	<string id="30235">IsraeLiveResolver עודכן לגירסה </string>
-	<string id="30236">IsraeLiveResolver הותקן ע"י IsraeLIVE </string>
-	<string id="30237">IsraeLiveResolver לא מותקן במערכת </string>
-	<string id="30238">נא להתקין את IsraeLIVE מחדש </string>
+	<string id="30235">IsraeLiveResolver עודכן</string>
+	<string id="30237">IsraeLiveResolver לא מותקן במערכת</string>
+	<string id="30238">נא להתקין את IsraeLiveResolver מחדש</string>
 	<string id="30239">הגדרות</string>
 	<string id="30240">הגדרות IsraeLIVE</string>
 	<string id="30241">הגדרות IsraeLiveResolver</string>
