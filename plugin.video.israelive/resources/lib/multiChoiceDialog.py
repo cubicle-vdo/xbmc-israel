@@ -1,5 +1,4 @@
-import os
-import xbmcgui, xbmcaddon
+import os, xbmcaddon
 import pyxbmct.addonwindow as pyxbmct
 
 AddonID = "plugin.video.israelive"

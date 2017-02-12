@@ -1,3 +1,6 @@
+[B]v5.0.1[/B]
+- Local proxy for LiveTV dynamic links, move from IsraeLIVE to IsraeLiveResolver.
+- Fix Kodi stuck at exit after playing LiveTV dinamic links with Livestreamer player.
 [B]v5.0.0[/B]
 - Fix EPG not shown in Kodi 17.
 - Default view for channels list change to channel names without program names.

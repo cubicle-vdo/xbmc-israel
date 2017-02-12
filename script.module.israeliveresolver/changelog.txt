@@ -1,3 +1,5 @@
+[B]v0.3.2[/B]
+- Local proxy for LiveTV dynamic links, move from IsraeLIVE to IsraeLiveResolver.
 [B]v0.3.0[/B]
 - Fix installation problem on some linux devices (OpenSSLv3 issue).
 - Added an option to enter the paid MakoTV username and password in addon settings.
