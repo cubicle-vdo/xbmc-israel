@@ -1,3 +1,5 @@
+[B]v5.0.2[/B]
+- Fix for Kodi 17: Prompt to choose what to do in case of LiveTV setting enable in addon settings but IPTV Simple Client disable.
 [B]v5.0.1[/B]
 - Local proxy for LiveTV dynamic links, move from IsraeLIVE to IsraeLiveResolver.
 - Fix Kodi stuck at exit after playing LiveTV dinamic links with Livestreamer player.
@@ -17,8 +19,8 @@
 - Direct link to channel or category by ID (from israelive.list): plugin://plugin.video.israelive/?channelid=ID
 [B]v4.9.6[/B]
 - Group all links of channel.
-- Autonatic enable IPTV Simple Client.
-- Autonatic enable LiveTV setting in Kodi settings.
+- Automatic enable IPTV Simple Client.
+- Automatic enable LiveTV setting in Kodi settings.
 - Prompt to choose what to do in case of LiveTV setting disable in Kodi settings but enable in addon settings.
 - Shows Now-playing and next program in program details too.
 - Direct link to channel by ID (from israelive.list): plugin://plugin.video.israelive/?mode=1&channelid=ID
