@@ -182,12 +182,8 @@ def EnableIptvClient():
 def EnableIPVR():
 	try:
 		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']:
-			tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
-			if tvOption == 0:
-				xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
-				return True
-			elif tvOption == 1:
-				Addon.setSetting("useIPTV", "False")
+			xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
+			return True
 	except:
 		pass
 	return False
@@ -304,11 +300,15 @@ def ReadSettings(source, fromFile=False):
 def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 	if common.getAutoIPTV() or forceUpdate:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
-		if Addon.getSetting("autoPVR") == "true":
-			EnableIptvClient()
-			if not EnableIPVR():
-				xbmc.executebuiltin('StopPVRManager')
-				xbmc.executebuiltin('StartPVRManager')
+		if Addon.getSetting("autoPVR") == "true" and (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']):
+			tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
+			if tvOption == 0:
+				EnableIptvClient()
+				if not EnableIPVR():
+					xbmc.executebuiltin('StopPVRManager')
+					xbmc.executebuiltin('StartPVRManager')
+			elif tvOption == 1:
+				Addon.setSetting("useIPTV", "False")
 		
 def GetCategories():
 	iptvList = int(Addon.getSetting("iptvList"))
