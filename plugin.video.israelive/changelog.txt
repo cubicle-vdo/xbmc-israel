@@ -1,3 +1,5 @@
+[B]v5.0.3[/B]
+- Bugfix for last version (script error on Kodi 17)
 [B]v5.0.2[/B]
 - Fix for Kodi 17: Prompt to choose what to do in case of LiveTV setting enable in addon settings but IPTV Simple Client disable.
 [B]v5.0.1[/B]
