@@ -300,11 +300,13 @@ def ReadSettings(source, fromFile=False):
 def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 	if common.getAutoIPTV() or forceUpdate:
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
-		if Addon.getSetting("autoPVR") == "true" and (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']):
+		ver = xbmc.__version__.split('.')
+		kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
+		if Addon.getSetting("autoPVR") == "true" and (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or (not kodi17 and not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value'])):
 			tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
 			if tvOption == 0:
 				EnableIptvClient()
-				if not EnableIPVR():
+				if kodi17 or not EnableIPVR():
 					xbmc.executebuiltin('StopPVRManager')
 					xbmc.executebuiltin('StartPVRManager')
 			elif tvOption == 1:
