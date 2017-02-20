@@ -5,7 +5,7 @@ from livestreamerXBMCLocalProxy import ThreadedHTTPServer, MyHandler
 try:
 	AddonID = "plugin.video.israelive"
 	Addon = xbmcaddon.Addon(AddonID)
-	hostName = 'localhost'
+	hostName = '127.0.0.1'
 	isIsraeLiveON = True
 except:
 	isIsraeLiveON = False
