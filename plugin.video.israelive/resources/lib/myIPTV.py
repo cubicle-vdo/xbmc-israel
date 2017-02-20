@@ -314,9 +314,9 @@ def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 				elif tvOption == 0:
 					restartIPTV = not EnableIptvClient() and kodi17
 					restartPVR = not EnablePVR()
-			if restartIPTV:
-				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":false},"id":1}')
-				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
+			#if restartIPTV:
+			#	xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":false},"id":1}')
+			#	xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
 			if restartPVR:
 				#xbmc.executebuiltin('StopPVRManager')
 				xbmc.executebuiltin('StartPVRManager')
