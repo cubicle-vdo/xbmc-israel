@@ -1,3 +1,5 @@
+[B]v0.3.3[/B]
+- Local proxy host changed from 'localhost' to '127.0.0.1'.
 [B]v0.3.2[/B]
 - Local proxy for LiveTV dynamic links, move from IsraeLIVE to IsraeLiveResolver.
 [B]v0.3.0[/B]

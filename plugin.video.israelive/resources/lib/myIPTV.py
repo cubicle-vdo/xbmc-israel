@@ -15,14 +15,14 @@ Addon = xbmcaddon.Addon(AddonID)
 AddonName = Addon.getAddonInfo("name")
 localizedString = Addon.getLocalizedString
 KodiPlayer = Addon.getSetting("dynamicPlayer") == "1"
-
 if not KodiPlayer:
 	try:
 		import myResolver
 	except:
 		myResolver = None
-		
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
+ver = xbmc.__version__.split('.')
+kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
 
 def makeIPTVlist(iptvFile):
 	iptvType = GetIptvType()
@@ -30,6 +30,7 @@ def makeIPTVlist(iptvFile):
 	
 	channelsList = GetIptvChannels()
 	portNum = common.GetLivestreamerPort()
+	hostName = '127.0.0.1'
 		
 	for item in channelsList:
 		try:
@@ -45,7 +46,7 @@ def makeIPTVlist(iptvFile):
 			url = item['url']
 			if "mode=" in url:
 				if KodiPlayer:
-					url = "http://localhost:{0}/?url=plugin://plugin.video.israelive/&channelid={1}".format(portNum, item['id'])
+					url = "http://{0}:{1}/?url=plugin://plugin.video.israelive/&channelid={2}".format(hostName, portNum, item['id'])
 					if item.get('catid') == 'Favourites':
 						url += '&mode=11'
 					else:
@@ -63,7 +64,7 @@ def makeIPTVlist(iptvFile):
 						elif mode == '13':
 							continue
 						else:
-							url = "http://localhost:{0}/?url={1}&mode={2}".format(portNum, urllib.quote(url.replace('?', '&')), mode)
+							url = "http://{0}:{1}/?url={2}&mode={3}".format(hostName, portNum, urllib.quote(url.replace('?', '&')), mode)
 			iptvList += '\n#EXTINF:-1 tvg-id="{0}" tvg-name="{1}"{2} tvg-logo="{3}"{4},{5}\n{6}\n'.format(tvg_id, tvg_name, group, tvg_logo, radio, view_name, url)
 		except Exception as ex:
 			xbmc.log("{0}".format(ex), 3)
@@ -179,7 +180,9 @@ def EnableIptvClient():
 		pass
 	return False
 
-def EnableIPVR():
+def EnablePVR():
+	if kodi17:
+		return True
 	try:
 		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']:
 			xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
@@ -222,7 +225,7 @@ def GetIptvType():
 			v = 2
 		return v
 	except:
-		return 0
+		return 2
 
 def UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath):
 	iptvSettingsFile = os.path.join(xbmc.translatePath("special://profile").decode("utf-8"), "addon_data", "pvr.iptvsimple", "settings.xml")
@@ -298,19 +301,28 @@ def ReadSettings(source, fromFile=False):
 	return dict
 		
 def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
-	if common.getAutoIPTV() or forceUpdate:
+	if forceUpdate or common.getAutoIPTV():
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
-		ver = xbmc.__version__.split('.')
-		kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
-		if Addon.getSetting("autoPVR") == "true" and (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or (not kodi17 and not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value'])):
-			tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
-			if tvOption == 0:
-				EnableIptvClient()
-				if kodi17 or not EnableIPVR():
-					xbmc.executebuiltin('StopPVRManager')
-					xbmc.executebuiltin('StartPVRManager')
-			elif tvOption == 1:
-				Addon.setSetting("useIPTV", "False")
+		if Addon.getSetting("autoPVR") == "true":
+			restartIPTV = kodi17
+			restartPVR = not kodi17
+			if (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or (not kodi17 and not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value'])):
+				tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
+				if tvOption == 1:
+					Addon.setSetting("useIPTV", "False")
+					return False
+				elif tvOption == 0:
+					restartIPTV = not EnableIptvClient() and kodi17
+					restartPVR = not EnablePVR()
+			if restartIPTV:
+				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":false},"id":1}')
+				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
+			if restartPVR:
+				#xbmc.executebuiltin('StopPVRManager')
+				xbmc.executebuiltin('StartPVRManager')
+		return True
+	else:
+		return False
 		
 def GetCategories():
 	iptvList = int(Addon.getSetting("iptvList"))
