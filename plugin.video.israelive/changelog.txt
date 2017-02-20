@@ -1,3 +1,5 @@
+[B]v5.0.5[/B]
+- Bugfix for last version (Kodi stuck sometimes when LiveTV PVR refresh 17)
 [B]v5.0.4[/B]
 - Bugfix for LiveTV PVR not refreshed (on Kodi < 17)
 [B]v5.0.3[/B]
