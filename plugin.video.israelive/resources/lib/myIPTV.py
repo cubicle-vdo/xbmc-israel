@@ -21,8 +21,6 @@ if not KodiPlayer:
 	except:
 		myResolver = None
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
-ver = xbmc.__version__.split('.')
-kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
 
 def makeIPTVlist(iptvFile):
 	iptvType = GetIptvType()
@@ -181,8 +179,6 @@ def EnableIptvClient():
 	return False
 
 def EnablePVR():
-	if kodi17:
-		return True
 	try:
 		if not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value']:
 			xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}')
@@ -303,22 +299,22 @@ def ReadSettings(source, fromFile=False):
 def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 	if forceUpdate or common.getAutoIPTV():
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
+		ver = xbmc.__version__.split('.')
+		kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
 		if Addon.getSetting("autoPVR") == "true":
-			restartIPTV = kodi17
-			restartPVR = not kodi17
 			if (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or (not kodi17 and not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value'])):
 				tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])
-				if tvOption == 1:
-					Addon.setSetting("useIPTV", "False")
+				if tvOption != 0:
+					if tvOption == 1:
+						Addon.setSetting("useIPTV", "False")
 					return False
-				elif tvOption == 0:
-					restartIPTV = not EnableIptvClient() and kodi17
-					restartPVR = not EnablePVR()
-			#if restartIPTV:
-			#	xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":false},"id":1}')
-			#	xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
-			if restartPVR:
-				#xbmc.executebuiltin('StopPVRManager')
+			isIPTVnotRestarted = not EnableIptvClient() and kodi17
+			isPVRnotRestarted = not kodi17 and not EnablePVR()
+			if isIPTVnotRestarted and forceUpdate:
+				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":false},"id":1}')
+				xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}')
+			if isPVRnotRestarted:
+				xbmc.executebuiltin('StopPVRManager')
 				xbmc.executebuiltin('StartPVRManager')
 		return True
 	else:

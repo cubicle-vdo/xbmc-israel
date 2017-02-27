@@ -3,8 +3,6 @@ import common
 
 AddonID = "plugin.video.israelive"
 Addon = xbmcaddon.Addon(AddonID)
-addonPath = xbmc.translatePath(Addon.getAddonInfo("path")).decode("utf-8")
-libDir = os.path.join(addonPath, 'resources', 'lib')
 
 user_dataDir = xbmc.translatePath(Addon.getAddonInfo("profile")).decode("utf-8")
 if not os.path.exists(user_dataDir):

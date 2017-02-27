@@ -447,7 +447,7 @@ def MakeIPTVlists():
 	myIPTV.makeIPTVlist(iptvChannelsFile)
 	xbmc.executebuiltin("XBMC.Notification({0}, Making IPTV TV-guide..., {1}, {2})".format(AddonName, 300000 ,icon))
 	myIPTV.MakeChannelsGuide(fullGuideFile, iptvGuideFile)
-	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir)
+	myIPTV.RefreshPVR(iptvChannelsFile, iptvGuideFile, iptvLogosDir, forceUpdate=True)
 	xbmc.executebuiltin("XBMC.Notification({0}, IPTV channels list and TV-guide created., {1}, {2})".format(AddonName, 5000 ,icon))
 
 def DownloadLogos():
@@ -675,6 +675,7 @@ def ImportFavourites():
 def Settings():
 	addDir(localizedString(30240).encode('utf-8'), 51, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30240).encode('utf-8'), isFolder=False)
 	addDir(localizedString(30241).encode('utf-8'), 52, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
+	addDir(localizedString(30304).encode('utf-8'), 32, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30241).encode('utf-8'), isFolder=False)
 	addDir(localizedString(30242).encode('utf-8'), 53, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30242).encode('utf-8'), isFolder=False)
 	addDir(localizedString(30243).encode('utf-8'), 54, 'https://www.ostraining.com/cdn/images/coding/setting.png', localizedString(30243).encode('utf-8'), isFolder=False)
 	SetViewMode()
