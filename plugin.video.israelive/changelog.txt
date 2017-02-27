@@ -1,3 +1,7 @@
+[B]v5.0.6[/B]
+- Bugfix for LiveTV disapears at startup (on Kodi < 17)
+- Remove automatic refresh for LiveTV on Kodi 17 (it's stuck Kodi 17.)
+- Added an option to force refresh LiveTV from inside the addon (at settings section).
 [B]v5.0.5[/B]
 - Bugfix for last version (Kodi stuck sometimes when LiveTV PVR refresh 17)
 [B]v5.0.4[/B]
