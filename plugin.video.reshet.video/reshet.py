@@ -13,8 +13,20 @@
     Initial Developer: Shai Bentin.
 
 """
+
+"""
+    Around march 2017, It looks like reshet switched (at least partially) from API-Based approach
+    to webview-based approach, this resulted that no episodes could be watched.
+    I Have made some work to switch over to feed off the webview content of the app, which is essentially the SAME as the web Version
+
+    I Guess reshet/appcaster would eventually block all API calls,
+    but for the time-beeing, I'll fill in only the places where they return no result
+
+    Hillel (and Daniel) Chimowicz, 2017
+"""
 import urllib, urllib2, re, os, sys, unicodedata, random, json
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
+from bs4 import BeautifulSoup
 
 ##General vars
 __plugin__ = "Reshet"
@@ -33,9 +45,13 @@ sys.path.append (M3U8_PATH)
 __properties = {'pKey':'a25129723d425516a51fe2910c', 'accountId': '32', 'broadcasterId':'1', 'bundle':'com.applicaster.iReshetandroid', 'bucketId':'507fe8f13b35016f91033bfa'}
 import APCategoryLoader, APAccountLoader, APBroadcaster, APCategoryList, APItemLoader, APChannel, APChannelLoader
 import APEpgLoader, APVodItem, APCategory, APExtensions
+from DQAPCategory import DQAPCategory
+from DQAPVodItem import DQAPVodItem
 
+rootCategoryId = ''
 
 def getMainCategoryList():
+    global rootCategoryId
     ## Get the account details
     ## account
     accountLoader = APAccountLoader.APAccountLoader(__properties)
@@ -44,14 +60,6 @@ def getMainCategoryList():
     
     # get programs category
     rootCategoryId = ''
-    #try:
-    #    extensionsStr = jsonAccountDictionary["account"]["extensions"]
-    #    extensions = APExtensions.APExtensions(json.loads(extensionsStr, 'utf-8'))
-    #    rootCategoryId = extensions.getProgramsCategoryId()
-    #    if __DEBUG__:
-    #        xbmc.log('Programs category id --> %s' % rootCategoryId, xbmc.LOGERROR)
-    #except:
-    #    pass
     
     if '' == rootCategoryId:
         ## broadcaster and main category from previous incarnation of the plugin
@@ -62,12 +70,82 @@ def getMainCategoryList():
     # get the main categories list
     getCategory(rootCategoryId)
 
+def getLinkUrlFromReshetScheme(reshetUrl):
+    paramParts = reshetUrl.split('?')
+    if len(paramParts)<=1:
+        return None
+    paramParts = paramParts[1].split('&')
+    # find linkUrl
+    for item in paramParts:
+        parts = item.split('linkUrl=')
+        if(len(parts)>1):
+            return urllib.unquote_plus( parts[1] )
+    return None
 
-def getCategory(categoryId):
+def getPageDataQueryJsonObject(url):
+    response = urllib2.urlopen(url)
+
+    unicode_text = response.read().decode('utf-8')
+
+    parsed_html = BeautifulSoup(unicode_text,"html.parser")
+    # we need to find the script element that has data_query
+    #for script in html.iter('script'):
+
+    patternJsonDataScript = re.compile(ur'data_query = ', re.UNICODE)
+    patternJson = re.compile(ur'\{.*\}', re.UNICODE)
+
+    for script in parsed_html.find_all('script'):
+        str = '' if (script.string is None) else script.string.encode('utf-8')
+     
+        if patternJsonDataScript.search(str) is not None:
+            jsStruct = patternJson.search(str)
+            if jsStruct is None:
+                #error
+                xbmc.log('getPageDataQueryJsonObject() Could not find data_query json', xbmc.LOGDEBUG) 
+                return None
+                #quit
+            jsonStr = jsStruct.group(0)
+            data = json.loads(jsonStr)
+            break
+    return data
+
+def getCategory(categoryId, categoryLink = None):
     # get the main categories list
+
+    # I.E the first time it would be all shows list,
+    # Next time a category is a specific show
+    # Main category list works ok, continue as `classic`-api-based approach
+
+    if rootCategoryId != categoryId and categoryLink is not None and categoryLink!='':
+        xbmc.log("getCategory not root category. catId=" + str(categoryId) + " Link?=" + categoryLink)
+        # not "all shows" menu
+        # use the new scraping method
+        categoryWebUrl = getLinkUrlFromReshetScheme(categoryLink)
+        if categoryWebUrl is None:
+            categoryWebUrl = categoryLink
+        xbmc.log("Loading reshet url = " + categoryWebUrl)
+        data = getPageDataQueryJsonObject(categoryWebUrl)
+        # We might be in: 1) a subcat - i.e. other stuff, intervies, episodes
+        # or we in 2) the root of the category, where the above list would show
+        
+        # Push sub-cats
+        sections = data['Content']['PageGrid']
+        for section in sections:
+            my_category = DQAPCategory(section['GridTitle'])
+            addCategoryView(my_category)
+
+            # also push videos if available
+            posts = section['Posts']
+            for video in posts:
+                if video['video'] is not None:
+                    item = DQAPVodItem(video)
+                    addItemView(item)
+        return
+
+    # "all shows" menu, Need to make sure that the link for the different shows, is available for this next getCategory function call
     categoryLoader = APCategoryLoader.APCategoryLoader(__properties, categoryId)
     xbmc.log('CategoryURL --> %s' % (categoryLoader.getQuery()), xbmc.LOGDEBUG)
-    jsonCategoryDictionary = categoryLoader.loadURL()
+    jsonCategoryDictionary= categoryLoader.loadURL()
     categories = APCategoryList.APCategoryList(jsonCategoryDictionary["category"])
 
     # detect all shows and expand it. patchy for now, we may remove this later to support more features
@@ -90,18 +168,26 @@ def getCategory(categoryId):
         xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
         xbmc.executebuiltin("Container.SetViewMode(504)")
             
-def getItem(itemId):
-    # get the item and load it's movie
+def getItem(itemId, link = None):
     itemLoader = APItemLoader.APItemLoader(__properties, itemId)
     xbmc.log('ItemURL --> %s' % (itemLoader.getQuery()), xbmc.LOGDEBUG)
     jsonItemDictionary = itemLoader.loadURL()
-    item = APVodItem.APVodItem(jsonItemDictionary["vod_item"])
-    playMovie(item)
+    if link is not None:
+        xbmc.log('getItem to play using link ' + link)
+        item = DQAPVodItem({})
+        playMovie(item, link)
+    else:
+        # get the item and load it's movie
+        item = APVodItem.APVodItem(jsonItemDictionary["vod_item"])
+    playMovie(item, link)
     
           
 def addCategoryView(category):
     xbmc.log('category --> %s' % (category.getId()), xbmc.LOGDEBUG)
-    _url = sys.argv[0] + "?category=" + category.getId()    
+    _url = sys.argv[0] + "?category=" + category.getId()
+    if category.getLink() is not None and category.getLink()!='':
+        _url = _url + "&link=" + urllib.quote(category.getLink())
+    xbmc.log('Category link ' + _url)
 
     title = category.getTitle().encode('UTF-8')
     summary = category.getDescription().encode('UTF-8')
@@ -116,7 +202,9 @@ def addCategoryView(category):
 
 def addItemView(item):
     xbmc.log('item --> %s' % (item.getId()), xbmc.LOGDEBUG)
-    _url = sys.argv[0] + "?item=" + item.getId()    
+    _url = sys.argv[0] + "?item=" + item.getId()
+    if item.getStreamUrl() is not None and item.getStreamUrl()!='':
+        _url = _url + "&itemlink=" + urllib.quote(item.getStreamUrl())
 
     title = item.getTitle().encode('UTF-8')
     summary = item.getDescription().encode('UTF-8')
@@ -132,9 +220,11 @@ def addItemView(item):
     listItem.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=_url, listitem=listItem, isFolder=False)
 
-def playMovie(item):  
-    DelCookies()  
-    _url = item.getStreamUrl()
+def playMovie(item, url = None):  
+    DelCookies()
+    _url = url
+    if url is None:
+        _url = item.getStreamUrl()
     _hls_cookie = item.getHLSCookie()
     xbmc.log('vod_item --> %s' % (item.getId()), xbmc.LOGDEBUG)
     xbmc.log('playable _url --> %s' % (_url), xbmc.LOGDEBUG)
@@ -222,6 +312,7 @@ xbmc.log('*****: final UUID --> %s, final auth token --> %s' % (uuid, token), xb
 
 params = getParams(sys.argv[2])
 categoryId = None
+categoryLink = None
 itemId = None
 
 try:
@@ -232,13 +323,24 @@ try:
     itemId=urllib.unquote_plus(params["item"])
 except:
     pass
+try:
+    categoryLink=urllib.unquote_plus(params["link"])
+    #xbmc.log('Fetched link ' + categoryLink)
+except:
+    pass
+try:
+    itemlink=urllib.unquote_plus(params["itemlink"])
+    #xbmc.log('Fetched item link ' + itemlink)
+except:
+    pass
+
 
 if None == categoryId and None == itemId:
     getMainCategoryList()
 elif None != categoryId:
-    getCategory(categoryId)
+    getCategory(categoryId, categoryLink)
 elif None != itemId:
-    getItem(itemId)
+    getItem(itemId, itemlink) # Just a hack to pass the link, not bothering creating another argument+var...
             
 xbmcplugin.setPluginFanart(int(sys.argv[1]),xbmc.translatePath( os.path.join( __PLUGIN_PATH__, "fanart.jpg") ))
 xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)

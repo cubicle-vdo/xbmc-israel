@@ -1,22 +1,13 @@
 # -*- coding: utf-8 -*-
 '''
-    Created on 21/01/2012
-
-    Copyright (c) 2010-2012 Shai Bentin.
-    All rights reserved.  Unpublished -- rights reserved
-
-    Use of a copyright notice is precautionary only, and does
-    not imply publication or disclosure.
- 
-    Licensed under Eclipse Public License, Version 1.0
-    Initial Developer: Shai Bentin.
-
-    @author: shai
+    File to overwrite APCategory 
+    DQ = Data query
+    @author: Hillel
 '''
 from APModel import APModel
 import json
 
-class APCategory(APModel):
+class DQAPCategory(APModel):
     '''
     classdocs
     '''
@@ -35,14 +26,12 @@ class APCategory(APModel):
         '''
         self.innerDictionary = params
         
-        self.__id = str(self.get('id'))
-        self.__fanArtImageURL = self.get('medium')
-        self.__thumbNameImageURL = self.get('large')
-        self.__title = self.get('name')
-        self.__description = self.get('description')
-        self.__link = None
-        if params['link'] is not None:
-            self.__link = params['link']['url']
+        self.__id = '-1' # Fake id in order to bypass checks on main #str(self.get('id'))
+        #self.__fanArtImageURL = self.get('medium')
+        #self.__thumbNameImageURL = self.get('large')
+        self.__title = self.get('title')
+        #self.__description = self.get('description')
+        self.__link = self.get('link')
 	self.__name = self.get('name')
 
 	# for the new incarnation of the plugin we'll have an images_json section
