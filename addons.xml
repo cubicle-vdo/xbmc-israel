@@ -210,10 +210,11 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.reshet.video" name="רשת" version="1.3.3" provider-name="sbentin">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.3.4" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="repository.xbmc-israel" />
+        <import addon="script.module.beautifulsoup4" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="reshet.py">
         <provides>video</provides>
