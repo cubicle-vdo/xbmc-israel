@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.reshet.video" name="רשת" version="1.3.4" provider-name="sbentin">
+<addon id="plugin.video.reshet.video" name="רשת" version="1.3.5" provider-name="sbentin">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="repository.xbmc-israel" />
