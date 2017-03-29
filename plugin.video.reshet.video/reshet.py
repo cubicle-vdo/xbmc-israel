@@ -83,9 +83,6 @@ def getLinkUrlFromReshetScheme(reshetUrl):
     return None
 
 def getPageDataQueryJsonObject(url):
-    i = url.find('?')
-    if i > 0:
-	    url = url[:url.find('?')]
     response = urllib2.urlopen(url)
 
     unicode_text = response.read().decode('utf-8')
