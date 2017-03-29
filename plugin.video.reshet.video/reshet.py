@@ -79,7 +79,7 @@ def getLinkUrlFromReshetScheme(reshetUrl):
     for item in paramParts:
         parts = item.split('linkUrl=')
         if(len(parts)>1):
-            return urllib.unquote_plus( parts[1] )
+            return urllib.unquote_plus( parts[1] ).replace(' ', '%20')
     return None
 
 def getPageDataQueryJsonObject(url):
