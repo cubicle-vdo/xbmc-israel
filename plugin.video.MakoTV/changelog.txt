@@ -1,3 +1,6 @@
+[B]1.2.0[/B]
+- Improvement in playing videos (at rush hour).
+- Remove option to use Israeli IP header using 'X-FORWARDED-FOR' header. (stopped working)
 [B]1.1.9[/B]
 - Maintenance.
 [B]1.1.8[/B]
