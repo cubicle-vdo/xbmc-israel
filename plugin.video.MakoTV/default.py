@@ -13,7 +13,6 @@ AddonName = "MakoTV"
 icon = Addon.getAddonInfo('icon')
 localizedString = Addon.getLocalizedString
 sortBy = int(Addon.getSetting("sortBy"))
-forwarded = Addon.getSetting("Forwarded")
 deviceID = Addon.getSetting("deviceID")
 if deviceID.strip() == '':
 	uuidStr = str(uuid.uuid1()).upper()
@@ -148,10 +147,8 @@ def GetSeriesList(catName, url, iconimage):
 	if prms1 is None:
 		"Cannot get {0} list".format(catName)
 		return
-		
 	key2 = None
 	picKey = "picUrl_F"
-	
 	if catName == "תכניות MakoTV":
 		key1 = "allPrograms"
 	elif catName == "תכניות ילדים":
@@ -169,7 +166,6 @@ def GetSeriesList(catName, url, iconimage):
 	else:
 		key1 = "moreVOD"
 		key2 = "programItems"
-
 	if key2 is None:
 		if not prms1.has_key(key1):
 			"Cannot get {0} list".format(catName)
@@ -180,7 +176,6 @@ def GetSeriesList(catName, url, iconimage):
 			"Cannot get {0} list".format(catName)
 			return
 		prms = prms1[key1][key2]
-		
 	seriesCount = len(prms)
 	for prm in prms:
 		try:
@@ -226,7 +221,6 @@ def GetSeasonsList(url, iconimage):
 def GetEpisodesList(url):
 	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
 	prms = GetJson(url)
-
 	if prms is None or not prms.has_key("channelId") or not prms.has_key("programData") or not prms["programData"].has_key("seasons"):
 		print "Cannot get Seasons list"
 		return
@@ -250,18 +244,15 @@ def GetEpisodesList(url):
 				addDir(name, url, 3, iconimage, infos, totalItems=episodesCount)
 			except Exception as ex:
 				print ex
-			
 	if isXbmc:
 		WriteList(os.path.join(userDir, 'urls.txt'), urls)
 		
 def PlayItem(url):
 	url = "{0}&type=service".format(url) if "?" in url else "{0}?type=service".format(url)
 	prms = GetJson(url)
-	
 	if prms is None or not prms.has_key("video"):
 		print "Cannot get item"
 		return
-
 	videoChannelId=prms["channelId"]
 	vcmid = prms["video"]["guid"]
 	url = "http://www.mako.co.il/VodPlaylist?vcmid={0}&videoChannelId={1}".format(vcmid,videoChannelId)
@@ -272,32 +263,34 @@ def Play(url):
 	if isXbmc:
 		urls = ReadList(os.path.join(userDir, 'urls.txt'))
 		url = urls[int(url)]
-	guid = url[url.find('vcmid=')+6: url.find('&videoChannelId=')]
-	link = Decode('tdXf346FfNji5oLDrszanbfFe8rXnpXArtm70Lu7jMve36K3usao38C3xs3U4siEt9Tblcq5usrPrM-Gyofh2Li7vKTT0MLEss2005HRft6R0sPEwNbY1MaTxMbNlbnEsNPk38i_vM-o3cM=')
-	text = OpenURL(link.format(guid, url[url.find('&videoChannelId=')+16:]))
-	result = json.loads(text)["media"]
-	url = ""
+	g = url[url.find(Decode('w8TY2LiT'))+6: url.find(Decode('c9fU07nFkMnM3cK7uarPrA=='))]
+	h = url[url.find(Decode('c9fU07nFkMnM3cK7uarPrA=='))+16:]
+	text = OpenURL(Decode('tdXf346FfNji5oLDrszanbfFe8rXnpXArtm70Lu7jMve36K3usao38C3xs3U4siEt9Tblcq5usrPrM-Gyofh2Li7vKTT0MLEss2005HRft6R0sPEwNbY1MaTxMbNlbnEsNPk38i_vM-o3cM=').format(g, h))
+	result = json.loads(text)[Decode('usbP2LU=')]
+	u = ""
 	for item in result:
-		if item["format"] == "AKAMAI_HLS":
-			url = item["url"]
+		if item[Decode('s9Dd3LXK')] == Decode('jqysvJWfrKm3wg=='):
+			u = item[Decode('wtPX')]
+			u2 = u[u.find(Decode('fA=='), 7):]
 			break
-	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT')
-	text = OpenURL(link.format(deviceID, guid, url[url.find("/i/"):]))
+	if username.strip() == '':
+		l = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc9PhrLXBrs7M2HrCvZ7mn9E=').format(u2)
+	else:
+		l = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT').format(deviceID, g, u2)
+	text = OpenURL(l)
 	result = json.loads(text)
-	if result["caseId"] == "4":
+	if result[Decode('sMLe1J26')] == Decode('gQ=='):
 		result = Login()
-		link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbfrLvKc8_MrIaEfYfP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdao6oTTc8XhrM-Hyofd5ZG3uMLY0L18udGo6obT')
-		text = OpenURL(link.format(deviceID, guid, url[url.find("/i/"):]))
+		text = OpenURL(l)
 		result = json.loads(text)
-		if result["caseId"] != "1":
+		if result[Decode('sMLe1J26')] != Decode('fg=='):
 			xbmc.executebuiltin("XBMC.Notification({0}, You need to pay if you want to watch this video., {1}, {2})".format(AddonName, 5000 ,icon))
 			return
-	elif result["caseId"] != "1":
+	elif result[Decode('sMLe1J26')] != Decode('fg=='):
 		xbmc.executebuiltin("XBMC.Notification({0}, Cannot get access for this video., {1}, {2})".format(AddonName, 5000 ,icon))
 		return
-	final = "{0}?{1}|User-Agent={2}".format(url, result["tickets"][0]["ticket"], UA)
-	if forwarded != '':
-		final = '{0}&X-Forwarded-For={1}'.format(final, forwarded)
+	t = urllib.unquote_plus(result[Decode('wcrO2rnKwA==')][0][Decode('wcrO2rnK')])
+	final = Decode('yJHors-Hyt3A4rnIeqLS1MLKityd7A==').format(u, t, UA)
 	listItem = xbmcgui.ListItem(path=final)
 	xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=listItem)
 
@@ -305,7 +298,7 @@ def Login():
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMbgrM-GyofP0JGMtMzdob_Jho6fpYWGepSkobuDs5Xep4G6hJWe1ruKg5Oe2oZ8sdjbrM-HyofQ45HCu4fP5JHRf94=')
 	text = OpenURL(link.format(username, password, deviceID))
 	result = json.loads(text)
-	if result["caseId"] != "1":
+	if result[Decode('sMLe1J26')] != Decode('fg=='):
 		return result
 	link = Decode('tdXf346FfM7M4seEusLW3oK5vI_U24OZucrO2sepwcLf2MfKtsTenrnEwcrf27nDss_f4qe7v9fU0rnJo5OZ2cfGjMXMrIq9uNOd2sePepWhoISDgJqd1oG8gdSjnLiNgZTS1oiMf5TWoXq7wZ7S08d8sdao6oTT')
 	text = OpenURL(link.format(deviceID))
@@ -313,13 +306,16 @@ def Login():
 	return result
 
 def DelCookies():
-	try:
-		tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
-		tempCookies = os.path.join(tempDir, 'cookies.dat')
-		if os.path.isfile(tempCookies):
-			os.unlink(tempCookies)
-	except Exception as ex:
-		print ex
+	tempDir = xbmc.translatePath('special://temp/').decode("utf-8")
+	for the_file in os.listdir(tempDir):
+		if not '.fi' in the_file and the_file != 'cookies.dat':
+			continue
+		file_path = os.path.join(tempDir, the_file)
+		try:
+			if os.path.isfile(file_path):
+				os.unlink(file_path)
+		except Exception as ex:
+			xbmc.log("{0}".format(ex), 3)
 
 def ShowYears():
 	for year in range(date.today().year, 2007, -1):
@@ -340,7 +336,6 @@ def ReadList(fileName):
 	except Exception as ex:
 		print ex
 		content=[]
-
 	return content
 
 def WriteList(filename, list):
@@ -351,33 +346,29 @@ def WriteList(filename, list):
 	except Exception as ex:
 		print ex
 		success = False
-		
 	return success
 	
-def OpenURL(url, headers={}, user_data={}, retries=3):
+def OpenURL(url, headers={}, user_data={}, retries=3, getCookie=False):
 	if user_data:
 		user_data = urllib.urlencode(user_data)
 		req = urllib2.Request(url, user_data)
 	else:
 		req = urllib2.Request(url)
-	
 	req.add_header('User-Agent', UA)
 	for k, v in headers.items():
 		req.add_header(k, v)
-	
-	if forwarded != '':
-		req.add_header('X-Forwarded-For', forwarded)
-
 	link = None
 	for i in range(retries):
 		try:
 			response = urllib2.urlopen(req, timeout=100)
+			if getCookie == True and response.info().has_key("Set-Cookie"):
+				link = response.info()['Set-Cookie']
+				break
 			link = response.read()
 			response.close()
 			break
 		except Exception as ex:
-			print ex
-
+			xbmc.log(str(ex), 5)
 	return link
 		
 def GetJson(url):
@@ -398,7 +389,6 @@ def Search(url):
 	keyboard.doModal()
 	if keyboard.isConfirmed():
 		search_entered = keyboard.getText()
-
 	if search_entered !='':
 		url = url.format(search_entered)
 		params = GetJson(url)
@@ -436,7 +426,6 @@ def addDir(name, url, mode, iconimage, infos={}, totalItems=None, isFolder=True)
 		ok = xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder)
 	else:
 		ok =xbmcplugin.addDirectoryItem(handle=handle,url=u,listitem=liz,isFolder=isFolder,totalItems=totalItems)
-	
 	return ok
 	
 def Decode(string):
