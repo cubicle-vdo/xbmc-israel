@@ -285,11 +285,8 @@ def MakoLogin(headers=None):
 
 def Get2url(channel):
 	DelCookies()
-	if Decode('sefm0Q==') in channel:
-		channel = Decode('f6imkceErbmnf6fYxZh9eYZ7')
 	a = Decode('sefm0Z97eM28wKHfwtC7d7m0d9zekNKttMVyv-LWjtG1v7tyvemht7SQdtF1xqHa1dKLvc-1rrDlxtfCsrmq').format(channel)
 	text = getUrl(a)
-	b = a[:a.find(Decode('iA=='))]
 	result = json.loads(text)[Decode('u-Lh1Q==')][Decode('v9zWxtQ=')]
 	c = result[Decode('sOjbxQ==')]
 	d = result[Decode('rNu7xQ==')]
@@ -303,7 +300,7 @@ def Get2url(channel):
 			if channel == Decode('f6imkceErbmnf6fYxZh9eYZ7'):
 				f = f.replace(Decode('e6Wjl5eEeJmNe7-7t6qrlaWc'), Decode('e6Wjl5h8eJmNe7-7t6qrkZ-MkQ=='))
 			break
-	g = Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b9fTnpuztMh3tOarjpmCeoZyfKykyJKyfcl9dteplZizsIp7e6bdk4u6qpN3d6OYxdqJxIbCb9fonuB9xny3v7DTzMa5qr9rteOv3JfJ').format(makoDeviceID, c, f[f.find(Decode('eA=='), 7):])
+	g = Decode('sefm0Z97eMOmvOagzsa3uISouKHbzZSPtb-otObF1cbAssm5stblkMq6vb-5tdjfxtPAvKmqu-nbxMq_n4hzs-bioMrAhr25b-Xonsa3qsOmspne0aLHedM=').format(f[f.find(Decode('eA=='), 7):])
 	text = getUrl(g)
 	result = json.loads(text)
 	if result[Decode('rNTlxq6w')] == Decode('fQ=='):
@@ -313,10 +310,8 @@ def Get2url(channel):
 	if result[Decode('rNTlxq6w')] != Decode('eg=='):
 		return None
 	h = urllib.unquote_plus(result[Decode('vdzVzMrAvA==')][0][Decode('vdzVzMrA')])
-	if Decode('iA==') in f:
-		return Decode('xKPvh-B9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
-	else:
-		return Decode('xKPvoOB9xtKXrtnX08q-htF3xpnH1Mq-dpesruHmnuB_xg==').format(f, h, b, UA)
+	i = Decode('bw==') if Decode('iA==') in f else Decode('iA==')
+	return Decode('xKPv3JbJxIjCxcjlxtd5ir2qt-ev3JjJ').format(f, i, h, UA)
 
 def Get3url(url):
 	return GetLivestreamerLink(url)
@@ -557,29 +552,12 @@ def Get33url(channel):
 	match = re.compile(Decode('hcbfytGhm6Jzc7KwiZN2iH-BeMbfytGhm6KD')).findall(text)
 	if len(match) < 1:
 		return None
-	else:
-		return Decode('xKPv3bq_rshyitrXz9mJxIfC').format(match[0].replace(Decode('b9Tf0aA='), Decode('bw==')), UA)
-	'''
-	match = re.compile(Decode('hbnbzcqhm6Jzc7KwiZN2iH-BeLnbzcqhm6KD')).findall(text)
-	if len(match) < 1:
-		return None
-	#a = match[-1]
 	a = match[0]
-	d = 1
-	for m in match:
-		f = re.compile(Decode('qJvOxZB1d8m5u9jTzg==')).findall(m)
-		if len(f) < 1:
-			continue
-		e = int(f[0])
-		if d < e:
-			a = m
-			d = e
 	match = re.compile(Decode('g6KhiZN2iH90')).findall(a)
 	b = match[0]
 	match = re.compile(Decode('hcbX09uxu3a1u9zh087AwpNsepqwiZN2iH-BeMbX09uxu5Q=')).findall(text)
 	c = b if len(match) < 1 else match[0]
-	return a.replace(b, c).replace(Decode('b9Tf0aA='), Decode('bw=='))
-	'''
+	return Decode('xKPv3bq_rshyitrXz9mJxIfC').format(a.replace(b, c).replace(Decode('b9Tf0aA='), Decode('bw==')), UA)
 
 def Get34url(url):
 	request = urllib2.Request(url)
@@ -593,12 +571,12 @@ def Get34url(url):
 	return '{0}/{1}'.format(url_base, data)
 
 def Get36url(channel):
-	url = Decode('sefm0Z97eMaxquzX05O5rrquqt7eytC3d766eOPewt6xu4W1tdTrxtd5ssS4stfXjsvBtcJ4d-Pa0aTBvLu3stevztnCqny4veXXwtK1rZPAefDeytuxb7yxqubazsa2uMiCe6WYx9GtvL6ysuHh06J8').format(channel.replace(Decode('dg=='),''))
-	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHfxsm1qsGxst7dj83BeNF1xg==').format(channel), 'User-Agent' : UA})
-	match = re.compile(Decode('cNnbzcpzg3ZscaGcoI5z')).findall(text)
+	url = Decode('sefm0Z97eMaxquzX05O5rrquqt7eytC3d766eOPewt6xu4W1tdTrxtd5ssS4stfXjsvBtcJ4d-Pa0aTBvLu3stevztnCqny4veXXwtK1rZPAefDeytuxb8S0r9_T1M2Jwru4b9ve1KJ-').format(channel.replace(Decode('dtje0A=='),'').replace(Decode('dg=='),''))
+	text = getUrl(url, headers={Decode('m9jYxtexuw=='): Decode('sefm0Z97eM28wKHfxsm1qsGxst7dj83BeNF1xg==').format(channel.replace(Decode('tufo'),Decode('tg==')))})
+	match = re.compile(Decode('a9nbzcpug3htd52xioc=')).findall(text)
 	if len(match) < 1:
 		return None
-	return match[0]
+	return match[0].replace(Decode('pQ=='),'')
 
 def Get39url(channel):
 	a = None
@@ -614,8 +592,9 @@ def Get47url(channel):
 	try:
 		a = Decode('sefm0Z97eM28wKHpys7Gd8q7eO6i3pO8scY=').format(channel)
 		b = getUrl(a)
-		c = re.compile(Decode('henbxcq7aYRviK_l0Nq-rLtlvOXVnod0d4CEcpU='), re.S).findall(b)[0]
-		u = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(c, UA)
+		c = re.compile(Decode('vOXVnod0d4CEctzgxcrEpYSyfOiqvaTAuMGqt7Caj4-Lcng=')).findall(b)[0]
+		d = Decode('xKPvytOwrs5ztqbnmaTAuMGqt7DtkuI=').format(c[0], c[1])
+		u = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(d, UA)
 	except Exception as ex:
 		xbmc.log(str(ex), 3)
 	return u
