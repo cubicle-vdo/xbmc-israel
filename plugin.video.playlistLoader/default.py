@@ -43,7 +43,7 @@ def Categories():
 		logos = item.get('logos', '')
 		cacheMin = item.get('cache', '0')
 		if item["url"].startswith('http'):
-			cacheList.append(hashlib.md5(item["url"]).hexdigest())
+			cacheList.append(hashlib.md5(item["url"].encode("utf-8")).hexdigest())
 		AddDir("[COLOR blue][{0}][/COLOR]".format(name) ,item["url"].encode("utf-8"), mode, image.encode("utf-8"), logos.encode("utf-8"), index=i, cacheMin=cacheMin)
 		i += 1
 	for the_file in os.listdir(cacheDir):

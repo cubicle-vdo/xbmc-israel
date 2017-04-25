@@ -32,6 +32,9 @@ def getFinalUrl(url):
 	return link
 		
 def OpenURL(url, headers={}, user_data={}, cookieJar=None, justCookie=False):
+	if isinstance (url, unicode):
+		url = url.encode('utf8')
+	url = urllib.quote(url, ':/')
 	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
 	opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 	if user_data:
@@ -114,7 +117,7 @@ def isFileNew(file, deltaInSec):
 	
 def GetList(address, cache=0):
 	if address.startswith('http'):
-		fileLocation = os.path.join(cacheDir, hashlib.md5(address).hexdigest())
+		fileLocation = os.path.join(cacheDir, hashlib.md5(address.encode('utf8')).hexdigest())
 		fromCache = isFileNew(fileLocation, cache*60)
 		if fromCache:
 			response = ReadFile(fileLocation)
