@@ -415,12 +415,22 @@ def Get17url(channel):
 		return Decode('xKPvgdjDr6u3tbDtkuJsubesrsjkzaLHe9M=').format(matches[0][0].replace(Decode('r9_omw=='), Decode('aePewt68qsqthg==')), matches[0][1], url)
 	
 def Get18url(channel):
-	text = getUrl(channel)
-	matches = re.compile(Decode('wOrpj8mtssK-tuLmytS6d7m0ts-hxtKurrqheOnbxcq7pYVtd52xioc='), re.I+re.M+re.U+re.S).findall(text)
-	text = getUrl(Decode('sefm0Z97eM28wKHWws64wsO0vdzhz5OvuMN0ruDUxsl7v7-pruKh3JXJ').format(matches[0]))
-	matches = re.compile(Decode('qujm0IeovIB_peacj5CLa8u3tZXO1I-Gpclva5ugjKR1aw==')).findall(text)
-	streamUrl = getUrl(Decode('xKPvh9exrb-3rtbmnpU=').format(matches[0].replace(Decode('pQ=='), '')))
-	return streamUrl
+	a = getUrl(channel)
+	b = re.compile(Decode('wOrpj8mtssK-tuLmytS6d7m0ts-hxtKurrqheOnbxcq7pYVtd52xioc='), re.I+re.M+re.U+re.S).findall(a)
+	c = getUrl(Decode('sefm0Z97eM28wKHWws64wsO0vdzhz5OvuMN0ruDUxsl7v7-pruKh3JXJ').format(b[0]))
+	d = re.compile(Decode('uujTzc7Asru4a8_li590d4GEcp-U08q8uMi5suHZgw==')).findall(c)
+	e = json.loads(d[0])
+	h = 0
+	f = e.keys()
+	for g in f:
+		try:
+			if g.isdigit() and int(g) > h:
+				h = int(g)
+		except Exception as ex:
+			xbmc.log(str(ex), 3)
+	if h == 0:
+		return None
+	return e[str(h)][1][Decode('vuXe')]
 
 def Get20url(channel):
 	try:
@@ -594,7 +604,29 @@ def Get47url(channel):
 		b = getUrl(a)
 		c = re.compile(Decode('vOXVnod0d4CEctzgxcrEpYSyfOiqvaTAuMGqt7Caj4-Lcng=')).findall(b)[0]
 		d = Decode('xKPvytOwrs5ztqbnmaTAuMGqt7DtkuI=').format(c[0], c[1])
-		u = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(d, UA)
+		u = Decode('xKPv3bq_rshyitrXz9mJxIfCb8XXx8q-rsiCxKXv').format(d, UA, a)
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+	return u
+	
+def Get48url(channel):
+	u = None
+	try:
+		a = Decode('sefm0Z97eMuwvemg09SuvMmmvdjezc7Arsq7d9bhzpTDqsqosaDnzJLAv4O0t9_bz8p7xIbCeA==').format(channel)
+		b = getUrl(a)
+		c = re.compile(Decode('vOXVm8G_iHhtd52xioc=')).findall(b)[0]
+		u = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(c, UA)
+	except Exception as ex:
+		xbmc.log(str(ex), 3)
+	return u
+	
+def Get49url(channel):
+	u = None
+	try:
+		a = Decode('sefm0Z97eM28wKHm18itvbmtvuOgxNS5eLe1sqLl1dexqsN0xKPv').format(channel)
+		b = getUrl(a, headers={Decode('u9jZytS6dr-p'): Decode('eg==')})
+		c = json.loads(b)
+		u = Decode('xKPv3bq_rshyitrXz9mJxIfC').format(c[Decode('vOfkxsa5')], UA)
 	except Exception as ex:
 		xbmc.log(str(ex), 3)
 	return u
@@ -670,10 +702,14 @@ def Resolve(url, mode, isLiveTV=False):
 		url = Get39url(url)
 	elif mode == 47:
 		url = Get47url(url)
+	elif mode == 48:
+		url = Get48url(url)
+	elif mode == 49:
+		url = Get49url(url)
 	
 	if isLiveTV:
 		if url is not None:
-			if mode == 1 or mode == 12 or mode == 15 or mode == 20 or mode == 24 or mode == 25 or mode == 34:
+			if mode == 1 or mode == 12 or mode == 15 or mode == 20 or mode == 24 or mode == 25 or mode == 34 or mode == 48:
 				url = "hls://{0}".format(url)
 			elif mode != 3:
 				url = "hlsvariant://{0}".format(url)
