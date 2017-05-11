@@ -1,4 +1,5 @@
-import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re, chardet, shutil, time, hashlib
+import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re, chardet, shutil, time, hashlib, gzip
+from StringIO import StringIO
 
 AddonID = 'plugin.video.playlistLoader'
 Addon = xbmcaddon.Addon(AddonID)
@@ -32,9 +33,9 @@ def getFinalUrl(url):
 	return link
 		
 def OpenURL(url, headers={}, user_data={}, cookieJar=None, justCookie=False):
-	if isinstance (url, unicode):
+	if isinstance(url, unicode):
 		url = url.encode('utf8')
-	url = urllib.quote(url, ':/')
+	#url = urllib.quote(url, ':/')
 	cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
 	opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
 	if user_data:
@@ -42,15 +43,12 @@ def OpenURL(url, headers={}, user_data={}, cookieJar=None, justCookie=False):
 		req = urllib2.Request(url, user_data)
 	else:
 		req = urllib2.Request(url)
-	
+	req.add_header('Accept-encoding', 'gzip')
 	for k, v in headers.items():
 		req.add_header(k, v)
 	if not req.headers.has_key('User-Agent') or req.headers['User-Agent'] == '':
 		req.add_header('User-Agent', UA)
-			
 	response = opener.open(req)
-	#response = urllib2.urlopen(req)
-	
 	if justCookie == True:
 		if response.info().has_key("Set-Cookie"):
 			data = response.info()['Set-Cookie']
@@ -58,12 +56,11 @@ def OpenURL(url, headers={}, user_data={}, cookieJar=None, justCookie=False):
 			data = None
 	else:
 		if response.info().get('Content-Encoding') == 'gzip':
-			buf = StringIO( response.read())
+			buf = StringIO(response.read())
 			f = gzip.GzipFile(fileobj=buf)
-			data = f.read()
+			data = f.read().replace("\r", "")
 		else:
 			data = response.read().replace("\r", "")
-	
 	response.close()
 	return data
 
