@@ -90,7 +90,7 @@ def GetChoice(choiceTitle, fileTitle, urlTitle, choiceFile, choiceUrl, choiceNon
 	elif method == 1:
 		if defaultText.startswith('http'):
 			defaultText = ""
-		choice = xbmcgui.Dialog().browse(fileType, getLocaleString(urlTitle), 'myprograms', fileMask, False, False, defaultText).decode("utf-8")
+		choice = xbmcgui.Dialog().browse(fileType, getLocaleString(urlTitle), 'files', fileMask, False, False, defaultText).decode("utf-8")
 	return choice
 	
 def RemoveFromLists(index, listFile):
@@ -119,7 +119,6 @@ def PlxCategory(url, cache):
 def m3uCategory(url, logos, cache):	
 	tmpList = []
 	list = common.m3u2list(url, cache)
-
 	for channel in list:
 		name = common.GetEncodeString(channel["display_name"])
 		image = channel.get("tvg_logo", "")

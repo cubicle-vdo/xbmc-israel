@@ -1,3 +1,5 @@
+1.1.6
+- Bugfix.
 1.1.5
 - Bugfix for Lists with none English names not worked well. (Thanks HAL9000)
 1.1.4
