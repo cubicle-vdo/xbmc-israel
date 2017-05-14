@@ -1,3 +1,5 @@
+[B]1.0.3[/B]
+- Fix for playing videos on Kodi 17. (Thanks EagleLand)
 [B]1.0.2[/B]
 - Maintenance (changes in website).
 [B]1.0.1[/B]
