@@ -112,25 +112,6 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.israelsports" name="Israel Sports" version="2.2.8" provider-name="ISRAELIVE Team">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-	<import addon="repository.xbmc-israel" />
-	<import addon="plugin.video.youtube" version="5.1.3"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">Plays episodes from sport5 and one.co.il site</summary>
-    <description lang="en">This addon parse sport5 site and one.co.il  you should check sport5 TOS before you using. It's as is</description>
-	 <description lang="he">יש לבדוק תנאי השימוש באתר- התוסף נבנה לצרכי לימוד פייטון</description>
-	<disclaimer>This addon parse sport5 site, you should check sport5 TOS before you using. It's as is</disclaimer>
-	<disclaimer>"יאללה בית"ר ,נורדיה"</disclaimer>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.MakoTV"
        name="MakoTV (web)"
        version="1.2.0"
