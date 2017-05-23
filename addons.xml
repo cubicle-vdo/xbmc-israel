@@ -114,6 +114,7 @@
 
 <addon id="plugin.video.KIDSIL"
        name="KIDSIL"
+       version="1.4.3"
        provider-name="void">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
