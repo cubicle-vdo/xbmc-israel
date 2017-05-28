@@ -112,24 +112,6 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.KIDSIL"
-       name="KIDSIL"
-       version="1.4.3"
-       provider-name="void">
-    <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource"
-               library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-    <summary lang="en">Browse children sections in other addons</summary>
-    <description lang="en">links to other  childern addons .</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.MakoTV"
        name="MakoTV (web)"
        version="1.2.0"
