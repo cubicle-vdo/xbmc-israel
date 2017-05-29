@@ -92,10 +92,10 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.israelive" name="[COLOR white]Israe[/COLOR][COLOR blue]L[/COLOR][COLOR white]IVE[/COLOR]" version="5.0.6" provider-name="Benny123, Avigdor (xbmc-israel repo)">
+<addon id="plugin.video.israelive" name="GlobeTV" version="5.0.7" provider-name="Benny123, Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="repository.xbmc-israel" />
+    <import addon="repository.xbmc-avigdork" />
 	<import addon="script.module.israeliveresolver" />
 	<import addon="script.module.six" />
   </requires>
@@ -106,8 +106,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Benny123's project</summary>
     <summary lang="he">הפרויקט של Benny123</summary>
-    <description lang="en">Watch Live TV channels from Israel and all over the world.[CR][CR]The addon page and free download:[CR][COLOR blue]http://www.hometheater.co.il/vt219048.html[/COLOR][CR][CR]More addons on The Israeli repo:[CR][COLOR blue]https://github.com/cubicle-vdo/xbmc-israel[/COLOR]</description>
-    <description lang="he">צפיה בשידורי טלויזיה חיים מישראל והעולם.[CR][CR]דף הסברים והורדה בחינם:[CR][COLOR blue]http://www.hometheater.co.il/vt219048.html[/COLOR][CR][CR]תוספים נוספים במקור הישראלי:[CR][COLOR blue]https://github.com/cubicle-vdo/xbmc-israel[/COLOR]</description>
+    <description lang="en">Watch free Live TV channels from over the world.</description>
+    <description lang="he">צפיה בשידורי טלויזיה חיים מהעולם.</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -238,6 +238,19 @@
     </extension>
 </addon>
 
+<addon id="repository.xbmc-avigdork" name="Avigdor's XBMC Repository" version="1.0.3" provider-name="avigdork">
+    <extension point="xbmc.addon.repository" name="Avigdor's XBMC Repo">
+        <info compressed="false">https://github.com/avigdork/xbmc-avigdork/raw/master/addons.xml</info>
+        <checksum>https://github.com/avigdork/xbmc-avigdork/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/avigdork/xbmc-avigdork/raw/master/repo</datadir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>Avigdor's XBMC Repository</summary>
+        <description>Download and install addons for XBMC by Avigdor</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
 <addon id="repository.xbmc-israel" name=".[COLOR blue]XBMC Israeli [/COLOR][COLOR white] Streaming Sites[/COLOR]" version="1.0.4" provider-name="cubicle-vdo">
     <extension point="xbmc.addon.repository" name="XBMC Israeli streaming repo for streaming sites">
         <info compressed="false">https://raw.githubusercontent.com/cubicle-vdo/xbmc-israel/master/addons.xml</info>
@@ -264,10 +277,10 @@
   <extension library="lib" point="xbmc.python.module" />
 </addon>
 
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.3" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="GlobeTVresolver" version="0.3.4" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
-	<import addon="repository.xbmc-israel" />
+	<import addon="repository.xbmc-avigdork" />
   </requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.python.pluginsource" library="lib/default.py" />

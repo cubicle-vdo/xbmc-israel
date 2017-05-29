@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.xbmc-avigdork" name="Avigdor's XBMC Repository" version="1.0.3" provider-name="avigdork">
+    <extension point="xbmc.addon.repository" name="Avigdor's XBMC Repo">
+        <info compressed="false">https://github.com/avigdork/xbmc-avigdork/raw/master/addons.xml</info>
+        <checksum>https://github.com/avigdork/xbmc-avigdork/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/avigdork/xbmc-avigdork/raw/master/repo</datadir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>Avigdor's XBMC Repository</summary>
+        <description>Download and install addons for XBMC by Avigdor</description>
+        <platform>all</platform>
+    </extension>
+</addon>

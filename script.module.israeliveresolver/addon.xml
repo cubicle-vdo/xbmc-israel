@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.israeliveresolver" name="IsraeLiveResolver" version="0.3.3" provider-name="Avigdor (xbmc-israel repo)">
+<addon id="script.module.israeliveresolver" name="GlobeTVresolver" version="0.3.4" provider-name="Avigdor">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
-	<import addon="repository.xbmc-israel" />
+	<import addon="repository.xbmc-avigdork" />
   </requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.python.pluginsource" library="lib/default.py" />

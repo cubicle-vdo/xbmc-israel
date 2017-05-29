@@ -299,8 +299,8 @@ def ReadSettings(source, fromFile=False):
 def RefreshPVR(m3uPath, epgPath, logoPath, forceUpdate=False):
 	if forceUpdate or common.getAutoIPTV():
 		UpdateIPTVSimpleSettings(m3uPath, epgPath, logoPath)
-		ver = xbmc.__version__.split('.')
-		kodi17 = True if int(ver[0]) > 2 or int(ver[0]) == 2 and int(ver[1]) > 24 else False
+		xbmcVer = xbmcaddon.Addon('xbmc.addon').getAddonInfo('version').split('.')
+		kodi17 = True if int(xbmcVer[0]) > 16 else False
 		if Addon.getSetting("autoPVR") == "true":
 			if (not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.GetAddonDetails","params":{"addonid":"pvr.iptvsimple", "properties": ["enabled"]},"id":1}'))['result']['addon']['enabled'] or (not kodi17 and not json.loads(xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"pvrmanager.enabled"},"id":1}'))['result']['value'])):
 				tvOption = common.GetMenuSelected(localizedString(30317).encode('utf-8'), [localizedString(30318).encode('utf-8'), localizedString(30319).encode('utf-8')])

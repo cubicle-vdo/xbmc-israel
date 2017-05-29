@@ -1,3 +1,8 @@
+[B]v5.0.7[/B]
+- Auto enable Video InputStream addons on Kodi 17
+- Addon move back to my repository.
+- Addon's name changesd to GlobeTV.
+- Addon's icon changed.
 [B]v5.0.6[/B]
 - Bugfix for LiveTV disapears at startup (on Kodi < 17)
 - Remove automatic refresh for LiveTV on Kodi 17 (it's stuck Kodi 17.)

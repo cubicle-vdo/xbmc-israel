@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<strings>
-    <string id="30000">Force using User-Agent</string>
-    <string id="30001">Specific User-Agent (if empty use random)</string>
-	<string id="30002">Israeli IP (if empty use default)</string>
-	<string id="30003">Mako Username</string>
-	<string id="30004">Mako Password</string>
-	<string id="30005">Mako Device ID</string>
-</strings>
