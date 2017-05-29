@@ -1,3 +1,5 @@
+1.1.7
+- Addon moved back to my repo.
 1.1.6
 - Bugfix.
 1.1.5
