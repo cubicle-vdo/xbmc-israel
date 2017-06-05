@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<setting id="action" type="action" label="10101" action="RunPlugin(plugin://plugin.video.playlistLoader/default.py?mode=27&url=settings)" option="close"/>
-	<setting id="action" type="action" label="10102" action="RunPlugin(plugin://plugin.video.playlistLoader/default.py?mode=39&url=settings)" option="close"/>
-</settings>
